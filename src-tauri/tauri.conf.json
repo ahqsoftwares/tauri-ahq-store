@@ -4,7 +4,7 @@
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
     "devPath": "http://localhost:3000",
-    "distDir": "../public"
+    "distDir": "../build"
   },
   "package": {
     "productName": "ahq-store-tauri",
@@ -17,7 +17,7 @@
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
-      "copyright": "",
+      "copyright": "AHQ Softwares",
       "deb": {
         "depends": []
       },
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.ahqsoftwares.store",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -56,11 +56,12 @@
     },
     "windows": [
       {
-        "fullscreen": false,
+        "center": true,
         "height": 600,
         "resizable": true,
         "title": "AHQ Store",
-        "width": 800
+        "width": 800,
+        "maximized": true
       }
     ]
   }

@@ -1,23 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
+import {getVersion} from "@tauri-apps/api/app";
+import logo from './AHQ Store.png';
 import './App.css';
 
 function App() {
+  let [version, setVersion] = useState("");
+  useEffect(() => {
+    (async() => {
+      setVersion(String(await getVersion()));
+    })()
+  }, []);
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={logo} alt="Loading" />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          Loading AHQ Store {version}
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
     </div>
   );
