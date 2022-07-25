@@ -51,7 +51,7 @@
       "csp": null
     },
     "updater": {
-      "active": false,
+      "active": true,
       "endpoints": [
         "https://github.com/ahqsoftwares/"
       ],

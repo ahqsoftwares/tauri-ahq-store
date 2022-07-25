@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
+        platform: [windows-latest]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -34,8 +34,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAURI_PRIVATE_KEY: ${{secrets.GITHUB_TAURI}}
       with:
-        tagName: store___VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+        tagName: ___VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "AHQ Store@__VERSION__"
-        releaseBody: "**Change Log :**"
+        releaseBody: ""
         releaseDraft: true
         prerelease: false

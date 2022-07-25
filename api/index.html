@@ -1,0 +1,17 @@
+<html>
+         <script>
+                  fetch("https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest")
+                  .then(res => res.json())
+                  .then((data) => {
+                           document.querySelector("span").innerHTML = `{
+                                    "url": "https://github.com/ahqsoftwares",
+                                    "version": "${data.tag_name}"
+                           }`
+                  })
+         </script>
+         <body>
+                  <span>
+
+                  </span>
+         </body>
+</html>
