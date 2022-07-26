@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import App from './config/App';
 import reportWebVitals from './reportWebVitals';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 
@@ -13,7 +13,7 @@ import { isPermissionGranted, requestPermission, sendNotification } from '@tauri
     permissionGranted = permission === 'granted';
   }
   if (permissionGranted) {
-    sendNotification({ title: 'Warning', body: 'AHQ Store is under maintenance'});
+    sendNotification({ title: 'Development Build', body: 'Not for consumer use'});
   }
 })()
 
