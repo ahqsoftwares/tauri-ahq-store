@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "AHQ Store",
-    "version": "0.1.2"
+    "version": "../package.json"
   },
   "tauri": {
     "allowlist": {
@@ -16,7 +16,7 @@
     },
     "bundle": {
       "active": true,
-      "category": "DeveloperTool",
+      "category": "Business",
       "copyright": "AHQ Softwares",
       "deb": {
         "depends": []
