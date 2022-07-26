@@ -7,14 +7,8 @@
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
-  background-color: #282c34;
+  animation: Loading infinite 10s linear;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -28,11 +22,17 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
+@keyframes Loading {
   from {
-    transform: rotate(0deg);
+    background-color: darkblue;
+  }
+  33% {
+    background-color: green;
+  }
+  67% {
+    background-color: black;
   }
   to {
-    transform: rotate(360deg);
+    background-color: darkblue;
   }
 }

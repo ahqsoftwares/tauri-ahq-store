@@ -15,7 +15,7 @@ function App() {
       <header className="App-header">
         <img src={logo} alt="Loading" />
         <p>
-          Loading AHQ Store {version}
+          v{version}
         </p>
       </header>
     </div>

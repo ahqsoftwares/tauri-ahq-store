@@ -1,11 +1,11 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
+name = "ahq-store-app"
+version = "0.1.4"
+description = "AHQ Store on Tauri and Rust"
+authors = ["AHQ Softwares"]
+license = "ISC"
 repository = ""
-default-run = "app"
+default-run = "ahq-store-app"
 edition = "2021"
 rust-version = "1.57"
 
@@ -17,7 +17,7 @@ tauri-build = { version = "1.0.2", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.2", features = ["api-all"] }
+tauri = { version = "1.0.2", features = ["api-all", "updater"] }
 
 [features]
 # by default Tauri runs in production mode
