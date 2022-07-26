@@ -34,7 +34,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAURI_PRIVATE_KEY: ${{secrets.TAURI}}
       with:
-        tagName: ___VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+        tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "AHQ Store@__VERSION__"
         releaseBody: ""
         releaseDraft: true
