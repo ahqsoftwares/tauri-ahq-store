@@ -12,7 +12,18 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "notification": {
+        "all": true
+      },
+      "fs": {
+        "scope": {
+          "$CACHE/AHQ Store/*": {
+            "readDir": true,
+            "readFile": true,
+            "writeFile": true
+          }
+        }
+      }
     },
     "bundle": {
       "active": true,
@@ -45,7 +56,8 @@
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "timestampUrl": "",
+        "allowDowngrades": false
       }
     },
     "security": {
@@ -56,7 +68,8 @@
       "endpoints": [
         "https://ahq-store.cf/api/updater"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFBQUQxRTExODc4NUUyQUMKUldTczRvV0hFUjZ0cWlOczRIQjlVTDFiWUhRUlNsMERZTm9hdGJzVTc1UUtEajBPSnVydWVMc0YK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFBQUQxRTExODc4NUUyQUMKUldTczRvV0hFUjZ0cWlOczRIQjlVTDFiWUhRUlNsMERZTm9hdGJzVTc1UUtEajBPSnVydWVMc0YK",
+      "dialog": false
     },
     "windows": [
       {

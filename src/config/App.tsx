@@ -1,21 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {getVersion} from "@tauri-apps/api/app";
 import logo from './AHQ Store.png';
 import './App.css';
 
-function App() {
-  let [version, setVersion] = useState("");
-  useEffect(() => {
-    (async() => {
-      setVersion(String(await getVersion()));
-    })()
-  }, []);
+function App(props: { info: string}) {
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} alt="Loading" />
         <p>
-          v{version}
+          {props.info}
         </p>
       </header>
     </div>

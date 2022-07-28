@@ -4,7 +4,8 @@ import './index.css';
 import App from './config/App';
 import reportWebVitals from './reportWebVitals';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
-
+import { checkUpdate, installUpdate } from '@tauri-apps/api/updater';
+import { relaunch } from '@tauri-apps/api/process';
 
 (async() => {
   let permissionGranted = await isPermissionGranted();
@@ -17,14 +18,32 @@ import { isPermissionGranted, requestPermission, sendNotification } from '@tauri
   }
 })()
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App/>
-  </React.StrictMode>
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
+render("Checking for updates...", App);
+
+checkUpdate().then(async({shouldUpdate, manifest}) => {
+  if (shouldUpdate) {
+    render(`Update to ${manifest?.version} Available...`, App);
+    setTimeout(async() => {
+      render(`Installing ${manifest?.version}`,  App);
+      setTimeout(async() => {
+        await installUpdate();
+        await relaunch();
+      }, 3000);
+    }, 5000);
+  } else {
+    render("Launching Store...", App);
+  }
+});
+
+function render(state: string, App: any) {
+  root.render(
+    <React.StrictMode>
+      <App info={state}/>
+    </React.StrictMode>
+  );
+}
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
