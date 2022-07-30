@@ -1,4 +1,4 @@
-import logo from './AHQ Store.png';
+import logo from './index.png';
 import './App.css';
 
 function App(props: { info: string}) {

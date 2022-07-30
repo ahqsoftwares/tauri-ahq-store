@@ -1,0 +1,22 @@
+@tailwind utilities;
+@tailwind base;
+@tailwind components;
+
+.nav {
+         transition: all 500ms linear;
+}
+.n-item {
+         @apply w-16 h-16 justify-center items-center relative flex text-gray-600 hover:text-orange-300 bg-orange-200 hover:bg-orange-600;
+         border-radius: 20%;
+         margin-top: 8px;
+         transition: all 200ms linear;
+}
+.n-item:hover {
+         border-radius: 30%;
+}
+.n-item:active, .n-item:focus, .active {
+         border-radius: 35%;
+         color: orangered;
+         cursor: pointer;
+         @apply bg-orange-900;
+}

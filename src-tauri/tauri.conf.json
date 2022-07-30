@@ -74,11 +74,13 @@
     "windows": [
       {
         "center": true,
-        "height": 600,
+        "height": 753,
         "resizable": true,
         "title": "AHQ Store",
-        "width": 800,
-        "maximized": true
+        "width": 1239,
+        "maximized": true,
+        "minHeight": 700,
+        "minWidth": 1200
       }
     ]
   }

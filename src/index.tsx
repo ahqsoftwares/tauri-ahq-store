@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './config/App';
+import Store from "./app/index";
 import reportWebVitals from './reportWebVitals';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 import { checkUpdate, installUpdate } from '@tauri-apps/api/updater';
@@ -34,6 +35,13 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
     }, 5000);
   } else {
     render("Launching Store...", App);
+    setTimeout(async() => {
+      root.render(
+        <React.StrictMode>
+          <Store />
+        </React.StrictMode>
+      )
+    }, 2000);
   }
 });
 
