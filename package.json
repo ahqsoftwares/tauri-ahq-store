@@ -13,6 +13,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "autoprefixer": "^10.4.8",
+    "firebase": "^9.9.1",
     "postcss": "^8.4.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -50,5 +51,6 @@
   "devDependencies": {
     "@tauri-apps/cli": "^1.0.5",
     "cross-env": "^7.0.3"
-  }
+  },
+  "packageManager": "yarn@3.2.2"
 }
