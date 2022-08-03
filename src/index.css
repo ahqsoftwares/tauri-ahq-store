@@ -15,3 +15,42 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.login-background {
+  background-image: url("./bg.jpg");
+  @apply h-screen w-screen flex items-center justify-center;
+  transition: all 25ms linear;
+}
+
+.modal {
+  @apply items-center justify-center flex w-[25rem] h-[40rem] bg-white rounded-lg shadow-lg flex-col;
+  transition: all 500ms linear;
+}
+
+.modal h1 {
+  font-weight: 900;
+  font-size: 5ch;
+  @apply text-blue-900;
+}
+
+.modal h2 {
+  font-weight: 300;
+  font-size: 30px;
+  @apply text-violet-800
+}
+
+.modal input {
+  border-bottom: 3px solid gray;
+  outline: none;
+  transition: all 500ms linear;
+  padding: 10px 15px;
+  @apply bg-gray-200 w-[90%] rounded-t-md shadow-lg focus:shadow-xl focus:rounded-lg;
+}
+
+.modal input:hover, .modal input:focus {
+  border-bottom: 3px solid black;
+}
+
+.button {
+  @apply bg-blue-900 text-white rounded-lg w-[60%] h-[50px] mt-[10px]
+}
