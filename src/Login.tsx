@@ -140,7 +140,7 @@ function Login(props: log) {
 }
 
 function Init(props: any) {
-         const {create, login, verify, reset, auth} = props.data;
+         const {create, login, verify, /*reset,*/ auth} = props.data;
          let [type, setType] = useState("login");
          
          return (
