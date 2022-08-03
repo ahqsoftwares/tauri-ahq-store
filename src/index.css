@@ -25,6 +25,7 @@ code {
 .modal {
   @apply items-center justify-center flex w-[25rem] h-[40rem] bg-white rounded-lg shadow-lg flex-col;
   transition: all 500ms linear;
+  user-select: none;
 }
 
 .modal h1 {

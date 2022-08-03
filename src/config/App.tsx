@@ -1,17 +1,19 @@
 import logo from './index.png';
-import './App.css';
 
 function App(props: { info: string}) {
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} alt="Loading" />
-        <p>
-          {props.info}
-        </p>
-      </header>
-    </div>
+    <header className="login-background">
+      <div className="modal">
+        <div className="mt-10"></div>
+        <h1>AHQ Store</h1>
+        <div className='mt-[5rem]'></div>
+        <img src={logo} alt={"logo"} width={"200px"} />
+        <div className='mt-auto'></div>
+        <h2><strong>{props.info}</strong></h2>
+        <div className='mb-auto'></div>
+      </div>
+    </header>
   );
 }
 

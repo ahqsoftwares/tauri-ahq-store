@@ -79,6 +79,7 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
         login: signInWithEmailAndPassword,
         verify: sendEmailVerification,
         reset: verifyPasswordResetCode,
+        resetEmail: sendPasswordResetEmail,
         auth
       });
     } else {
@@ -86,11 +87,14 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
     }
 
     auth.onAuthStateChanged((user) => {
-      user ? storeLoad(Store) : storeLoad(Login, {
+      user ? storeLoad(Store, {
+        auth
+      }) : storeLoad(Login, {
         create: createUserWithEmailAndPassword,
         login: signInWithEmailAndPassword,
         verify: sendEmailVerification,
         reset: verifyPasswordResetCode,
+        resetEmail: sendPasswordResetEmail,
         auth
       });
     });
