@@ -16,6 +16,10 @@ code {
     monospace;
 }
 
+.background {
+  background-image: url("./bg.jpg");
+}
+
 .login-background {
   background-image: url("./bg.jpg");
   @apply h-screen w-screen flex items-center justify-center;
@@ -48,10 +52,17 @@ code {
   @apply bg-gray-200 w-[90%] rounded-t-md shadow-lg focus:shadow-xl focus:rounded-lg;
 }
 
-.modal input:hover, .modal input:focus {
+.modal input:enabled:hover, .modal input:enabled:focus {
   border-bottom: 3px solid black;
 }
 
+.modal input:disabled {
+  @apply rounded-lg border-none shadow-lg;
+}
+
 .button {
-  @apply bg-blue-900 text-white rounded-lg w-[60%] h-[50px] mt-[10px]
+  @apply bg-blue-900 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
+}
+.button:disabled {
+  @apply bg-gray-500;
 }

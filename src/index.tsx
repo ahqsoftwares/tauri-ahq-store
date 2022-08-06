@@ -9,6 +9,7 @@ import reportWebVitals from './reportWebVitals';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 import { checkUpdate, installUpdate } from '@tauri-apps/api/updater';
 import { relaunch } from '@tauri-apps/api/process';
+import { appWindow } from "@tauri-apps/api/window";
 
 /*Apps
 */
@@ -19,7 +20,9 @@ import Login from "./Login";
 /*Firebase
 */
 import {initializeApp} from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, verifyPasswordResetCode } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
+/*import { initializeFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";*/
 
 /*Global CSS
 */
@@ -40,12 +43,17 @@ const config = {
 
 const app = initializeApp(config);
 const auth = getAuth(app);
+/*const firestore = initializeFirestore(app, {});
+const realtimeDB = getDatabase(app);*/
 
 /*Logic
 */
 (async() => {
   let permissionGranted = await isPermissionGranted();
-  if (!permissionGranted) {
+  if (!await appWindow.isMaximized()) {
+    appWindow.maximize();
+  }
+   if (!permissionGranted) {
     const permission = await requestPermission();
     permissionGranted = permission === 'granted';
   } else {
@@ -59,7 +67,7 @@ render("Checking for updates...", App);
 
 checkUpdate().then(async({shouldUpdate, manifest}) => {
   if (shouldUpdate) {
-    render(`Update to ${manifest?.version} Available...`, App);
+    render(`Verison ${manifest?.version} Available...`, App);
 
     setTimeout(async() => {
       render(`Installing ${manifest?.version}`,  App);
@@ -72,18 +80,27 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
   } else {
 
     render("Launching Store...", App);
-
+    setTimeout(() => {
     if (!auth.currentUser) {
       storeLoad(Login, {
         create: createUserWithEmailAndPassword,
         login: signInWithEmailAndPassword,
         verify: sendEmailVerification,
-        reset: verifyPasswordResetCode,
         resetEmail: sendPasswordResetEmail,
-        auth
+        auth,
+        verifyCode: verifyPasswordResetCode,
+        reset: confirmPasswordReset
       });
     } else {
-      storeLoad(Store);
+      storeLoad(Store, {auth});
+    }
+
+    if (auth.currentUser && !auth.currentUser?.emailVerified) {
+      sendEmailVerification(auth.currentUser);
+      sendNotification({
+        title: "Email Verification",
+        body: "Email verification link send! Please verify"
+      });
     }
 
     auth.onAuthStateChanged((user) => {
@@ -93,11 +110,13 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
         create: createUserWithEmailAndPassword,
         login: signInWithEmailAndPassword,
         verify: sendEmailVerification,
-        reset: verifyPasswordResetCode,
+        reset: confirmPasswordReset,
         resetEmail: sendPasswordResetEmail,
-        auth
+        auth,
+        verifyCode: verifyPasswordResetCode
       });
     });
+  }, 500);
   }
 });
 

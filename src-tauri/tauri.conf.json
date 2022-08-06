@@ -23,6 +23,19 @@
             "writeFile": true
           }
         }
+      },
+      "window": {
+        "all": false,
+        "maximize": true,
+        "minimize": false,
+        "setSkipTaskbar": false,
+        "setTitle": false,
+        "show": false,
+        "startDragging": false,
+        "unmaximize": false,
+        "unminimize": false,
+        "create": true,
+        "close": true
       }
     },
     "bundle": {
@@ -78,7 +91,6 @@
         "resizable": true,
         "title": "AHQ Store",
         "width": 1239,
-        "maximized": true,
         "minHeight": 700,
         "minWidth": 1200
       }

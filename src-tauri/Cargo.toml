@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "0.2.99"
+version = "0.3.0"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares"]
 license = "ISC"
@@ -17,7 +17,7 @@ tauri-build = { version = "1.0.2", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.2", features = ["notification-all", "updater"] }
+tauri = { version = "1.0.2", features = ["notification-all", "updater", "window-close", "window-create", "window-maximize"] }
 
 [features]
 # by default Tauri runs in production mode

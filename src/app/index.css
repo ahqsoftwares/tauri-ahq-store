@@ -4,19 +4,72 @@
 
 .nav {
          transition: all 500ms linear;
+         background-color: white;
 }
+
+/*
+Item pallete
+*/
+.n-item:active, .n-item:focus, .active {
+         @apply text-white bg-orange-400;
+         border: 10px solid transparent;
+         border-radius: 45%;
+         cursor: pointer;
+}
+
 .n-item {
-         @apply w-16 h-16 justify-center items-center relative flex text-gray-600 hover:text-orange-300 bg-orange-200 hover:bg-orange-600;
+         @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black;
+         background-color: bisque;
          border-radius: 20%;
          margin-top: 8px;
          transition: all 200ms linear;
 }
+
 .n-item:hover {
+         border: 9px solid transparent;
          border-radius: 30%;
 }
-.n-item:active, .n-item:focus, .active {
-         border-radius: 35%;
-         color: orangered;
+
+.n-item-d:active, .n-item-d:focus, .active-d {
+         @apply text-black bg-white;
+         border: 10px solid transparent;
+         border-radius: 45%;
          cursor: pointer;
-         @apply bg-orange-900;
+}
+
+.n-item-d {
+         @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black;
+         background-color: bisque;
+         border-radius: 20%;
+         margin-top: 8px;
+         transition: all 200ms linear;
+}
+
+.n-item-d:hover {
+         border: 9px solid transparent;
+         border-radius: 30%;
+}
+
+/*
+Backgrounds Super
+*/
+.bg-blue-super {
+         /*background: linear-gradient(to bottom, rgb(111, 111, 255), rgb(21, 21, 255));*/
+         background-color: whitesmoke;
+}
+.bg-blue-super-d {
+         /*background: linear-gradient(to bottom, rgb(111, 111, 255), rgb(21, 21, 255));*/
+         background-color: black;
+}
+
+
+
+/*
+App pallete
+*/
+.apps {
+         background: white;
+}
+.apps-d {
+         @apply bg-gray-800;
 }
