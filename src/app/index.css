@@ -19,7 +19,7 @@ Navigation
 }
 .nav-d {
          transition: all 1s linear;
-         background-color: white;
+         background-color: gray;
 }
 
 /*
@@ -39,21 +39,25 @@ Item pallete
 }
 
 .n-item-s:active, .n-item-s:hover {
-         border: 10px solid inherit;
-         border-radius: 50%;
-         cursor: pointer;
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  @apply border-orange-400
 }
 
 .n-item:active, .n-item:focus, .active {
-         @apply text-white;
-         border: 10px solid inherit;
-         border-radius: 45%;
-         cursor: pointer;
+          @apply text-white;
+         border-width: 9px;
+         border-style: solid;
+         border-radius: 30%;
+         @apply border-orange-400
 }
 
 .n-item:hover {
-         border: 9px solid inherit;
-         border-radius: 30%;
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  @apply border-orange-400
 }
 
 /*
