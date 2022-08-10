@@ -2,51 +2,57 @@
 @tailwind base;
 @tailwind components;
 
+:root {
+         --opacity: 0.75;
+         --text: white;
+}
+
+::-webkit-scrollbar {
+         width: 1px;
+}
+/*
+Navigation
+*/
 .nav {
-         transition: all 500ms linear;
+         transition: all 1s linear;
+         background-color: white;
+}
+.nav-d {
+         transition: all 1s linear;
          background-color: white;
 }
 
 /*
 Item pallete
 */
-.n-item:active, .n-item:focus, .active {
-         @apply text-white bg-orange-400;
-         border: 10px solid transparent;
-         border-radius: 45%;
-         cursor: pointer;
-}
-
 .n-item {
-         @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black;
-         background-color: bisque;
+         @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black bg-orange-400;
          border-radius: 20%;
          margin-top: 8px;
          transition: all 200ms linear;
+}
+.n-item-s {
+         @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black bg-orange-400;
+         border-radius: 20%;
+         margin-top: 8px;
+         transition: all 500ms linear;
+}
+
+.n-item-s:active, .n-item-s:hover {
+         border: 10px solid inherit;
+         border-radius: 50%;
+         cursor: pointer;
+}
+
+.n-item:active, .n-item:focus, .active {
+         @apply text-white;
+         border: 10px solid inherit;
+         border-radius: 45%;
+         cursor: pointer;
 }
 
 .n-item:hover {
-         border: 9px solid transparent;
-         border-radius: 30%;
-}
-
-.n-item-d:active, .n-item-d:focus, .active-d {
-         @apply text-black bg-white;
-         border: 10px solid transparent;
-         border-radius: 45%;
-         cursor: pointer;
-}
-
-.n-item-d {
-         @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black;
-         background-color: bisque;
-         border-radius: 20%;
-         margin-top: 8px;
-         transition: all 200ms linear;
-}
-
-.n-item-d:hover {
-         border: 9px solid transparent;
+         border: 9px solid inherit;
          border-radius: 30%;
 }
 
@@ -54,15 +60,26 @@ Item pallete
 Backgrounds Super
 */
 .bg-blue-super {
-         /*background: linear-gradient(to bottom, rgb(111, 111, 255), rgb(21, 21, 255));*/
-         background-color: whitesmoke;
+         @apply bg-gray-300;
 }
 .bg-blue-super-d {
-         /*background: linear-gradient(to bottom, rgb(111, 111, 255), rgb(21, 21, 255));*/
-         background-color: black;
+         @apply bg-gray-700;
 }
 
-
+/*
+*/
+.menu {
+         @apply items-center flex w-[99%] h-[98vh] bg-gray-300 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
+         transition: all 500ms linear;
+         overflow-y: scroll;
+         scroll-behavior: smooth;
+}
+.menu-d {
+         @apply items-center flex w-[99%] h-[98vh] bg-gray-600 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
+         transition: all 500ms linear;
+         overflow-y: scroll;
+         scroll-behavior: smooth;
+}
 
 /*
 App pallete
@@ -72,4 +89,79 @@ App pallete
 }
 .apps-d {
          @apply bg-gray-800;
+}
+
+/*
+Checkbox
+*/
+.checkbox {
+         @apply bg-white w-[98%] rounded-lg shadow-md p-[auto] h-[4rem] flex;
+         transition: all 500ms linear;
+}
+
+.checkbox:hover {
+         @apply bg-gray-200;
+}
+
+.checkbox h6 {
+         @apply text-black my-auto;
+         cursor: default;
+}
+.checkbox p {
+         @apply text-gray-600;
+}
+
+.checkbox-d p {
+         @apply text-gray-400;
+}
+
+.checkbox-d {
+         @apply bg-gray-700 w-[98%] rounded-lg shadow-md p-[auto] h-[4rem] flex;
+         transition: all 500ms linear;
+}
+
+.checkbox-d:hover {
+         @apply bg-gray-500;
+}
+
+.checkbox-d h6 {
+         @apply my-auto;
+         cursor: default;
+         color: var(--text)
+}
+
+.slider {
+         -webkit-appearance: none;  /* Override default CSS styles */
+         appearance: none;
+         padding: auto;
+         width: 40px; /* Full-width */
+         height: 20px; /* Specified height */
+         @apply bg-gray-400 my-auto rounded-lg;
+         outline: none; /* Remove outline */
+         opacity: var(--opacity); /* Set transparency (for mouse-over effects on hover) */
+         -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+         transition: opacity .2s;
+}
+.checkbox-d .slider {
+         @apply bg-gray-300;
+}
+
+.slider::-webkit-slider-thumb {
+         -webkit-appearance: none; /* Override default look */
+         appearance: none;
+         width: 14px; /* Set a specific slider handle width */
+         height: 14px; /* Slider handle height */
+         background: darkgreen; /* Green background */
+         border-radius: 50%;
+         cursor: pointer; /* Cursor on hover */
+}
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #04AA6D; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.checkbox-d:hover, .checkbox:hover {
+         --opacity: 1;
 }

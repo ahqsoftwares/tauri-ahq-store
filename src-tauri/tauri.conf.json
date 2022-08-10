@@ -15,21 +15,21 @@
       "notification": {
         "all": true
       },
+      "path": {
+        "all": true
+      },
       "fs": {
-        "scope": {
-          "$CACHE/AHQ Store/*": {
-            "readDir": true,
-            "readFile": true,
-            "writeFile": true
-          }
-        }
+        "readFile": true,
+        "writeFile": true,
+        "createDir": true,
+        "scope": ["$APP", "$APP/*"]
       },
       "window": {
         "all": false,
         "maximize": true,
         "minimize": false,
         "setSkipTaskbar": false,
-        "setTitle": false,
+        "setTitle": true,
         "show": false,
         "startDragging": false,
         "unmaximize": false,

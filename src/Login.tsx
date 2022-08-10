@@ -1,12 +1,15 @@
 import {useState} from "react";
-import { sendNotification } from "@tauri-apps/api/notification";
+import { getCurrent } from "@tauri-apps/api/window";
 
+/**
+ * Forgot Password Component
+ * @param props 
+ * @returns {JSX.Element} Component
+ */
 function ForgotPwd(props: any) {
          let 
-         {reset, verify, email: Email, auth} = props,
+         {email: Email, auth} = props,
          [email, setEmail] = useState(""),
-         [password, setPwd]  = useState(""),
-         [code, setCode] = useState(""),
          [step, setStep] = useState(1),
          [errors, setE] = useState("");
 
@@ -16,44 +19,23 @@ function ForgotPwd(props: any) {
                            case 1:
                                     setStep(step + 1);
                                     Email(auth, email)
-                                    .catch(() => {
-                                             setStep(0);
-                                    });
-                                    break;
-                           case 2:
-                                    setStep(3);
-                                    verify(auth, code).then((res: string | null) => {
-                                             if (res === email) {
-                                                      setStep(4);
-                                                      setE("");
-                                             } else {
-                                                      setStep(2);
-                                                      setE("Invalid verification code!");
-                                                      sendNotification({
-                                                               title: "Invalid Verification Code!",
-                                                               body: "Please enter the correct verification code!"
-                                                      });
+                                    .then(() => {setStep(3); setE("")})
+                                    .catch((e: Error) => {
+                                             switch (String(e)) {
+                                                      case "FirebaseError: Firebase: Error (auth/user-not-found).": 
+                                                               setE("Invalid Email");
+                                                               break;
+                                                      default:
+                                                               setE("Unknown Error");
                                              }
-                                    }).catch(() => {
-                                             setStep(2);
-                                             setE("Invalid verification code!");
-                                             sendNotification({
-                                                      title: "Invalid Verification Code!",
-                                                      body: "Please enter the correct verification code!"
-                                             });
-                                    });
-                                    break;
-                           case 4:
-                                    reset(auth, code, password).then(() => {
-                                             setStep(5);
-                                             setTimeout(() => {
-                                                      props.change("login");
-                                             }, 2000);
-                                    }).catch(() => {
                                              setStep(0);
                                     });
+                                    break;
+                           case 3:
+                                    props.change("login");
                                     break;
                            default:
+                                    setE("Page Not Found!");
                                     setStep(0);
                   }
          }
@@ -63,7 +45,6 @@ function ForgotPwd(props: any) {
                            <div className="mt-10"></div>
                            <h1>Restore</h1>
                            <h2>Reset your password!</h2>
-                           <h2>{errors}</h2>
 
                            <div className="mt-auto"></div>
 
@@ -71,42 +52,30 @@ function ForgotPwd(props: any) {
                                     <div className="mt-auto"></div>
 
                                     { step !== 0 ? 
+
                                     <>
+                                    {step === 3 ? <h6 className="text-green-700 mb-2">Password reset email sent successfully!</h6> : <></>}
 
-                                    {step < 3 ?
-                                             <input type="email" disabled={step !== 1} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required={true}></input>
-                                    : <></>}
-
-                                    {step > 1 && step < 5 ?
-                                    <>
-                                             <div className="mt-[1rem]"></div>
-                                             <h6 style={{"transitionDuration": "500ms"}} className={`mr-auto ml-[5%] transition-all ${(code === "" || code.length !== 6) ? "text-red-900" : step === 3 ? "text-black" : "text-green-600"}`}>{step < 3 ? "Please enter the code sent to your email" : "Verification Code"}</h6>
-                                             <input disabled={step > 2} placeholder="Code" value={code} onChange={(e) => setCode(e.target.value.replaceAll(" ", ""))} required={true}></input>
-                                    </>         
-                                    : <></>}
-
-                                    {step === 4 ?
-                                    <>
-                                             <div className="mt-[1rem]"></div>
-                                             <input disabled={step !== 4} placeholder="New Password" value={password} onChange={(e => setPwd(e.target.value))} required></input>
-                                    </>
-                                    : <></>}
-
-                                    {step === 5 ?
-                                    <h1>Success!</h1>
-                                    : <></> }
+                                    <input type="email" disabled={step !== 1} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required={true}></input>
 
                                     <div className="mt-auto"></div>
                                     
-                                    <button className="button" disabled={step === 3}>{step < 2 ? "Continue" : step === 3 ? "Please Wait..." : "Submit"}</button>
+                                    <button className="button" disabled={step === 2}>{step === 1 ? "Email Me!" :  step === 3 ? "✔️": "⏲️"}</button>
                                     
                                     <div className="mb-[2rem]"></div>
-
                                     </>
-                                    : <h2 className="text-red-800 m-auto mb-[12rem]" style={{"color": "red"}}><strong>An Error Occured</strong></h2>}
+                                    
+                                    : 
+                                    <>
+                                    <h2 className="text-red-800 m-auto mb-[12rem]" style={{"color": "red"}}><strong>{errors}</strong></h2>
+                                    <button className="button" onClick={() => {setStep(1); setEmail("")}}>Try Again</button>
+                                    <div className="mb-[2rem]"></div>
+                                    </>
+                                    }
 
                            </form>
-
+                           {step === 1
+                           ?
                            <div className="flex w-[90%]">
                                     <button onClick={() => {
                                              props.change("login");
@@ -121,6 +90,7 @@ function ForgotPwd(props: any) {
                                     </button>
                                     
                            </div>
+                           : <></>}
                   </>
          )
 }
@@ -129,18 +99,28 @@ function SignUp(props: any) {
          const {create, auth} = props;
          let [email, setEmail] = useState(""),
          [step, setStep] = useState(1),
-         [pwd, setPwd] = useState("");
+         [pwd, setPwd] = useState(""),
+         [err, setErr] = useState("");
 
          async function contd(event: any) {
-                  console.log(event);
                   event.preventDefault();
-                  if (step === 3) {
+                  if (step === 2) {
                            await create(auth, email, pwd)
                            .then(() => {
                                     auth.signOut();
                            })
                            .catch((e: Error) => {
-                                    console.log(e)
+                                    switch (String(e).replace("FirebaseError: Firebase: ", "")) {
+                                             case "Password should be at least 6 characters (auth/weak-password).":
+                                                      setErr("Use a strong password!");
+                                                      break;
+                                             case "Error (auth/email-already-in-use).":
+                                                      setErr("Use unique email address.");
+                                                      break;
+                                             default:
+                                                      setErr("Unknown error");
+                                    }
+                                    setStep(0);
                            });
                   } else {
                            setStep(step + 1);
@@ -155,6 +135,8 @@ function SignUp(props: any) {
 
                            <div className="mt-auto"></div>
                            
+                           {step !== 0 ?
+
                            <form className="modal" onSubmit={contd}>
                                     <div className="mt-auto"></div>
 
@@ -188,6 +170,14 @@ function SignUp(props: any) {
                                     <div className="mt-auto"></div>
                                     <div className="mb-[1rem]"></div>
                            </form>
+
+                           : 
+                           <>
+                           <h2 style={{"color": "red", "marginBottom": "1rem"}}>
+                                    {err}
+                           </h2>
+                           <button className="button" onClick={() => {setStep(1); setEmail(""); setPwd("")}}>Try Again</button>
+                           </>}
 
                            {step === 1 ?
                            <div className="flex w-[90%]">
@@ -275,6 +265,8 @@ function Login(props: log) {
 function Init(props: any) {
          const {create, login, verify, reset, auth, verifyCode, resetEmail} = props.data;
          let [type, setType] = useState("login");
+
+         getCurrent().setTitle("Accounts - AHQ Store");
          
          return (
                   <header className="login-background">
