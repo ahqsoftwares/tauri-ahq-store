@@ -25,30 +25,33 @@ function Render(props: any) {
                            setLoad(true);
                   })
                   .catch((e) => {
-                           console.log(e);
-                           createDir("database", {dir: BaseDirectory.App}).then(console.log).catch(console.log)
-                           .then(async() => {
-                                    let mode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-                                    setDark(mode);
-                                    await writeFile("database/config.astore", `{"dark": ${mode}}`, {dir: BaseDirectory.App});
-                           })
-                           .then(() => {
-                                    setLoad(true);
-                           });
-                  });
+                        console.log(e);
+                        createDir("database", {dir: BaseDirectory.App}).then(console.log).catch(console.log)
+                        .then(async() => {
+                                let mode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+                                setD(mode);
+                                await writeFile("database/config.astore", `{"dark": ${mode}}`, {dir: BaseDirectory.App})
+                                .catch(() => {
+                                        sendNotification({title: "Error", body: "Could not sync notifications!"});
+                                });
+                        })
+                        .then(() => {
+                                setLoad(true);
+                        });
+                });
          }, []);
 
          function updateConfig(data: Object) {
                   if (load) {
-                           writeFile("database/config.astore", JSON.stringify(data), {dir: BaseDirectory.App})
-                           .catch(() => {
-                                    sendNotification({title: "Error", body: "Could not save settings!"});
-                           });
+                        writeFile("database/config.astore", JSON.stringify(data), {dir: BaseDirectory.App})
+                        .catch(() => {
+                                sendNotification({title: "Error", body: "Could not save settings!"});
+                        });
                   }
          }
          function setDark(dark: boolean) {
-                  setD(dark);
-                  updateConfig({dark});
+                setD(dark);
+                updateConfig({dark});
          }
 
          switch (page) {

@@ -15,6 +15,8 @@ export default function Init(props: {dark: boolean, setDark: Function}){
                                     <input className="slider" type={"range"} min="0" max="60" value={props.dark ? "55" : "5"} readOnly></input>
                                     <div className="mr-3"></div>
                            </div>
+
+                           <></>
                   </div>
          )
 }

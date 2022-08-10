@@ -97,6 +97,7 @@ Checkbox
 .checkbox {
          @apply bg-white w-[98%] rounded-lg shadow-md p-[auto] h-[4rem] flex;
          transition: all 500ms linear;
+         cursor: pointer;
 }
 
 .checkbox:hover {
@@ -105,7 +106,7 @@ Checkbox
 
 .checkbox h6 {
          @apply text-black my-auto;
-         cursor: default;
+         cursor: pointer;
 }
 .checkbox p {
          @apply text-gray-600;
@@ -118,6 +119,7 @@ Checkbox
 .checkbox-d {
          @apply bg-gray-700 w-[98%] rounded-lg shadow-md p-[auto] h-[4rem] flex;
          transition: all 500ms linear;
+         cursor: pointer;
 }
 
 .checkbox-d:hover {
@@ -126,7 +128,7 @@ Checkbox
 
 .checkbox-d h6 {
          @apply my-auto;
-         cursor: default;
+         cursor: pointer;
          color: var(--text)
 }
 
@@ -141,9 +143,11 @@ Checkbox
          opacity: var(--opacity); /* Set transparency (for mouse-over effects on hover) */
          -webkit-transition: .2s; /* 0.2 seconds transition on hover */
          transition: opacity .2s;
+         cursor: pointer;
 }
 .checkbox-d .slider {
          @apply bg-gray-300;
+         cursor: pointer;
 }
 
 .slider::-webkit-slider-thumb {
