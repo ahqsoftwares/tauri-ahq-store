@@ -57,7 +57,7 @@ jobs:
         id: publish-release
         uses: actions/github-script@v6
         env:
-          release_id: ${{ needs.publish-tauri.outputs.releaseId }}
+          release_id: ${{ needs.publish-release.outputs.release_id }}
         with:
           script: |
             github.rest.repos.updateRelease({
