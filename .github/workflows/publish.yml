@@ -47,24 +47,4 @@ jobs:
         releaseName: "AHQ Store __VERSION__"
         releaseBody: ""
         releaseDraft: true
-        prerelease: false
-  publish-release:
-    runs-on: ubuntu-latest
-    needs: [publish-tauri]
-
-    steps:
-      - name: Publish release
-        id: publish-release
-        uses: actions/github-script@v6
-        env:
-          release_id: ${{ needs.publish-release.outputs.release_id }}
-        with:
-          script: |
-            github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: process.env.release_id,
-              draft: false,
-              prerelease: false
-            })
-
+        prerelease: true

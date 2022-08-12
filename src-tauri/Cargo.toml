@@ -18,6 +18,7 @@ tauri-build = { version = "1.0.2", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.0.2", features = ["fs-create-dir", "fs-read-file", "fs-write-file", "notification-all", "path-all", "updater", "window-close", "window-create", "window-maximize", "window-set-title"] }
+tauri-plugin-single-instance = { git = "https://github.com/amrbashir/tauri-plugin-single-instance" }
 
 [features]
 # by default Tauri runs in production mode
