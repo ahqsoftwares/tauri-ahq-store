@@ -45,5 +45,5 @@ jobs:
         releaseName: "AHQ Store __VERSION__"
         releaseBody: ""
         releaseDraft: true
-        prerelease: true
+        prerelease: false
 
