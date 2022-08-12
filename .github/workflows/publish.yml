@@ -27,6 +27,13 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+    - name: Cache store
+      uses: actions/cache@v3.0.7
+      with:
+        key: ${{ runner.os }}-build
+        path: |
+          src-tauri/target/release
+          node_modules
     - name: install app dependencies and build it
       run: yarn && yarn build
     - uses: tauri-apps/tauri-action@v0
@@ -35,10 +42,8 @@ jobs:
         TAURI_PRIVATE_KEY: ${{secrets.TAURI}}
       with:
         tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-        releaseName: "AHQ Store@__VERSION__"
+        releaseName: "AHQ Store __VERSION__"
         releaseBody: ""
         releaseDraft: true
-        prerelease: false
-    - name: Cache
-      uses: actions/cache@v3.0.7
+        prerelease: true
 

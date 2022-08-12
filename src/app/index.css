@@ -46,11 +46,11 @@ Item pallete
 }
 
 .n-item:active, .n-item:focus, .active {
-          @apply text-white;
-         border-width: 9px;
-         border-style: solid;
-         border-radius: 30%;
-         @apply border-orange-400
+  @apply text-white;
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  @apply border-orange-400
 }
 
 .n-item:hover {
