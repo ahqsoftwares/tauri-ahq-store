@@ -21,8 +21,9 @@ import Login from "./Login";
 */
 import {initializeApp} from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
-/*import { initializeFirestore } from "firebase/firestore";
-import { getDatabase } from "firebase/database";*/
+import { initializeFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
+import { getStorage } from "firebase/storage"
 
 /*Global CSS
 */
@@ -43,8 +44,9 @@ const config = {
 
 const app = initializeApp(config);
 const auth = getAuth(app);
-/*const firestore = initializeFirestore(app, {});
-const realtimeDB = getDatabase(app);*/
+const firestore = initializeFirestore(app, {});
+const realtimeDB = getDatabase(app);
+const storage = getStorage(app);
 
 /*Logic
 */
@@ -77,9 +79,16 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
       }, 3000);
     }, 5000);
 
-  } else {
+  } else Manage();
+})
+.catch((e) => {
+  Manage();
+});
 
-    render("Launching Store...", App);
+
+
+async function Manage() {
+  render("Launching Store...", App);
     setTimeout(() => {
     if (!auth.currentUser) {
       storeLoad(Login, {
@@ -92,7 +101,7 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
         reset: confirmPasswordReset
       });
     } else {
-      storeLoad(Store, {auth});
+      storeLoad(Store, {auth, db: firestore, cache: realtimeDB, storage});
     }
 
     if (auth.currentUser && !auth.currentUser?.emailVerified) {
@@ -104,9 +113,19 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
     }
 
     auth.onAuthStateChanged((user) => {
+      if (user && !user.emailVerified) {
+        sendEmailVerification(user);
+        sendNotification({
+          title: "Email Verification",
+          body: "Email verification link send! Please verify"
+        });
+      }
       user ? storeLoad(Store, {
-        auth
-      }) : storeLoad(Login, {
+          auth, 
+          db: firestore, 
+          cache: realtimeDB, 
+          storage
+        }) : storeLoad(Login, {
         create: createUserWithEmailAndPassword,
         login: signInWithEmailAndPassword,
         verify: sendEmailVerification,
@@ -117,9 +136,7 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
       });
     });
   }, 500);
-  }
-});
-
+}
 
 /**
  * Load a Store Component on the DOM
@@ -127,9 +144,10 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
  * @param prop 
  */
 function storeLoad(Component: any, prop?: Object) {
-    root.render(<React.StrictMode>
+    root.render(
+    <>
       <Component data={prop ? prop : {}}/>
-    </React.StrictMode>)
+    </>)
 }
 
 /**
@@ -139,10 +157,9 @@ function storeLoad(Component: any, prop?: Object) {
  */
 function render(state: string, App: any) {
   root.render(
-    <React.StrictMode>
+    <>
       <App info={state}/>
-    </React.StrictMode>
-  );
+    </>);
 }
 
 reportWebVitals();

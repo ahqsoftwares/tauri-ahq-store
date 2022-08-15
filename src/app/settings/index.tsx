@@ -1,4 +1,10 @@
-export default function Init(props: {dark: boolean, setDark: Function}){
+interface InitProps {
+    dark: boolean,
+    setDark: Function
+}
+
+export default function Init(props: InitProps) {
+
          function darkMode(classes: Array<string>, dark: boolean) {
                   return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
          }

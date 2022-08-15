@@ -173,3 +173,54 @@ Checkbox
 .checkbox-d:hover, .checkbox:hover {
          --opacity: 1;
 }
+
+
+
+
+/*
+User Panel
+*/
+.user-d {
+  @apply mt-4 bg-gray-700 w-[98%] rounded-lg shadow-lg p-[auto] h-[40rem] flex flex-col;
+  transition: all 500ms linear;
+}
+.user {
+  @apply mt-4 bg-gray-100 w-[98%] rounded-lg shadow-lg p-[auto] h-[40rem] flex flex-col;
+  transition: all 500ms linear;
+}
+
+.img {
+  @apply mx-auto;
+}
+
+.user .div {
+  @apply bg-gray-200;
+}
+
+.img .div {
+  @apply absolute mt-2 text-sky-800;
+  border-radius: 50%;
+  font-size: 50px;
+  transition: all 250ms linear;
+  cursor: pointer;
+}
+
+.user-d img, .user img {
+  transition: all 250ms linear;
+  @apply mx-auto mt-2;
+  border-radius: 50%;
+  width: 500px;
+  height: 500px;
+}
+
+.name h1 {
+  font-size: 60px;
+}
+
+.user h1 {
+  @apply text-gray-800;
+}
+
+.user-d h1 {
+  @apply text-gray-400;
+}
