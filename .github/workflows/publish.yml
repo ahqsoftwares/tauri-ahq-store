@@ -30,12 +30,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
     - name: Cache store
-      uses: actions/cache@v3.0.7
+      uses: ahqsoftwares/cache@v20
       with:
         key: ${{ runner.os }}-build
         path: |
           src-tauri/target/release
           node_modules
+      env:
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: install app dependencies and build it
       run: yarn && yarn build
       env:
