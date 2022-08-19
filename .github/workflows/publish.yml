@@ -35,6 +35,7 @@ jobs:
         key: ${{ runner.os }}-build
         path: |
           src-tauri/target/release
+          build
           node_modules
       env:
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,6 +50,6 @@ jobs:
       with:
         tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "AHQ Store __VERSION__"
-        releaseBody: ""
+        releaseBody: "AHQ Store __VERSION__ Update\n**Changes**:"
         releaseDraft: true
-        prerelease: true
+        prerelease: false

@@ -151,7 +151,7 @@ function SignUp(props: any) {
                                     {step > 1 ? 
                                              <>
                                                       <div className="mt-[1rem]"></div>
-                                                      <input type={"password"} required={true} placeholder={"Password"} onChange={(e) => {
+                                                      <input type={"password"} required={true} minLength={8} placeholder={"Password"} onChange={(e) => {
                                                                if (step === 2) {
                                                                         setPwd(e.target.value);
                                                                } else {
@@ -229,15 +229,35 @@ function Login(props: log) {
                                     .then(() => {
                                              setE("");
                                     })
-                                    .catch(() => {
-                                             setE("Invalid username/password");
-                                             setPwd("");
+                                    .catch((e: any) => {
+                                        let msg = e.message.replace("Firebase: Error ", "").replace(")", "").replace("(", "").replaceAll(".", "");
+                                        console.log(msg);
+                                        function reverse(err: string) {
+                                            setE(err);
+                                            setPwd("");
+                                        }
+
+                                        switch(msg) {
+                                            case "auth/wrong-password":
+                                                reverse("Wrong Passwod!");
+                                                break;
+                                            case "Firebase: Access to this account has been temporarily disabled due to many failed login attempts You can immediately restore it by resetting your password or you can try again later auth/too-many-requests":
+                                                reverse("Too many login attempts!");
+                                                break;
+                                            case "auth/user-not-found":
+                                                reverse("No Account Found");
+                                                break;
+                                            default:
+                                                reverse("Invalid username/password");
+                                                break;
+                                        }
+                                        
                                     })
                            }}>
                                     
                                     <input type={"email"} required={true} placeholder={"Email ID"} onChange={(e) => setEmail(e.target.value)} value={email}></input>
                                     <div className="mt-[1rem]"></div>
-                                    <input type={"password"} required={true} placeholder={"Password"} onChange={(e) => setPwd(e.target.value)} value={pwd}></input>
+                                    <input type={"password"} required={true} placeholder={"Password"} minLength={8} onChange={(e) => setPwd(e.target.value)} value={pwd}></input>
 
 
                                     <button className="button">Login</button>

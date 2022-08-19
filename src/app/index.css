@@ -181,16 +181,16 @@ Checkbox
 User Panel
 */
 .user-d {
-  @apply mt-4 bg-gray-700 w-[98%] rounded-lg shadow-lg p-[auto] h-[40rem] flex flex-col;
+  @apply mt-4 bg-gray-700 w-[98%] rounded-lg shadow-lg p-[auto] h-[43rem] flex flex-col;
   transition: all 500ms linear;
 }
 .user {
-  @apply mt-4 bg-gray-100 w-[98%] rounded-lg shadow-lg p-[auto] h-[40rem] flex flex-col;
+  @apply mt-4 bg-gray-100 w-[98%] rounded-lg shadow-lg p-[auto] h-[43rem] flex flex-col;
   transition: all 500ms linear;
 }
 
 .img {
-  @apply mx-auto;
+  @apply mx-auto mt-2;
 }
 
 .user .div {
@@ -217,10 +217,15 @@ User Panel
   font-size: 60px;
 }
 
-.user h1 {
+.name h6 {
+  margin-top:  1px;
+  font-size: 25px;
+}
+
+.user h1, .user h6 {
   @apply text-gray-800;
 }
 
-.user-d h1 {
+.user-d h1, .user-d h6 {
   @apply text-gray-400;
 }

@@ -44,7 +44,7 @@ code {
   @apply text-violet-800
 }
 
-.modal input {
+.modal input, .style-input {
   border-bottom: 3px solid gray;
   outline: none;
   transition: all 500ms linear;
@@ -52,17 +52,30 @@ code {
   @apply bg-gray-200 w-[90%] rounded-t-md shadow-lg focus:shadow-xl focus:rounded-lg;
 }
 
-.modal input:enabled:hover, .modal input:enabled:focus {
+.modal input:enabled:hover, .style-input:enabled:hover, .style-input:enabled:hover, .modal input:enabled:focus {
   border-bottom: 3px solid black;
 }
 
-.modal input:disabled {
+.modal input:disabled, .style-input:disabled {
   @apply rounded-lg border-none shadow-lg;
 }
 
 .button {
-  @apply bg-blue-900 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
+  @apply bg-blue-800 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
+  transition:  all 250ms linear;
 }
-.button:disabled {
+.button:hover {
+  @apply bg-blue-900;
+}
+
+.button-danger {
+  @apply bg-red-700 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
+  transition:  all 250ms linear;
+}
+.button-danger:hover {
+  @apply bg-red-800;
+}
+
+.button:disabled, .button-danger:disabled {
   @apply bg-gray-500;
 }

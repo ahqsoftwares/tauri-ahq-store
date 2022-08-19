@@ -86,6 +86,18 @@ checkUpdate().then(async({shouldUpdate, manifest}) => {
 });
 
 
+window.addEventListener("offline", () => {
+  render("Offline, waiting for network", App);
+});
+
+window.addEventListener("online", () => {
+  render("Online!", App);
+  setTimeout(() => {
+    Manage();
+  }, 3000);
+});
+
+
 
 async function Manage() {
   render("Launching Store...", App);
