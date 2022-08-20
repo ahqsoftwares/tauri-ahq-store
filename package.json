@@ -55,5 +55,7 @@
     "cross-env": "^7.0.3",
     "serve": "14.0.1"
   },
-  "packageManager": "yarn@3.2.2"
+  "packageManager": "yarn@3.2.2",
+  "repository": "https://github.com/ahqsoftwares/tauri-ahq-store.git",
+  "author": "AHQSoftwares@AHQStore"
 }

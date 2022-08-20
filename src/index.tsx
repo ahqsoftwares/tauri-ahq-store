@@ -150,6 +150,17 @@ async function Manage() {
   }, 500);
 }
 
+/*invoke("download", { url: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-Setup-2.1.0.exe", path: "./install/" })
+.then(() => {
+  invoke("install", {path: "./install/Simple-Host-Desktop-Setup-2.1.0.exe"})
+  .then((code) => {
+    console.log(code);
+  });
+})
+.catch((e) => {
+  console.log(e);
+});*/
+
 /**
  * Load a Store Component on the DOM
  * @param Component 

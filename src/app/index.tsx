@@ -18,6 +18,7 @@ CSS
 */
 import "./index.css";
 
+import Home from "./home/index";
 import Nav from "./Nav";
 import User from "./client/index";
 import Settings from "./settings/index";
@@ -97,6 +98,7 @@ function Render(props: AppProps) {
                         App = User;
                         break;
                 default:
+                        App = Home;
                         break;
         }
 
