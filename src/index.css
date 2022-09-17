@@ -62,6 +62,7 @@ code {
 
 .button {
   @apply bg-blue-800 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
+  min-height:  50px;
   transition:  all 250ms linear;
 }
 .button:hover {
@@ -70,6 +71,7 @@ code {
 
 .button-danger {
   @apply bg-red-700 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
+  min-height:  50px;
   transition:  all 250ms linear;
 }
 .button-danger:hover {

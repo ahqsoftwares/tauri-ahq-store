@@ -5,7 +5,10 @@
 
 pub mod extract;
 pub mod download;
-use std::thread;
+
+use std::path::Path;
+use std::{thread, fs};
+use tauri::SystemTray;
 
 
 fn main() {
@@ -13,7 +16,8 @@ fn main() {
   install(String::from("./installs/Simple-Host-Desktop-Setup-2.1.0.exe"));*/
   let context = tauri::generate_context!();
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![download, install])
+    .system_tray(SystemTray::new())
+    .invoke_handler(tauri::generate_handler![download, install, extract, clean])
     .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
       println!("{}, {argv:?}, {cwd}", app.package_info().name);
     }))
@@ -28,9 +32,14 @@ fn main() {
 
 
 #[tauri::command(async)]
-fn download(url: String, path: String) -> Result<i32, i32> {
+fn download(url: String) -> Result<i32, i32> {
   thread::spawn(move || {
-    download::download(url.as_str(), path.as_str());
+    let result = fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Installers");
+    match result {
+      Ok(()) => println!("Success!"),
+      Err(_status) => println!("Error")
+    }
+    download::download(url.as_str(), "C:\\ProgramData\\AHQ Store Applications\\Installers");
   }).join().expect("Thread panicked");
   
   Ok(0.into())
@@ -40,4 +49,16 @@ fn download(url: String, path: String) -> Result<i32, i32> {
 fn install(path: String) -> Result<bool, i32> {
   let status = extract::run(path);
   Ok(status.into())
+}
+
+#[tauri::command(async)]
+fn extract(app: &str, installer: &str) -> Result<i32, i32> {
+  let status = extract::extract(&Path::new(&("C:\\ProgramData\\AHQ Store Applications\\Installers\\".to_owned() + installer)), &Path::new(&("C:\\ProgramData\\AHQ Store Applications\\Programs\\".to_owned() + app)));
+
+  Ok(status.into())
+}
+
+#[tauri::command(async)]
+fn clean(path: String) {
+  fs::remove_file(path).unwrap();
 }

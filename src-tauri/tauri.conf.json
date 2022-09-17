@@ -11,6 +11,10 @@
     "version": "../package.json"
   },
   "tauri": {
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
     "allowlist": {
       "notification": {
         "all": true

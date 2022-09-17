@@ -1,0 +1,97 @@
+/*
+General
+*/
+.apps-text {
+	font-size:  50px;
+}
+.apps-desc {
+	font-size: 35px;
+}
+.menu .apps-text, .menu .apps-desc {
+	@apply text-gray-800;
+} 
+.menu-d .apps-text, .menu-d .apps-desc {
+	@apply text-gray-300;
+}
+
+
+/*
+Apps Layout
+*/
+.appss {
+	@apply flex flex-col w-[99%] h-[auto] items-center;
+	background-color:  inherit;
+	margin-bottom: 1rem;
+}
+
+/*
+Layers
+*/
+.layer {
+	@apply flex flex-col h-[24rem] w-[98%] bg-gray-100 rounded-md mt-5;
+}
+.menu-d .layer {
+	 @apply bg-gray-700;
+}
+
+.layer .title {
+	@apply ml-[0.5rem];
+	font-size: 1.25rem;
+}
+
+.menu-d .title {
+	@apply text-gray-200;
+}
+
+.layer .item {
+	@apply flex flex-row h-[22rem] w-[97%];
+	overflow-y: hidden;
+	overflow-x: hidden;
+}
+
+/*
+Cards
+*/
+.card {
+	@apply flex flex-col self-center h-[20rem] w-[15rem] bg-gray-600 text-center rounded-xl shadow-md ml-[0.5rem];
+	min-width: 15rem;
+	min-height: 20rem;
+	transition: all 250ms linear;
+}
+
+.menu .card {
+	@apply bg-gray-300;
+}
+
+.card-img {
+	transition: all 250ms linear;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 1rem;
+	margin-bottom: 0.75rem;
+	border-radius: 20%;
+	width: 75px;
+}
+
+.card-title {
+	@apply text-blue-500;
+	font-size: 25px;
+}
+
+.card-description {
+	@apply mt-1;
+	padding-left: 0.2rem;
+	padding-right: 0.2rem;
+}
+
+.menu-d .card-description {
+	@apply text-gray-300;
+}
+
+.menu .card-description {
+	@apply text-gray-800;
+}
+.card-footer {
+	margin-top: auto;
+	margin-bottom: 1rem;
+}

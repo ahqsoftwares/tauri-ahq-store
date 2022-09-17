@@ -8,7 +8,12 @@
 }
 
 ::-webkit-scrollbar {
-         width: 1px;
+  width: none;
+  display: none;
+}
+
+::-webkit-scrollbar:horizontal {
+  width: 1px;
 }
 /*
 Navigation
@@ -75,12 +80,14 @@ Backgrounds Super
 .menu {
          @apply items-center flex w-[99%] h-[98vh] bg-gray-300 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
          transition: all 500ms linear;
+         overflow-x: hidden;
          overflow-y: scroll;
          scroll-behavior: smooth;
 }
 .menu-d {
          @apply items-center flex w-[99%] h-[98vh] bg-gray-600 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
          transition: all 500ms linear;
+         overflow-x: hidden;
          overflow-y: scroll;
          scroll-behavior: smooth;
 }
@@ -190,7 +197,10 @@ User Panel
 }
 
 .img {
-  @apply mx-auto mt-2;
+  @apply mt-2 mx-auto;
+  position: relative;
+  width: 50%;
+  border-radius: 50%;
 }
 
 .user .div {
@@ -198,18 +208,26 @@ User Panel
 }
 
 .img .div {
-  @apply absolute mt-2 text-sky-800;
-  border-radius: 50%;
-  font-size: 50px;
-  transition: all 250ms linear;
+  @apply bg-gray-500 text-sky-800 mx-auto mt-2 flex items-center justify-center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 500px;
+  width: 500px;
+  opacity: 0;
+  transition: .5s ease;
   cursor: pointer;
+  border-radius: 50%;
 }
 
 .user-d img, .user img {
   transition: all 250ms linear;
   @apply mx-auto mt-2;
-  border-radius: 50%;
+  display: block;
   width: 500px;
+  border-radius: 50%;
   height: 500px;
 }
 
@@ -228,4 +246,15 @@ User Panel
 
 .user-d h1, .user-d h6 {
   @apply text-gray-400;
+}
+
+.img:hover .div {
+  opacity: 0.7;
+}
+
+.text {
+  color: white;
+  font-size: 35px;
+  position: absolute;
+  text-align: center;
 }

@@ -20,8 +20,10 @@ import "./index.css";
 
 import Home from "./home/index";
 import Nav from "./Nav";
+import Apps from "./apps/";
 import User from "./client/index";
 import Settings from "./settings/index";
+import Icon from "./apps/icon.png";
 
 interface AppProps {
         data: {
@@ -37,8 +39,25 @@ function Render(props: AppProps) {
          let [page, changePage] = useState("home"),
          [dark, setD] = useState(true),
          [load, setLoad] = useState(false),
+         [apps, setApps] = useState<any>([]),
          App: any = () => (<></>);
 
+
+        useEffect(() => {
+                setApps([
+                        ["Explore Your Needs", [{
+                                title: "AHQ Store",
+                                description: "The store which can make you feel better\nWritten in rust and in ahq.js",
+                                img: Icon as string,
+                                appId: "ahq",
+                                installData: {
+                                        downloadUrl: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-2.1.0-win.zip",
+                                        installer: "Simple-Host-Desktop-2.1.0-win.zip",
+                                        location: "Simple Host"
+                                }
+                        }]]
+                ]);
+        }, []);
         /*
         Dark Mode
         */
@@ -90,6 +109,7 @@ function Render(props: AppProps) {
 
          switch (page) {
                 case "apps":
+                        App = Apps;
                         break;
                 case "settings":
                         App = Settings;
@@ -97,7 +117,7 @@ function Render(props: AppProps) {
                 case "user":
                         App = User;
                         break;
-                default:
+                case "home":
                         App = Home;
                         break;
         }
@@ -112,7 +132,7 @@ function Render(props: AppProps) {
                          <Nav active={page} home={(page: string) => changePage(page)} dark={[dark, setDark]}/>
                         <div className="w-screen h-screen">
                                 <div className="flex flex-col w-[100%] h-[100%] justify-center">
-                                        <App auth={auth} dark={dark} setDark={setDark} firebase={{db, cache, storage}}/>
+                                        <App auth={auth} dark={dark} setDark={setDark} firebase={{db, cache, storage}} apps={apps} setApps={setApps}/>
                                 </div>
                         </div>
                   </header> : <></>}

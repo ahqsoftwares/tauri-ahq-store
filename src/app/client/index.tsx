@@ -191,20 +191,12 @@ export default function Init(props: UserProps){
                                 >Unverified Email</h1>
                             </div>}
                             <div className="img" id="img">
-                                <div className="div w-[500px] h-[500px] bg-gray-500" style={{"opacity": "0.0"}} id="drop">
-                                    <input ref={refer} type="file" max={1} min={1} accept="image/*" id="profile-input" hidden></input>
-                                        <div className="flex flex-col w-[100%] h-[100%] align-center">
-                                            <div className="my-auto"></div>
-                                                <div className="flex flex-row justify-center">
-                                                    <h1 className="block">{alt}</h1>
-                                                </div>
-                                                <div className="my-auto">
-                                                    
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <img src={auth.currentUser?.emailVerified ? user : GeneralUser} alt="logo" />
-                                    </div>
+                                <input ref={refer} type="file" max={1} min={1} accept="image/*" id="profile-input" hidden></input>
+                                <img src={auth.currentUser?.emailVerified ? user : GeneralUser} alt="Avatar" />
+                                <div className="div" id="drop">
+                                    <h1 className="text">{alt}</h1>
+                                </div>
+                            </div>
                                     <div className="flex flex-col text-center mt-2 name">
                                         <div className="flex justify-center">
                                             <h1>{name}</h1>
