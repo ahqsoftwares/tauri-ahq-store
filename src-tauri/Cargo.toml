@@ -21,6 +21,7 @@ tauri = { version = "1.0.2", features = ["fs-create-dir", "fs-read-file", "fs-wr
 tauri-plugin-single-instance = { git = "https://github.com/amrbashir/tauri-plugin-single-instance" }
 zip = "0.6.2"
 downloader = "0.2.6"
+mslnk = "0.1.8"
 
 [features]
 # by default Tauri runs in production mode

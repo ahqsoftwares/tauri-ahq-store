@@ -74,7 +74,10 @@
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
         "timestampUrl": "",
-        "allowDowngrades": false
+        "allowDowngrades": false,
+	"wix": {
+	    "template": "assets/install.wix"
+	}
       }
     },
     "security": {
