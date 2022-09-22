@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
          <head>
-                  <title>AHQ Store Downloader</title>
+                  <title>Download - AHQ Store</title>
+                  <meta name="viewport" height="770" width="520">
+                  <meta name=description content="Download AHQ Store, a store app made with rust and web technogies, open sourced allowing anyone to contribute to the repo! @ahqsoftwares/tauri-ahq-store">
+                  <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/ahqsoftwares/tauri-ahq-store/master/src-tauri/icons/icon.png"/>
+
                   <script src="https://cdn.tailwindcss.com"></script>
                   <script>
                            tailwind.config = {
@@ -19,7 +23,7 @@
                                     <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
                            </g>
                   </svg>`;
-
+                  
                   const dark = `\<?xml version="1.0" encoding="utf-8"?>
                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background-color: null; display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
                            <g>
@@ -40,12 +44,13 @@
                            .then((res) => res.json())
                            .then(({assets, tag_name}) => {
                                     const downloader = assets.filter(({name}) => name.endsWith(".msi"))[0].browser_download_url;
-                                    console.log(downloader);
 
                                     wait.hidden = true;
                                     const text = document.getElementById("downloadLabel");
 
                                     text.hidden = false;
+                                    let txt = text.innerText;
+                                    text.innerText = txt.replaceAll("{version}", tag_name);
                                     download.hidden = false;
 
                                     download.onclick = () => {
@@ -70,7 +75,7 @@
 
          <body class="bg-gray-300 w-[100%] h-screen dark:bg-gray-700 flex items-center text-center justify-center">     
                   <div class="w-[3rem] md:w-[40rem] h-[50rem] md:h-[50rem] bg-gray-200 dark:bg-gray-800 rounded-lg flex flex-col items-center justify-center">
-                           <h1 class="text-blue-800 dark:text-blue-600 text-3xl mb-[5rem]" hidden id="downloadLabel">Download AHQ Store</h1>
+                           <h1 class="text-blue-800 dark:text-blue-600 text-3xl mb-[5rem]" hidden id="downloadLabel">Download AHQ Store v{version}</h1>
                            <div id="wait">
 
                            </div>
