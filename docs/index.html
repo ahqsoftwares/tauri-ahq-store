@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+         <head>
+                  <title>AHQ Store Downloader</title>
+                  <script src="https://cdn.tailwindcss.com"></script>
+                  <script>
+                           tailwind.config = {
+                                    dark: "media"
+                           }
+                  </script>
+         </head>
+
+         <script defer>
+                  const light = `\<?xml version="1.0" encoding="utf-8"?>
+                           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: null; display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                           <g>
+                                    <path d="M50 15A35 35 0 1 0 74.74873734152916 25.251262658470843" fill="none" stroke="rgb(55 65 81)" stroke-width="12"></path>
+                                    <path d="M49 3L49 27L61 15L49 3" fill="rgb(55 65 81)"></path>
+                                    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+                           </g>
+                  </svg>`;
+
+                  const dark = `\<?xml version="1.0" encoding="utf-8"?>
+                           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background-color: null; display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                           <g>
+                                    <path d="M50 15A35 35 0 1 0 74.74873734152916 25.251262658470843" fill="none" stroke="gray" stroke-width="12"></path>
+                                    <path d="M49 3L49 27L61 15L49 3" fill="gray"></path>
+                                    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+                           </g>
+                  </svg>`;
+
+                  setTimeout(() => {
+                           const download = document.getElementById("install");
+                           const wait = document.getElementById("wait");
+
+                           let downloader = "";
+
+                           wait.innerHTML = `${(window.matchMedia("(prefers-color-scheme: dark)").matches) ? dark : light}\n<h1 class="text-slate-700 dark:text-slate-400 text-2xl">Loading</h1>`;
+                           fetch("https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest")
+                           .then((res) => res.json())
+                           .then(({assets, tag_name}) => {
+                                    const downloader = assets.filter(({name}) => name.endsWith(".msi"))[0].browser_download_url;
+                                    console.log(downloader);
+
+                                    wait.hidden = true;
+                                    const text = document.getElementById("downloadLabel");
+
+                                    text.hidden = false;
+                                    download.hidden = false;
+
+                                    download.onclick = () => {
+                                             window.location.href = downloader;
+                                    }
+                           })
+                           .catch((e) => {
+                                    window.location.reload();
+                           });
+
+                  }, 2);
+         </script>
+
+         <style>
+                  button:disabled {
+                           background-color: gray;
+                  }
+                  .windows > path {
+                           fill: white;
+                  }
+         </style>
+
+         <body class="bg-gray-300 w-[100%] h-screen dark:bg-gray-700 flex items-center text-center justify-center">     
+                  <div class="w-[3rem] md:w-[40rem] h-[50rem] md:h-[50rem] bg-gray-200 dark:bg-gray-800 rounded-lg flex flex-col items-center justify-center">
+                           <h1 class="text-blue-800 dark:text-blue-600 text-3xl mb-[5rem]" hidden id="downloadLabel">Download AHQ Store</h1>
+                           <div id="wait">
+
+                           </div>
+                           <button id="install" hidden class="bg-blue-800 hover:bg-blue-900 text-white rounded-lg w-[60%] h-[70px] mt-[10px]">
+                                    <div class="block flex text-center justify-center items-center">
+                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="40px" class="windows mr-[0.5rem]">
+                                                      <path d="M0 93.7l183.6-25.3v177.4H0V93.7zm0 324.6l183.6 25.3V268.4H0v149.9zm203.8 28L448 480V268.4H203.8v177.9zm0-380.6v180.1H448V32L203.8 65.7z"/>
+                                             </svg>
+                                             Download for Windows 10/11
+                                    </div>
+                           </button>
+                  </div>
+         </body>
+</html>

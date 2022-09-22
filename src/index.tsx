@@ -52,6 +52,7 @@ const storage = getStorage(app);
 */
 (async() => {
   let permissionGranted = await isPermissionGranted();
+  appWindow.show();
   if (!await appWindow.isMaximized()) {
     appWindow.maximize();
   }

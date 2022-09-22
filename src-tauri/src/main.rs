@@ -17,6 +17,11 @@ fn main() {
     install(String::from("./installs/Simple-Host-Desktop-Setup-2.1.0.exe"));*/
     let context = tauri::generate_context!();
     tauri::Builder::default()
+        .setup(|app| {
+            let main = tauri::Manager::get_window(app, "main").unwrap();
+            main.hide().unwrap();
+            Ok(())
+        })
         .system_tray(
             SystemTray::new().with_menu(
                 SystemTrayMenu::new()

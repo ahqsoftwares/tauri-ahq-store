@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "0.7.0"
+version = "0.7.1"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "ISC"
@@ -17,7 +17,7 @@ tauri-build = { version = "1.0.2", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.2", features = ["fs-create-dir", "fs-read-file", "fs-write-file", "notification-all", "path-all", "system-tray", "updater", "window-close", "window-create", "window-maximize", "window-set-title"] }
+tauri = { version = "1.0.2", features = ["fs-create-dir", "fs-read-file", "fs-write-file", "notification-all", "path-all", "system-tray", "updater", "window-close", "window-create", "window-maximize", "window-set-title", "window-show"] }
 tauri-plugin-single-instance = { git = "https://github.com/amrbashir/tauri-plugin-single-instance" }
 zip = "0.6.2"
 downloader = "0.2.6"
