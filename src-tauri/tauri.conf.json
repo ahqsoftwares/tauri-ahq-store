@@ -26,7 +26,7 @@
         "readFile": true,
         "writeFile": true,
         "createDir": true,
-        "scope": ["$APP", "$APP/*", "C:/ProgramData/AHQ Store Applications/Installers/*"]
+        "scope": ["$APP", "$APP/*", "C:\\ProgramData\\AHQ Store Applications\\Updaters\\*", "C:\\ProgramData\\AHQ Store Applications\\Updaters"]
       },
       "window": {
         "all": false,

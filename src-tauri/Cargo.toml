@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "0.7.1"
+version = "0.7.2"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "ISC"
@@ -22,6 +22,7 @@ tauri-plugin-single-instance = { git = "https://github.com/amrbashir/tauri-plugi
 zip = "0.6.2"
 downloader = "0.2.6"
 mslnk = "0.1.8"
+dirs = "4.0.0"
 
 [features]
 # by default Tauri runs in production mode

@@ -1,9 +1,17 @@
 import {useState, useEffect} from "react";
+import {writeFile, createDir, readTextFile} from "@tauri-apps/api/fs";
 import { invoke } from '@tauri-apps/api/tauri';
 
 export default function Home() {
+    let apps = "C:\\ProgramData\\AHQ Store Applications\\Updaters";
+
     let [status, setState] = useState("Install Simple Host Desktop (SAMPLE APP);"),
     [install, set] = useState(true);
+
+    createDir(apps, {recursive: true})
+    .then(() => {
+        writeFile(`${apps}\\Simple Host.updater`, "{version: \"1.0.0\"}");
+    });
 
     (async() => {
         const status = await invoke("check_app", {appName: "Simple Host"});
@@ -19,10 +27,11 @@ export default function Home() {
                 invoke("download", { url: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-2.1.0-win.zip"})
 .then(() => {
     setState("Installing...;-disabled");
-  invoke("extract", {app: "Simple Host", installer: "Simple-Host-Desktop-2.1.0-win.zip", app_data: JSON.stringify({version: "v2.1.0"})})
+  invoke("extract", {app: "Simple Host", installer: "Simple-Host-Desktop-2.1.0-win.zip"})
   .then(() => {
     invoke("clean", {path: `C:\\ProgramData\\AHQ Store Applications\\Installers\\Simple-Host-Desktop-2.1.0-win.zip`});
-    setState("Success;");
+    invoke("shortcut", { app: "Simple Host\\Simple Host Desktop.exe", appShort: "Simple Host" })
+        setState("Success;");
   });
 })
 .catch((e) => {
@@ -37,7 +46,13 @@ export default function Home() {
                 if (install) {
                     Download()
                 } else {
-                    invoke("install", {path: "C:\\ProgramData\\AHQ Store Applications\\Programs\\Simple Host\\Simple Host Desktop.exe"})
+                    invoke("uninstall", {appName: "Simple Host"})
+                    .then(() => {
+                        console.log("Uninstalled!")
+                    })
+                    .catch(() => {
+                        console.log("Failed!");
+                    });
                 }
             }}>
             {status.split(";")[0]}
