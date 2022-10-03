@@ -19,6 +19,10 @@
       "notification": {
         "all": true
       },
+      "http": {
+        "all": true,
+        "scope": ["https://github.com/ahqsoftwares/ahq-store-data/*"]
+      },
       "path": {
         "all": true
       },

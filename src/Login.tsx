@@ -231,7 +231,7 @@ function Login(props: log) {
                                     })
                                     .catch((e: any) => {
                                         let msg = e.message.replace("Firebase: Error ", "").replace(")", "").replace("(", "").replaceAll(".", "");
-                                        console.log(msg);
+                                        //console.log(msg);
                                         function reverse(err: string) {
                                             setE(err);
                                             setPwd("");

@@ -16,7 +16,7 @@ export default function AppCard(props: AppCardProps) {
 	} = props;
 
 	return (
-		<div className="card" style={{"cursor": "pointer"}} onClick={handleClick}>
+		<div className="card hover:mb-2 hover:shadow-2xl" style={{"cursor": "pointer"}} onClick={handleClick}>
 			<img className="card-img" src={img} alt=""></img>
 
 			<h1 className="card-title">{title}</h1>

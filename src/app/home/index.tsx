@@ -1,5 +1,5 @@
-import {useState, useEffect} from "react";
-import {writeFile, createDir, readTextFile} from "@tauri-apps/api/fs";
+import {useState} from "react";
+import {writeFile, createDir} from "@tauri-apps/api/fs";
 import { invoke } from '@tauri-apps/api/tauri';
 
 export default function Home() {
@@ -15,23 +15,25 @@ export default function Home() {
 
     (async() => {
         const status = await invoke("check_app", {appName: "Simple Host"});
-        console.log(status);
         if (status) {
-            setState("Launch!");
+            setState("Uninstall!");
             set(false);
         }
     })()
 
     function Download() {
         setState("Downloading...;-disabled");
-                invoke("download", { url: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-2.1.0-win.zip"})
+                invoke("download", { url: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-2.1.0-win.zip", name: "SimpleHost.zip"})
 .then(() => {
     setState("Installing...;-disabled");
-  invoke("extract", {app: "Simple Host", installer: "Simple-Host-Desktop-2.1.0-win.zip"})
+  invoke("extract", {app: "Simple Host", installer: "SimpleHost.zip"})
   .then(() => {
-    invoke("clean", {path: `C:\\ProgramData\\AHQ Store Applications\\Installers\\Simple-Host-Desktop-2.1.0-win.zip`});
+    invoke("clean", {path: `C:\\ProgramData\\AHQ Store Applications\\Installers\\SimpleHost.zip`});
     invoke("shortcut", { app: "Simple Host\\Simple Host Desktop.exe", appShort: "Simple Host" })
         setState("Success;");
+        setTimeout(() => {
+            setState("Uninstall")
+        }, 2000);
   });
 })
 .catch((e) => {

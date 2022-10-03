@@ -117,7 +117,15 @@ export default function Init(props: UserProps){
                         setUser(GeneralUser);
                         setName("Guest");
                     } else {
-                        setName(auth.currentUser?.displayName  ? auth.currentUser.displayName as string: "Guest");
+                        if (auth.currentUser?.displayName) {
+                            if (auth.currentUser?.displayName.startsWith("(dev)")) {
+                                setName(auth.currentUser?.displayName.replace("(dev)", ""));
+                            } else {
+                                setName(auth.currentUser?.displayName);
+                            }
+                        } else {
+                            setName("Guest");
+                        }
                         setUser(auth.currentUser?.photoURL ? auth.currentUser.photoURL as string: GeneralUser);
                         setAlt(auth.currentUser?.photoURL ? "Click to edit picture" : "Click to upload");
                     }
@@ -349,7 +357,10 @@ interface AccountNameProps {
 }
 function ChangeAccountName(props: AccountNameProps) {
     const {close, user, updateName} = props;
-    let [value, setValue] = useState(user.displayName as string);
+    const name = user.displayName as string;
+    const dev = name.startsWith("(dev)");
+
+    let [value, setValue] = useState(dev ? name.replace("(dev)", "") : name);
 
     async function confirmName(e: {preventDefault: Function}) {
         close();
@@ -357,7 +368,7 @@ function ChangeAccountName(props: AccountNameProps) {
         try {
             if (user.displayName !== value) {
                 await updateProfile(user, {
-                    displayName: value
+                    displayName: dev ? `(dev)${value}` : value
                 });
             }
             updateName(value);

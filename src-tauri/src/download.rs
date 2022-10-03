@@ -5,8 +5,8 @@
 #![warn(clippy::all, clippy::nursery, clippy::pedantic)]
 #![allow(clippy::non_ascii_literal)]
 use downloader::Downloader;
-use std::path::Path;
 use std::fs::create_dir_all;
+use std::path::Path;
 
 // Define a custom progress reporter:
 struct SimpleReporterPrivate {
@@ -66,7 +66,7 @@ impl downloader::progress::Reporter for SimpleReporter {
     }
 }
 
-pub fn download(file: &str, path: &str) {
+pub fn download(file: &str, path: &str, name: &str) {
     let datas = create_dir_all(path);
     match datas {
         Err(daras) => println!("{}", daras.to_string()),
@@ -75,11 +75,11 @@ pub fn download(file: &str, path: &str) {
 
     let mut downloader = Downloader::builder()
         .download_folder(Path::new(path))
-        .parallel_requests(1)
+        .parallel_requests(32)
         .build()
         .unwrap();
 
-    let dl = downloader::Download::new(file);
+    let dl = downloader::Download::new(file).file_name(std::path::Path::new(name));
 
     #[cfg(not(feature = "tui"))]
     let dl = dl.progress(SimpleReporter::create());

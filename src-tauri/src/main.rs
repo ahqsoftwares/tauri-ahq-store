@@ -20,7 +20,7 @@ fn main() {
         .setup(|app| {
             let main = tauri::Manager::get_window(app, "main").unwrap();
             main.hide().unwrap();
-	    fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Installers");
+            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Installers");
             fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Programs");
             fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Updaters");
             Ok(())
@@ -60,7 +60,7 @@ fn main() {
 }
 
 #[tauri::command(async)]
-fn download(url: String) -> Result<i32, i32> {
+fn download(url: String, name: String) -> Result<i32, i32> {
     thread::spawn(move || {
         let result = fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Installers");
         match result {
@@ -70,6 +70,7 @@ fn download(url: String) -> Result<i32, i32> {
         download::download(
             url.as_str(),
             "C:\\ProgramData\\AHQ Store Applications\\Installers",
+            name.as_str(),
         );
     })
     .join()

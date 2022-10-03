@@ -21,17 +21,7 @@ import "./index.css";
 /*
 Interfaces
 */
-interface AppsProps {
-	dark: boolean,
-	auth: Auth,
-	apps: Array<any>
-}
-
-function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
-}
-
-type store = {
+/*type store = {
 	title: string,
 	description: string,
 	img: string,
@@ -41,20 +31,29 @@ type store = {
 		installer: string,
 		location: string
 	}
+}*/
+interface AppsProps {
+	dark: boolean,
+	auth: Auth,
+	apps: Array<any>,
+	allAppsData: any
+}
+
+function darkMode(classes: Array<string>, dark: boolean) {
+    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
 }
 
 export default function Apps(props: AppsProps){
 	const {
 		dark,
-		apps
+		apps,
+		allAppsData
 	} = props;
 
 	const [shown, showModal] = useState(false),
 	[data, setData] = useState({
 		img: "",
 		downloadUrl: "",
-		installer: "",
-		location: "",
 		id: ""
 	});
 
@@ -85,23 +84,36 @@ export default function Apps(props: AppsProps){
 				}
 
 				{apps.map((filess: any) => {
+					try {
 					const [alt, data] = filess;
 					const apps: any = data;
-
 					return (
 						<Layer alt={alt as string} key={keyGen()}>
-							{apps.map((data: store) => {
-								const {title, description, appId, img, installData} = data;
-								const { downloadUrl, installer, location } = installData;
+							{apps.map((data: string) => {
+								try {
+								const {
+									title, 
+									description,
+									img, 
+									download_url: downloadUrl,
+									author
+								} = allAppsData.info[data];
+
 								return (
-									<Card key={keyGen()} title={title} description={description} img={img} footer={<button className="button">View</button>} onClick={() => {
-										setData({img, downloadUrl, installer, location, id: appId});
+									<Card key={keyGen()} title={title} description={description} img={img} footer={<button className="text-blue-500 text-2xl" style={{"minWidth": "95%"}}>{author.displayName}</button>} onClick={() => {
+										setData({img, downloadUrl, id: data});
 										change();
 									}}/>
 								)
+								} catch (e) {
+									return (<h1 key={keyGen()}></h1>);
+								}
 							})}
 						</Layer>
 					)
+					} catch (e) {
+						return (<h1 key={keyGen()} ></h1>);
+					}
 				})}
 			</div>
 		</div>

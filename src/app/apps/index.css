@@ -29,6 +29,7 @@ Layers
 */
 .layer {
 	@apply flex flex-col h-[24rem] w-[98%] bg-gray-100 rounded-md mt-5;
+	overflow-x: scroll;
 }
 .menu-d .layer {
 	 @apply bg-gray-700;
@@ -45,8 +46,8 @@ Layers
 
 .layer .item {
 	@apply flex flex-row h-[22rem] w-[97%];
-	overflow-y: hidden;
-	overflow-x: hidden;
+	/*overflow-y: hidden;
+	overflow-x: hidden;*/
 }
 
 /*

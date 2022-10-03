@@ -4,6 +4,7 @@ Native API
 import {useEffect, useState} from "react";
 import {writeFile, createDir, readTextFile, BaseDirectory} from "@tauri-apps/api/fs";
 import { sendNotification } from "@tauri-apps/api/notification";
+import {fetch} from "@tauri-apps/api/http";
 
 /*
 Firebase
@@ -23,7 +24,6 @@ import Nav from "./Nav";
 import Apps from "./apps/";
 import User from "./client/index";
 import Settings from "./settings/index";
-import Icon from "./apps/icon.png";
 
 interface AppProps {
         data: {
@@ -40,22 +40,35 @@ function Render(props: AppProps) {
          [dark, setD] = useState(true),
          [load, setLoad] = useState(false),
          [apps, setApps] = useState<any>([]),
+         [allAppsData, setData] = useState<any>({
+                info: {},
+                map: {}
+         }),
          App: any = () => (<></>);
 
 
         useEffect(() => {
+                //Fetch All Apps
+                fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/apps.json", {
+                        method: "GET",
+                        timeout: 30,
+                        responseType: 1
+                }).then(({data}) => {
+                        //Fetch Maps
+                        fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/mapped.json", {
+                                method: "GET",
+                                timeout: 30,
+                                responseType: 1
+                        })
+                        .then((response) => {
+                                setData({info: data, map: response.data});
+                        });
+                })
+                .catch((e) => {
+                        console.log(e);
+                });
                 setApps([
-                        ["Explore Your Needs", [{
-                                title: "AHQ Store",
-                                description: "The store which can make you feel better\nWritten in rust and in ahq.js",
-                                img: Icon as string,
-                                appId: "ahq",
-                                installData: {
-                                        downloadUrl: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-2.1.0-win.zip",
-                                        installer: "Simple-Host-Desktop-2.1.0-win.zip",
-                                        location: "Simple Host"
-                                }
-                        }]]
+                        ["Explore Your Needs", ["ufdQHNE1a2OgVQTBCyBR"]]
                 ]);
         }, []);
         /*
@@ -75,7 +88,7 @@ function Render(props: AppProps) {
                   })
                   .catch((e) => {
                         console.log(e);
-                        createDir("database", {dir: BaseDirectory.App}).then(console.log).catch(console.log)
+                        createDir("database", {dir: BaseDirectory.App}).catch(console.log)
                         .then(async() => {
                                 let mode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
                                 setD(mode);
@@ -132,7 +145,7 @@ function Render(props: AppProps) {
                          <Nav active={page} home={(page: string) => changePage(page)} dark={[dark, setDark]}/>
                         <div className="w-screen h-screen">
                                 <div className="flex flex-col w-[100%] h-[100%] justify-center">
-                                        <App auth={auth} dark={dark} setDark={setDark} firebase={{db, cache, storage}} apps={apps} setApps={setApps}/>
+                                        <App auth={auth} dark={dark} setDark={setDark} firebase={{db, cache, storage}} apps={apps} setApps={setApps} allAppsData={allAppsData} />
                                 </div>
                         </div>
                   </header> : <></>}
