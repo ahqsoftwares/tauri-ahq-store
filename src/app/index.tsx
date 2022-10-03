@@ -74,6 +74,9 @@ function Render(props: AppProps) {
         /*
         Dark Mode
         */
+        useEffect(() => {
+                document.querySelector("body")?.classList.toggle("dark", dark);
+        }, [dark]);
 
          useEffect(() => {
                   createDir("", {dir: BaseDirectory.App})

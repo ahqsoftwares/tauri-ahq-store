@@ -105,7 +105,11 @@ export default function Init(props: UserProps){
                 width: "30rem",
                 height: "40rem",
                 transition: "all 500ms linear",
-                "backgroundColor": "whitesmoke"
+                "backgroundColor": props.dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
+                borderColor: props.dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
+            },
+            overlay: {
+                backgroundColor: !props.dark ? "rgb(55, 65, 81, 0.5)" : "rgb(107, 114, 128, 0.75)"
             }
         };
 
@@ -175,7 +179,7 @@ export default function Init(props: UserProps){
                         contentLabel={"Confirm Delete Account"}
                         style={customStyles}
                     >
-                        < DeleteAccount auth={auth} cancel={() => {setDelete(false); setPwd("");}} pass={deletePwd} set={{pwd: setPwd}}/>
+                        < DeleteAccount auth={auth} cancel={() => {setDelete(false); setPwd("");}} pass={deletePwd} set={{pwd: setPwd}} dark={props.dark} />
                     </Modal>
 
                     <Modal
@@ -183,7 +187,7 @@ export default function Init(props: UserProps){
                         contentLabel="Change Name"
                         style={customStyles}
                     >
-                        <ChangeAccountName close={() => setNamePopup(false)} user={auth.currentUser as User} updateName={((value: string) => setName(value))}/>
+                        <ChangeAccountName close={() => setNamePopup(false)} user={auth.currentUser as User} updateName={((value: string) => setName(value))} dark={props.dark}/>
                     </Modal>
 
 
@@ -201,7 +205,7 @@ export default function Init(props: UserProps){
                             <div className="img" id="img">
                                 <input ref={refer} type="file" max={1} min={1} accept="image/*" id="profile-input" hidden></input>
                                 <img src={auth.currentUser?.emailVerified ? user : GeneralUser} alt="Avatar" />
-                                <div className="div" id="drop">
+                                <div className={`div ${props.dark ? "" : "div-l"}`} id="drop">
                                     <h1 className="text">{alt}</h1>
                                 </div>
                             </div>
@@ -251,6 +255,7 @@ interface DeleteAccountProps {
     auth: Auth,
     cancel: Function,
     pass: string,
+    dark: boolean,
     set: {
         pwd: Function
     }
@@ -318,11 +323,11 @@ function DeleteAccount(props: DeleteAccountProps) {
                     {step === 0 ? 
                         <>
 
-                        <input className="style-input" disabled type="email" placeholder="Enter Your Email" value={user.email} required></input>
+                        <input className={`style-input ${!props.dark ? "" : "style-input-d"}`} disabled type="email" placeholder="Enter Your Email" value={user.email} required></input>
 
                         <div className="mt-[1rem]"></div>
 
-                        <input className="style-input" type="password" placeholder="Enter Your Password" minLength={8} value={pass} onChange={(e) => sP(e.target.value)} required disabled={text.split(";")[2] === "true"}></input>
+                        <input className={`style-input ${!props.dark ? "" : "style-input-d"}`} type="password" placeholder="Enter Your Password" minLength={8} value={pass} onChange={(e) => sP(e.target.value)} required disabled={text.split(";")[2] === "true"}></input>
 
                         <div className="mt-[12.5rem]"></div>
                         <button className={`button${text.split(";")[1]}`} style={{"transition": "all 500ms linear"}} disabled={text.split(";")[2] === "true"}>{text.split(";")[0]}</button>
@@ -353,7 +358,8 @@ function DeleteAccount(props: DeleteAccountProps) {
 interface AccountNameProps {
     close: Function,
     user: User,
-    updateName: Function
+    updateName: Function,
+    dark: boolean
 }
 function ChangeAccountName(props: AccountNameProps) {
     const {close, user, updateName} = props;
@@ -389,7 +395,15 @@ function ChangeAccountName(props: AccountNameProps) {
 
             <div className="flex flex-col">
                 <form className="flex flex-col items-center" onSubmit={confirmName}>
-                    <input className="style-input" type="string" placeholder="Enter Name for Profile" maxLength={32} minLength={6} value={value} onChange={((e) => setValue(e.target.value))} required></input>
+                    <input className={`style-input ${!props.dark ? "" : "style-input-d"}`} type="string" placeholder="Enter Name for Profile" maxLength={32} minLength={6} value={value} onChange={
+                        ((e) => {
+                            if (e.target.value.startsWith("(dev)")) {
+                                setValue(e.target.value.replace("(dev)", ""));
+                            } else {
+                                setValue(e.target.value);
+                            }
+                        })
+                    } required></input>
 
                     <div className="mt-[15rem]"></div>
 

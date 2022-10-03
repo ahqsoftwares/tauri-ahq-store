@@ -52,6 +52,10 @@ code {
   @apply bg-gray-200 w-[90%] rounded-t-md shadow-lg focus:shadow-xl focus:rounded-lg;
 }
 
+.style-input-d {
+  @apply bg-gray-500 text-white;
+}
+
 .modal input:enabled:hover, .style-input:enabled:hover, .style-input:enabled:hover, .modal input:enabled:focus {
   border-bottom: 3px solid black;
 }

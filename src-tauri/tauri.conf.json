@@ -103,7 +103,8 @@
         "title": "AHQ Store",
         "width": 1239,
         "minHeight": 700,
-        "minWidth": 1200
+        "minWidth": 1200,
+        "visible": false
       }
     ]
   }

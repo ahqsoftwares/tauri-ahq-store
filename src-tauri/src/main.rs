@@ -13,16 +13,17 @@ use std::{fs, thread};
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 fn main() {
-    /*download(String::from("https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-Setup-2.1.0.exe"), String::from("./installs/"));
-    install(String::from("./installs/Simple-Host-Desktop-Setup-2.1.0.exe"));*/
     let context = tauri::generate_context!();
     tauri::Builder::default()
-        .setup(|app| {
-            let main = tauri::Manager::get_window(app, "main").unwrap();
-            main.hide().unwrap();
-            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Installers");
-            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Programs");
-            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Updaters");
+        .setup(|_| {
+            /*let main = tauri::Manager::get_window(app, "main").unwrap();
+            main.hide().unwrap();*/
+            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Installers")
+                .expect("Error");
+            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Programs")
+                .expect("Error!");
+            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Updaters")
+                .expect("Error!");
             Ok(())
         })
         .system_tray(SystemTray::new().with_menu(
@@ -48,6 +49,10 @@ fn main() {
             download, install, extract, clean, shortcut, check_app, uninstall
         ])
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+            tauri::Manager::get_window(app, "main")
+                .unwrap()
+                .show()
+                .expect("Error!");
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
         }))
         .menu(if cfg!(target_os = "macos") {

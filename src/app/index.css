@@ -222,6 +222,10 @@ User Panel
   border-radius: 50%;
 }
 
+.img .div-l {
+  @apply bg-gray-300 !important;
+}
+
 .user-d img, .user img {
   transition: all 250ms linear;
   @apply mx-auto mt-2;
