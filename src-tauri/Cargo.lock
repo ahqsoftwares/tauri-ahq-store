@@ -37,7 +37,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "0.7.2"
+version = "0.7.4"
 dependencies = [
  "dirs",
  "downloader",
@@ -46,6 +46,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "tauri-plugin-deep-link",
  "tauri-plugin-single-instance",
  "zip",
 ]
@@ -1552,6 +1553,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "interprocess"
+version = "1.1.1"
+source = "git+https://github.com/kotauskas/interprocess?rev=e9bd7c1eaadb73497e26842ec70faea7e554e8e9#e9bd7c1eaadb73497e26842ec70faea7e554e8e9"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "rustc_version 0.4.0",
+ "to_method",
+ "winapi",
 ]
 
 [[package]]
@@ -3316,6 +3329,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-deep-link"
+version = "0.0.0"
+source = "git+https://github.com/FabianLars/tauri-plugin-deep-link#e4cc8cf05821a29a2cfd40dcad27ad8a2889ebe8"
+dependencies = [
+ "dirs-next",
+ "interprocess",
+ "log",
+ "once_cell",
+ "tauri-utils",
+ "winreg",
+]
+
+[[package]]
 name = "tauri-plugin-single-instance"
 version = "0.0.0"
 source = "git+https://github.com/amrbashir/tauri-plugin-single-instance#9bcdd1f447faed2be95e4756f5418673f2c8ea1b"
@@ -3485,6 +3511,12 @@ name = "tinyvec_macros"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
+
+[[package]]
+name = "to_method"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7c4ceeeca15c8384bbc3e011dbd8fccb7f068a440b752b7d9b32ceb0ca0e2e8"
 
 [[package]]
 name = "tokio"

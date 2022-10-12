@@ -1,4 +1,5 @@
 import {BiHome, BiExtension} from "react-icons/bi";
+import {BsCodeSlash} from "react-icons/bs";
 import {FiSettings} from "react-icons/fi";
 import {VscAccount} from "react-icons/vsc";
 import { getCurrent } from "@tauri-apps/api/window";
@@ -7,7 +8,8 @@ import { getCurrent } from "@tauri-apps/api/window";
 interface prop {
          active: string,
          home: Function,
-         dark: [boolean, Function]
+         dark: [boolean, Function],
+         dev: boolean | undefined
 }
 
 export default function nav(props: prop) {
@@ -15,10 +17,10 @@ export default function nav(props: prop) {
                   return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
          }
          let
-         {active, home: changePage, dark} = props,
+         {active, home: changePage, dark, dev} = props,
          [mode] = dark;
 
-         let a="", b="", c="", d="";
+         let a="", b="", c="", d="", e="";
          switch (active) {
                   case "home":
                            a="active";
@@ -28,6 +30,9 @@ export default function nav(props: prop) {
                            break;
                   case "settings":
                            c="active";
+                           break;
+                  case "developer":
+                           e="active";
                            break;
                   default:
                            d="active";
@@ -48,6 +53,12 @@ export default function nav(props: prop) {
                            </button>
                            
                            <div className="mt-auto mb-auto"></div>
+
+                           {dev ? 
+                            <button className={`n-item ${e}`} onClick={() => changePage("developer")}>
+                                    <BsCodeSlash size={"2.5em"} />
+                            </button>
+                            : <></>}
 
                            <button className={`n-item ${d}`} onClick={() => changePage("user")}>
                                     <VscAccount size={"2.5em"} />

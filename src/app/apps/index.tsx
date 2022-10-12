@@ -1,8 +1,14 @@
 /*
 React Native
 */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Auth } from "firebase/auth";
+
+
+/*
+Functions
+*/
+import Search from "./functions/search";
 
 /*
 Components
@@ -10,7 +16,7 @@ Components
 import Layer from "./components/layer";
 import Card from "./components/app_card";
 import Modal from "./components/modal";
-/*import AHQStore from "./icon.png";*/
+import {VscAccount} from "react-icons/vsc";
 
 /*
 StyleSheets
@@ -21,17 +27,6 @@ import "./index.css";
 /*
 Interfaces
 */
-/*type store = {
-	title: string,
-	description: string,
-	img: string,
-	appId: string,
-	installData: {
-		downloadUrl: string,
-		installer: string,
-		location: string
-	}
-}*/
 interface AppsProps {
 	dark: boolean,
 	auth: Auth,
@@ -51,11 +46,24 @@ export default function Apps(props: AppsProps){
 	} = props;
 
 	const [shown, showModal] = useState(false),
+	[search, searchText] = useState(""),
+	[enter, setEnter] = useState(false),
 	[data, setData] = useState({
 		img: "",
 		downloadUrl: "",
 		id: ""
 	});
+
+	useEffect(() => {
+		function Fix() {
+			const element = document.querySelector("#search-result") as any;
+			element.style = `width: ${document.querySelector("#get-width")?.clientWidth}px;`;
+		}
+		window.addEventListener("resize", () => {
+			Fix();
+		});
+		Fix();
+	}, []);
 
 	function change() {
 		showModal(!shown);
@@ -70,7 +78,40 @@ export default function Apps(props: AppsProps){
 	return (
 		<div className={darkMode(["menu"], dark)}>
 			<Modal shown={shown} dark={dark} change={change} installData={data} />
-			<h6 className="apps-desc">Explore our apps!</h6>
+			<div 
+				className="w-[40%] mt-2"
+				onBlur={() => {
+					setTimeout(() => {
+						if (!enter) {
+							searchText("");
+						}
+					}, 100);
+				}}
+			>
+				<input 
+					className={`search-input ${dark ? "style-input-d" : ""}`} 
+					placeholder={`🔎 Search for an app`} 
+					value={search}
+					onChange={(e) => {
+						searchText(e.target.value);
+					}}
+					onKeyUp={(e) => {
+						if (e.key === "Enter") {
+							setEnter(true);
+						} else {
+							setEnter(false);
+						}
+					}}
+					autoComplete={"off"}
+					id="get-width"
+				></input>
+				<div className={`absolute ${!dark ? "bg-gray-200 text-black" : "bg-gray-500 text-white"} rounded-b-xl`} id="search-result">
+					{search.length > 0 && !enter ?
+						<Search {...allAppsData} query={search} set={setData} show={change}/>
+						: <></>
+					}
+				</div>
+			</div>
 
 			<div className="appss">
 				{apps.length === 0
@@ -85,32 +126,33 @@ export default function Apps(props: AppsProps){
 
 				{apps.map((filess: any) => {
 					try {
-					const [alt, data] = filess;
-					const apps: any = data;
-					return (
-						<Layer alt={alt as string} key={keyGen()}>
-							{apps.map((data: string) => {
-								try {
-								const {
-									title, 
-									description,
-									img, 
-									download_url: downloadUrl,
-									author
-								} = allAppsData.info[data];
+						const [alt, data] = filess;
+						const apps: any = data;
+						return (
+							<Layer alt={alt as string} key={keyGen()}>
+								{apps.map((data: string) => {
+									try {
+										const {
+											title, 
+											description,
+											img, 
+											download_url: downloadUrl,
+											author
+										} = allAppsData.info[data];
+										const {displayName} = allAppsData.users[author.id];
 
-								return (
-									<Card key={keyGen()} title={title} description={description} img={img} footer={<button className="text-blue-500 text-2xl" style={{"minWidth": "95%"}}>{author.displayName}</button>} onClick={() => {
-										setData({img, downloadUrl, id: data});
-										change();
-									}}/>
-								)
-								} catch (e) {
-									return (<h1 key={keyGen()}></h1>);
-								}
-							})}
-						</Layer>
-					)
+										return (
+											<Card key={keyGen()} title={title} description={description} img={img} footer={<button className="text-blue-500 text-2xl" style={{"minWidth": "95%"}}>{displayName}</button>} onClick={() => {
+												setData({img, downloadUrl, id: data});
+												change();
+											}}/>
+										);
+									} catch (e) {
+										return (<h1 key={keyGen()}></h1>);
+									}
+								})}
+							</Layer>
+						)
 					} catch (e) {
 						return (<h1 key={keyGen()} ></h1>);
 					}

@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import {writeFile, createDir, readTextFile, BaseDirectory} from "@tauri-apps/api/fs";
 import { sendNotification } from "@tauri-apps/api/notification";
 import {fetch} from "@tauri-apps/api/http";
+import {appWindow} from "@tauri-apps/api/window";
 
 /*
 Firebase
@@ -35,41 +36,59 @@ interface AppProps {
 }
 
 function Render(props: AppProps) {
+        appWindow.listen("protocol", ({payload}) => {
+                console.log(payload);
+        });
+
          const {auth, db, cache, storage} = props.data;
          let [page, changePage] = useState("home"),
+         [dev, setDev] = useState(auth.currentUser?.displayName?.startsWith("(dev)")),
          [dark, setD] = useState(true),
          [load, setLoad] = useState(false),
          [apps, setApps] = useState<any>([]),
          [allAppsData, setData] = useState<any>({
                 info: {},
-                map: {}
+                map: {},
+                users: {}
          }),
          App: any = () => (<></>);
 
 
         useEffect(() => {
                 //Fetch All Apps
-                fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/apps.json", {
-                        method: "GET",
-                        timeout: 30,
-                        responseType: 1
-                }).then(({data}) => {
-                        //Fetch Maps
-                        fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/mapped.json", {
+                (async() => {
+                        const {data: Apps} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/apps.json", {
                                 method: "GET",
                                 timeout: 30,
                                 responseType: 1
-                        })
-                        .then((response) => {
-                                setData({info: data, map: response.data});
                         });
-                })
-                .catch((e) => {
-                        console.log(e);
-                });
-                setApps([
-                        ["Explore Your Needs", ["ufdQHNE1a2OgVQTBCyBR"]]
-                ]);
+                                //Fetch Maps
+                        const {data: Mapped} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/mapped.json", {
+                                method: "GET",
+                                timeout: 30,
+                                responseType: 1
+                        });
+
+                        const {data: Authors} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/users.json", {
+                                method: "GET",
+                                timeout: 30,
+                                responseType: 1
+                        });
+
+                        setData({
+                                info: Apps,
+                                map: Mapped,
+                                users: Authors
+                        });
+
+                        const {data: Home} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/home.json", {
+                                method: "GET",
+                                timeout: 30,
+                                responseType: 1
+                        });
+
+                        setApps(Home);
+                })()
         }, []);
         /*
         Dark Mode
@@ -145,10 +164,10 @@ function Render(props: AppProps) {
         return (
                 <>
                    {load === true ? <header className={`apps${dark ? "-d": ""} flex transition-all`}>
-                         <Nav active={page} home={(page: string) => changePage(page)} dark={[dark, setDark]}/>
+                         <Nav active={page} home={(page: string) => changePage(page)} dev={dev} dark={[dark, setDark]}/>
                         <div className="w-screen h-screen">
                                 <div className="flex flex-col w-[100%] h-[100%] justify-center">
-                                        <App auth={auth} dark={dark} setDark={setDark} firebase={{db, cache, storage}} apps={apps} setApps={setApps} allAppsData={allAppsData} />
+                                        <App baseApi={"http://pr1.simplehostnode.cf:1027/"} auth={auth} setDev={setDev} dark={dark} setDark={setDark} firebase={{db, cache, storage}} apps={apps} setApps={setApps} allAppsData={allAppsData} />
                                 </div>
                         </div>
                   </header> : <></>}

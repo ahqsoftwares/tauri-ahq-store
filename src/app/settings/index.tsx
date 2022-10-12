@@ -6,6 +6,7 @@ interface InitProps {
     dark: boolean,
     setDark: Function,
     auth: Auth,
+    setDev: Function
 }
 
 export default function Init(props: InitProps) {
@@ -45,6 +46,7 @@ export default function Init(props: InitProps) {
             });
             setUser(props.auth.currentUser as User);
             setDev(!dev);
+            props.setDev(!dev);
             setShow(false);
         }
 

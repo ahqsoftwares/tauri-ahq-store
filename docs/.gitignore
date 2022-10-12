@@ -1,7 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/docs/node_modules
 /node_modules
 /.pnp
 .pnp.js
@@ -11,9 +10,6 @@
 
 # production
 /build
-
-# Docs
-/docs/.firebase
 
 # misc
 .DS_Store
@@ -25,5 +21,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-/myapp.key
-installs/Simple-Host-Desktop-Setup-2.1.0.exe

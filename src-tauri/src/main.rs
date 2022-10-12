@@ -10,11 +10,13 @@ use dirs;
 use mslnk::ShellLink;
 use std::path::Path;
 use std::{fs, thread};
-use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 fn main() {
+    tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
+
     let context = tauri::generate_context!();
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
         .setup(|_| {
             /*let main = tauri::Manager::get_window(app, "main").unwrap();
             main.hide().unwrap();*/
@@ -24,6 +26,7 @@ fn main() {
                 .expect("Error!");
             fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Updaters")
                 .expect("Error!");
+
             Ok(())
         })
         .system_tray(SystemTray::new().with_menu(
@@ -60,8 +63,31 @@ fn main() {
         } else {
             tauri::Menu::default()
         })
-        .run(context)
-        .expect("error while running tauri application");
+        .build(context)
+        .unwrap();
+
+    let window = tauri::Manager::get_window(&app, "main").unwrap();
+    let mainwindow = tauri::Manager::get_window(&app, "main").unwrap();
+
+    tauri_plugin_deep_link::register("ahqstore", move |request| {
+        println!("Request Data {}", &request);
+        mainwindow.emit("protocol", request).unwrap();
+    })
+    .unwrap();
+
+    app.run(move |_, event| match event {
+        RunEvent::ExitRequested { api, .. } => {
+            api.prevent_exit();
+        }
+        RunEvent::WindowEvent { event, .. } => match event {
+            tauri::WindowEvent::CloseRequested { api, .. } => {
+                api.prevent_close();
+                window.hide().unwrap();
+            }
+            _ => {}
+        },
+        _ => {}
+    });
 }
 
 #[tauri::command(async)]
