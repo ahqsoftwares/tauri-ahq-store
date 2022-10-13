@@ -51,13 +51,6 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             download, install, extract, clean, shortcut, check_app, uninstall
         ])
-        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
-            tauri::Manager::get_window(app, "main")
-                .unwrap()
-                .show()
-                .expect("Error!");
-            println!("{}, {argv:?}, {cwd}", app.package_info().name);
-        }))
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
         } else {
@@ -71,6 +64,7 @@ fn main() {
 
     tauri_plugin_deep_link::register("ahqstore", move |request| {
         println!("Request Data {}", &request);
+        mainwindow.show().unwrap();
         mainwindow.emit("protocol", request).unwrap();
     })
     .unwrap();
