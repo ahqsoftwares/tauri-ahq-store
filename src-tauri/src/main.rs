@@ -33,7 +33,7 @@ fn main() {
             SystemTrayMenu::new().add_item(CustomMenuItem::new("quit".to_string(), "Close App")),
         ))
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-            tauri::Manager::get_window(&app, "main")
+            tauri::Manager::get_window(app, "main")
                 .unwrap()
                 .show()
                 .unwrap();

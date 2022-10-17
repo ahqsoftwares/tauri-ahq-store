@@ -2,4 +2,4 @@
 
 
 # AHQ Store
-A lightweight store to increase your productivity!
+The Microsoft Store Open Source Alternative
