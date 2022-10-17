@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App(
+         {
+                  path
+         }: 
+         {
+                  path: string
+         }
+): JSX.Element {
+
+         const [dark, setDark] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+         useEffect(() => {
+                  const rawDark = localStorage.getItem("dark");
+                  if (rawDark !== null) {
+                           const darked = JSON.parse(rawDark);
+                           setDark(darked);
+                  }
+         }, []);
+
+
+         useEffect(() => {
+                  const body = document.querySelector("body") as HTMLElement;
+                  body.classList[dark ? "add" : "remove"]("dark");
+                  localStorage.setItem("dark", JSON.stringify(dark));
+         }, [dark]);
+         
+         switch (path) {
+
+         }
+         return (
+                  <div>
+                           <button
+                                    onClick={() => setDark((dark) => !dark)}
+                           >Click Me to Change Something</button>
+                  </div>
+         );
 }
-
-export default App;

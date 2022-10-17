@@ -37,7 +37,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "0.7.5"
+version = "0.7.6"
 dependencies = [
  "dirs",
  "downloader",
@@ -3284,6 +3284,7 @@ dependencies = [
  "uuid 1.2.1",
  "webkit2gtk",
  "webview2-com",
+ "win7-notifications",
  "windows 0.39.0",
  "zip",
 ]
@@ -3996,6 +3997,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d743fdedc5c64377b5fc2bc036b01c7fd642205a0d96356034ae3404d49eb7fb"
 dependencies = [
  "cc",
+]
+
+[[package]]
+name = "win7-notifications"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "210952d7163b9ed83a6fd9754ab2a101d14480f8491b5f1d6292771d88dbee70"
+dependencies = [
+ "once_cell",
+ "windows-sys 0.36.1",
 ]
 
 [[package]]

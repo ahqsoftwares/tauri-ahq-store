@@ -32,6 +32,12 @@ fn main() {
         .system_tray(SystemTray::new().with_menu(
             SystemTrayMenu::new().add_item(CustomMenuItem::new("quit".to_string(), "Close App")),
         ))
+        .plugin(tauri_plugin_single_instance::init(|app, _, _| {
+            tauri::Manager::get_window(&app, "main")
+                .unwrap()
+                .show()
+                .unwrap();
+        }))
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
                 println!("Received a left Click");
