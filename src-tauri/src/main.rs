@@ -6,7 +6,6 @@
 pub mod download;
 pub mod extract;
 
-use dirs;
 use mslnk::ShellLink;
 use std::path::Path;
 use std::{fs, thread};
@@ -20,11 +19,12 @@ fn main() {
         .setup(|_| {
             /*let main = tauri::Manager::get_window(app, "main").unwrap();
             main.hide().unwrap();*/
-            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Installers")
+            let sys_dir = std::env::var("SYSTEMROOT").unwrap().as_str().replace("\\WINDOWS", "");
+            fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()))
                 .expect("Error");
-            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Programs")
+            fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Programs", sys_dir.clone()))
                 .expect("Error!");
-            fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Updaters")
+            fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Updaters", sys_dir.clone()))
                 .expect("Error!");
 
             Ok(())
@@ -93,14 +93,15 @@ fn main() {
 #[tauri::command(async)]
 fn download(url: String, name: String) -> Result<i32, i32> {
     thread::spawn(move || {
-        let result = fs::create_dir_all("C:\\ProgramData\\AHQ Store Applications\\Installers");
+        let sys_dir = std::env::var("SYSTEMROOT").unwrap().as_str().replace("\\WINDOWS", "");
+        let result = fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()));
         match result {
             Ok(()) => println!("Success!"),
             Err(_status) => println!("Error"),
         }
         download::download(
             url.as_str(),
-            "C:\\ProgramData\\AHQ Store Applications\\Installers",
+            &format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()).as_str(),
             name.as_str(),
         );
     })
@@ -118,11 +119,12 @@ fn install(path: String) -> Result<bool, i32> {
 
 #[tauri::command(async)]
 fn extract(app: &str, installer: &str) -> Result<i32, i32> {
+    let sys_dir = std::env::var("SYSTEMROOT").unwrap().as_str().replace("\\WINDOWS", "");
     let status = extract::extract(
         &Path::new(
-            &("C:\\ProgramData\\AHQ Store Applications\\Installers\\".to_owned() + installer),
+            &format!("{}\\ProgramData\\AHQ Store Applications\\Installers\\{}", sys_dir.clone(), installer),
         ),
-        &Path::new(&("C:\\ProgramData\\AHQ Store Applications\\Programs\\".to_owned() + app)),
+        &Path::new(&format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{}", sys_dir.clone(), app)),
     );
 
     Ok(status.into())
@@ -135,20 +137,21 @@ fn clean(path: String) {
 
 #[tauri::command(async)]
 fn shortcut(app: &str, app_short: &str) {
-    let base = r"C:\ProgramData\AHQ Store Applications\Programs\".to_owned() + app;
+    let sys_dir = std::env::var("SYSTEMROOT").unwrap().as_str().replace("\\WINDOWS", "");
+    let base = format!(r"{}\ProgramData\AHQ Store Applications\Programs\", sys_dir).to_owned() + app;
 
     let sl = ShellLink::new(base).unwrap();
-    let mut path = dirs::desktop_dir().unwrap();
-    path.push(format!("{}.lnk", app_short));
 
-    sl.create_lnk(&path.as_path()).unwrap();
+    sl.create_lnk(&std::path::Path::new(&format!(r"{}\Users\Public\Desktop\{app_short}.lnk", sys_dir.clone()))).unwrap();
+    sl.create_lnk(std::path::Path::new(&format!(r"{}\ProgramData\Microsoft\Windows\Start Menu\Programs\AHQ Store\{}.lnk", sys_dir, app_short))).unwrap();
 }
 
 #[tauri::command(async)]
 fn check_app(app_name: &str) -> Result<bool, bool> {
+    let sys_dir = std::env::var("SYSTEMROOT").unwrap().as_str().replace("\\WINDOWS", "");
     Ok(
         Path::new(
-            format!("C:\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}").as_str(),
+            format!("{sys_dir}\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}").as_str(),
         )
         .is_dir()
         .into(),
@@ -157,20 +160,25 @@ fn check_app(app_name: &str) -> Result<bool, bool> {
 
 #[tauri::command(async)]
 fn uninstall(app_name: &str) -> Result<(), bool> {
+    let sys_dir = std::env::var("SYSTEMROOT").unwrap().as_str().replace("\\WINDOWS", "");
+    let path = format!(r"{}\ProgramData\Microsoft\Windows\Start Menu\Programs\AHQ Store\{}.lnk", sys_dir.clone(), app_name.clone());
+
+    let dir = std::path::Path::new(&path);
     fs::remove_dir_all(
-        format!("C:\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}").as_str(),
+        format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}", sys_dir.clone()).as_str(),
     )
     .expect("Failed!");
-
-    let mut path = dirs::desktop_dir().unwrap();
-    path.push(format!("{}.lnk", app_name));
 
     fs::remove_file(
-        format!("C:\\ProgramData\\AHQ Store Applications\\Updaters\\{app_name}.updater").as_str(),
+        format!("{}\\ProgramData\\AHQ Store Applications\\Updaters\\{app_name}.updater", sys_dir.clone()).as_str(),
     )
     .expect("Failed!");
 
-    match fs::remove_file(&path) {
+    fs::remove_file(
+        dir
+    ).expect("Failed");
+
+    match fs::remove_file(&std::path::Path::new(&format!(r"{sys_dir}\Users\Public\Desktop\{app_name}.lnk"))) {
         Err(_err) => {
             println!("App wasn't found maybe?");
             Ok(())

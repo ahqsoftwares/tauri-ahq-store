@@ -151,11 +151,13 @@
             </Component>
         </DirectoryRef>
 
+        <Property Id="MSIUSEREALADMINDETECTION" Value="1" />
+
         <DirectoryRef Id="ApplicationProgramsFolder">
             <Component Id="ApplicationShortcut" Guid="*">
                 <Shortcut Id="ApplicationStartMenuShortcut"
                     Name="{{{product_name}}}"
-                    Description="Runs {{{product_name}}}"
+                    Description="The open source store to install apps"
                     Target="[!Path]"
                     Icon="ProductIcon"
                     WorkingDirectory="INSTALLDIR">
