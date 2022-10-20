@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "0.7.8"
+version = "0.7.9"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "ISC"
@@ -22,6 +22,7 @@ tauri-plugin-single-instance = { git = "https://github.com/amrbashir/tauri-plugi
 tauri-plugin-deep-link = {git = "https://github.com/FabianLars/tauri-plugin-deep-link"}
 zip = "0.6.2"
 downloader = "0.2.6"
+deelevate = "0.2.0"
 mslnk = "0.1.8"
 
 [features]

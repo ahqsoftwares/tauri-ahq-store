@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState} from "react";
 import {Auth, User, updateProfile} from "firebase/auth";
 import Modal from "react-modal";
 

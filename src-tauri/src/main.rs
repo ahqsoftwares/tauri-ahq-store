@@ -7,11 +7,28 @@ pub mod download;
 pub mod extract;
 
 use mslnk::ShellLink;
+use deelevate::{Token, PrivilegeLevel};
 use std::path::Path;
-use std::{fs, thread};
+use std::process;
+use std::{fs, thread, process::Command};
 use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 fn main() {
+    match Token::with_current_process().unwrap().privilege_level().unwrap() {
+        PrivilegeLevel::NotPrivileged => {
+            Command::new("powershell").arg(format!("start-process \"{}\" -verb runas", std::env::current_exe().unwrap().to_str().unwrap()))
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap();
+
+            process::exit(0);
+        }
+        _ => {
+                        
+        }
+    }
+
     tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
 
     let context = tauri::generate_context!();
@@ -26,7 +43,6 @@ fn main() {
                 .expect("Error!");
             fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Updaters", sys_dir.clone()))
                 .expect("Error!");
-
             Ok(())
         })
         .system_tray(SystemTray::new().with_menu(
@@ -88,6 +104,7 @@ fn main() {
         },
         _ => {}
     });
+
 }
 
 #[tauri::command(async)]

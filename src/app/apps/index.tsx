@@ -16,7 +16,7 @@ Components
 import Layer from "./components/layer";
 import Card from "./components/app_card";
 import Modal from "./components/modal";
-import {VscAccount} from "react-icons/vsc";
+//import {VscAccount} from "react-icons/vsc";
 
 /*
 StyleSheets
@@ -148,13 +148,13 @@ export default function Apps(props: AppsProps){
 											}}/>
 										);
 									} catch (e) {
-										return (<h1 key={keyGen()}></h1>);
+										return (<div key={keyGen()}></div>);
 									}
 								})}
 							</Layer>
 						)
 					} catch (e) {
-						return (<h1 key={keyGen()} ></h1>);
+						return (<div key={keyGen()} ></div>);
 					}
 				})}
 			</div>
