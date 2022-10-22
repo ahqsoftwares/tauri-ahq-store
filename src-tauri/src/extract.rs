@@ -1,3 +1,4 @@
+use std::fs::File;
 use std::path::Path;
 use std::{fs, io};
 use std::process::Command;
@@ -35,11 +36,21 @@ pub fn extract(path: &Path, location: &Path) -> i32 {
 
                            if let Some(p) = outpath.parent() {
                                     if !p.exists() {
-                                             fs::create_dir_all(&p).unwrap();
+                                             match fs::create_dir_all(&p) {
+                                                      Ok(_) => {},
+                                                      Err(_) => {return 1}
+                                             };
                                     }
                            }
-                           let mut outfile = fs::File::create(&outpath).unwrap();
-                           io::copy(&mut file, &mut outfile).unwrap();
+                           let mut outfile: File;
+                           match fs::File::create(&outpath) {
+                                    Ok(file) => {outfile = file},
+                                    Err(_) => {return 1}
+                           };
+                           match io::copy(&mut file, &mut outfile) {
+                                    Ok(_) => {},
+                                    Err(_) => {return 1}
+                           }
                   }
          }
          return 0;

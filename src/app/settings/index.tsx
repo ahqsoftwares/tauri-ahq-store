@@ -1,6 +1,9 @@
 import {useState} from "react";
 import {Auth, User, updateProfile} from "firebase/auth";
 import Modal from "react-modal";
+import { sendNotification } from "@tauri-apps/api/notification";
+import { BiMoon, BiSun } from "react-icons/bi";
+import { BsCodeSlash } from "react-icons/bs";
 
 interface InitProps {
     dark: boolean,
@@ -40,14 +43,20 @@ export default function Init(props: InitProps) {
         console.log(user.displayName);
 
         async function Update() {
-            setShow(true);
-            await updateProfile(user, {
-                displayName: !dev ? `(dev)${user?.displayName}` : user?.displayName?.replace("(dev)", "")
-            });
-            setUser(props.auth.currentUser as User);
-            setDev(!dev);
-            props.setDev(!dev);
-            setShow(false);
+            try {
+                if (props.auth?.currentUser?.emailVerified) {
+                    setShow(true);
+                    await updateProfile(user, {
+                        displayName: !dev ? `(dev)${user?.displayName}` : user?.displayName?.replace("(dev)", "")
+                    });
+                    setUser(props.auth.currentUser as User);
+                    setDev(!dev);
+                    props.setDev(!dev);
+                    setShow(false);
+                }
+            } catch (_e) {
+                sendNotification("Could not update data!");
+            }
         }
 
          function darkMode(classes: Array<string>, dark: boolean) {
@@ -72,9 +81,19 @@ export default function Init(props: InitProps) {
                            
                            <div className={`${darkMode(["checkbox"], props.dark)}`} onClick={() => props.setDark(!props.dark)}>
                                     <div className="ml-3"></div>
-                                    <h6>Dark Mode<p>Enables or disabled dark mode</p></h6>
+                                    
+                                    <div className={`flex items-center justify-center ${props.dark ? "text-slate-300" : "text-slate-700"}`}>
+                                        {props.dark ? <BiSun size="2.5em"/> : <BiMoon size="2.5em"/>}
+                                    </div>
+                                    
+                                    <div className="ml-3"></div>
+
+                                    <h6>Dark Mode<p>Enables or disables dark mode</p></h6>
+
                                     <div className="mx-auto"></div>
+
                                     <input className="slider" type={"range"} min="0" max="60" value={props.dark ? "55" : "5"} readOnly></input>
+                                    
                                     <div className="mr-3"></div>
                            </div>
 
@@ -82,9 +101,23 @@ export default function Init(props: InitProps) {
                             Update()
                            }}>
                                     <div className="ml-3"></div>
-                                    <h6>Developer Mode<p>Allows you to publish windows apps</p></h6>
+
+                                    <div className={`flex items-center justify-center ${props.dark ? "text-slate-300" : "text-slate-700"}`}>
+                                        <BsCodeSlash size="2.5em"/>
+                                    </div>
+                                    
+                                    <div className="ml-3"></div>
+
+                                    {props.auth?.currentUser?.emailVerified ? 
+                                        <h6>Developer Mode<p>Allows you to publish windows apps</p></h6>
+                                    :
+                                        <h6>Developer Mode<p style={{"color": props.dark ? "red" : "darkred"}}>(DISABLED, VERIFY EMAIL) Allows you to publish windows apps</p></h6>
+                                    }
+
                                     <div className="mx-auto"></div>
+                                    
                                     <input className="slider" type={"range"} min="0" max="60" value={dev ? "55" : "5"} readOnly></input>
+                                    
                                     <div className="mr-3"></div>
                            </div>
 

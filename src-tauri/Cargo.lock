@@ -37,7 +37,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "0.7.9"
+version = "0.8.0"
 dependencies = [
  "deelevate",
  "downloader",

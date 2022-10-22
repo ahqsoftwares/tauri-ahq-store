@@ -107,7 +107,7 @@ Checkbox
 */
 .checkbox {
          @apply bg-white w-[98%] rounded-lg shadow-md p-[auto] h-[4rem] flex;
-         transition: all 500ms linear;
+         transition: all 125ms linear;
          cursor: pointer;
 }
 
@@ -134,7 +134,7 @@ Checkbox
 }
 
 .checkbox-d:hover {
-         @apply bg-gray-500;
+         background-color: rgb(88, 95, 108);
 }
 
 .checkbox-d h6 {
@@ -231,8 +231,12 @@ User Panel
   @apply mx-auto mt-2;
   display: block;
   width: 500px;
+  min-width: 500px;
+  max-width: 500px;
   border-radius: 50%;
   height: 500px;
+  min-height: 500px;
+  max-height: 500px;
 }
 
 .name h1 {

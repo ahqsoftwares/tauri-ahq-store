@@ -22,6 +22,7 @@ import "./index.css";
 
 import Home from "./home/index";
 import Nav from "./Nav";
+import Developer from "./developer/";
 import Apps from "./apps/";
 import User from "./client/index";
 import Settings from "./settings/index";
@@ -154,6 +155,9 @@ function Render(props: AppProps) {
                         break;
                 case "home":
                         App = Home;
+                        break;
+                case "developer":
+                        App = Developer;
                         break;
         }
 

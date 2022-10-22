@@ -24,6 +24,7 @@ Database Refs
 */
 import GeneralUser from "./user.png";
 import Loading from "./loading.gif";
+import { BiLogOut, BiUserX } from "react-icons/bi";
 
 
 /*
@@ -191,8 +192,8 @@ export default function Init(props: UserProps){
                     </Modal>
 
 
-                    <div className={`${darkMode(["menu"], dark)}`}>
-                        <div className={darkMode(["user"], dark)}>
+                    <div className={`${darkMode(["menu"], dark)} pb-2`}>
+                        <div className={`${darkMode(["user"], dark)} pb-2`}>
                             {auth.currentUser?.emailVerified
                             ?
                             <></>
@@ -244,10 +245,19 @@ export default function Init(props: UserProps){
 function Actions(props: {auth: Auth, deleteAcc: Function}) {
     const {auth, deleteAcc} = props;
     return (
-        <>
-            <button className="button mx-auto" onClick={() => auth.signOut()}>LogOut</button>
-            <button className="button-danger mx-auto" onClick={() => deleteAcc(true)}>Delete Account</button>
-        </>
+        <div className="flex flex-col">
+            <div className="flex w-[100%] flex-row">
+                <button className="button mx-auto flex items-center text-center justify-center" onClick={() => auth.signOut()} style={{"minWidth": "15rem", "maxWidth": "15rem", "minHeight": "3.5rem", "maxHeight": "3.5rem"}}>
+                    <BiLogOut size="2.5em"/>
+                    <p className="mx-2">LogOut</p>
+                </button>
+                <div className="mx-3"></div>
+                <button className="button-danger mx-auto flex items-center text-center justify-center" onClick={() => deleteAcc(true)} style={{"minWidth": "15rem", "maxWidth": "15rem", "minHeight": "3.5rem", "maxHeight": "3.5rem"}}>
+                    <BiUserX size="2.5em"/>
+                    <p className="mx-2">Delete Account</p>
+                </button>
+            </div>
+        </div>
     );
 }
 
@@ -262,7 +272,7 @@ interface DeleteAccountProps {
 }
 
 function DeleteAccount(props: DeleteAccountProps) {
-    const {cancel, pass, set, auth} = props;
+    const {cancel, pass, set, auth, dark} = props;
     const {pwd: sP} = set;
 
     const user: any = auth.currentUser;
@@ -309,7 +319,7 @@ function DeleteAccount(props: DeleteAccountProps) {
         <div className="flex flex-col" style={{"transition": "all 250ms linear"}}>
             <div className="flex flex-row">
                 <div className="mx-auto"></div>
-                <button className="text-black hover:text-red-500 h-[1rem] w-[1rem]" style={{"fontWeight": "bolder", "transition": "all 250ms linear"}} onClick={() => cancel()}>X</button>
+                <button className={`${dark ? "text-white" : "text-black"} hover:text-red-500 h-[1rem] w-[1rem]`} style={{"fontWeight": "bolder", "transition": "all 250ms linear"}} onClick={() => cancel()}>X</button>
             </div>
 
             <div className="mt-[8rem]"></div>
@@ -330,7 +340,7 @@ function DeleteAccount(props: DeleteAccountProps) {
                         <input className={`style-input ${!props.dark ? "" : "style-input-d"}`} type="password" placeholder="Enter Your Password" minLength={8} value={pass} onChange={(e) => sP(e.target.value)} required disabled={text.split(";")[2] === "true"}></input>
 
                         <div className="mt-[12.5rem]"></div>
-                        <button className={`button${text.split(";")[1]}`} style={{"transition": "all 500ms linear"}} disabled={text.split(";")[2] === "true"}>{text.split(";")[0]}</button>
+                        <button className={`button${text.split(";")[1]} flex items-center text-center justify-center`} style={{"transition": "all 500ms linear"}} disabled={text.split(";")[2] === "true"}><BiUserX size="2.5em" className="mx-2"/> {text.split(";")[0]}</button>
 
                         </>
                     :
@@ -343,7 +353,7 @@ function DeleteAccount(props: DeleteAccountProps) {
                                     <button type="reset" className="button" onClick={() => cancel()}>No</button>
                                 </div>
                                 <div className="w-[10rem]">
-                                    <button className="button-danger">Yes</button>
+                                    <button className="button-danger"><BiUserX size="2.5em"/> Yes</button>
                                 </div>
                                 <div className="w-[10rem]"></div>
                             </div>
