@@ -4,7 +4,6 @@ React Native
 import { useState, useEffect } from "react";
 import { Auth } from "firebase/auth";
 
-
 /*
 Functions
 */
@@ -143,7 +142,7 @@ export default function Apps(props: AppsProps){
 
 										return (
 											<Card key={keyGen()} title={title} description={description} img={img} footer={<button className="text-blue-500 text-2xl" style={{"minWidth": "95%"}}>{displayName}</button>} onClick={() => {
-												setData({img, downloadUrl, id: data});
+												setData({img, downloadUrl, id: data, ...allAppsData.info[data], displayName});
 												change();
 											}}/>
 										);

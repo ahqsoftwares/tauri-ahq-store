@@ -24,7 +24,6 @@ export default function Load(props: SearchPropsToRender) {
 			className="flex w-[100%] h-[3rem] shoadow-2xl rounded-xl" 
 			style={{"cursor": "pointer"}}
 			onClick={() => {
-				console.log("Clocked!");
 				set({
 					img,
 					downloadUrl,

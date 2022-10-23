@@ -294,7 +294,6 @@ function DeleteAccount(props: DeleteAccountProps) {
         })
         .catch((e) => {
             let msg = e.message.replace("Firebase: Error ", "").replace(")", "").replace("(", "").replaceAll(".", "");
-            console.log(msg);
 
             switch(msg) {
                 case "auth/wrong-password":

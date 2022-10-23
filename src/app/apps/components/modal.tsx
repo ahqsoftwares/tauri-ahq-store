@@ -1,22 +1,27 @@
+import { BiArrowBack } from "react-icons/bi";
 import Modal from "react-modal";
 
 interface AppDataPropsModal {
 	shown: boolean,
 	change: Function,
 	dark: Boolean,
-	installData?: {
-		img: string,
-		downloadUrl: string,
-		id: string
-	}
+	installData: any
 }
 
 export default function showModal(props: AppDataPropsModal) {
 	const { 
 		shown,
 		dark,
-		change
+		change,
+        installData
 	} = props;
+
+    const {
+        img,
+        title,
+        description,
+        displayName
+    } = installData;
 
 	const modalStyles = {
         content: {
@@ -46,7 +51,44 @@ export default function showModal(props: AppDataPropsModal) {
         	contentLabel={"Confirm Delete Account"}
         	style={modalStyles}
         >
-            <h1 onClick={() => change()}>Hi</h1>
+            <div className="flex flex-col w-[100%] h-[100%]">
+                <div className={`flex ${dark ? "text-slate-300" : "text-slate-800"}`}>
+                    <button onClick={() => change()} className={`rounded-md p-1 ${dark ? "hover:bg-gray-600" : "hover:bg-white"}`} style={{"transition": "all 250ms linear"}}>
+                        <BiArrowBack size="1.5em"/>
+                    </button>
+                </div>
+                <div className="flex w-[100%] h-[100%]">
+                    <div className={`w-[40%] flex flex-col items-center rounded-xl shadow-xl`}>
+                        <img src={img} alt="Logo" className="rounded-3xl shadow-2xl"></img>
+                        
+                        <h1 className={`mt-5 text-3xl ${dark ? "text-slate-200" : "text-slate-800"}`}>{title}</h1>
+                        
+                        <div className="w-[95%] mt-3 mb-auto">
+                            <h2 className={`text-2xl text-center ${dark ? "text-gray-400" : "text-gray-600"}`}>{description}</h2>
+                        </div>
+
+                        <button disabled className="button mb-4">Install</button>
+                    </div>
+
+                    <div className={`${dark ? "text-slate-200" : "text-slate-800"} p-4 ml-2 w-[100%] rounded-xl shadow-xl flex flex-col`}>
+                        {/*"Images (soon)"*/}
+                        <div>
+
+                        </div>
+
+                        {/*Author*/}
+                        <div className="w-[100%]">
+                            <h1 className="text-xl">About Developer</h1>
+                            <h2 className="text-lg">{displayName}</h2>
+                        </div>
+
+                        {/*Ratings (soon)*/}
+                        <div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </Modal>
        );
 }

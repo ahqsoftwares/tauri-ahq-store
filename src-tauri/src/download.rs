@@ -47,8 +47,8 @@ impl downloader::progress::Reporter for SimpleReporter {
             };
             if p.last_update.elapsed().as_millis() >= 1000 {
                 println!(
-                    "Downloading App: {} of {} bytes. [{}]",
-                    current, max_bytes, p.message
+                  "Downloading App: {} of {} bytes. [{}]",
+                  current, max_bytes, p.message
                 );
                 p.last_update = std::time::Instant::now();
             }
@@ -66,7 +66,7 @@ impl downloader::progress::Reporter for SimpleReporter {
     }
 }
 
-pub fn download(file: &str, path: &str, name: &str) {
+pub fn download(file: &str, path: &str, name: &str) -> u8 {
     let datas = create_dir_all(path);
     match datas {
         Err(daras) => println!("{}", daras.to_string()),
@@ -86,10 +86,19 @@ pub fn download(file: &str, path: &str, name: &str) {
 
     let result = downloader.download(&[dl]).unwrap();
 
+    let mut status = 0;
+
     for r in result {
         match r {
-            Err(e) => println!("Error: {}", e.to_string()),
-            Ok(s) => println!("Success: {}", &s),
+            Err(e) => {
+                println!("Error: {}", e.to_string());
+                status = 1;
+            },
+            Ok(s) => {
+                println!("Success: {}", &s);
+                status = 0;
+            },
         };
     }
+    status
 }

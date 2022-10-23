@@ -20,6 +20,9 @@ CSS
 */
 import "./index.css";
 
+/*
+Components
+*/
 import Home from "./home/index";
 import Nav from "./Nav";
 import Developer from "./developer/";
@@ -37,22 +40,47 @@ interface AppProps {
 }
 
 function Render(props: AppProps) {
-        appWindow.listen("protocol", ({payload}) => {
-                console.log(payload);
-        });
+        const {auth, db, cache, storage} = props.data;
+        let [page, changePage] = useState("home"),
+        [dev, setDev] = useState(auth.currentUser?.displayName?.startsWith("(dev)")),
+        [dark, setD] = useState(true),
+        [load, setLoad] = useState(false),
+        [apps, setApps] = useState<any>([]),
+        [allAppsData, setData] = useState<any>({
+               info: {},
+               map: {},
+               users: {}
+        }),
+        App: any = () => (<></>);
 
-         const {auth, db, cache, storage} = props.data;
-         let [page, changePage] = useState("home"),
-         [dev, setDev] = useState(auth.currentUser?.displayName?.startsWith("(dev)")),
-         [dark, setD] = useState(true),
-         [load, setLoad] = useState(false),
-         [apps, setApps] = useState<any>([]),
-         [allAppsData, setData] = useState<any>({
-                info: {},
-                map: {},
-                users: {}
-         }),
-         App: any = () => (<></>);
+
+        appWindow.listen("protocol", (
+                {
+                        payload
+                }: {
+                        payload: string
+                }
+        ) => {
+                if (payload.startsWith("ahqstore://")) {
+                        const [page] = payload.replace("ahqstore://", "").split("/");
+
+                        switch (page) {
+                                case "app":
+                                        changePage("apps");
+                                        break;
+                                case "update": 
+                                        changePage("apps");
+                                        break;
+                                //In Future
+                                /*
+                                case "rate":
+                                        break;
+                                */
+                                default:
+                                        break;
+                        }
+                };
+        });
 
 
         useEffect(() => {
