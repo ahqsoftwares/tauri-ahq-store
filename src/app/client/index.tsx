@@ -3,17 +3,16 @@
 /*
 React && Native
 */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { sendNotification } from "@tauri-apps/api/notification";
+import { Body, fetch } from "@tauri-apps/api/http";
+import { useCookies } from "react-cookie";
 import Modal from "react-modal";
 
 /*
 Firebase API
 */
 import { Auth, updateProfile, User, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
-import { Database } from "firebase/database";
-import { Firestore } from "firebase/firestore";
-import { FirebaseStorage, getDownloadURL, ref, uploadBytes, list, deleteObject } from "firebase/storage";
 
 /*Icons
 */
@@ -22,9 +21,13 @@ import { BsPen, BsPenFill } from "react-icons/bs";
 /*
 Database Refs
 */
+import base from "../server";
 import GeneralUser from "./user.png";
 import Loading from "./loading.gif";
 import { BiLogOut, BiUserX } from "react-icons/bi";
+import PopUp from "../resources/popup";
+import { open } from "@tauri-apps/api/dialog";
+import { readBinaryFile } from "@tauri-apps/api/fs";
 
 
 /*
@@ -32,12 +35,7 @@ Interfaces
 */
 interface UserProps {
     auth: Auth,
-    dark: boolean,
-    firebase: {
-        db: Firestore,
-        cache: Database,
-        storage: FirebaseStorage
-    }
+    dark: boolean
 }
 
 /*
@@ -72,9 +70,10 @@ export default function Init(props: UserProps){
             return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
         }
 
+        const [cookies, setCookie/*, removeCookie*/] = useCookies(["temptokenforuse"]);
 
-        let {auth, dark, firebase} = props,
-        {storage} = firebase;
+
+        let {auth, dark} = props;
 
 
         let 
@@ -84,16 +83,17 @@ export default function Init(props: UserProps){
 
         [alt, setAlt] = useState("Please wait..."),
 
-        refer = useRef<HTMLInputElement>(null),
-
         [showDelete, setDelete] = useState(false),
 
         [deletePwd, setPwd] = useState(""),
 
         [Pen, setPen] = useState(dark ?  <BsPen size="2em"/> : <BsPenFill size="2em"/>),
 
-        [namePopup, setNamePopup] = useState(false);
-
+        [namePopup, setNamePopup] = useState(false),
+        
+        [passwordPopup, setpPopop] = useState(false),
+        
+        [profilePictureData, setPFD] = useState({});
 
         const customStyles = {
             content: {
@@ -131,7 +131,18 @@ export default function Init(props: UserProps){
                         } else {
                             setName("Guest");
                         }
-                        setUser(auth.currentUser?.photoURL ? auth.currentUser.photoURL as string: GeneralUser);
+                        setUser(Loading);
+                        fetch(`${base}`, {
+                            headers: {
+                                uid: auth.currentUser?.uid
+                            },
+                            method: "GET",
+                            responseType: 1
+                        }).then(({data}) => {
+                            setUser(data as any);
+                        }).catch(() => {
+                            setUser(GeneralUser);
+                        });
                         setAlt(auth.currentUser?.photoURL ? "Click to edit picture" : "Click to upload");
                     }
                 })();
@@ -139,8 +150,7 @@ export default function Init(props: UserProps){
 
          useEffect(() => {
             const image = document.getElementById("img") as HTMLElement,
-            drop = document.getElementById("drop") as HTMLElement,
-            file = document.getElementById("profile-input") as any;
+            drop = document.getElementById("drop") as HTMLElement;
 
             image.addEventListener("mouseover", () => {
                drop.setAttribute("style", "opacity: 0.9");
@@ -148,26 +158,60 @@ export default function Init(props: UserProps){
             image.addEventListener("mouseleave", () => {
                 drop.setAttribute("style", "opacity: 0.0");
             });
-            image.addEventListener("click", () => {
+            image.addEventListener("click", async() => {
                if (auth.currentUser?.emailVerified) {
-                    file.click();
-                   }
-                });
-                file.addEventListener("change", (event: any) => {
-                    const fs = new FileReader();
+                    const image = await open({
+                        multiple: false,
+                        filters: [{
+                            name: "image",
+                            extensions: ["png"]
+                        }]
+                    });
 
-                    if (!event.target.files[0].type.startsWith("image/")) {
-                        sendNotification("Non image files are not supported!");
-                        return;
+                    if (image) {
+                        const data = await readBinaryFile(image as string);
+                        const blob = new Blob([data]);
+
+                        const fs = new FileReader();
+
+                        fs.readAsDataURL(blob);
+                        fs.onload = async() => {
+                            setUser(Loading);
+                        }
+
+                        setPFD({
+                            fs,
+                            pfd: fs.result as string
+                        });
+
+                        if (!cookies.temptokenforuse) {
+                            setpPopop(true);
+                        } else {
+                            await fetch(`${base}verify`, {
+                                method: "GET",
+                                responseType: 1,
+                                headers: {
+                                    "x-uid": auth.currentUser?.uid,
+                                    "x-password": cookies.temptokenforuse
+                                }
+                            })
+                            .then(({ok}) => {
+                                console.log(ok);
+                                if (!ok) {
+                                    setpPopop(true);
+                                } else {
+                                    ChangeProfile(auth, setAlt, setUser, {
+                                        result: fs.result as string
+                                    }, cookies.temptokenforuse);
+                                }
+                            })
+                            .catch((_e) => {
+                                setpPopop(true);
+                            });
+                        }
                     }
-
-                    const type = event.target.files[0].type.replace("image/", "");
-
-                    fs.readAsArrayBuffer(event.target.files[0]);
-                    fs.onload = async() => {
-                        await ChangeProfile(type, auth, setAlt, setUser, event, storage, fs);
-                    }
-                  });
+                }
+            });
          }, []);
 
          /*manage();*/
@@ -182,6 +226,52 @@ export default function Init(props: UserProps){
                     >
                         < DeleteAccount auth={auth} cancel={() => {setDelete(false); setPwd("");}} pass={deletePwd} set={{pwd: setPwd}} dark={props.dark} />
                     </Modal>
+
+                    <PopUp
+                        dark={props.dark}
+                        shown={passwordPopup}
+                    >  
+                        <div className="w-[100%] flex flex-col justify-end text-end items-end">
+                            <button className={`block font-extrabold text-2xl ${dark ? "text-white" : "text-black"} hover:text-red-800`} style={{"transition": "all 250ms linear"}} onClick={() => {
+                                (document.getElementById("accpwdhost") as HTMLInputElement).value = "";
+                                setpPopop(false);
+                            }}>X</button>
+                        </div>
+                        <form 
+                            className="w-[100%] h-[100%] flex flex-col text-center items-center justify-center"
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                const inputPassword = (document.getElementById("accpwdhost") as HTMLInputElement).value;
+
+                                fetch(`${base}verify`, {
+                                    method: "GET",
+                                    headers: {
+                                        "x-uid": auth.currentUser?.uid,
+                                        "x-password": inputPassword
+                                    },
+                                    responseType: 1
+                                }).then(({ok}) => {
+                                    console.log(ok);
+                                    if (ok) {
+                                        setCookie("temptokenforuse", inputPassword, {
+                                            expires: new Date(Date.now() + (14 * 24 * 60 * 60 * 1000))
+                                        });
+                                    } else {
+                                        ChangeProfile(auth, setAlt, setUser, {
+                                            result: (profilePictureData as any).pfd as string
+                                        }, inputPassword);
+                                        (document.getElementById("accpwdhost") as HTMLInputElement).value = "";
+                                        setpPopop(false);
+                                        setPFD({});
+                                    }
+                                });
+                            }}
+                        >
+                            <input id="accpwdhost" className="style-input style-input-d" type="password" placeholder="Enter Your Account Password"></input>
+
+                            <button className="button">Submit</button>
+                        </form>
+                    </PopUp>
 
                     <Modal
                         isOpen={namePopup}
@@ -204,7 +294,6 @@ export default function Init(props: UserProps){
                                 >Unverified Email</h1>
                             </div>}
                             <div className="img" id="img">
-                                <input ref={refer} type="file" max={1} min={1} accept="image/*" id="profile-input" hidden></input>
                                 <img src={auth.currentUser?.emailVerified ? user : GeneralUser} alt="Avatar" />
                                 <div className={`div ${props.dark ? "" : "div-l"}`} id="drop">
                                     <h1 className="text">{alt}</h1>
@@ -423,49 +512,47 @@ function ChangeAccountName(props: AccountNameProps) {
     )
 }
 
-async function ChangeProfile(type: string, auth: Auth, setAlt: Function, setUser: Function, event: any, storage: FirebaseStorage, fs: any) {
+async function ChangeProfile(auth: Auth, setAlt: Function, setUser: Function, fs: {result: string}, pwd: string) {
     try {
-        const location = ref(storage, `${auth.currentUser?.uid}/profile.${type}`);
         setUser(Loading);
+        setAlt("Please Wait...");
+        console.log(Body.text(fs.result));
 
-        try {
-            await list(ref(storage, auth.currentUser?.uid))
-            .then(async(data) => {
-                for (let i = 0; i < data.items.length; i++) {
-                        const e = data.items[i];
-                        await deleteObject(ref(storage, e.fullPath));
-                }
-            });
-        } catch (e) {
-            console.log(e);
-        }
-
-        await uploadBytes(location, fs.result as ArrayBuffer, {
-            contentType: String(event.target.files[0].type)
-        });
-
-        await getDownloadURL(location)
-        .then((data) => {
-            if (auth.currentUser?.emailVerified) {
-                setAlt("Click to edit picture");
-            }
-            updateProfile(auth.currentUser as User, {
-                photoURL: data
-            });
-            setUser(data);
+        fetch(`${base}`, {
+            method: "POST",
+            headers: {
+                "x-uid": auth.currentUser?.uid as any,
+                "x-password": pwd
+            },
+            body: Body.json({data: fs.result}),
+            timeout: 60
         })
-        .catch((e) => {
-            console.log(e);
-            if (auth.currentUser?.emailVerified) {
-                setAlt("Click to upload");
+        .then((data) => {
+            console.log(data);
+            const {
+                ok
+            } = data;
+            if (!ok) {
+                sendNotification("Failed to update profile picture!");
+                fetch(`${base}`, {
+                    method: "GET",
+                    headers: {
+                        "uid": auth.currentUser?.uid
+                    },
+                    responseType: 1
+                }).then(({data}) => {
+                    setUser(data);
+                }).catch(() => {
+                    setUser(GeneralUser);
+                });
+            } else {
+                setAlt("Click to edit picture");
+                setUser(fs.result);
             }
-            updateProfile(auth.currentUser as User, {
-                photoURL: GeneralUser
-            });
-            setUser(GeneralUser);
         });
     } catch (e) {
-        setUser(auth.currentUser?.photoURL ? auth.currentUser.photoURL : GeneralUser);
+        console.log(e);
+        setUser(GeneralUser);
         sendNotification("Failed to update profile picture!");
     }
 }

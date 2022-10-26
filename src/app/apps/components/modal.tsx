@@ -48,7 +48,7 @@ export default function showModal(props: AppDataPropsModal) {
 	return (
 		<Modal
         	isOpen={shown}
-        	contentLabel={"Confirm Delete Account"}
+        	contentLabel={"App Information"}
         	style={modalStyles}
         >
             <div className="flex flex-col w-[100%] h-[100%]">

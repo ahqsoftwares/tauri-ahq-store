@@ -1,4 +1,8 @@
+//UI Elements
 import { useEffect, useState } from "react";
+import { useSpring, animated } from 'react-spring'
+
+import Nav from "./components/Nav";
 
 export default function App(
          {
@@ -10,6 +14,11 @@ export default function App(
 ): JSX.Element {
 
          const [dark, setDark] = useState(window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+         let arr = [];
+         for (let i = 0; i < 2000; i++) {
+                  arr.push(i);
+         }
 
          useEffect(() => {
                   const rawDark = localStorage.getItem("dark");
@@ -29,11 +38,22 @@ export default function App(
          switch (path) {
 
          }
+
+         const props = useSpring({ 
+                  to: { opacity: 1 }, 
+                  from: { opacity: 0 },
+                  reset: true,
+                  delay: 3000
+         });
+
          return (
                   <div>
-                           <button
-                                    onClick={() => setDark((dark) => !dark)}
-                           >Click Me to Change Something</button>
+                           <div>
+                                    <Nav page={path}/>
+                           </div>
+                           <div>
+                                    <animated.div style={props}>I will fade in</animated.div>
+                           </div>
                   </div>
          );
 }

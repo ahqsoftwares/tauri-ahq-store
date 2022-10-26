@@ -12,7 +12,11 @@ import './index.css';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-/*const component = Pages(document.location.pathname);*/
+
+setTimeout(() => {
+  const title = document.querySelector("title") as HTMLElement;
+  title.innerHTML = "AHQ Store";
+}, 2000);
 
 root.render(
   <App 

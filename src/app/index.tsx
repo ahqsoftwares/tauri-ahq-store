@@ -30,6 +30,8 @@ import Apps from "./apps/";
 import User from "./client/index";
 import Settings from "./settings/index";
 
+import BaseAPI from "./server";
+
 interface AppProps {
         data: {
                 auth: Auth,
@@ -199,7 +201,7 @@ function Render(props: AppProps) {
                          <Nav active={page} home={(page: string) => changePage(page)} dev={dev} dark={[dark, setDark]}/>
                         <div className="w-screen h-screen">
                                 <div className="flex flex-col w-[100%] h-[100%] justify-center">
-                                        <App baseApi={"http://pr1.simplehostnode.cf:1027/"} auth={auth} setDev={setDev} dark={dark} setDark={setDark} firebase={{db, cache, storage}} apps={apps} setApps={setApps} allAppsData={allAppsData} />
+                                        <App baseApi={BaseAPI} auth={auth} setDev={setDev} dark={dark} setDark={setDark} firebase={{db, cache, storage}} apps={apps} setApps={setApps} allAppsData={allAppsData} />
                                 </div>
                         </div>
                   </header> : <></>}

@@ -4,5 +4,5 @@
 
 #root {
   transition: all 125ms linear;
-  @apply w-[100%] h-screen flex flex-col bg-gray-100 dark:bg-gray-800 text-slate-800 dark:text-white;
+  @apply w-[100%] min-h-screen h-[auto] flex flex-col bg-gray-100 dark:bg-gray-800 text-slate-800 dark:text-white;
 }
