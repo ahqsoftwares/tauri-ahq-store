@@ -179,10 +179,9 @@ export default function Init(props: UserProps){
                             setUser(Loading);
                         }
 
-                        setPFD({
-                            fs,
-                            pfd: fs.result as string
-                        });
+                        setPFD({fs});
+
+                        console.log(profilePictureData);
 
                         if (!cookies.temptokenforuse) {
                             setpPopop(true);
@@ -196,13 +195,12 @@ export default function Init(props: UserProps){
                                 }
                             })
                             .then(({ok}) => {
-                                console.log(ok);
                                 if (!ok) {
                                     setpPopop(true);
                                 } else {
                                     ChangeProfile(auth, setAlt, setUser, {
                                         result: fs.result as string
-                                    }, cookies.temptokenforuse);
+                                    }, cookies.temptokenforuse, setPFD);
                                 }
                             })
                             .catch((_e) => {
@@ -241,8 +239,9 @@ export default function Init(props: UserProps){
                             className="w-[100%] h-[100%] flex flex-col text-center items-center justify-center"
                             onSubmit={(event) => {
                                 event.preventDefault();
+                                const error = (document.getElementById("errorhost")) as HTMLHeadingElement;
                                 const inputPassword = (document.getElementById("accpwdhost") as HTMLInputElement).value;
-
+                                console.log(profilePictureData);
                                 fetch(`${base}verify`, {
                                     method: "GET",
                                     headers: {
@@ -251,22 +250,26 @@ export default function Init(props: UserProps){
                                     },
                                     responseType: 1
                                 }).then(({ok}) => {
-                                    console.log(ok);
                                     if (ok) {
                                         setCookie("temptokenforuse", inputPassword, {
                                             expires: new Date(Date.now() + (14 * 24 * 60 * 60 * 1000))
                                         });
-                                    } else {
-                                        ChangeProfile(auth, setAlt, setUser, {
-                                            result: (profilePictureData as any).pfd as string
-                                        }, inputPassword);
-                                        (document.getElementById("accpwdhost") as HTMLInputElement).value = "";
                                         setpPopop(false);
-                                        setPFD({});
+
+                                        ChangeProfile(auth, setAlt, setUser, {
+                                            result: (profilePictureData as any).fs.result
+                                        }, inputPassword, setPFD);
+                                        
+                                        error.innerText = "";
+                                        (document.getElementById("accpwdhost") as HTMLInputElement).value = "";
+                                    } else {
+                                        error.innerText = "Wrong Password!";
                                     }
                                 });
                             }}
                         >
+                            {/*eslint-disable-next-line jsx-a11y/heading-has-content*/}
+                            <h1 id="errorhost" className="text-red-700 text-3xl text-bolder pb-2"></h1>
                             <input id="accpwdhost" className="style-input style-input-d" type="password" placeholder="Enter Your Account Password"></input>
 
                             <button className="button">Submit</button>
@@ -512,7 +515,7 @@ function ChangeAccountName(props: AccountNameProps) {
     )
 }
 
-async function ChangeProfile(auth: Auth, setAlt: Function, setUser: Function, fs: {result: string}, pwd: string) {
+async function ChangeProfile(auth: Auth, setAlt: Function, setUser: Function, fs: {result: string}, pwd: string, setPFD: any) {
     try {
         setUser(Loading);
         setAlt("Please Wait...");
@@ -528,7 +531,6 @@ async function ChangeProfile(auth: Auth, setAlt: Function, setUser: Function, fs
             timeout: 60
         })
         .then((data) => {
-            console.log(data);
             const {
                 ok
             } = data;
@@ -542,17 +544,21 @@ async function ChangeProfile(auth: Auth, setAlt: Function, setUser: Function, fs
                     responseType: 1
                 }).then(({data}) => {
                     setUser(data);
+                    setPFD({});
                 }).catch(() => {
                     setUser(GeneralUser);
+                    setPFD({});
                 });
             } else {
                 setAlt("Click to edit picture");
                 setUser(fs.result);
+                setPFD({});
             }
         });
     } catch (e) {
         console.log(e);
         setUser(GeneralUser);
         sendNotification("Failed to update profile picture!");
+        setPFD({});
     }
 }
