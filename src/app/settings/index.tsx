@@ -1,6 +1,12 @@
+//React
 import {useState} from "react";
 import {Auth, User, updateProfile} from "firebase/auth";
+
+//packages
 import Modal from "react-modal";
+import Toast from "../resources/toast";
+
+//Tauri
 import { sendNotification } from "@tauri-apps/api/notification";
 import { BiMoon, BiSun } from "react-icons/bi";
 import { BsCodeSlash } from "react-icons/bs";
@@ -43,20 +49,27 @@ export default function Init(props: InitProps) {
         console.log(user.displayName);
 
         async function Update() {
+            const toast = Toast("Please Wait...", "warn", "never");
             try {
                 if (props.auth?.currentUser?.emailVerified) {
                     setShow(true);
                     await updateProfile(user, {
                         displayName: !dev ? `(dev)${user?.displayName}` : user?.displayName?.replace("(dev)", "")
                     });
+                    toast?.edit(`Successfully ${!dev ? "enabled" : "disabled"} developer mode!`, "success");
                     setUser(props.auth.currentUser as User);
                     setDev(!dev);
                     props.setDev(!dev);
                     setShow(false);
                 }
             } catch (_e) {
+                toast?.edit("Failed to enable developer mode!", "danger");
                 sendNotification("Could not update data!");
             }
+
+            setTimeout(() => {
+                toast?.unmount();
+            }, 5000);
         }
 
          function darkMode(classes: Array<string>, dark: boolean) {

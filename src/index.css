@@ -81,6 +81,10 @@ code {
   @apply bg-blue-900;
 }
 
+.button-success {
+  @apply bg-green-700 hover:bg-green-800;
+}
+
 .button-danger {
   @apply bg-red-700 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
   min-height:  50px;
@@ -92,4 +96,34 @@ code {
 
 .button:disabled, .button-danger:disabled {
   @apply bg-gray-500;
+}
+
+#toast {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 1%;
+  right: 1%;
+  overflow: hidden;
+  transition: all 250ms linear;
+}
+
+@layer utilities {
+  .toast {
+    @apply text-white p-2 m-3 rounded-md shadow-md min-w-[20rem] min-h-[3rem] flex flex-col justify-center;
+    transition: all 250ms linear;
+    z-index:1000;
+  }
+
+  .toast-success {
+    @apply bg-green-700;
+  }
+
+  .toast-warn {
+    @apply bg-yellow-700;
+  }
+
+  .toast-danger {
+    @apply bg-red-700;
+  }
 }

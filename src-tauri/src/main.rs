@@ -32,14 +32,7 @@ fn main() {
             let args = std::env::args();
 
             if std::env::args().last().unwrap().as_str() != exec.clone().as_str() {
-                /*Command::new("powershell.exe")
-                    .args(["-NoProfile", "-windowstyle", "hidden"])
-                    .arg(format!("start-process \"{}\" {} -verb runas", exec.as_str(), args.last().unwrap()))
-                    .spawn()
-                    .unwrap()
-                    .wait()
-                    .unwrap();*/
-                    Command::new("powershell")
+                Command::new("powershell")
                     .args([
                         "-NoProfile",
                         "-WindowStyle", 
@@ -58,14 +51,6 @@ fn main() {
                     .wait()
                     .unwrap();
             } else {
-                /*Command::new("powershell.exe")
-                    .env("WindowStyle", "HIDDEN")
-                    .arg(format!("start-process \"{}\" -verb runas", exec.as_str()))
-                    .spawn()
-                    .unwrap()
-                    .wait()
-                    .unwrap();*/
-                //cmd /c start /min "" powershell -WindowStyle Hidden start-process cmd -verb runas
                 Command::new("powershell")
                     .args([
                         "-NoProfile",

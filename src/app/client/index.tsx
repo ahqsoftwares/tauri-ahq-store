@@ -8,11 +8,12 @@ import { sendNotification } from "@tauri-apps/api/notification";
 import { Body, fetch } from "@tauri-apps/api/http";
 import { useCookies } from "react-cookie";
 import Modal from "react-modal";
+import Toast from "../resources/toast";
 
 /*
 Firebase API
 */
-import { Auth, updateProfile, User, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
+import { Auth, updateProfile, User, EmailAuthProvider, reauthenticateWithCredential, sendPasswordResetEmail } from "firebase/auth";
 
 /*Icons
 */
@@ -28,6 +29,7 @@ import { BiLogOut, BiUserX } from "react-icons/bi";
 import PopUp from "../resources/popup";
 import { open } from "@tauri-apps/api/dialog";
 import { readBinaryFile } from "@tauri-apps/api/fs";
+import { VscKey } from "react-icons/vsc";
 
 
 /*
@@ -320,7 +322,7 @@ export default function Init(props: UserProps){
                                                     }}
                                                     onClick={() => setNamePopup(true)}
                                                 >
-                                                    {Pen}
+                                                    <div className={props.dark ? "text-gray-300" : ""}>{Pen}</div>
                                                 </span>
                                             </>
                                             : <></>}
@@ -349,6 +351,44 @@ function Actions(props: {auth: Auth, deleteAcc: Function}) {
                     <p className="mx-2">Delete Account</p>
                 </button>
             </div>
+            <button onClick={() => {
+                const toast = Toast("Please wait...", "warn", "never");
+                function startUnmount() {
+                    setTimeout(() => {
+                        toast?.unmount();
+                    }, 5000);
+                }
+
+                sendPasswordResetEmail(auth as Auth, auth.currentUser?.email as string)
+                    .then(() => {
+                        const email = auth.currentUser?.email as string;
+                        let censoredEmail = ""
+
+                        for (let i = 0; i < email.split("@")[0].length; i++) {
+                            let slice = email[i];
+
+                            if (i === 0) {
+                                censoredEmail += slice;
+                            } else if (i === email.split("@")[0].length - 1) {
+                                censoredEmail += slice;
+                            } else {
+                                censoredEmail += "*";
+                            }
+                        }
+
+                        censoredEmail += `@${email.split("@")[1]}`;
+
+                        toast?.edit(`Password reset link sent to ${censoredEmail}`, "success");
+                        startUnmount();
+                    })
+                    .catch(() => {
+                        toast?.edit("Failed to send Password reset email!", "danger");
+                        startUnmount();
+                    });
+            }} className="button button-success mx-auto flex items-center text-center justify-center" style={{"minWidth": "100%", "maxWidth": "100%", "minHeight": "3.5rem", "maxHeight": "3.5rem"}}>
+                <VscKey size="2.5em"/>
+                <p className="mx-2">Reset Password</p>
+            </button>
         </div>
     );
 }
@@ -463,7 +503,7 @@ interface AccountNameProps {
     dark: boolean
 }
 function ChangeAccountName(props: AccountNameProps) {
-    const {close, user, updateName} = props;
+    const {close, dark, user, updateName} = props;
     const name = user.displayName as string;
     const dev = name.startsWith("(dev)");
 
@@ -489,7 +529,7 @@ function ChangeAccountName(props: AccountNameProps) {
         <div className="flex flex-col" style={{"transition": "all 250ms linear"}}>
             <div className="flex flex-row">
                 <div className="mx-auto"></div>
-                <button className="text-black hover:text-red-500 h-[1rem] w-[1rem]" style={{"fontWeight": "bolder", "transition": "all 250ms linear"}} onClick={() => close()}>X</button>
+                <button className={`${dark ? "text-white" :"text-black"} hover:text-red-500 h-[1rem] w-[1rem]`} style={{"fontWeight": "bolder", "transition": "all 250ms linear"}} onClick={() => close()}>X</button>
             </div>
 
             <div className="mt-[10rem]"></div>
