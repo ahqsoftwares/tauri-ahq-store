@@ -15,7 +15,6 @@ Components
 import Layer from "./components/layer";
 import Card from "./components/app_card";
 import Modal from "./components/modal";
-//import {VscAccount} from "react-icons/vsc";
 
 /*
 StyleSheets
@@ -30,7 +29,14 @@ interface AppsProps {
 	dark: boolean,
 	auth: Auth,
 	apps: Array<any>,
-	allAppsData: any
+	allAppsData: {
+		map: {
+			[key: string]: any
+		},
+		users: {
+			[key: string]: any
+		}
+	}
 }
 
 function darkMode(classes: Array<string>, dark: boolean) {
@@ -47,11 +53,7 @@ export default function Apps(props: AppsProps){
 	const [shown, showModal] = useState(false),
 	[search, searchText] = useState(""),
 	[enter, setEnter] = useState(false),
-	[data, setData] = useState({
-		img: "",
-		downloadUrl: "",
-		id: ""
-	});
+	[data, setData] = useState("");
 
 	useEffect(() => {
 		function Fix() {
@@ -131,18 +133,9 @@ export default function Apps(props: AppsProps){
 							<Layer alt={alt as string} key={keyGen()}>
 								{apps.map((data: string) => {
 									try {
-										const {
-											title, 
-											description,
-											img, 
-											download_url: downloadUrl,
-											author
-										} = allAppsData.info[data];
-										const {displayName} = allAppsData.users[author.id];
-
 										return (
-											<Card key={keyGen()} title={title} description={description} img={img} footer={<button className="text-blue-500 text-2xl" style={{"minWidth": "95%"}}>{displayName}</button>} onClick={() => {
-												setData({img, downloadUrl, id: data, ...allAppsData.info[data], displayName});
+											<Card key={keyGen()} id={data} onClick={() => {
+												setData(data);
 												change();
 											}}/>
 										);

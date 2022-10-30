@@ -1,6 +1,5 @@
 /*Main Modules
 */
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 
@@ -8,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
  */
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 import { checkUpdate, installUpdate } from '@tauri-apps/api/updater';
+import {invoke} from "@tauri-apps/api/tauri";
 import { relaunch } from '@tauri-apps/api/process';
 import { appWindow } from "@tauri-apps/api/window";
 
@@ -16,6 +16,10 @@ import { appWindow } from "@tauri-apps/api/window";
 import App from './config/App';
 import Store from "./app/index";
 import Login from "./Login";
+
+/*
+*/
+import {init} from "./app/resources/os";
 
 /*Firebase
 */
@@ -48,14 +52,22 @@ const firestore = initializeFirestore(app, {});
 const realtimeDB = getDatabase(app);
 const storage = getStorage(app);
 
+init();
+
 /*Logic
 */
 (async() => {
   let permissionGranted = await isPermissionGranted();
-  appWindow.show();
+  const autostarted = await invoke("autostart");
+
+  if (!autostarted) {
+    appWindow.show();
+  }
+
   if (!await appWindow.isMaximized()) {
     appWindow.maximize();
   }
+
    if (!permissionGranted) {
     const permission = await requestPermission();
     permissionGranted = permission === 'granted';

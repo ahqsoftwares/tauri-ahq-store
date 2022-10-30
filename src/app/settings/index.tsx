@@ -1,21 +1,31 @@
 //React
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Auth, User, updateProfile} from "firebase/auth";
 
 //packages
 import Modal from "react-modal";
 import Toast from "../resources/toast";
+import getWindows from "../resources/os";
+import { isAutostartEnabled, enableAutostart, disableAutoStart } from "../resources/autostart";
 
 //Tauri
 import { sendNotification } from "@tauri-apps/api/notification";
+
+//Components
+import CheckBox from "./components/checkbox";
+import FontSelector from "./components/font";
+
 import { BiMoon, BiSun } from "react-icons/bi";
-import { BsCodeSlash } from "react-icons/bs";
+import { BsCodeSlash, BsFonts } from "react-icons/bs";
+
 
 interface InitProps {
     dark: boolean,
     setDark: Function,
     auth: Auth,
-    setDev: Function
+    setDev: Function,
+    font: string,
+    setFont: Function
 }
 
 export default function Init(props: InitProps) {
@@ -44,9 +54,17 @@ export default function Init(props: InitProps) {
         Modal.setAppElement("body");
         const [user, setUser] = useState(props.auth.currentUser as User);
         const [show, setShow] = useState(false);
-        const [dev, setDev] = useState(user?.displayName?.startsWith("(dev)"));
+        const [dev, setDev] = useState(user?.displayName?.startsWith("(dev)") as boolean);
+        const [runOn, setRunOn] = useState(false);
+        const windowsVersion = getWindows();
 
-        console.log(user.displayName);
+        useEffect(() => {
+            isAutostartEnabled().then((value) => {
+                setRunOn(value);
+            }).catch((e) => {
+                Toast("Sorry! We ran into an error!", "danger", 3000);
+            });
+        }, []);
 
         async function Update() {
             const toast = Toast("Please Wait...", "warn", "never");
@@ -90,49 +108,62 @@ export default function Init(props: InitProps) {
                 </Modal>
                   
                   <div className={darkMode(["menu"], props.dark)}>
-                           <div className="mt-2"></div>
-                           
-                           <div className={`${darkMode(["checkbox"], props.dark)}`} onClick={() => props.setDark(!props.dark)}>
-                                    <div className="ml-3"></div>
-                                    
-                                    <div className={`flex items-center justify-center ${props.dark ? "text-slate-300" : "text-slate-700"}`}>
-                                        {props.dark ? <BiSun size="2.5em"/> : <BiMoon size="2.5em"/>}
-                                    </div>
-                                    
-                                    <div className="ml-3"></div>
 
-                                    <h6>Dark Mode<p>Enables or disables dark mode</p></h6>
+                            <CheckBox 
+                                dark={props.dark}
+                                title="Dark Mode"
+                                description="Enables or disables dark mode"
+                                Icon={props.dark ? BiSun : BiMoon}
+                                onClick={() => props.setDark(!props.dark)}
+                                active={props.dark}
+                            />
 
-                                    <div className="mx-auto"></div>
+                            <CheckBox 
+                                dark={props.dark}
+                                title="Developer Mode"
+                                description={props.auth?.currentUser?.emailVerified ? "Allows you to publish windows apps" : "(DISABLED, VERIFY EMAIL) Allows you to publish windows apps"}
+                                Icon={BsCodeSlash}
+                                onClick={() => Update()}
+                                disabled={!props.auth?.currentUser?.emailVerified}
+                                active={dev}
+                            />
 
-                                    <input className="slider" type={"range"} min="0" max="60" value={props.dark ? "55" : "5"} readOnly></input>
-                                    
-                                    <div className="mr-3"></div>
-                           </div>
+                            <FontSelector
+                                Icon={BsFonts}
+                                dark={props.dark}
+                                initial={props.font}
+                                onChange={(e) => {
+                                    props.setFont(e.target.value);
+                                }}
+                            />
 
-                           <div className={`${darkMode(["checkbox"], props.dark)} my-2`} onClick={() => {
-                            Update()
-                           }}>
-                                    <div className="ml-3"></div>
+                            <CheckBox
+                                dark={props.dark}
+                                title="Run on startup"
+                                description="Run AHQ Store on login (silent run)"
+                                Icon={windowsVersion}
+                                onClick={() => {
+                                    const toast = Toast("Please wait...", "warn", "never");
 
-                                    <div className={`flex items-center justify-center ${props.dark ? "text-slate-300" : "text-slate-700"}`}>
-                                        <BsCodeSlash size="2.5em"/>
-                                    </div>
-                                    
-                                    <div className="ml-3"></div>
-
-                                    {props.auth?.currentUser?.emailVerified ? 
-                                        <h6>Developer Mode<p>Allows you to publish windows apps</p></h6>
-                                    :
-                                        <h6>Developer Mode<p style={{"color": props.dark ? "red" : "darkred"}}>(DISABLED, VERIFY EMAIL) Allows you to publish windows apps</p></h6>
+                                    function unmount() {
+                                        setTimeout(() => {
+                                            toast?.unmount();
+                                        }, 2000);
                                     }
 
-                                    <div className="mx-auto"></div>
-                                    
-                                    <input className="slider" type={"range"} min="0" max="60" value={dev ? "55" : "5"} readOnly></input>
-                                    
-                                    <div className="mr-3"></div>
-                           </div>
+                                    (runOn ? disableAutoStart() : enableAutostart())
+                                    .then(() => {
+                                        toast?.edit(`Successfully ${runOn ? "disabled" : "enabled"} run on startup!`, "success");
+                                        setRunOn(!runOn);
+                                        unmount();
+                                    })
+                                    .catch(() => {
+                                        toast?.edit(`Could not ${runOn ? "disable" : "enable"} run on startup`, "danger");
+                                        unmount();
+                                    });
+                                }}
+                                active={runOn}
+                            />
 
                            <></>
                   </div>

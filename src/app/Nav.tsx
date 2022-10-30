@@ -1,4 +1,4 @@
-import {BiHome, BiExtension} from "react-icons/bi";
+import {BiHome, BiExtension, BiLibrary} from "react-icons/bi";
 import {BsCodeSlash} from "react-icons/bs";
 import {FiSettings} from "react-icons/fi";
 import {VscAccount} from "react-icons/vsc";
@@ -20,7 +20,7 @@ export default function nav(props: prop) {
          {active, home: changePage, dark, dev} = props,
          [mode] = dark;
 
-         let a="", b="", c="", d="", e="";
+         let a="", b="", c="", d="", e="", f="";
          switch (active) {
                   case "home":
                            a="active";
@@ -33,6 +33,9 @@ export default function nav(props: prop) {
                            break;
                   case "developer":
                            e="active";
+                           break;
+                  case "library":
+                           f="active";
                            break;
                   default:
                            d="active";
@@ -59,6 +62,10 @@ export default function nav(props: prop) {
                                     <BsCodeSlash size={"2.5em"} />
                             </button>
                             : <></>}
+
+                             <button className={`n-item ${f}`} onClick={() => changePage("library")}>
+                                      <BiLibrary size="2.5em"/>
+                           </button>
 
                            <button className={`n-item ${d}`} onClick={() => changePage("user")}>
                                     <VscAccount size={"2.5em"} />

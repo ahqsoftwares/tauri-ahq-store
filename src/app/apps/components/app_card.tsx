@@ -1,23 +1,38 @@
-interface AppCardProps {
-	title: string,
-	description: any,
-	footer: any,
-	img: string,
-	onClick: any
-}
+import { useEffect, useState } from "react";
+import { VscExtensions } from "react-icons/vsc";
+import fetchApps from "../../resources/fetchApps";
 
-export default function AppCard(props: AppCardProps) {
+export default function AppCard(props: {
+	id: string,
+	onClick: any
+}) {
+
+	const [appData, setAppData] = useState<any>({
+		title: "Loading...",
+		description: "The current component is loading...",
+		img: "",
+		author: {
+			displayName: ""
+		}
+	});
+
 	const {
 		title, 
 		description, 
-		footer,
 		img,
-		onClick: handleClick
-	} = props;
+		author
+	} = appData;
+
+	useEffect(() => {
+		(async() => {
+			const dta = await fetchApps(props.id);
+			setAppData(dta);
+		})();
+	}, [props.id]);
 
 	return (
-		<div className="card hover:mb-2 hover:shadow-2xl" style={{"cursor": "pointer"}} onClick={handleClick}>
-			<img className="card-img" src={img} alt=""></img>
+		<div className="card hover:mb-2 hover:shadow-2xl" style={{"cursor": "pointer"}} onClick={props.onClick}>
+			{title === "Loading..." ? <div className="mx-auto mt-[1rem] mb-[0.75rem]"><VscExtensions className="block" size="3em"/></div> : <img className="card-img" src={img} alt="Logo"></img>}
 
 			<h1 className="card-title">{title}</h1>
 			
@@ -26,7 +41,9 @@ export default function AppCard(props: AppCardProps) {
 			</div>
 
 			<div className="card-footer">
-				{footer}
+				<button className="text-blue-500 text-2xl" style={{"minWidth": "95%"}}>
+					{author.displayName}
+				</button>
 			</div>
 		</div>
 	);

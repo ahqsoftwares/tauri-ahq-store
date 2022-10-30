@@ -11,9 +11,6 @@ import {appWindow} from "@tauri-apps/api/window";
 Firebase
 */
 import { Auth } from "firebase/auth";
-import { Firestore } from "firebase/firestore";
-import { Database } from "firebase/database";
-import { FirebaseStorage } from "firebase/storage";
 
 /*
 CSS
@@ -34,27 +31,23 @@ import BaseAPI from "./server";
 
 interface AppProps {
         data: {
-                auth: Auth,
-                db: Firestore,
-                cache: Database,
-                storage: FirebaseStorage
+                auth: Auth
         }
 }
 
 function Render(props: AppProps) {
-        const {auth, db, cache, storage} = props.data;
+        const {auth} = props.data;
         let [page, changePage] = useState("home"),
         [dev, setDev] = useState(auth.currentUser?.displayName?.startsWith("(dev)")),
         [dark, setD] = useState(true),
+        [font, setFont] = useState("def"),
         [load, setLoad] = useState(false),
         [apps, setApps] = useState<any>([]),
-        [allAppsData, setData] = useState<any>({
-               info: {},
+        [allAppsData, setData] = useState<{map: {[key: string]: Object}, users: {[key: string]: Object}}>({
                map: {},
                users: {}
         }),
         App: any = () => (<></>);
-
 
         appWindow.listen("protocol", (
                 {
@@ -86,20 +79,16 @@ function Render(props: AppProps) {
 
 
         useEffect(() => {
-                //Fetch All Apps
+                //Fetch All Maps (not full data, full data will be lazy fetched)
                 (async() => {
-                        const {data: Apps} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/apps.json", {
-                                method: "GET",
-                                timeout: 30,
-                                responseType: 1
-                        });
-                                //Fetch Maps
+                        //Fetch Maps
                         const {data: Mapped} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/mapped.json", {
                                 method: "GET",
                                 timeout: 30,
                                 responseType: 1
                         });
 
+                        //Fetch Authors (map coming soon!)
                         const {data: Authors} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/users.json", {
                                 method: "GET",
                                 timeout: 30,
@@ -107,9 +96,12 @@ function Render(props: AppProps) {
                         });
 
                         setData({
-                                info: Apps,
-                                map: Mapped,
-                                users: Authors
+                                map: Mapped as  {
+                                        [key: string]: Object;
+                                    },
+                                users: Authors as  {
+                                        [key: string]: Object;
+                                    }
                         });
 
                         const {data: Home} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/home.json", {
@@ -128,24 +120,25 @@ function Render(props: AppProps) {
                 document.querySelector("body")?.classList.toggle("dark", dark);
         }, [dark]);
 
-         useEffect(() => {
-                  createDir("", {dir: BaseDirectory.App})
-                  .catch(e => e);
+        useEffect(() => {
+                createDir("", {dir: BaseDirectory.App})
+                .catch(e => e);
 
 
-                  readTextFile("database/config.astore", {dir: BaseDirectory.App})
-                  .then((data) => {
-                           const json = JSON.parse(data || "{}");
-                           setD(typeof(json.dark) === "undefined" ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) : json.dark);
-                           setLoad(true);
-                  })
-                  .catch((e) => {
+                readTextFile("database/config.astore", {dir: BaseDirectory.App})
+                .then((data) => {
+                        const json = JSON.parse(data || "{}");
+                        setD(typeof(json.dark) === "undefined" ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) : json.dark);
+                        setFont(typeof(json.font) === "string" ? json.font : "def");
+                        setLoad(true);
+                })
+                .catch((e) => {
                         console.log(e);
                         createDir("database", {dir: BaseDirectory.App}).catch(console.log)
                         .then(async() => {
                                 let mode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
                                 setD(mode);
-                                await writeFile("database/config.astore", `{"dark": ${mode}}`, {dir: BaseDirectory.App})
+                                await writeFile("database/config.astore", `{"dark": ${mode}, "font": "def"}`, {dir: BaseDirectory.App})
                                 .catch(() => {
                                         sendNotification({title: "Error", body: "Could not sync notifications!"});
                                 });
@@ -154,7 +147,18 @@ function Render(props: AppProps) {
                                 setLoad(true);
                         });
                 });
-         }, []);
+        }, []);
+
+        useEffect(() => {
+                const element = document.querySelector("body");
+                element?.classList.toggle("def", font === "def");
+                element?.classList.toggle("tnr", font === "tnr");
+                element?.classList.toggle("geo", font === "geo");
+                element?.classList.toggle("gra", font === "gra");
+                element?.classList.toggle("ari", font === "ari");
+                element?.classList.toggle("ext", font === "ext");
+                element?.classList.toggle("bhn", font === "bhn");
+        }, [font]);
 
         function updateConfig(data: Object) {
                 if (load) {
@@ -164,9 +168,14 @@ function Render(props: AppProps) {
                         });
                 }
         }
+
         function setDark(dark: boolean) {
                 setD(dark);
-                updateConfig({dark});
+                updateConfig({dark, font});
+        }
+        function changeFont(newFont: string) {
+                setFont(newFont);
+                updateConfig({dark, font: newFont});
         }
 
         /*
@@ -201,7 +210,24 @@ function Render(props: AppProps) {
                          <Nav active={page} home={(page: string) => changePage(page)} dev={dev} dark={[dark, setDark]}/>
                         <div className="w-screen h-screen">
                                 <div className="flex flex-col w-[100%] h-[100%] justify-center">
-                                        <App baseApi={BaseAPI} auth={auth} setDev={setDev} dark={dark} setDark={setDark} firebase={{db, cache, storage}} apps={apps} setApps={setApps} allAppsData={allAppsData} />
+                                        <App 
+                                                baseApi={BaseAPI} 
+
+                                                auth={auth} 
+
+                                                setDev={setDev} 
+
+                                                dark={dark} 
+                                                setDark={setDark} 
+
+                                                font={font}
+                                                setFont={changeFont}
+
+                                                apps={apps} 
+
+                                                setApps={setApps} 
+                                                allAppsData={allAppsData} 
+                                        />
                                 </div>
                         </div>
                   </header> : <></>}

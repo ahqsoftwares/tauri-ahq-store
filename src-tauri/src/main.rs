@@ -6,11 +6,11 @@
 pub mod download;
 pub mod extract;
 
+use tauri_plugin_autostart::MacosLauncher;
 use mslnk::ShellLink;
 use deelevate::{Token, PrivilegeLevel};
 use std::path::Path;
-use std::process;
-use std::{fs, thread, process::Command};
+use std::{fs, thread, process, env::args, process::Command};
 use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 fn main() {
@@ -90,6 +90,7 @@ fn main() {
                 .show()
                 .unwrap();
         }))
+        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(["autostart"].to_vec())))
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
                 println!("Received a left Click");
@@ -107,7 +108,8 @@ fn main() {
             }
         })
         .invoke_handler(tauri::generate_handler![
-            download, install, extract, clean, shortcut, check_app, uninstall
+            download, install, extract, clean, shortcut, check_app, uninstall,
+            autostart, iswindows10
         ])
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
@@ -141,6 +143,24 @@ fn main() {
         _ => {}
     });
 
+}
+
+#[tauri::command(async)]
+fn autostart() -> bool {
+  let mut status = false;
+
+  if args().len() > 1 {
+    if args().last().unwrap() == "autostart" {
+        status = true;
+    }
+  }
+
+  status.into()
+}
+
+#[tauri::command]
+fn iswindows10() -> bool {
+    std::env::var("SYSTEMROOT").unwrap().contains("WINDOWS")
 }
 
 #[tauri::command(async)]

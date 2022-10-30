@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import Modal from "react-modal";
+import fetchApps from "../../resources/fetchApps";
 
 interface AppDataPropsModal {
 	shown: boolean,
@@ -8,7 +10,7 @@ interface AppDataPropsModal {
 	installData: any
 }
 
-export default function showModal(props: AppDataPropsModal) {
+export default function ShowModal(props: AppDataPropsModal) {
 	const { 
 		shown,
 		dark,
@@ -16,12 +18,25 @@ export default function showModal(props: AppDataPropsModal) {
         installData
 	} = props;
 
+    const [appData, setAppData] = useState<any>({
+        img: "",
+        title: "",
+        description: "",
+        author: {}
+    });
+
+    useEffect(() => {
+        (async() => {
+            setAppData(await fetchApps(installData));
+        })()
+    }, [installData]);
+
     const {
         img,
         title,
         description,
-        displayName
-    } = installData;
+        author
+    } = appData;
 
 	const modalStyles = {
         content: {
@@ -79,7 +94,7 @@ export default function showModal(props: AppDataPropsModal) {
                         {/*Author*/}
                         <div className="w-[100%]">
                             <h1 className="text-xl">About Developer</h1>
-                            <h2 className="text-lg">{displayName}</h2>
+                            <h2 className="text-lg">{author.displayName}</h2>
                         </div>
 
                         {/*Ratings (soon)*/}

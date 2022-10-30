@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
+import fetchApps from "../../resources/fetchApps";
 import SearchResult from "../components/search_results";
 
 interface SearchProps {
 	map: Object,
-	info: Object,
 	query: string,
 	set: Function,
 	show: Function
@@ -18,13 +19,19 @@ interface App {
 export default function Search(props: SearchProps) {
 	const {
 		map,
-		info, 
 		query,
 		set,
 		show
 	} = props;
 
-	const matches = getDataFromMatches(getMatches(map, query), info);
+	const [matches, setMatches] = useState<any>([]);
+
+	useEffect(() => {
+		(async() => {
+			const results = await getDataFromMatches(getMatches(map, query));
+			setMatches(results);
+		})();
+	}, [map, query]);
 
 	return (
 		<>
@@ -57,15 +64,23 @@ function getMatches(maps: Object, query: string): Array<string> {
 	);
 }
 
-function getDataFromMatches(matches: Array<string>, apps: any) {
+async function getDataFromMatches(matches: Array<string>) {
+	let answer: any = [];
+
 	let data = matches
-		.map((id: any) => 
-			apps[id]
+		.map((id: string) => 
+			fetchApps(id)
 		);
-	if (data.length > 5) {
-		data.length = 5;
-	}
+
+	await Promise.all(data).then((results) => {
+		answer = results;
+
+		if (results.length > 5) {
+			answer.length = 5;
+		}
+	});
+
 	return (
-		data
+		answer
 	);
 }

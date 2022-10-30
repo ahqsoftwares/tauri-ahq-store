@@ -266,3 +266,13 @@ User Panel
   position: absolute;
   text-align: center;
 }
+
+.select {
+  @apply px-2 py-[auto] w-[10.5rem] h-[30px] my-auto ml-auto rounded-xl bg-gray-300 text-slate-700;
+  cursor: pointer;
+  transition: all 250ms linear;
+}
+
+.select-d {
+  @apply bg-gray-800 text-slate-100;
+}
