@@ -177,6 +177,23 @@ Checkbox
   cursor: pointer; /* Cursor on hover */
 }
 
+.slider-disabled::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 14px; /* Set a specific slider handle width */
+  height: 14px; /* Slider handle height */
+  background: darkred; /* Green background */
+  border-radius: 50%;
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider-disabled::-moz-range-thumb {
+width: 25px; /* Set a specific slider handle width */
+height: 25px; /* Slider handle height */
+background: rgb(170, 4, 4); /* Green background */
+cursor: pointer; /* Cursor on hover */
+}
+
 .checkbox-d:hover, .checkbox:hover {
          --opacity: 1;
 }

@@ -71,8 +71,6 @@ init();
    if (!permissionGranted) {
     const permission = await requestPermission();
     permissionGranted = permission === 'granted';
-  } else {
-    sendNotification({ title: 'Development Build', body: 'Not for consumer use'});
   }
 })()
 

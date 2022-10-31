@@ -1,25 +1,19 @@
 import { MouseEventHandler } from "react";
-import { IconType } from "react-icons";
+import { VscExtensions } from "react-icons/vsc";
 import {IoIosArrowForward} from "react-icons/io";
 
 function darkMode(classes: Array<string>, dark: boolean) {
          return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
 }
 
-export default function SettingOption(
+export default function InstalledAppsMenu(
          props: {
-                  dark: boolean,
-                  ShowCaseIcon: IconType,
-                  title: string,
-                  description: string,
+                  dark: boolean
                   onClick: MouseEventHandler<HTMLDivElement>
          }
 ) {
          const {
                   dark,
-                  title,
-                  description,
-                  ShowCaseIcon,
                   onClick
          } = props;
 
@@ -28,12 +22,12 @@ export default function SettingOption(
                         <div className="ml-3"></div>            
 
                         <div className={`flex items-center justify-center ${dark ? "text-slate-300" : "text-slate-700"}`}>
-                                <ShowCaseIcon size="2.5em" />
+                                <VscExtensions size="2.5em" />
                         </div>
                                     
                         <div className="ml-3"></div>
 
-                        <h6>{title}<p>{description}</p></h6>
+                        <h6>Installed Apps<p>Show all apps installed by AHQ Store (soon)</p></h6>
 
                         <div className="mx-auto"></div>
 

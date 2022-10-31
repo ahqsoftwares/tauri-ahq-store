@@ -38,7 +38,7 @@ export default function CheckBox(
 
                            <div className="mx-auto"></div>
 
-                           <input className="slider" type={"range"} min="0" max="60" value={props.active ? "55" : "5"} readOnly></input>
+                           <input className={props.active ? "slider" : "slider slider-disabled"} type={"range"} min="0" max="60" value={props.active ? "55" : "5"} readOnly></input>
                                     
                            <div className="mr-3"></div>
                   </div>

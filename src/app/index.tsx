@@ -25,6 +25,7 @@ import Nav from "./Nav";
 import Developer from "./developer/";
 import Apps from "./apps/";
 import User from "./client/index";
+import Library from "./library";
 import Settings from "./settings/index";
 
 import BaseAPI from "./server";
@@ -197,6 +198,9 @@ function Render(props: AppProps) {
                         break;
                 case "developer":
                         App = Developer;
+                        break;
+                case "library":
+                        App = Library;
                         break;
         }
 
