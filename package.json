@@ -2,7 +2,7 @@
   "name": "ahq-store-tauri",
   "version": "0.8.5",
   "private": true,
-  "license": "ISC",
+  "license": "Creative Commons",
   "dependencies": {
     "@tauri-apps/api": "^1.1.0",
     "@testing-library/jest-dom": "^5.16.5",
