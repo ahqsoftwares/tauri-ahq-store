@@ -19,7 +19,7 @@ import Login from "./Login";
 
 /*
 */
-import {init} from "./app/resources/os";
+import {init} from "./app/resources/api/os";
 
 /*Firebase
 */

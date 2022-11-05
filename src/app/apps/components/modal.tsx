@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import Modal from "react-modal";
-import fetchApps from "../../resources/fetchApps";
+import fetchApps from "../../resources/api/fetchApps";
 
 interface AppDataPropsModal {
 	shown: boolean,

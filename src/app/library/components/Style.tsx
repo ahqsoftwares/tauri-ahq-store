@@ -1,6 +1,6 @@
 import { MouseEventHandler } from "react";
 import { VscExtensions } from "react-icons/vsc";
-import {IoIosArrowForward} from "react-icons/io";
+import { FiExternalLink } from "react-icons/fi";
 
 function darkMode(classes: Array<string>, dark: boolean) {
          return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
@@ -31,7 +31,7 @@ export default function InstalledAppsMenu(
 
                         <div className="mx-auto"></div>
 
-                        <IoIosArrowForward size="3em" className={`my-auto ml-auto mr-1 ${dark ? "text-slate-300" : "text-slate-700"}`}/>
+                        <FiExternalLink size="3em" className={`my-auto ml-auto mr-1 ${dark ? "text-slate-300" : "text-slate-700"}`}/>
                                     
                         <div className="mr-3"></div>
                 </div>

@@ -105,9 +105,17 @@ App pallete
 Checkbox
 */
 .checkbox {
-         @apply bg-white w-[98%] rounded-lg shadow-md p-[auto] h-[4rem] flex;
+         @apply bg-white w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
          transition: all 125ms linear;
          cursor: pointer;
+}
+
+.checkbox-special {
+  @apply flex-col;
+}
+
+.checkbox-special-child {
+  @apply min-h-[4rem] flex p-[auto];
 }
 
 .checkbox:hover {
@@ -127,7 +135,7 @@ Checkbox
 }
 
 .checkbox-d {
-         @apply bg-gray-700 w-[98%] rounded-lg shadow-md p-[auto] h-[4rem] flex;
+         @apply bg-gray-700 w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
          transition: all 500ms linear;
          cursor: pointer;
 }

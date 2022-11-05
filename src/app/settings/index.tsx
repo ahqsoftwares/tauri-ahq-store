@@ -4,9 +4,9 @@ import {Auth, User, updateProfile} from "firebase/auth";
 
 //packages
 import Modal from "react-modal";
-import Toast from "../resources/toast";
-import getWindows from "../resources/os";
-import { isAutostartEnabled, enableAutostart, disableAutoStart } from "../resources/autostart";
+import Toast from "../resources/api/toast";
+import getWindows from "../resources/api/os";
+import { isAutostartEnabled, enableAutostart, disableAutoStart } from "../resources/api/autostart";
 
 //Tauri
 import { sendNotification } from "@tauri-apps/api/notification";
@@ -17,6 +17,7 @@ import FontSelector from "./components/font";
 
 import { BiMoon, BiSun } from "react-icons/bi";
 import { BsCodeSlash, BsFonts } from "react-icons/bs";
+import { FiDownload } from "react-icons/fi";
 
 
 interface InitProps {
@@ -25,7 +26,9 @@ interface InitProps {
     auth: Auth,
     setDev: Function,
     font: string,
-    setFont: Function
+    setFont: Function,
+    autoUpdate: boolean,
+    setAutoUpdate: Function
 }
 
 export default function Init(props: InitProps) {
@@ -163,6 +166,17 @@ export default function Init(props: InitProps) {
                                     });
                                 }}
                                 active={runOn}
+                            />
+
+                            <CheckBox 
+                                dark={props.dark}
+                                title="Auto Update Apps"
+                                description="Automatically update apps when I launch AHQ Store"
+                                Icon={FiDownload}
+                                onClick={() => {
+                                    props.setAutoUpdate(!props.autoUpdate);
+                                }}
+                                active={props.autoUpdate}
                             />
 
                            <></>

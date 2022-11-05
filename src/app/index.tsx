@@ -43,6 +43,7 @@ function Render(props: AppProps) {
         [dark, setD] = useState(true),
         [font, setFont] = useState("def"),
         [load, setLoad] = useState(false),
+        [autoUpdate, setUpdate] = useState(false),
         [apps, setApps] = useState<any>([]),
         [allAppsData, setData] = useState<{map: {[key: string]: Object}, users: {[key: string]: Object}}>({
                map: {},
@@ -131,6 +132,7 @@ function Render(props: AppProps) {
                         const json = JSON.parse(data || "{}");
                         setD(typeof(json.dark) === "undefined" ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) : json.dark);
                         setFont(typeof(json.font) === "string" ? json.font : "def");
+                        setUpdate(typeof(json.autoUpdate) === "boolean" ? json.autoUpdate : false);
                         setLoad(true);
                 })
                 .catch((e) => {
@@ -139,7 +141,7 @@ function Render(props: AppProps) {
                         .then(async() => {
                                 let mode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
                                 setD(mode);
-                                await writeFile("database/config.astore", `{"dark": ${mode}, "font": "def"}`, {dir: BaseDirectory.App})
+                                await writeFile("database/config.astore", `{"dark": ${mode}, "font": "def", "autoUpdate": false}`, {dir: BaseDirectory.App})
                                 .catch(() => {
                                         sendNotification({title: "Error", body: "Could not sync notifications!"});
                                 });
@@ -172,11 +174,15 @@ function Render(props: AppProps) {
 
         function setDark(dark: boolean) {
                 setD(dark);
-                updateConfig({dark, font});
+                updateConfig({dark, font, autoUpdate});
         }
         function changeFont(newFont: string) {
                 setFont(newFont);
-                updateConfig({dark, font: newFont});
+                updateConfig({dark, font: newFont, autoUpdate});
+        }
+        function setAutoUpdate(newStatus: boolean) {
+                setUpdate(newStatus);
+                updateConfig({dark, font, autoUpdate: newStatus});
         }
 
         /*
@@ -231,6 +237,9 @@ function Render(props: AppProps) {
 
                                                 setApps={setApps} 
                                                 allAppsData={allAppsData} 
+
+                                                autoUpdate={autoUpdate}
+                                                setAutoUpdate={setAutoUpdate}
                                         />
                                 </div>
                         </div>

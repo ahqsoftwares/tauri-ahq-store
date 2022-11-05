@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import fetchApps from "../../resources/fetchApps";
+import fetchApps from "../../resources/api/fetchApps";
 import SearchResult from "../components/search_results";
 
 interface SearchProps {
