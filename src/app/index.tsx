@@ -7,6 +7,7 @@ import { sendNotification } from "@tauri-apps/api/notification";
 import {fetch} from "@tauri-apps/api/http";
 import {appWindow} from "@tauri-apps/api/window";
 
+import { runAutoUpdate } from "./resources/api/updater";
 /*
 Firebase
 */
@@ -126,13 +127,15 @@ function Render(props: AppProps) {
                 createDir("", {dir: BaseDirectory.App})
                 .catch(e => e);
 
-
                 readTextFile("database/config.astore", {dir: BaseDirectory.App})
                 .then((data) => {
                         const json = JSON.parse(data || "{}");
                         setD(typeof(json.dark) === "undefined" ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) : json.dark);
                         setFont(typeof(json.font) === "string" ? json.font : "def");
                         setUpdate(typeof(json.autoUpdate) === "boolean" ? json.autoUpdate : false);
+
+                        runAutoUpdate(typeof(json.autoUpdate) === "boolean" ? json.autoUpdate : false);
+
                         setLoad(true);
                 })
                 .catch((e) => {

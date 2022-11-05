@@ -82,9 +82,10 @@
         "digestAlgorithm": "sha256",
         "timestampUrl": "",
         "allowDowngrades": false,
-	"wix": {
-	    "template": "assets/install.wix"
-	}
+	      "wix": {
+	        "template": "assets/install.wix",
+          "license": "license/license.rtf"
+	      }
       }
     },
     "security": {
@@ -101,10 +102,10 @@
     "windows": [
       {
         "center": true,
-        "height": 753,
+        "height": 760,
         "resizable": true,
         "title": "AHQ Store",
-        "width": 1239,
+        "width": 1240,
         "minHeight": 700,
         "minWidth": 1200,
         "visible": false
