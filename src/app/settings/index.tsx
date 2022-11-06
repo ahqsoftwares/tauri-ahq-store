@@ -121,6 +121,26 @@ export default function Init(props: InitProps) {
                                 active={props.dark}
                             />
 
+                            <FontSelector
+                                Icon={BsFonts}
+                                dark={props.dark}
+                                initial={props.font}
+                                onChange={(e) => {
+                                    props.setFont(e.target.value);
+                                }}
+                            />
+
+                            <CheckBox 
+                                dark={props.dark}
+                                title="Auto Update Apps"
+                                description="Automatically update apps when I launch AHQ Store"
+                                Icon={FiDownload}
+                                onClick={() => {
+                                    props.setAutoUpdate(!props.autoUpdate);
+                                }}
+                                active={props.autoUpdate}
+                            />
+
                             <CheckBox 
                                 dark={props.dark}
                                 title="Developer Mode"
@@ -129,15 +149,6 @@ export default function Init(props: InitProps) {
                                 onClick={() => Update()}
                                 disabled={!props.auth?.currentUser?.emailVerified}
                                 active={dev}
-                            />
-
-                            <FontSelector
-                                Icon={BsFonts}
-                                dark={props.dark}
-                                initial={props.font}
-                                onChange={(e) => {
-                                    props.setFont(e.target.value);
-                                }}
                             />
 
                             <CheckBox
@@ -166,17 +177,6 @@ export default function Init(props: InitProps) {
                                     });
                                 }}
                                 active={runOn}
-                            />
-
-                            <CheckBox 
-                                dark={props.dark}
-                                title="Auto Update Apps"
-                                description="Automatically update apps when I launch AHQ Store"
-                                Icon={FiDownload}
-                                onClick={() => {
-                                    props.setAutoUpdate(!props.autoUpdate);
-                                }}
-                                active={props.autoUpdate}
                             />
 
                            <></>

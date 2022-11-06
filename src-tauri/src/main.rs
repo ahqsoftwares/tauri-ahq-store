@@ -16,7 +16,6 @@ use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMen
 fn main() {
     tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
     let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
-
     fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()))
         .unwrap();
     fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Programs", sys_dir.clone()))
@@ -109,7 +108,7 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             download, install, extract, clean, shortcut, check_app, uninstall,
-            autostart, iswindows10
+            autostart, iswindows10, list_all_apps
         ])
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
@@ -120,12 +119,18 @@ fn main() {
         .unwrap();
 
     let window = tauri::Manager::get_window(&app, "main").unwrap();
-    let mainwindow = tauri::Manager::get_window(&app, "main").unwrap();
+    let window2 = tauri::Manager::get_window(&app, "main").unwrap();
+    let window3 = tauri::Manager::get_window(&app, "main").unwrap();
+    let window4 = tauri::Manager::get_window(&app, "main").unwrap();
+
+    window3.listen("sendUpdaterStatus", move |event| {
+        window4.emit("sendUpdaterStatus", event.payload().unwrap()).unwrap();
+    });
 
     tauri_plugin_deep_link::register("ahqstore", move |request| {
         println!("Request Data {}", &request);
-        mainwindow.show().unwrap();
-        mainwindow.emit("protocol", request).unwrap();
+        window2.show().unwrap();
+        window2.emit("protocol", request).unwrap();
     })
     .unwrap();
 
@@ -156,6 +161,28 @@ fn autostart() -> bool {
   }
 
   status.into()
+}
+
+#[tauri::command(async)]
+fn list_all_apps() -> [Vec<String>; 2] {
+    let mut apps: Vec<String> = Vec::new();
+    let mut versions: Vec<String> = Vec::new();
+    let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
+
+    let pages = fs::read_dir(
+        format!(r"{}\ProgramData\AHQ Store Applications\Programs", sys_dir.clone())
+    ).unwrap();
+
+    for page in pages {
+        let name = page.unwrap().file_name().into_string().unwrap();
+
+        let version = fs::read_to_string(format!(r"{}\ProgramData\AHQ Store Applications\Programs\{}\ahqStoreVersion", sys_dir.clone(), name.clone())).unwrap();
+
+        versions.push(version);
+        apps.push(name);
+    }
+
+    [apps, versions]
 }
 
 #[tauri::command]
@@ -198,16 +225,21 @@ fn install(path: String) -> Result<bool, i32> {
 }
 
 #[tauri::command(async)]
-fn extract(app: &str, installer: &str) -> Result<(), i32> {
+fn extract(app: &str, version: &str) -> Result<(), i32> {
     let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
     let status = extract::extract(
         &Path::new(
-            &format!("{}\\ProgramData\\AHQ Store Applications\\Installers\\{}", sys_dir.clone(), installer),
+            &format!("{}\\ProgramData\\AHQ Store Applications\\Installers\\{}.zip", sys_dir.clone(), app.clone()),
         ),
-        &Path::new(&format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{}", sys_dir.clone(), app)),
+        &Path::new(&format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{}", sys_dir.clone(), app.clone())),
     );
 
-    if status == 0 {
+    let status2 = fs::write(
+        &Path::new(&format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{}\\ahqStoreVersion", sys_dir.clone(), app.clone())), 
+        &version
+    );
+
+    if status == 0 && !status2.is_err() {
         Ok(())
     } else {
         Err(1)

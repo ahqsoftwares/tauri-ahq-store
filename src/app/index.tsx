@@ -46,39 +46,38 @@ function Render(props: AppProps) {
         [load, setLoad] = useState(false),
         [autoUpdate, setUpdate] = useState(false),
         [apps, setApps] = useState<any>([]),
-        [allAppsData, setData] = useState<{map: {[key: string]: Object}, users: {[key: string]: Object}}>({
-               map: {},
-               users: {}
+        [allAppsData, setData] = useState<{map: {[key: string]: Object}}>({
+               map: {}
         }),
         App: any = () => (<></>);
 
-        appWindow.listen("protocol", (
-                {
-                        payload
-                }: {
-                        payload: string
-                }
-        ) => {
-                if (payload.startsWith("ahqstore://")) {
-                        const [page] = payload.replace("ahqstore://", "").split("/");
-
-                        switch (page) {
-                                case "app":
-                                        changePage("apps");
-                                        break;
-                                case "update": 
-                                        changePage("apps");
-                                        break;
-                                //In Future
-                                /*
-                                case "rate":
-                                        break;
-                                */
-                                default:
-                                        break;
+        useEffect(() => {
+                appWindow.listen("sendUpdaterStatus", ({payload}: any) => {
+                        console.log(payload);
+                });
+                appWindow.listen("protocol", (
+                        {
+                                payload
+                        }: {
+                                payload: string
                         }
-                };
-        });
+                ) => {
+                        if (payload.startsWith("ahqstore://")) {
+                                const [page] = payload.replace("ahqstore://", "").split("/");
+
+                                switch (page) {
+                                        case "app":
+                                                changePage("apps");
+                                                break;
+                                        case "update": 
+                                                changePage("apps");
+                                                break;
+                                        default:
+                                                break;
+                                }
+                        };
+                });
+        }, []);
 
 
         useEffect(() => {
@@ -91,20 +90,10 @@ function Render(props: AppProps) {
                                 responseType: 1
                         });
 
-                        //Fetch Authors (map coming soon!)
-                        const {data: Authors} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/users.json", {
-                                method: "GET",
-                                timeout: 30,
-                                responseType: 1
-                        });
-
                         setData({
-                                map: Mapped as  {
+                                map: Mapped as {
                                         [key: string]: Object;
-                                    },
-                                users: Authors as  {
-                                        [key: string]: Object;
-                                    }
+                                }
                         });
 
                         const {data: Home} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/home.json", {
