@@ -1,6 +1,9 @@
 
 //Icons
+import { useState } from "react";
 import {AiOutlineAppstoreAdd} from "react-icons/ai";
+import { FiExternalLink } from "react-icons/fi";
+import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { VscExtensions } from "react-icons/vsc";
 
 //Components
@@ -15,6 +18,8 @@ export default function Developers(props: DevProps) {
                 dark
         } = props;
 
+        const [Icon, setIcon] = useState(true);
+
         function darkMode(classes: Array<string>, dark: boolean) {
                 return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
         }
@@ -24,9 +29,11 @@ export default function Developers(props: DevProps) {
                         ShowCaseIcon={VscExtensions} 
                         title={"My Apps"} 
                         description="View apps published by me (soon)"
+                        PopUp={Icon ? IoIosArrowForward : IoIosArrowDown}
                         onClick={() => {
-                                
+                                setIcon((value) => !value);
                         }}
+                        Extra={Icon ? <></> : <h1>Hi</h1>}
                 />
                 <Option 
                         dark={dark} 
@@ -36,6 +43,7 @@ export default function Developers(props: DevProps) {
                         onClick={() => {
                                 
                         }}
+                        PopUp={FiExternalLink}
                 />
         
         </div>);

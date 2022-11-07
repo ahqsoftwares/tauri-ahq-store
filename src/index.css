@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Extatica";
+  src: url("./special.otf");
+}
+
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -29,7 +34,7 @@ body {
 }
 
 .ext {
-  font-family: 'Extatica', 'Monaco', 'Segoe UI';
+  font-family: 'Extatica';
 }
 
 .bhn {

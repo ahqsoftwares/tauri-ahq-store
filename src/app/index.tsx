@@ -7,6 +7,7 @@ import { sendNotification } from "@tauri-apps/api/notification";
 import {fetch} from "@tauri-apps/api/http";
 import {appWindow} from "@tauri-apps/api/window";
 
+import { runAutoUpdate } from "./resources/api/updateInstallWorker";
 /*
 Firebase
 */
@@ -25,6 +26,7 @@ import Nav from "./Nav";
 import Developer from "./developer/";
 import Apps from "./apps/";
 import User from "./client/index";
+import Library from "./library";
 import Settings from "./settings/index";
 
 import BaseAPI from "./server";
@@ -42,40 +44,40 @@ function Render(props: AppProps) {
         [dark, setD] = useState(true),
         [font, setFont] = useState("def"),
         [load, setLoad] = useState(false),
+        [autoUpdate, setUpdate] = useState(false),
         [apps, setApps] = useState<any>([]),
-        [allAppsData, setData] = useState<{map: {[key: string]: Object}, users: {[key: string]: Object}}>({
-               map: {},
-               users: {}
+        [allAppsData, setData] = useState<{map: {[key: string]: Object}}>({
+               map: {}
         }),
         App: any = () => (<></>);
 
-        appWindow.listen("protocol", (
-                {
-                        payload
-                }: {
-                        payload: string
-                }
-        ) => {
-                if (payload.startsWith("ahqstore://")) {
-                        const [page] = payload.replace("ahqstore://", "").split("/");
-
-                        switch (page) {
-                                case "app":
-                                        changePage("apps");
-                                        break;
-                                case "update": 
-                                        changePage("apps");
-                                        break;
-                                //In Future
-                                /*
-                                case "rate":
-                                        break;
-                                */
-                                default:
-                                        break;
+        useEffect(() => {
+                appWindow.listen("sendUpdaterStatus", ({payload}: any) => {
+                        console.log(payload);
+                });
+                appWindow.listen("protocol", (
+                        {
+                                payload
+                        }: {
+                                payload: string
                         }
-                };
-        });
+                ) => {
+                        if (payload.startsWith("ahqstore://")) {
+                                const [page] = payload.replace("ahqstore://", "").split("/");
+
+                                switch (page) {
+                                        case "app":
+                                                changePage("apps");
+                                                break;
+                                        case "update": 
+                                                changePage("apps");
+                                                break;
+                                        default:
+                                                break;
+                                }
+                        };
+                });
+        }, []);
 
 
         useEffect(() => {
@@ -88,20 +90,10 @@ function Render(props: AppProps) {
                                 responseType: 1
                         });
 
-                        //Fetch Authors (map coming soon!)
-                        const {data: Authors} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/users.json", {
-                                method: "GET",
-                                timeout: 30,
-                                responseType: 1
-                        });
-
                         setData({
-                                map: Mapped as  {
+                                map: Mapped as {
                                         [key: string]: Object;
-                                    },
-                                users: Authors as  {
-                                        [key: string]: Object;
-                                    }
+                                }
                         });
 
                         const {data: Home} = await fetch("https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/home.json", {
@@ -124,12 +116,15 @@ function Render(props: AppProps) {
                 createDir("", {dir: BaseDirectory.App})
                 .catch(e => e);
 
-
                 readTextFile("database/config.astore", {dir: BaseDirectory.App})
                 .then((data) => {
                         const json = JSON.parse(data || "{}");
                         setD(typeof(json.dark) === "undefined" ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) : json.dark);
                         setFont(typeof(json.font) === "string" ? json.font : "def");
+                        setUpdate(typeof(json.autoUpdate) === "boolean" ? json.autoUpdate : false);
+
+                        runAutoUpdate(typeof(json.autoUpdate) === "boolean" ? json.autoUpdate : false);
+
                         setLoad(true);
                 })
                 .catch((e) => {
@@ -138,7 +133,7 @@ function Render(props: AppProps) {
                         .then(async() => {
                                 let mode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
                                 setD(mode);
-                                await writeFile("database/config.astore", `{"dark": ${mode}, "font": "def"}`, {dir: BaseDirectory.App})
+                                await writeFile("database/config.astore", `{"dark": ${mode}, "font": "def", "autoUpdate": false}`, {dir: BaseDirectory.App})
                                 .catch(() => {
                                         sendNotification({title: "Error", body: "Could not sync notifications!"});
                                 });
@@ -151,13 +146,13 @@ function Render(props: AppProps) {
 
         useEffect(() => {
                 const element = document.querySelector("body");
-                element?.classList.toggle("def", font === "def");
-                element?.classList.toggle("tnr", font === "tnr");
-                element?.classList.toggle("geo", font === "geo");
-                element?.classList.toggle("gra", font === "gra");
-                element?.classList.toggle("ari", font === "ari");
-                element?.classList.toggle("ext", font === "ext");
-                element?.classList.toggle("bhn", font === "bhn");
+                const listedFonts = ["def", "tnr", "geo", "gra", "ari", "ext", "bhn"];
+
+                const selectedFont = font;
+
+                for (const font of listedFonts) {
+                        element?.classList.toggle(font, font === selectedFont);
+                }
         }, [font]);
 
         function updateConfig(data: Object) {
@@ -171,11 +166,15 @@ function Render(props: AppProps) {
 
         function setDark(dark: boolean) {
                 setD(dark);
-                updateConfig({dark, font});
+                updateConfig({dark, font, autoUpdate});
         }
         function changeFont(newFont: string) {
                 setFont(newFont);
-                updateConfig({dark, font: newFont});
+                updateConfig({dark, font: newFont, autoUpdate});
+        }
+        function setAutoUpdate(newStatus: boolean) {
+                setUpdate(newStatus);
+                updateConfig({dark, font, autoUpdate: newStatus});
         }
 
         /*
@@ -197,6 +196,9 @@ function Render(props: AppProps) {
                         break;
                 case "developer":
                         App = Developer;
+                        break;
+                case "library":
+                        App = Library;
                         break;
         }
 
@@ -227,6 +229,9 @@ function Render(props: AppProps) {
 
                                                 setApps={setApps} 
                                                 allAppsData={allAppsData} 
+
+                                                autoUpdate={autoUpdate}
+                                                setAutoUpdate={setAutoUpdate}
                                         />
                                 </div>
                         </div>

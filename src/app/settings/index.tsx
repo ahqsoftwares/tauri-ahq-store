@@ -4,9 +4,9 @@ import {Auth, User, updateProfile} from "firebase/auth";
 
 //packages
 import Modal from "react-modal";
-import Toast from "../resources/toast";
-import getWindows from "../resources/os";
-import { isAutostartEnabled, enableAutostart, disableAutoStart } from "../resources/autostart";
+import Toast from "../resources/api/toast";
+import getWindows from "../resources/api/os";
+import { isAutostartEnabled, enableAutostart, disableAutoStart } from "../resources/api/autostart";
 
 //Tauri
 import { sendNotification } from "@tauri-apps/api/notification";
@@ -17,6 +17,7 @@ import FontSelector from "./components/font";
 
 import { BiMoon, BiSun } from "react-icons/bi";
 import { BsCodeSlash, BsFonts } from "react-icons/bs";
+import { FiDownload } from "react-icons/fi";
 
 
 interface InitProps {
@@ -25,7 +26,9 @@ interface InitProps {
     auth: Auth,
     setDev: Function,
     font: string,
-    setFont: Function
+    setFont: Function,
+    autoUpdate: boolean,
+    setAutoUpdate: Function
 }
 
 export default function Init(props: InitProps) {
@@ -118,6 +121,26 @@ export default function Init(props: InitProps) {
                                 active={props.dark}
                             />
 
+                            <FontSelector
+                                Icon={BsFonts}
+                                dark={props.dark}
+                                initial={props.font}
+                                onChange={(e) => {
+                                    props.setFont(e.target.value);
+                                }}
+                            />
+
+                            <CheckBox 
+                                dark={props.dark}
+                                title="Auto Update Apps"
+                                description="Automatically update apps when I launch AHQ Store"
+                                Icon={FiDownload}
+                                onClick={() => {
+                                    props.setAutoUpdate(!props.autoUpdate);
+                                }}
+                                active={props.autoUpdate}
+                            />
+
                             <CheckBox 
                                 dark={props.dark}
                                 title="Developer Mode"
@@ -126,15 +149,6 @@ export default function Init(props: InitProps) {
                                 onClick={() => Update()}
                                 disabled={!props.auth?.currentUser?.emailVerified}
                                 active={dev}
-                            />
-
-                            <FontSelector
-                                Icon={BsFonts}
-                                dark={props.dark}
-                                initial={props.font}
-                                onChange={(e) => {
-                                    props.setFont(e.target.value);
-                                }}
                             />
 
                             <CheckBox

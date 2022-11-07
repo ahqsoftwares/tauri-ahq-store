@@ -19,7 +19,7 @@ import Login from "./Login";
 
 /*
 */
-import {init} from "./app/resources/os";
+import {init} from "./app/resources/api/os";
 
 /*Firebase
 */
@@ -71,8 +71,6 @@ init();
    if (!permissionGranted) {
     const permission = await requestPermission();
     permissionGranted = permission === 'granted';
-  } else {
-    sendNotification({ title: 'Development Build', body: 'Not for consumer use'});
   }
 })()
 

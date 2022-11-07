@@ -10,9 +10,11 @@ export default function SettingOption(
          props: {
                   dark: boolean,
                   ShowCaseIcon: IconType,
+                  PopUp?: IconType,
                   title: string,
                   description: string,
-                  onClick: MouseEventHandler<HTMLDivElement>
+                  onClick: MouseEventHandler<HTMLDivElement>,
+                  Extra?: JSX.Element
          }
 ) {
          const {
@@ -20,26 +22,38 @@ export default function SettingOption(
                   title,
                   description,
                   ShowCaseIcon,
-                  onClick
+                  onClick,
+                  PopUp,
+                  Extra
          } = props;
 
-         return (
-                  <div className={`${darkMode(["checkbox"], dark)} mt-3`} onClick={onClick}>
-                        <div className="ml-3"></div>            
+         const LinkIcon = PopUp || IoIosArrowForward;
 
-                        <div className={`flex items-center justify-center ${dark ? "text-slate-300" : "text-slate-700"}`}>
-                                <ShowCaseIcon size="2.5em" />
+        return (
+                <div className={`${darkMode(["checkbox"], dark)} checkbox-special mt-3`} onClick={onClick}>
+                        <div className="checkbox-special-child">
+                                <div className="ml-3"></div>            
+
+                                <div className={`flex items-center justify-center ${dark ? "text-slate-300" : "text-slate-700"}`}>
+                                        <ShowCaseIcon size="2.5em" />
+                                </div>
+
+                                <div className="ml-3"></div>
+
+                                <h6>{title}<p>{description}</p></h6>
+
+                                <div className="mx-auto"></div>
+
+                                <LinkIcon size="3em" className={`my-auto ml-auto mr-1 ${dark ? "text-slate-300" : "text-slate-700"}`}/>
+                                    
+                                <div className="mr-3"></div>
                         </div>
-                                    
-                        <div className="ml-3"></div>
 
-                        <h6>{title}<p>{description}</p></h6>
-
-                        <div className="mx-auto"></div>
-
-                        <IoIosArrowForward size="3em" className={`my-auto ml-auto mr-1 ${dark ? "text-slate-300" : "text-slate-700"}`}/>
-                                    
-                        <div className="mr-3"></div>
+                        {Extra ? 
+                                <>{Extra}</>
+                                : <>
+                                </>
+                        }
                 </div>
          )
 }

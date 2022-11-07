@@ -8,7 +8,7 @@ import { sendNotification } from "@tauri-apps/api/notification";
 import { Body, fetch } from "@tauri-apps/api/http";
 import { useCookies } from "react-cookie";
 import Modal from "react-modal";
-import Toast from "../resources/toast";
+import Toast from "../resources/api/toast";
 
 /*
 Firebase API
@@ -26,7 +26,7 @@ import base from "../server";
 import GeneralUser from "./user.png";
 import Loading from "./loading.gif";
 import { BiLogOut, BiUserX } from "react-icons/bi";
-import PopUp from "../resources/popup";
+import PopUp from "../resources/components/popup";
 import { open } from "@tauri-apps/api/dialog";
 import { readBinaryFile } from "@tauri-apps/api/fs";
 import { VscKey } from "react-icons/vsc";

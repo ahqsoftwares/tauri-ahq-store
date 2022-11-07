@@ -47,35 +47,35 @@ export default function nav(props: prop) {
          return (
                   <div className={`w-[80px] h-screen flex flex-col items-center ${darkMode(["nav", "bg-blue-super"], mode)}`}>
                            
-                           <button className={`n-item ${a}`} onClick={() => changePage("home")}>
-                                    <BiHome size={"2.5em"}/>
-                           </button>
+                        <button className={`n-item ${a}`} onClick={() => changePage("home")}>
+                                <BiHome size={"2.5em"}/>
+                        </button>
                            
-                           <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
-                                    <BiExtension size={"2.5em"} />
-                           </button>
+                        <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
+                                <BiExtension size={"2.5em"} />
+                        </button>
                            
-                           <div className="mt-auto mb-auto"></div>
+                        <div className="mt-auto mb-auto"></div>
 
-                           {dev ? 
-                            <button className={`n-item ${e}`} onClick={() => changePage("developer")}>
-                                    <BsCodeSlash size={"2.5em"} />
-                            </button>
-                            : <></>}
+                        {dev ? 
+                                <button className={`n-item ${e}`} onClick={() => changePage("developer")}>
+                                        <BsCodeSlash size={"2.5em"} />
+                                </button>
+                        : <></>}
 
-                             <button className={`n-item ${f}`} onClick={() => changePage("library")}>
-                                      <BiLibrary size="2.5em"/>
-                           </button>
+                        <button className={`n-item ${f}`} onClick={() => changePage("library")}>
+                                <BiLibrary size="2.5em"/>
+                        </button>
 
-                           <button className={`n-item ${d}`} onClick={() => changePage("user")}>
-                                    <VscAccount size={"2.5em"} />
-                           </button>
+                        <button className={`n-item ${d}`} onClick={() => changePage("user")}>
+                                <VscAccount size={"2.5em"} />
+                        </button>
 
-                           <button className={`n-item ${c}`} onClick={() => changePage("settings")}>
-                                    <FiSettings size={"2.5em"} />
-                           </button>
+                        <button className={`n-item ${c}`} onClick={() => changePage("settings")}>
+                                <FiSettings size={"2.5em"} />
+                        </button>
 
-                           <div className="mb-[8px]"></div>
+                        <div className="mb-[8px]"></div>
 
                   </div>
          );

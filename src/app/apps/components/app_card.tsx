@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { VscExtensions } from "react-icons/vsc";
-import fetchApps from "../../resources/fetchApps";
+import fetchApps from "../../resources/api/fetchApps";
 
 export default function AppCard(props: {
 	id: string,
