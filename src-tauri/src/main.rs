@@ -16,6 +16,7 @@ use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMen
 fn main() {
     tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
     let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
+
     fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()))
         .unwrap();
     fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Programs", sys_dir.clone()))
@@ -108,7 +109,7 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             download, install, extract, clean, shortcut, check_app, uninstall,
-            autostart, iswindows10, list_all_apps
+            autostart, iswindows10, list_all_apps, sys_handler
         ])
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
@@ -148,6 +149,11 @@ fn main() {
         _ => {}
     });
 
+}
+
+#[tauri::command]
+fn sys_handler() -> String {
+    std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "")
 }
 
 #[tauri::command(async)]

@@ -30,38 +30,25 @@ Navigation
 Item pallete
 */
 .n-item {
-         @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black bg-orange-400;
+         @apply w-16 h-16 justify-center items-center relative flex text-white hover:text-white bg-orange-400 hover:bg-blue-400;
          border-radius: 20%;
+         border-color: rgb(251 146 60);
          margin-top: 8px;
          transition: all 200ms linear;
 }
-.n-item-s {
-         @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black bg-orange-400;
-         border-radius: 20%;
-         margin-top: 8px;
-         transition: all 500ms linear;
-}
-
-.n-item-s:active, .n-item-s:hover {
-  border-width: 9px;
-  border-style: solid;
-  border-radius: 30%;
-  @apply border-orange-400
-}
-
 .n-item:active, .n-item:focus, .active {
   @apply text-white;
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
-  @apply border-orange-400
+  @apply border-blue-400 bg-blue-400;
 }
 
 .n-item:hover {
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
-  @apply border-orange-400
+  @apply border-blue-400
 }
 
 /*

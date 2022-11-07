@@ -5,7 +5,9 @@ type cacheData = {
          description: string,
          img: string,
          download_url: string,
-         author: any
+         author: any,
+         version: string,
+         exe: string
 }
 
 let cache: {
@@ -14,6 +16,7 @@ let cache: {
 
 };
 
+export type {cacheData};
 export default async function fetchApps(
          apps: string | string[]
 ): Promise<cacheData | cacheData[]> {
@@ -61,9 +64,7 @@ async function getApp(appName: string) {
 
                   cache[appName] = fullAnswer;
                   data = fullAnswer;
-         }      
-
-         console.log(data);
+         }
 
          return data
 }

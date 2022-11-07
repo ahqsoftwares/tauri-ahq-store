@@ -1,8 +1,8 @@
 import { sendNotification } from "@tauri-apps/api/notification";
 import { appWindow } from "@tauri-apps/api/window";
 import fetchApps from "../api/fetchApps";
-import getWindows from "../api/os";
 import listAllApps, { Apps } from "../utilities/listAllApps";
+import installWorker from "./installWorker";
 
 //Interfaces
 type updateStatus = "checking" | "updating" | "updated";
@@ -92,6 +92,24 @@ export default class Updater {
                   this.updateStatus = "updating";
                   this.updatingApp = apps[0];
                   this.emitter();
+
+                  await new installWorker((event, data) => {
+                           if (event === "installing") {
+                                    const {
+                                             customId
+                                    } = data;
+                                    console.log(event, data);
+
+                                    this.updateStatus = "updating";
+                                    this.updatingApp = (this.updatingAppList as string[])[customId];
+                                    this.emitter();
+
+                                    if (customId !== 0) {
+                                             this.updatingAppList?.splice(0, 1);
+                                    }
+                           }
+                  }, apps).install(true);
+
                   this.updateStatus = "updated";
                   this.emitter();
 

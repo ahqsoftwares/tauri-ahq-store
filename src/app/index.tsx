@@ -7,7 +7,7 @@ import { sendNotification } from "@tauri-apps/api/notification";
 import {fetch} from "@tauri-apps/api/http";
 import {appWindow} from "@tauri-apps/api/window";
 
-import { runAutoUpdate } from "./resources/api/updater";
+import { runAutoUpdate } from "./resources/api/updateInstallWorker";
 /*
 Firebase
 */
@@ -146,13 +146,13 @@ function Render(props: AppProps) {
 
         useEffect(() => {
                 const element = document.querySelector("body");
-                element?.classList.toggle("def", font === "def");
-                element?.classList.toggle("tnr", font === "tnr");
-                element?.classList.toggle("geo", font === "geo");
-                element?.classList.toggle("gra", font === "gra");
-                element?.classList.toggle("ari", font === "ari");
-                element?.classList.toggle("ext", font === "ext");
-                element?.classList.toggle("bhn", font === "bhn");
+                const listedFonts = ["def", "tnr", "geo", "gra", "ari", "ext", "bhn"];
+
+                const selectedFont = font;
+
+                for (const font of listedFonts) {
+                        element?.classList.toggle(font, font === selectedFont);
+                }
         }, [font]);
 
         function updateConfig(data: Object) {
