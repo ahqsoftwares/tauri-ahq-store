@@ -19,6 +19,10 @@ export async function unInstall(appId: string) {
          await new installWorker(() => {}).uninstall(appId);
 }
 
+export async function isInstalled(appId: string): Promise<boolean> {
+         return await new installWorker(() => {}).exists(appId) as boolean;
+}
+
 export function updaterStatus() {
          return {
                   status: updater.updateStatus,

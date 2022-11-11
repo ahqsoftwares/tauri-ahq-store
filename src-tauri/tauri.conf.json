@@ -24,7 +24,7 @@
       },
       "http": {
         "all": true,
-        "scope": ["https://github.com/ahqsoftwares/ahq-store-data/*", "http://web1.simplehostnode.cf:2030/*", "http://web1.simplehostnode.cf:2030/", "http://localhost:2030/", "http://localhost:2030/*"]
+        "scope": ["https://github.com/ahqsoftwares/ahq-store-data/*", "http://n7.danbot.host:2061/*", "http://n7.danbot.host:2061/", "http://localhost:2030/", "http://localhost:2030/*"]
       },
       "path": {
         "all": true
@@ -83,8 +83,7 @@
         "timestampUrl": "",
         "allowDowngrades": false,
 	      "wix": {
-	        "template": "assets/install.wix",
-          "license": "license/license.rtf"
+	        "template": "assets/install.wix"
 	      }
       }
     },
@@ -109,6 +108,20 @@
         "minHeight": 700,
         "minWidth": 1200,
         "visible": false
+      },
+      {
+        "center": true,
+        "height": 550,
+        "width": 450,
+        "minHeight": 550,
+        "minWidth": 450,
+        "maxHeight": 550,
+        "maxWidth": 450,
+        "title": "AHQ Store Complement",
+        "alwaysOnTop": true,
+        "decorations": false,
+        "visible": false,
+        "label": "complement"
       }
     ]
   }

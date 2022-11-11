@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "0.8.6"
+version = "0.8.7"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "ISC"
@@ -25,6 +25,7 @@ zip = "0.6.2"
 downloader = "0.2.6"
 deelevate = "0.2.0"
 mslnk = "0.1.8"
+os-version = "0.2.0"
 
 [features]
 # by default Tauri runs in production mode

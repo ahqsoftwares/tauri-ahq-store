@@ -33,8 +33,6 @@ import { getStorage } from "firebase/storage"
 */
 import './index.css';
 
-/*Constants
-*/
 const config = {
   apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
   authDomain: "ahq-store.firebaseapp.com",
@@ -52,6 +50,9 @@ const firestore = initializeFirestore(app, {});
 const realtimeDB = getDatabase(app);
 const storage = getStorage(app);
 
+/*Constants
+*/
+if (appWindow.label === "main") {
 init();
 
 /*Logic
@@ -112,7 +113,7 @@ window.addEventListener("online", () => {
 
 async function Manage() {
   render("Launching Store...", App);
-    setTimeout(() => {
+  setTimeout(() => {
     if (!auth.currentUser) {
       storeLoad(Login, {
         create: createUserWithEmailAndPassword,
@@ -158,19 +159,8 @@ async function Manage() {
         verifyCode: verifyPasswordResetCode
       });
     });
-  }, 500);
+  }, 1000);
 }
-
-/*invoke("download", { url: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-Setup-2.1.0.exe", path: "./install/" })
-.then(() => {
-  invoke("install", {path: "./install/Simple-Host-Desktop-Setup-2.1.0.exe"})
-  .then((code) => {
-    console.log(code);
-  });
-})
-.catch((e) => {
-  console.log(e);
-});*/
 
 /**
  * Load a Store Component on the DOM
@@ -197,3 +187,13 @@ function render(state: string, App: any) {
 }
 
 reportWebVitals();
+} else {
+  appWindow.listen("app", (event) => {
+    console.log(event);
+    appWindow.show();
+  });
+
+  if (!auth.currentUser) {
+
+  }
+}

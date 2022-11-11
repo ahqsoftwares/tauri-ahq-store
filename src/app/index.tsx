@@ -55,13 +55,14 @@ function Render(props: AppProps) {
                 appWindow.listen("sendUpdaterStatus", ({payload}: any) => {
                         console.log(payload);
                 });
-                appWindow.listen("protocol", (
+                appWindow.listen("app", (
                         {
                                 payload
                         }: {
                                 payload: string
                         }
                 ) => {
+                        console.log(payload);
                         if (payload.startsWith("ahqstore://")) {
                                 const [page] = payload.replace("ahqstore://", "").split("/");
 

@@ -4,7 +4,7 @@ import fetchApps, { cacheData } from "../api/fetchApps";
 
 export default class installWorker {
          appId?: string[];
-         callback: (event: "installing", data: any) => void
+         callback: (event: "installing" | "downloading", data: any) => void
 
          /**
           * Starts the downloader
@@ -12,7 +12,7 @@ export default class installWorker {
           * @param {boolean} appId
           */
          constructor(
-                  callback: (event: "installing", data: any) => void,
+                  callback: (event: "installing" | "downloading", data: any) => void,
                   appId?: string[]
          ) {
                   this.appId = appId;
@@ -44,6 +44,10 @@ export default class installWorker {
                   await invoke("download", {
                            url: appData.download_url,
                            name: `${appData.id}.zip`
+                  });
+
+                  this.callback("installing", {
+                           ...appData
                   });
 
                   await invoke("extract", {
@@ -92,7 +96,7 @@ export default class installWorker {
 
                   for (const app of allApps) {
                            const index = allApps.findIndex((value) => value.download_url === app.download_url);
-                           this.callback("installing", {
+                           this.callback("downloading", {
                                     ...app,
                                     customId: index
                            });
@@ -116,5 +120,11 @@ export default class installWorker {
                            appName: appId,
                            appFullName: (app as cacheData).title
                   });
+         }
+
+         async exists(
+                  appId: string
+         ) {
+                  return await invoke("check_app", {appName: appId});
          }
 }
