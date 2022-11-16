@@ -17,6 +17,10 @@ import App from './config/App';
 import Store from "./app/index";
 import Login from "./Login";
 
+//2nd Screen
+import SecondApp from "./complement/app";
+import SecondLogin from "./complement/login";
+
 /*
 */
 import {init} from "./app/resources/api/os";
@@ -24,7 +28,7 @@ import {init} from "./app/resources/api/os";
 /*Firebase
 */
 import {initializeApp} from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset, onAuthStateChanged } from "firebase/auth";
 import { initializeFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage"
@@ -50,8 +54,9 @@ const firestore = initializeFirestore(app, {});
 const realtimeDB = getDatabase(app);
 const storage = getStorage(app);
 
-/*Constants
-*/
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
+/**Sub or main? */
 if (appWindow.label === "main") {
 init();
 
@@ -74,8 +79,6 @@ init();
     permissionGranted = permission === 'granted';
   }
 })()
-
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 render("Checking for updates...", App);
 
@@ -188,12 +191,36 @@ function render(state: string, App: any) {
 
 reportWebVitals();
 } else {
-  appWindow.listen("app", (event) => {
-    console.log(event);
-    appWindow.show();
+  let dataHolder: string;
+
+  appWindow.listen("app", ({payload}: {payload: string}) => {
+    console.log(payload);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_ahqstore, _useless, path, data] = payload.split("/");
+    dataHolder = data;
+    if (path === "app") {
+      if (!auth.currentUser) {
+        unload();
+      } else {
+        load();
+      }
+      appWindow.show();
+    }
   });
 
-  if (!auth.currentUser) {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      load()
+    } else {
+      unload();
+    }
+  });
 
+  function load() {
+    root.render(<SecondApp appId={dataHolder} />);
+  }
+
+  function unload() {
+    root.render(<SecondLogin />);
   }
 }

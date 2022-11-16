@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import fetchApps, { cacheData } from "../../resources/api/fetchApps";
 import listAllApps from "../../resources/utilities/listAllApps";
+import App from "./App";
 
 interface Props {
          dark: boolean,
@@ -21,11 +22,11 @@ export default function AppsList(props: Props) {
                   (async() => {
                            const apps = await listAllApps();
                            const resolvedApps = await fetchApps(Object.keys(apps));
-                           setApps(resolvedApps as cacheData[]);
+                           for (let i = 0; i < 100; i++) {
+                                    setApps((apps) => [...apps, ...(resolvedApps as cacheData[])] as cacheData[]);
+                           }
                   })();
          }, []);
-
-         console.log(apps);
 
          return (
          <div className="flex flex-col w-[100%] h-[100%]">
@@ -33,6 +34,11 @@ export default function AppsList(props: Props) {
                            <button onClick={() => change()} className={`rounded-md p-1 ${dark ? "hover:bg-gray-600" : "hover:bg-white"}`} style={{"transition": "all 250ms linear"}}>
                                     <BiArrowBack size="1.5em"/>   
                            </button>
+                  </div>
+                  <div className="min-h-[auto] h-[100%] min-w-[100%] pb-[1rem]" style={{"overflowY": "scroll"}}>
+                           {apps.map((data) => {
+                                    return <App key={data.id} appInfo={data} dark={dark} />
+                           })}
                   </div>
          </div>
          );

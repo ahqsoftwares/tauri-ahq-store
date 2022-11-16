@@ -46,7 +46,8 @@
         "unmaximize": false,
         "unminimize": false,
         "create": true,
-        "close": true
+        "close": true,
+        "hide": true
       }
     },
     "bundle": {
@@ -121,6 +122,7 @@
         "alwaysOnTop": true,
         "decorations": false,
         "visible": false,
+        "resizable": false,
         "label": "complement"
       }
     ]
