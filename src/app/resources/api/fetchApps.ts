@@ -3,6 +3,7 @@ import { fetch } from "@tauri-apps/api/http";
 type cacheData = {
          title: string,
          description: string,
+         id: string,
          img: string,
          download_url: string,
          author: any,
@@ -55,6 +56,7 @@ async function getApp(appName: string) {
                   });
 
                   let fullAnswer = {
+                           id: appName,
                            ...mainAppData,
                            author: {
                                     id: mainAppData.author.id,

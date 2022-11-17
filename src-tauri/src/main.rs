@@ -11,7 +11,8 @@ use mslnk::ShellLink;
 use deelevate::{Token, PrivilegeLevel};
 use std::path::Path;
 use std::{fs, thread, process, env::args, process::Command};
-use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use os_version::Windows;
+use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu, Manager};
 
 fn main() {
     tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
@@ -78,7 +79,15 @@ fn main() {
 
     let context = tauri::generate_context!();
     let app = tauri::Builder::default()
-        .setup(|_| {
+        .setup(|app| {
+            let window = Manager::get_window(app, "complement");
+            tauri_plugin_deep_link::register("ahqstore", move |request| {
+                println!("Request Data {}", &request);
+                if window.clone().is_some() {
+                    window.as_ref().unwrap().emit("app", &request).unwrap();
+                }
+            })
+            .unwrap();
             Ok(())
         })
         .system_tray(SystemTray::new().with_menu(
@@ -109,7 +118,7 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             download, install, extract, clean, shortcut, check_app, uninstall,
-            autostart, iswindows10, list_all_apps, sys_handler
+            autostart, get_windows, list_all_apps, sys_handler
         ])
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
@@ -120,20 +129,12 @@ fn main() {
         .unwrap();
 
     let window = tauri::Manager::get_window(&app, "main").unwrap();
-    let window2 = tauri::Manager::get_window(&app, "main").unwrap();
     let window3 = tauri::Manager::get_window(&app, "main").unwrap();
     let window4 = tauri::Manager::get_window(&app, "main").unwrap();
 
     window3.listen("sendUpdaterStatus", move |event| {
         window4.emit("sendUpdaterStatus", event.payload().unwrap()).unwrap();
     });
-
-    tauri_plugin_deep_link::register("ahqstore", move |request| {
-        println!("Request Data {}", &request);
-        window2.show().unwrap();
-        window2.emit("protocol", request).unwrap();
-    })
-    .unwrap();
 
     app.run(move |_, event| match event {
         RunEvent::ExitRequested { api, .. } => {
@@ -192,8 +193,21 @@ fn list_all_apps() -> [Vec<String>; 2] {
 }
 
 #[tauri::command]
-fn iswindows10() -> bool {
-    std::env::var("SYSTEMROOT").unwrap().contains("WINDOWS")
+fn get_windows() -> Option<String> {
+    match Windows::detect() {
+        Ok(win) => {
+            if win.version == String::from("10") {
+                Some(if std::env::var("SYSTEMROOT").unwrap().contains("WINDOWS") {
+                    10.to_string()
+                } else {
+                    11.to_string()
+                })
+            } else {
+                Some(win.version)
+            }
+        },
+        Err(_) => None
+    }
 }
 
 #[tauri::command(async)]

@@ -183,8 +183,6 @@ export default function Init(props: UserProps){
 
                         setPFD({fs});
 
-                        console.log(profilePictureData);
-
                         if (!cookies.temptokenforuse) {
                             setpPopop(true);
                         } else {
@@ -243,7 +241,7 @@ export default function Init(props: UserProps){
                                 event.preventDefault();
                                 const error = (document.getElementById("errorhost")) as HTMLHeadingElement;
                                 const inputPassword = (document.getElementById("accpwdhost") as HTMLInputElement).value;
-                                console.log(profilePictureData);
+                                
                                 fetch(`${base}verify`, {
                                     method: "GET",
                                     headers: {
@@ -559,7 +557,6 @@ async function ChangeProfile(auth: Auth, setAlt: Function, setUser: Function, fs
     try {
         setUser(Loading);
         setAlt("Please Wait...");
-        console.log(Body.text(fs.result));
 
         fetch(`${base}`, {
             method: "POST",

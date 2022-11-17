@@ -1,16 +1,16 @@
 {
   "name": "ahq-store-tauri",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "private": true,
   "license": "Creative Commons",
   "dependencies": {
-    "@tauri-apps/api": "^1.1.0",
+    "@tauri-apps/api": "^1.2.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
-    "@types/jest": "^29.2.0",
-    "@types/node": "^18.11.7",
-    "@types/react": "^18.0.24",
+    "@types/jest": "^29.2.2",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
     "@types/react-modal": "^3.13.1",
     "autoprefixer": "^10.4.13",
@@ -22,7 +22,7 @@
     "react-icons": "^4.6.0",
     "react-modal": "^3.16.1",
     "react-scripts": "5.0.1",
-    "tailwindcss": "^3.2.1",
+    "tailwindcss": "^3.2.3",
     "tauri-plugin-autostart-api": "github:tauri-apps/tauri-plugin-autostart",
     "typescript": "^4.8.4",
     "web-vitals": "^3.0.4"
@@ -53,7 +53,7 @@
     ]
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.1.1",
+    "@tauri-apps/cli": "^1.2.0",
     "cross-env": "^7.0.3",
     "serve": "14.0.1"
   },

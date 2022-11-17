@@ -17,6 +17,10 @@ import App from './config/App';
 import Store from "./app/index";
 import Login from "./Login";
 
+//2nd Screen
+import SecondApp from "./complement/app";
+import SecondLogin from "./complement/login";
+
 /*
 */
 import {init} from "./app/resources/api/os";
@@ -24,7 +28,7 @@ import {init} from "./app/resources/api/os";
 /*Firebase
 */
 import {initializeApp} from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, verifyPasswordResetCode, confirmPasswordReset, onAuthStateChanged } from "firebase/auth";
 import { initializeFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage"
@@ -33,8 +37,6 @@ import { getStorage } from "firebase/storage"
 */
 import './index.css';
 
-/*Constants
-*/
 const config = {
   apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
   authDomain: "ahq-store.firebaseapp.com",
@@ -52,6 +54,10 @@ const firestore = initializeFirestore(app, {});
 const realtimeDB = getDatabase(app);
 const storage = getStorage(app);
 
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
+/**Sub or main? */
+if (appWindow.label === "main") {
 init();
 
 /*Logic
@@ -73,8 +79,6 @@ init();
     permissionGranted = permission === 'granted';
   }
 })()
-
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 render("Checking for updates...", App);
 
@@ -112,7 +116,7 @@ window.addEventListener("online", () => {
 
 async function Manage() {
   render("Launching Store...", App);
-    setTimeout(() => {
+  setTimeout(() => {
     if (!auth.currentUser) {
       storeLoad(Login, {
         create: createUserWithEmailAndPassword,
@@ -158,19 +162,8 @@ async function Manage() {
         verifyCode: verifyPasswordResetCode
       });
     });
-  }, 500);
+  }, 1000);
 }
-
-/*invoke("download", { url: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-Setup-2.1.0.exe", path: "./install/" })
-.then(() => {
-  invoke("install", {path: "./install/Simple-Host-Desktop-Setup-2.1.0.exe"})
-  .then((code) => {
-    console.log(code);
-  });
-})
-.catch((e) => {
-  console.log(e);
-});*/
 
 /**
  * Load a Store Component on the DOM
@@ -197,3 +190,37 @@ function render(state: string, App: any) {
 }
 
 reportWebVitals();
+} else {
+  let dataHolder: string;
+
+  appWindow.listen("app", ({payload}: {payload: string}) => {
+    console.log(payload);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_ahqstore, _useless, path, data] = payload.split("/");
+    dataHolder = data;
+    if (path === "app") {
+      if (!auth.currentUser) {
+        unload();
+      } else {
+        load();
+      }
+      appWindow.show();
+    }
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      load()
+    } else {
+      unload();
+    }
+  });
+
+  function load() {
+    root.render(<SecondApp appId={dataHolder} />);
+  }
+
+  function unload() {
+    root.render(<SecondLogin />);
+  }
+}

@@ -4,7 +4,7 @@ import Modal from "react-modal";
 
 //Components
 import InstalledAppsMenu from "./components/Style";
-import AppList from "./components/allAppsList";
+import AppList from "./components/AppsList";
 
 interface LibraryProps {
          dark: boolean

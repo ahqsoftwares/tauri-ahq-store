@@ -1,7 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
+//Worker
 import { BiArrowBack } from "react-icons/bi";
 import Modal from "react-modal";
 import fetchApps from "../../resources/api/fetchApps";
+
+//AHQ Store Installer
+import { isInstalled } from "../../resources/api/updateInstallWorker";
+import installWorker from "../../resources/classes/installWorker";
 
 interface AppDataPropsModal {
 	shown: boolean,
@@ -24,7 +30,15 @@ export default function ShowModal(props: AppDataPropsModal) {
         description: "",
         author: {}
     });
+    const [working, setWorking] = useState(false);
+    const button = useRef<HTMLButtonElement>("" as any);
+    const [installed, setInstalled] = useState(false);
 
+    useEffect(() => {
+        (async() => {
+            setInstalled(await isInstalled(installData));
+        })()
+    }, [installData]);
     useEffect(() => {
         (async() => {
             setAppData(await fetchApps(installData));
@@ -68,7 +82,11 @@ export default function ShowModal(props: AppDataPropsModal) {
         >
             <div className="flex flex-col w-[100%] h-[100%]">
                 <div className={`flex ${dark ? "text-slate-300" : "text-slate-800"}`}>
-                    <button onClick={() => change()} className={`rounded-md p-1 ${dark ? "hover:bg-gray-600" : "hover:bg-white"}`} style={{"transition": "all 250ms linear"}}>
+                    <button onClick={() => {
+                        if (!working) {
+                            change();
+                        }
+                    }} className={`rounded-md p-1 ${!working ? dark ? "hover:bg-gray-600" : "hover:bg-white" : ""}`} style={{"transition": "all 250ms linear"}}>
                         <BiArrowBack size="1.5em"/>
                     </button>
                 </div>
@@ -82,7 +100,43 @@ export default function ShowModal(props: AppDataPropsModal) {
                             <h2 className={`text-2xl text-center ${dark ? "text-gray-400" : "text-gray-600"}`}>{description}</h2>
                         </div>
 
-                        <button disabled className="button mb-4">Install</button>
+                        {installed ? 
+                            <button 
+                                ref={button} 
+                                className="button-danger mb-4"
+                                onClick={async() => {
+                                    setWorking(true);
+                                    button.current.innerHTML = "Uninstalling...";
+                                    await new installWorker((_) => {
+                                        
+                                    }).uninstall(installData);
+                                    button.current.innerHTML = "Uninstalled!";
+                                    setWorking(false);
+                                    setTimeout(async() => {
+                                        setInstalled(await isInstalled(installData));
+                                    }, 1000);
+                                }}
+                            >Uninstall</button>
+                            :
+                            <button 
+                                ref={button} 
+                                className="button mb-4"
+                                onClick={async() => {
+                                    setWorking(true);
+                                    button.current.innerHTML = "Working...";
+                                    await new installWorker((event) => {
+                                        if (event === "downloading") {
+                                            button.current.innerHTML = "Downloading...";
+                                        } else if (event === "installing") {
+                                            button.current.innerHTML = "Installing...";
+                                        }
+                                    }).install(false, [installData]);
+                                    button.current.innerHTML = "Installed!";
+                                    setWorking(false);
+                                    setInstalled(await isInstalled(installData));
+                                }}
+                            >Install</button>
+                        }
                     </div>
 
                     <div className={`${dark ? "text-slate-200" : "text-slate-800"} p-4 ml-2 w-[100%] rounded-xl shadow-xl flex flex-col`}>

@@ -2,8 +2,6 @@
 Native API
 */
 import {useEffect, useState} from "react";
-import {writeFile, createDir, readTextFile, BaseDirectory} from "@tauri-apps/api/fs";
-import { sendNotification } from "@tauri-apps/api/notification";
 import {fetch} from "@tauri-apps/api/http";
 import {appWindow} from "@tauri-apps/api/window";
 
@@ -30,6 +28,7 @@ import Library from "./library";
 import Settings from "./settings/index";
 
 import BaseAPI from "./server";
+import fetchPrefs, { appData, setConfig } from "./resources/utilities/preferences";
 
 interface AppProps {
         data: {
@@ -55,13 +54,14 @@ function Render(props: AppProps) {
                 appWindow.listen("sendUpdaterStatus", ({payload}: any) => {
                         console.log(payload);
                 });
-                appWindow.listen("protocol", (
+                appWindow.listen("app", (
                         {
                                 payload
                         }: {
                                 payload: string
                         }
                 ) => {
+                        /*console.log(payload);*/
                         if (payload.startsWith("ahqstore://")) {
                                 const [page] = payload.replace("ahqstore://", "").split("/");
 
@@ -113,35 +113,21 @@ function Render(props: AppProps) {
         }, [dark]);
 
         useEffect(() => {
-                createDir("", {dir: BaseDirectory.App})
-                .catch(e => e);
+                (async() => {
+                        const {
+                                autoUpdate,
+                                dark,
+                                font
+                        } = await fetchPrefs()
 
-                readTextFile("database/config.astore", {dir: BaseDirectory.App})
-                .then((data) => {
-                        const json = JSON.parse(data || "{}");
-                        setD(typeof(json.dark) === "undefined" ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) : json.dark);
-                        setFont(typeof(json.font) === "string" ? json.font : "def");
-                        setUpdate(typeof(json.autoUpdate) === "boolean" ? json.autoUpdate : false);
+                        setD(dark);
+                        setFont(font);
+                        setUpdate(autoUpdate);
 
-                        runAutoUpdate(typeof(json.autoUpdate) === "boolean" ? json.autoUpdate : false);
+                        runAutoUpdate(autoUpdate);
 
                         setLoad(true);
-                })
-                .catch((e) => {
-                        console.log(e);
-                        createDir("database", {dir: BaseDirectory.App}).catch(console.log)
-                        .then(async() => {
-                                let mode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-                                setD(mode);
-                                await writeFile("database/config.astore", `{"dark": ${mode}, "font": "def", "autoUpdate": false}`, {dir: BaseDirectory.App})
-                                .catch(() => {
-                                        sendNotification({title: "Error", body: "Could not sync notifications!"});
-                                });
-                        })
-                        .then(() => {
-                                setLoad(true);
-                        });
-                });
+                })()
         }, []);
 
         useEffect(() => {
@@ -155,13 +141,8 @@ function Render(props: AppProps) {
                 }
         }, [font]);
 
-        function updateConfig(data: Object) {
-                if (load) {
-                        writeFile("database/config.astore", JSON.stringify(data), {dir: BaseDirectory.App})
-                        .catch(() => {
-                                sendNotification({title: "Error", body: "Could not save settings!"});
-                        });
-                }
+        function updateConfig(data: appData) {
+                setConfig(data);
         }
 
         function setDark(dark: boolean) {

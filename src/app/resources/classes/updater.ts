@@ -98,7 +98,6 @@ export default class Updater {
                                     const {
                                              customId
                                     } = data;
-                                    console.log(event, data);
 
                                     this.updateStatus = "updating";
                                     this.updatingApp = (this.updatingAppList as string[])[customId];
