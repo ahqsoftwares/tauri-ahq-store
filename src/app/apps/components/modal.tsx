@@ -107,8 +107,8 @@ export default function ShowModal(props: AppDataPropsModal) {
                                 onClick={async() => {
                                     setWorking(true);
                                     button.current.innerHTML = "Uninstalling...";
-                                    await new installWorker((event) => {
-                                        console.log(event);
+                                    await new installWorker((_) => {
+                                        
                                     }).uninstall(installData);
                                     button.current.innerHTML = "Uninstalled!";
                                     setWorking(false);

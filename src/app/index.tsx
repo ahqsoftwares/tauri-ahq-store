@@ -61,7 +61,7 @@ function Render(props: AppProps) {
                                 payload: string
                         }
                 ) => {
-                        console.log(payload);
+                        /*console.log(payload);*/
                         if (payload.startsWith("ahqstore://")) {
                                 const [page] = payload.replace("ahqstore://", "").split("/");
 

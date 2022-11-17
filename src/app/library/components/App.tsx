@@ -6,27 +6,57 @@ import { IoIosNotifications } from "react-icons/io";
 
 //API
 import { cacheData } from "../../resources/api/fetchApps";
-import { updaterStatus } from "../../resources/api/updateInstallWorker";
+import Toast from "../../resources/api/toast";
+import { unInstall, updaterStatus } from "../../resources/api/updateInstallWorker";
 
 export default function App({
          appInfo,
-         dark
+         dark,
+         reload,
+         toast
 }: {
          appInfo: cacheData,
-         dark: boolean
+         dark: boolean,
+         reload: Function,
+         toast: typeof Toast
 }) {
          const updating = updaterStatus().apps?.includes(appInfo.id);
          const [active, setActive] = useState(false);
          const data = useRef<HTMLDivElement>("" as any);
 
+         async function handleClick() {
+                  const Toast = toast("Please wait...", "warn", "never");
+                  try {
+                           await unInstall(appInfo.id);
+                           Toast?.edit(`Successfully uninstalled ${appInfo.title}`, "success");
+                           setTimeout(() => {
+                                    reload();
+                                    setTimeout(() => {
+                                             Toast?.unmount();
+                                    }, 2000);
+                           }, 125);
+                  } catch (e) {
+                           console.log(e);
+                           Toast?.edit(`Something might went wrong...`, "danger");
+                           setTimeout(() => {
+                                    reload();
+                                    setTimeout(() => {
+                                             Toast?.unmount();
+                                    }, 2000);
+                           }, 125);
+                  }
+         }
+
          useEffect(() => {
                   if (!updating) {
                            if ((data.current as any) !== "") {
                                     data.current.addEventListener("focusout", () => {
-                                             setActive(false);
+                                             setTimeout(() => {
+                                                      setActive(false);
+                                             }, 125);
                                     });
                                     data.current.addEventListener("click", () => {
-                                             setActive((value) => !value);
+                                             setActive(true);
                                     });
                            }
                   }
@@ -71,6 +101,9 @@ export default function App({
                                                       >
                                                                <button 
                                                                         className="flex w-[100%] h-[3rem] justify-center items-center text-center text-red-700 hover:text-white hover:bg-red-700 rounded-xl"
+                                                                        onClick={() => {
+                                                                                 handleClick()
+                                                                        }}
                                                                >
                                                                         <BsTrash size="1.5em" /> Uninstall
                                                                </button>
