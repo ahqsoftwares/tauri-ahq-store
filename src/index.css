@@ -14,15 +14,16 @@ body {
 }
 
 .def {
-  font-family: 'Segoe UI Variable', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI Variable", "Segoe UI", Tahoma, Geneva, Verdana,
+    sans-serif;
 }
 
 .tnr {
-  font-family: 'Times New Roman', Times, serif;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .geo {
-  font-family: Georgia, 'Segoe UI';
+  font-family: Georgia, "Segoe UI";
 }
 
 .gra {
@@ -34,7 +35,7 @@ body {
 }
 
 .ext {
-  font-family: 'Extatica';
+  font-family: "Extatica";
 }
 
 .bhn {
@@ -42,7 +43,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -71,10 +72,11 @@ code {
 .modal h2 {
   font-weight: 300;
   font-size: 30px;
-  @apply text-violet-800
+  @apply text-violet-800;
 }
 
-.modal input, .style-input {
+.modal input,
+.style-input {
   border-bottom: 3px solid gray;
   outline: none;
   transition: all 500ms linear;
@@ -94,18 +96,22 @@ code {
   @apply bg-gray-500 text-white;
 }
 
-.modal input:enabled:hover, .style-input:enabled:hover, .style-input:enabled:hover, .modal input:enabled:focus {
+.modal input:enabled:hover,
+.style-input:enabled:hover,
+.style-input:enabled:hover,
+.modal input:enabled:focus {
   border-bottom: 3px solid black;
 }
 
-.modal input:disabled, .style-input:disabled {
+.modal input:disabled,
+.style-input:disabled {
   @apply rounded-lg border-none shadow-lg;
 }
 
 .button {
   @apply bg-blue-800 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
-  min-height:  50px;
-  transition:  all 250ms linear;
+  min-height: 50px;
+  transition: all 250ms linear;
 }
 .button:hover {
   @apply bg-blue-900;
@@ -117,14 +123,15 @@ code {
 
 .button-danger {
   @apply bg-red-700 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
-  min-height:  50px;
-  transition:  all 250ms linear;
+  min-height: 50px;
+  transition: all 250ms linear;
 }
 .button-danger:hover {
   @apply bg-red-800;
 }
 
-.button:disabled, .button-danger:disabled {
+.button:disabled,
+.button-danger:disabled {
   @apply bg-gray-500;
 }
 
@@ -142,7 +149,7 @@ code {
   .toast {
     @apply text-white p-2 m-3 rounded-md shadow-md min-w-[20rem] min-h-[3rem] flex flex-col justify-center;
     transition: all 250ms linear;
-    z-index:1000;
+    z-index: 1000;
   }
 
   .toast-success {

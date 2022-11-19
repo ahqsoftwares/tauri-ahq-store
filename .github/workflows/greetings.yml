@@ -9,8 +9,8 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-    - uses: actions/first-interaction@v1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: "Thank you for showing your interest to improve AHQ Store App!"
-        pr-message: "Thank you for making a request to improve our App!"
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: "Thank you for showing your interest to improve AHQ Store App!"
+          pr-message: "Thank you for making a request to improve our App!"

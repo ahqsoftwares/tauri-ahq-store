@@ -1,13 +1,13 @@
-import { enable, disable, isEnabled } from 'tauri-plugin-autostart-api';
+import { enable, disable, isEnabled } from "tauri-plugin-autostart-api";
 
 export async function isAutostartEnabled() {
-         return await isEnabled();
+  return await isEnabled();
 }
 
 export async function enableAutostart() {
-         return await enable()
+  return await enable();
 }
 
 export async function disableAutoStart() {
-         return await disable();
+  return await disable();
 }

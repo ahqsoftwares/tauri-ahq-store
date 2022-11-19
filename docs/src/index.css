@@ -35,26 +35,29 @@ Nav Items
   transition: all 500ms linear;
 }
 
-.n-item-s:active, .n-item-s:hover {
-border-width: 9px;
-border-style: solid;
-border-radius: 30%;
-@apply border-orange-400
+.n-item-s:active,
+.n-item-s:hover {
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  @apply border-orange-400;
 }
 
-.n-item:active, .n-item:focus, .active {
-@apply text-white;
-border-width: 9px;
-border-style: solid;
-border-radius: 30%;
-@apply border-orange-400
+.n-item:active,
+.n-item:focus,
+.active {
+  @apply text-white;
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  @apply border-orange-400;
 }
 
 .n-item:hover {
-border-width: 9px;
-border-style: solid;
-border-radius: 30%;
-@apply border-orange-400
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  @apply border-orange-400;
 }
 
 /*
@@ -70,8 +73,8 @@ Backgrounds Super
 @layer utilities {
   .button {
     @apply bg-blue-800 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
-    min-height:  50px;
-    transition:  all 250ms linear;
+    min-height: 50px;
+    transition: all 250ms linear;
   }
 
   .button:hover {
@@ -84,15 +87,16 @@ Backgrounds Super
 
   .button-danger {
     @apply bg-red-700 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
-    min-height:  50px;
-    transition:  all 250ms linear;
+    min-height: 50px;
+    transition: all 250ms linear;
   }
-  
+
   .button-danger:hover {
     @apply bg-red-800;
   }
 
-  .button:disabled, .button-danger:disabled {
+  .button:disabled,
+  .button-danger:disabled {
     @apply bg-gray-500;
   }
 
