@@ -26,6 +26,7 @@
         "all": true,
         "scope": [
           "https://github.com/ahqsoftwares/ahq-store-data/*",
+          "https://raw.githack.com/ahqsoftwares/ahq-store-data/*",
           "http://n7.danbot.host:2061/*",
           "http://n7.danbot.host:2061/",
           "http://localhost:2030/",

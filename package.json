@@ -1,6 +1,6 @@
 {
   "name": "ahq-store-tauri",
-  "version": "0.8.7",
+  "version": "0.9.0",
   "private": true,
   "license": "Creative Commons",
   "dependencies": {
@@ -54,7 +54,7 @@
     ]
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.2.0",
+    "@tauri-apps/cli": "^1.2.1",
     "cross-env": "^7.0.3",
     "serve": "14.0.1"
   },

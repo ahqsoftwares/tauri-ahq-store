@@ -27,7 +27,7 @@ export default function InstalledAppsMenu(props: {
       <div className="ml-3"></div>
 
       <h6>
-        Installed Apps<p>Show all apps installed by AHQ Store (soon)</p>
+        Installed Apps<p>Show all apps installed by AHQ Store</p>
       </h6>
 
       <div className="mx-auto"></div>

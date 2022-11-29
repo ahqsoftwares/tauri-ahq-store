@@ -46,7 +46,8 @@ export default function nav(props: prop) {
   }
 
   getCurrent().setTitle(
-    `${active[0].toUpperCase()}${active
+    `${active.replace("user", "account")[0].toUpperCase()}${active
+      .replace("user", "ccount")
       .replace(active[0], "")
       .toLowerCase()} - AHQ Store`
   );

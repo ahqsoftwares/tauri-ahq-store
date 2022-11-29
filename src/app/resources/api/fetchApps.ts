@@ -44,7 +44,7 @@ async function getApp(appName: string) {
     data = cache[appName];
   } else {
     const { data: mainAppData }: any = await fetch(
-      `https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/${appName}.json`,
+      `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/${appName}.json`,
       {
         method: "GET",
         responseType: 1,
@@ -52,7 +52,7 @@ async function getApp(appName: string) {
     );
 
     const { data: authorData }: any = await fetch(
-      `https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/user${mainAppData.author.id}.json`,
+      `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/user${mainAppData.author.id}.json`,
       {
         method: "GET",
         responseType: 1,

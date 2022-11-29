@@ -83,7 +83,7 @@ function Render(props: AppProps) {
     (async () => {
       //Fetch Maps
       const { data: Mapped } = await fetch(
-        "https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/mapped.json",
+        "https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/mapped.json",
         {
           method: "GET",
           timeout: 30,
@@ -98,7 +98,7 @@ function Render(props: AppProps) {
       });
 
       const { data: Home } = await fetch(
-        "https://github.com/ahqsoftwares/ahq-store-data/raw/main/database/home.json",
+        "https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/home.json",
         {
           method: "GET",
           timeout: 30,
@@ -212,6 +212,7 @@ function Render(props: AppProps) {
                 allAppsData={allAppsData}
                 autoUpdate={autoUpdate}
                 setAutoUpdate={setAutoUpdate}
+                setPage={changePage}
               />
             </div>
           </div>
