@@ -96,6 +96,8 @@ export default function Init(props: InitProps) {
         setDev(!dev);
         props.setDev(!dev);
         setShow(false);
+      } else {
+        toast?.edit("Please verify your email!", "danger");
       }
     } catch (_e) {
       toast?.edit("Failed to enable developer mode!", "danger");

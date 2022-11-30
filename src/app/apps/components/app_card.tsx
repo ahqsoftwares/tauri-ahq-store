@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { VscExtensions } from "react-icons/vsc";
 import fetchApps from "../../resources/api/fetchApps";
 
-export default function AppCard(props: { id: string; onClick: any }) {
+export default function AppCard(props: { id: string; onClick: any, dark: boolean }) {
   const [appData, setAppData] = useState<any>({
     title: "Loading...",
     description: "The current component is loading...",
@@ -23,7 +23,7 @@ export default function AppCard(props: { id: string; onClick: any }) {
 
   return (
     <div
-      className="card hover:mb-2 hover:shadow-2xl"
+      className={`card ${props.dark ? "hover:bg-gray-900 " : "hover:bg-gray-200 "}hover:mb-2 hover:shadow-xl`}
       style={{ cursor: "pointer" }}
       onClick={props.onClick}
     >

@@ -5,6 +5,7 @@ interface ButtonProps {
          Icon: IconType | string,
          title: String,
          description: String,
+         no50?: boolean,
          onClick: Function
 }
 
@@ -16,7 +17,8 @@ export default function Button(
                   Icon,
                   title,
                   description,
-                  onClick
+                  onClick,
+                  no50
          } = props;
 
          return (
@@ -29,7 +31,11 @@ export default function Button(
                            onClick={() => onClick()}
                   >        
                            <div className="my-auto ml-3">
-                                    <Icon size="3em" />
+                                    {typeof(Icon) === "string" ?
+                                             <img alt="Logo" width={"48px"} height={"48px"} style={no50 ? {} : {"borderRadius": "50%"}} src={Icon}></img>
+                                             :
+                                             <Icon size="3em" />
+                                    }
                            </div>
                            <div className="flex flex-col ml-3">
                                     <h1 className="text-3xl">{title}</h1>

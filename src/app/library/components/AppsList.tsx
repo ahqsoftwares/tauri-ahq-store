@@ -32,7 +32,7 @@ export default function AppsList(props: Props) {
         <button
           onClick={() => change()}
           className={`rounded-md p-1 ${
-            dark ? "hover:bg-gray-600" : "hover:bg-white"
+            dark ? "hover:bg-gray-900" : "hover:bg-white"
           }`}
           style={{ transition: "all 250ms linear" }}
         >

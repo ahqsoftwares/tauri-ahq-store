@@ -29,7 +29,7 @@ Apps Layout
 Layers
 */
 .layer {
-  @apply flex flex-col h-[24rem] w-[98%] bg-gray-100 rounded-md mt-5;
+  @apply flex flex-col h-[25rem] w-[98%] bg-gray-300 rounded-md mt-5;
   overflow-x: scroll;
 }
 .menu-d .layer {
@@ -55,14 +55,14 @@ Layers
 Cards
 */
 .card {
-  @apply flex flex-col self-center h-[20rem] w-[15rem] bg-gray-600 text-center rounded-xl shadow-md ml-[0.5rem];
+  @apply flex flex-col self-center h-[20rem] w-[15rem] bg-gray-800 text-center rounded-xl shadow-md ml-[0.5rem];
   min-width: 15rem;
   min-height: 20rem;
   transition: all 250ms linear;
 }
 
 .menu .card {
-  @apply bg-gray-300;
+  @apply bg-gray-100;
 }
 
 .card-img {

@@ -73,7 +73,7 @@ Backgrounds Super
   scroll-behavior: smooth;
 }
 .menu-d {
-  @apply items-center flex w-[99%] h-[98vh] bg-gray-600 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
+  @apply items-center flex w-[99%] h-[98vh] bg-gray-700 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
   transition: all 500ms linear;
   overflow-x: hidden;
   overflow-y: scroll;
@@ -124,13 +124,13 @@ Checkbox
 }
 
 .checkbox-d {
-  @apply bg-gray-700 w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
+  @apply bg-gray-800 w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
   transition: all 500ms linear;
   cursor: pointer;
 }
 
 .checkbox-d:hover {
-  background-color: rgb(88, 95, 108);
+  @apply bg-gray-900;
 }
 
 .checkbox-d h6 {
@@ -201,7 +201,7 @@ Checkbox
 User Panel
 */
 .user-d {
-  @apply mt-4 bg-gray-700 w-[98%] rounded-lg shadow-lg p-[auto] h-[43rem] flex flex-col;
+  @apply mt-4 bg-gray-800 w-[98%] rounded-lg shadow-lg p-[auto] h-[43rem] flex flex-col;
   transition: all 500ms linear;
 }
 .user {

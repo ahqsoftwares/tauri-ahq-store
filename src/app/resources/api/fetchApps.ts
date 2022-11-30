@@ -26,6 +26,18 @@ export default async function fetchApps(
   }
 }
 
+export async function fetchAuthor(
+  id: string
+) {
+  return await fetch(
+    `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/user${id}.json`,
+    {
+      method: "GET",
+      responseType: 1,
+    }
+  ) as any;
+}
+
 async function resolveApps(apps: string[]) {
   let promises = [];
 

@@ -57,8 +57,8 @@ export default function ShowModal(props: AppDataPropsModal) {
       height: "90%",
       transition: "all 500ms linear",
       borderRadius: "20px",
-      borderColor: dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
-      backgroundColor: dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
+      borderColor: dark ? "rgb(30, 41, 59)" : "rgb(209, 213, 219)",
+      backgroundColor: dark ? "rgb(30, 41, 59)" : "rgb(209, 213, 219)",
     },
     overlay: {
       backgroundColor: !dark

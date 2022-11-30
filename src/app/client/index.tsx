@@ -32,7 +32,7 @@ Database Refs
 import base from "../server";
 import GeneralUser from "./user.png";
 import Loading from "./loading.gif";
-import { BiLogOut, BiUserX } from "react-icons/bi";
+import { BiLogOut, BiUserCheck, BiUserX } from "react-icons/bi";
 import PopUp from "../resources/components/popup";
 import { open } from "@tauri-apps/api/dialog";
 import { readBinaryFile } from "@tauri-apps/api/fs";
@@ -586,22 +586,24 @@ function DeleteAccount(props: DeleteAccountProps) {
             </>
           ) : (
             <>
-              <h1>Are you sure you want to delete your account?</h1>
+              <h1 className={`text-3xl text-center ${dark ? "text-slate-200" : ""}`}>Are you sure you want to delete your account?</h1>
               <div className="mt-[14rem]"></div>
               <div className="flex">
                 <div className="w-[10rem] ml-[4rem]"></div>
-                <div className="w-[10rem]">
+                <div className="w-[12rem]">
                   <button
                     type="reset"
-                    className="button"
+                    className="button button-success flex items-center text-center justify-center"
                     onClick={() => cancel()}
                   >
-                    No
+                    <BiUserCheck size="2em" />
+                    <h1 className="block text-bold ml-1">NO</h1>
                   </button>
                 </div>
-                <div className="w-[10rem]">
-                  <button className="button-danger">
-                    <BiUserX size="2.5em" /> Yes
+                <div className="w-[12rem]">
+                  <button className="button-danger flex items-center text-center justify-center">
+                    <BiUserX size="2em" /> 
+                    <h1 className="block text-bold ml-1">YES</h1>
                   </button>
                 </div>
                 <div className="w-[10rem]"></div>

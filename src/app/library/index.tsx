@@ -63,7 +63,7 @@ export default function Library(props: LibraryProps) {
       <div className={`${darkMode(["menu"])}`}>
         <div
           className={`mt-[1rem] min-w-[98%] rounded-lg shadow-xl ${
-            dark ? "bg-gray-700" : "bg-gray-100"
+            dark ? "bg-gray-800" : "bg-gray-100"
           } flex flex-col`}
         >
           <div className="px-3 pt-1 flex flex-row text-center items-center justify-center mb-[1rem]">

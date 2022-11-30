@@ -147,6 +147,7 @@ export default function Apps(props: AppsProps) {
                           setData(data);
                           change();
                         }}
+                        dark={dark}
                       />
                     );
                   } catch (e) {

@@ -68,7 +68,7 @@ export default function App({
   return (
     <div
       className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] ${
-        dark ? "bg-gray-600 text-white" : "bg-gray-100 text-slate-800"
+        dark ? "bg-gray-800 text-white" : "bg-gray-100 text-slate-800"
       } rounded-md mt-2 shadow-xl`}
     >
       <img
@@ -101,9 +101,9 @@ export default function App({
         <div className="ml-auto mr-3 my-auto" ref={data}>
           <button
             className={`p-2 ${
-              active ? (dark ? "bg-gray-800" : "bg-gray-200") : ""
+              active ? (dark ? "bg-gray-900" : "bg-gray-200") : ""
             } ${
-              !active ? (dark ? "hover:bg-gray-700" : "hover:bg-gray-300") : ""
+              !active ? (dark ? "hover:bg-black" : "hover:bg-gray-300") : ""
             } rounded-md`}
             style={{ transition: "all 120ms linear" }}
           >
@@ -112,7 +112,7 @@ export default function App({
           {active ? (
             <div
               className={`mt-1 absolute ${
-                dark ? "bg-gray-800" : "bg-gray-300"
+                dark ? "bg-gray-900" : "bg-gray-300"
               } min-h-[1rem] min-w-[6rem] rounded-xl shadow-xl`}
               style={{
                 right: "2rem",
