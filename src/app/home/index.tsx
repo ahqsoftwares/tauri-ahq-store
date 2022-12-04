@@ -4,6 +4,9 @@ import { BiLibrary, BiExtension } from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
 import { VscAccount } from "react-icons/vsc";
 
+//image
+import AHQStore from "./index.png";
+
 //components
 import Button from "./components/Button";
 import base from "../server";
@@ -13,6 +16,7 @@ import { didGreet, greeted } from "../resources/utilities/greet";
 import { fetch } from "@tauri-apps/api/http";
 import { getData, setData } from "../resources/utilities/database";
 import { Auth } from "firebase/auth";
+import { getAppVersion } from "../resources/api/version";
 import getWindows from "../resources/api/os";
 
 function darkMode(classes: Array<string>, dark: boolean) {
@@ -48,14 +52,15 @@ export default function Home(props: HomeProps) {
   .catch(console.log);
 
   const [greet, setGreet] = useState(didGreet());
-  const first = didGreet();
+  const version = getAppVersion();
+  const [first] = useState(!didGreet());
   const textBox = useRef<HTMLHeadingElement>("" as any);
 
   useEffect(() => {
     if (!greet) {
+      greeted();
       setTimeout(() => {
         setGreet(true);
-        greeted();
         const greetText = "What would you like to do today!";
         for (let i = 0; i < greetText.length; i++) {
           const h1 = textBox.current as HTMLHeadElement;
@@ -66,16 +71,26 @@ export default function Home(props: HomeProps) {
             h1.innerHTML += greetText[i];
           }, 50 * i);
         }
-      }, 1500);
+      }, 1750);
     }
   }, [greet]);
 
   return (
     <div className={`${darkMode(["menu"], props.dark)} flex flex-col justify-center`}>
+      <div className="flex justify-center items-center mb-auto mt-3">
+        <img
+          src={AHQStore}
+          alt="Logo"
+          width={"100px"}
+          draggable={false}
+        />
+        <h1 className={`block ml-2 style-h1 ${props.dark ? "style-h1-d" : ""}`} style={{"fontSize": "100px"}} >AHQ Store</h1>
+        <span className={`block mt-auto text-red-600 ml-2`} style={{"fontSize": "50px", fontWeight: "10px" }}>v{version}</span>
+      </div>
       <h1 ref={textBox} className={`text-3xl ${dark ? "text-slate-300" : "text-slate-600"} mb-2`} style={{"transition": "all 125ms fade-in"}}>
-        {(!first && greet) ? "What would you like to do today!" : "Welcome to AHQ Store"}
+        {(!first && greet) ? "What would you like to do today!" : "Welcome!"}
       </h1>
-      <div className="flex flex-col">
+      <div className="flex flex-col mb-auto">
         <div className="flex flex-row">
           <Button 
             dark={dark}

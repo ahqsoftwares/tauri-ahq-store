@@ -47,25 +47,22 @@ export default function FontSelector(props: {
       <div className="mx-auto"></div>
 
       <select
-        className={`select ${props.dark ? "select-d" : ""}`}
+        className={`select ${props.dark ? "select-d text-blue-700" : "text-red-700"}`}
         defaultValue={initial}
         onChange={onChange}
+        style={{
+          fontWeight: "bold"
+        }}
       >
-        <option value="def" style={{ fontFamily: "Segoe UI" }}>
-          Default
-        </option>
-        <optgroup label="Serif">
-          <option value="tnr" style={{ fontFamily: "Times New Roman" }}>
-            Times New Roman
+        <optgroup label="Store Style">
+          <option value="def" style={{ fontFamily: "Segoe UI" }}>
+            Normal
           </option>
-          <option value="geo" style={{ fontFamily: "Georgia" }}>
-            Georgia
-          </option>
-          <option value="gra" style={{ fontFamily: "Garamond" }}>
-            Garamond
+          <option value="def-v" style={{ fontFamily: "Roboto" }}>
+            Pro
           </option>
         </optgroup>
-        <optgroup label="Sans-serif">
+        <optgroup label="Store+">
           <option value="ari" style={{ fontFamily: "Arial" }}>
             Arial
           </option>
@@ -74,6 +71,17 @@ export default function FontSelector(props: {
           </option>
           <option value="bhn" style={{ fontFamily: "Bahnschrift" }}>
             Bahnschrift
+          </option>
+        </optgroup>
+        <optgroup label="Formal">
+          <option value="tnr" style={{ fontFamily: "Times New Roman" }}>
+            Times New Roman
+          </option>
+          <option value="geo" style={{ fontFamily: "Georgia" }}>
+            Georgia
+          </option>
+          <option value="gra" style={{ fontFamily: "Garamond" }}>
+            Garamond
           </option>
         </optgroup>
       </select>

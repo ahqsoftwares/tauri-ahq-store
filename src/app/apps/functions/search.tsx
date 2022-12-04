@@ -13,7 +13,6 @@ interface App {
   title: string;
   description: string;
   id: string;
-  download_url: string;
 }
 
 export default function Search(props: SearchProps) {
@@ -35,7 +34,6 @@ export default function Search(props: SearchProps) {
           <>
             <SearchResult
               {...app}
-              downloadUrl={app.download_url}
               set={set}
               show={show}
             />

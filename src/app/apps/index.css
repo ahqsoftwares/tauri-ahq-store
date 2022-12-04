@@ -46,7 +46,7 @@ Layers
 }
 
 .layer .item {
-  @apply flex flex-row h-[22rem] w-[97%];
+  @apply flex flex-row h-[23rem] w-[97%];
   /*overflow-y: hidden;
 	overflow-x: hidden;*/
 }
@@ -55,7 +55,7 @@ Layers
 Cards
 */
 .card {
-  @apply flex flex-col self-center h-[20rem] w-[15rem] bg-gray-800 text-center rounded-xl shadow-md ml-[0.5rem];
+  @apply flex flex-col self-center h-[21rem] w-[16rem] bg-gray-800 text-center rounded-xl px-[0.25rem] shadow-md ml-[0.5rem];
   min-width: 15rem;
   min-height: 20rem;
   transition: all 250ms linear;

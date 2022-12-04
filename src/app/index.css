@@ -18,11 +18,11 @@
 Navigation
 */
 .nav {
-  transition: all 1s linear;
+  transition: all 500ms linear;
   background-color: white;
 }
 .nav-d {
-  transition: all 1s linear;
+  transition: all 500ms linear;
   background-color: gray;
 }
 
@@ -36,6 +36,7 @@ Item pallete
   margin-top: 8px;
   transition: all 200ms linear;
 }
+
 .n-item:active,
 .n-item:focus,
 .active {
@@ -43,6 +44,8 @@ Item pallete
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
+  transition: padding 125ms linear;
+  animation: clickAnimation 250ms linear;
   @apply border-blue-400 bg-blue-400;
 }
 
@@ -51,6 +54,18 @@ Item pallete
   border-style: solid;
   border-radius: 30%;
   @apply border-blue-400;
+}
+
+@keyframes clickAnimation {
+  from {
+    padding: 0%;
+  }
+  50% {
+    padding: 10%;
+  }
+  100% {
+    padding: 0%;
+  }
 }
 
 /*
@@ -289,6 +304,22 @@ User Panel
   transition: all 250ms linear;
 }
 
+.select optgroup {
+  @apply text-black;
+}
+
+.select option {
+  @apply text-red-700;
+}
+
 .select-d {
-  @apply bg-gray-800 text-slate-100;
+  @apply bg-black text-slate-100;
+}
+
+.select-d optgroup {
+  @apply text-white;
+}
+
+.select-d option {
+  @apply text-blue-700;
 }

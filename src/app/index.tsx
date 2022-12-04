@@ -132,7 +132,7 @@ function Render(props: AppProps) {
 
   useEffect(() => {
     const element = document.querySelector("body");
-    const listedFonts = ["def", "tnr", "geo", "gra", "ari", "ext", "bhn"];
+    const listedFonts = ["def", "def-v", "tnr", "geo", "gra", "ari", "ext", "bhn"];
 
     const selectedFont = font;
 

@@ -46,6 +46,7 @@ import {
 /*Global CSS
  */
 import "./index.css";
+import { loadAppVersion } from "./app/resources/api/version";
 
 const config = {
   apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
@@ -67,6 +68,7 @@ const root = ReactDOM.createRoot(
 
 /**Sub or main? */
 if (appWindow.label === "main") {
+  loadAppVersion();
   init();
 
   /*Logic

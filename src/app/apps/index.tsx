@@ -32,9 +32,6 @@ interface AppsProps {
     map: {
       [key: string]: any;
     };
-    users: {
-      [key: string]: any;
-    };
   };
 }
 

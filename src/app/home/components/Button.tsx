@@ -32,7 +32,7 @@ export default function Button(
                   >        
                            <div className="my-auto ml-3">
                                     {typeof(Icon) === "string" ?
-                                             <img alt="Logo" width={"48px"} height={"48px"} style={no50 ? {} : {"borderRadius": "50%"}} src={Icon}></img>
+                                             <img alt="Logo" width={"48px"} height={"48px"} style={no50 ? {} : {"borderRadius": "50%"}} draggable={false} src={Icon}></img>
                                              :
                                              <Icon size="3em" />
                                     }

@@ -2,9 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  user-select: none;
+}
+
 @font-face {
   font-family: "Extatica";
   src: url("./special.otf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: url("./Roboto.ttf");
 }
 
 body {
@@ -14,8 +23,12 @@ body {
 }
 
 .def {
-  font-family: "Segoe UI Variable", "Segoe UI", Tahoma, Geneva, Verdana,
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana,
     sans-serif;
+}
+
+.def-v {
+  font-family: "Roboto";
 }
 
 .tnr {
@@ -63,10 +76,15 @@ code {
   user-select: none;
 }
 
-.modal h1 {
+.modal h1, .style-h1 {
   font-weight: 900;
   font-size: 5ch;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   @apply text-blue-900;
+}
+
+.style-h1-d {
+  @apply text-blue-700;
 }
 
 .modal h2 {

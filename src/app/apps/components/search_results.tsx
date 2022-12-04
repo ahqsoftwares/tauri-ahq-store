@@ -4,23 +4,18 @@ interface SearchPropsToRender {
   description: string;
   id: string;
   set: Function;
-  downloadUrl: string;
   show: Function;
 }
 
 export default function Load(props: SearchPropsToRender) {
-  const { img, title, description, downloadUrl, show, set, id } = props;
+  const { img, title, description, show, set, id } = props;
 
   return (
     <div
       className="flex w-[100%] h-[3rem] shoadow-2xl rounded-xl"
       style={{ cursor: "pointer" }}
       onClick={() => {
-        set({
-          img,
-          downloadUrl,
-          id,
-        });
+        set(id);
         show();
       }}
     >
