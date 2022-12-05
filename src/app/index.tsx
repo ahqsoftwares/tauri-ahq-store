@@ -130,6 +130,16 @@ function Render(props: AppProps) {
     })();
   }, []);
 
+  (async() => {
+    setInterval(() => {
+      const elements = document.querySelectorAll("img");
+
+      for (let i = 0; i < elements.length; i++) {
+        elements[i].setAttribute("draggable", "false");
+      }
+    }, 1000);
+  })()
+
   useEffect(() => {
     const element = document.querySelector("body");
     const listedFonts = [

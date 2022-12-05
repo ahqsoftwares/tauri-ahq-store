@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import pkg from "../../resources/package.png";
 
 //Icons
 import { BsThreeDotsVertical, BsTrash } from "react-icons/bs";
@@ -76,6 +77,8 @@ export default function App({
         height={"64px"}
         src={appInfo.img}
         alt={appInfo.title}
+        className={appInfo.img === pkg ? "p-2" : ""}
+        draggable={false}
       ></img>
 
       <div className="flex flex-col my-auto">

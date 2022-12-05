@@ -32,6 +32,7 @@ export default function Button(props: ButtonProps) {
             width={"48px"}
             height={"48px"}
             style={no50 ? {} : { borderRadius: "50%" }}
+            className="shadow-2xl"
             draggable={false}
             src={Icon}
           ></img>
