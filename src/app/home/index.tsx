@@ -18,6 +18,7 @@ import { getData, setData } from "../resources/utilities/database";
 import { Auth } from "firebase/auth";
 import { getAppVersion } from "../resources/api/version";
 import getWindows from "../resources/api/os";
+import { BsCodeSlash } from "react-icons/bs";
 
 function darkMode(classes: Array<string>, dark: boolean) {
   return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
@@ -27,6 +28,7 @@ interface HomeProps {
   dark: boolean;
   setPage: React.Dispatch<React.SetStateAction<string>>;
   auth: Auth;
+  dev: boolean;
 }
 
 export default function Home(props: HomeProps) {
@@ -116,6 +118,7 @@ export default function Home(props: HomeProps) {
             dark={dark}
             Icon={BiLibrary}
             title="Library"
+            calibrate="1.5"
             description="Check for app updates"
             onClick={() => setPage("library")}
           />
@@ -133,10 +136,25 @@ export default function Home(props: HomeProps) {
             Icon={Math.random() > 0.01 ? FiSettings : getWindows()}
             no50
             title="Settings"
+            calibrate="1"
             description="Set your preferences"
             onClick={() => setPage("settings")}
           />
         </div>
+        {props.dev ? 
+          <div className="flex justify-center items-center mb-auto mt-3">
+            <Button
+              dark={dark}
+              Icon={BsCodeSlash}
+              no50
+              calibrate="1.5"
+              title="Developer"
+              description="Hola! Hello!"
+              onClick={() => setPage("developer")}
+            />
+          </div>
+          : <></>
+        }
       </div>
     </div>
   );

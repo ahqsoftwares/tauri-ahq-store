@@ -24,14 +24,15 @@ export default function App({
   reload: Function;
   toast: typeof Toast;
 }) {
-  const updating = updaterStatus().apps?.includes(appInfo.id);
+  const updating = updaterStatus().apps?.includes(appInfo.id as string);
   const [active, setActive] = useState(false);
   const data = useRef<HTMLDivElement>("" as any);
 
   async function handleClick() {
     const Toast = toast("Please wait...", "warn", "never");
     try {
-      await unInstall(appInfo.id);
+      console.log(appInfo.id);
+      await unInstall(appInfo.id as string);
       Toast?.edit(`Successfully uninstalled ${appInfo.title}`, "success");
       setTimeout(() => {
         reload();

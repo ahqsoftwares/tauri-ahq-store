@@ -7,10 +7,11 @@ interface ButtonProps {
   description: String;
   no50?: boolean;
   onClick: Function;
+  calibrate?: string
 }
 
 export default function Button(props: ButtonProps) {
-  const { dark, Icon, title, description, onClick, no50 } = props;
+  const { dark, Icon, title, description, onClick, no50, calibrate } = props;
 
   return (
     <div
@@ -42,7 +43,7 @@ export default function Button(props: ButtonProps) {
       </div>
       <div className="flex flex-col ml-3">
         <h1 className="text-3xl">{title}</h1>
-        <h2>{description}</h2>
+        <h2 className={calibrate ? `ml-[${calibrate}px]` : ""}>{description}</h2>
       </div>
     </div>
   );

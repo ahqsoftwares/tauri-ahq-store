@@ -129,8 +129,8 @@ fn main() {
         .unwrap();
 
     let window = tauri::Manager::get_window(&app, "main").unwrap();
-    let window3 = tauri::Manager::get_window(&app, "main").unwrap();
-    let window4 = tauri::Manager::get_window(&app, "main").unwrap();
+    let window3 = window.clone();
+    let window4 = window.clone();
 
     window3.listen("sendUpdaterStatus", move |event| {
         window4.emit("sendUpdaterStatus", event.payload().unwrap()).unwrap();

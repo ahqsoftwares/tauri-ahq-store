@@ -4,8 +4,8 @@ import packageImg from "../package.png";
 type appData = {
   title: string;
   description: string;
-  id: string;
   img: string;
+  id?: string;
   download_url: string;
   version: string;
   exe: string;
@@ -105,6 +105,7 @@ async function getApp(appName: string) {
     });
 
     let fullAnswer = {
+      id: appName,
       ...mainAppData,
       author: {
         id: mainAppData.author.id,

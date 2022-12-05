@@ -232,6 +232,7 @@ function Render(props: AppProps) {
                 autoUpdate={autoUpdate}
                 setAutoUpdate={setAutoUpdate}
                 setPage={changePage}
+                dev={dev}
               />
             </div>
           </div>
