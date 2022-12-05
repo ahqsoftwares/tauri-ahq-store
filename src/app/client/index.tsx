@@ -586,7 +586,13 @@ function DeleteAccount(props: DeleteAccountProps) {
             </>
           ) : (
             <>
-              <h1 className={`text-3xl text-center ${dark ? "text-slate-200" : ""}`}>Are you sure you want to delete your account?</h1>
+              <h1
+                className={`text-3xl text-center ${
+                  dark ? "text-slate-200" : ""
+                }`}
+              >
+                Are you sure you want to delete your account?
+              </h1>
               <div className="mt-[14rem]"></div>
               <div className="flex">
                 <div className="w-[10rem] ml-[4rem]"></div>
@@ -602,7 +608,7 @@ function DeleteAccount(props: DeleteAccountProps) {
                 </div>
                 <div className="w-[12rem]">
                   <button className="button-danger flex items-center text-center justify-center">
-                    <BiUserX size="2em" /> 
+                    <BiUserX size="2em" />
                     <h1 className="block text-bold ml-1">YES</h1>
                   </button>
                 </div>

@@ -24,32 +24,29 @@ function darkMode(classes: Array<string>, dark: boolean) {
 }
 
 interface HomeProps {
-  dark: boolean,
-  setPage: React.Dispatch<React.SetStateAction<string>>,
-  auth: Auth
+  dark: boolean;
+  setPage: React.Dispatch<React.SetStateAction<string>>;
+  auth: Auth;
 }
 
 export default function Home(props: HomeProps) {
-  const [userIcon, setUserIcon] = useState<string>(getData("x-icon") as string || "");
+  const [userIcon, setUserIcon] = useState<string>(
+    (getData("x-icon") as string) || ""
+  );
 
-
-  const {
-    dark,
-    setPage,
-    auth
-  } = props;
+  const { dark, setPage, auth } = props;
 
   fetch(`${base}`, {
     headers: {
-      uid: auth.currentUser?.uid as string
+      uid: auth.currentUser?.uid as string,
     },
-    method: "GET"
+    method: "GET",
   })
-  .then(({ data }: any) => { 
-    setData("x-icon", data);
-    setUserIcon(data);
-  })
-  .catch(console.log);
+    .then(({ data }: any) => {
+      setData("x-icon", data);
+      setUserIcon(data);
+    })
+    .catch(console.log);
 
   const [greet, setGreet] = useState(didGreet());
   const version = getAppVersion();
@@ -76,30 +73,46 @@ export default function Home(props: HomeProps) {
   }, [greet]);
 
   return (
-    <div className={`${darkMode(["menu"], props.dark)} flex flex-col justify-center`}>
+    <div
+      className={`${darkMode(
+        ["menu"],
+        props.dark
+      )} flex flex-col justify-center`}
+    >
       <div className="flex justify-center items-center mb-auto mt-3">
-        <img
-          src={AHQStore}
-          alt="Logo"
-          width={"100px"}
-          draggable={false}
-        />
-        <h1 className={`block ml-2 style-h1 ${props.dark ? "style-h1-d" : ""}`} style={{"fontSize": "100px"}} >AHQ Store</h1>
-        <span className={`block mt-auto text-red-600 ml-2`} style={{"fontSize": "50px", fontWeight: "10px" }}>v{version}</span>
+        <img src={AHQStore} alt="Logo" width={"100px"} draggable={false} />
+        <h1
+          className={`block ml-2 style-h1 ${props.dark ? "style-h1-d" : ""}`}
+          style={{ fontSize: "100px" }}
+        >
+          AHQ Store
+        </h1>
+        <span
+          className={`block mt-auto text-red-600 ml-2`}
+          style={{ fontSize: "50px", fontWeight: "10px" }}
+        >
+          v{version}
+        </span>
       </div>
-      <h1 ref={textBox} className={`text-3xl ${dark ? "text-slate-300" : "text-slate-600"} mb-2`} style={{"transition": "all 125ms fade-in"}}>
-        {(!first && greet) ? "What would you like to do today!" : "Welcome!"}
+      <h1
+        ref={textBox}
+        className={`text-3xl ${
+          dark ? "text-slate-300" : "text-slate-600"
+        } mb-2`}
+        style={{ transition: "all 125ms fade-in" }}
+      >
+        {!first && greet ? "What would you like to do today!" : "Welcome!"}
       </h1>
       <div className="flex flex-col mb-auto">
         <div className="flex flex-row">
-          <Button 
+          <Button
             dark={dark}
             Icon={BiExtension}
             title={"Apps"}
             description="Explore Apps"
             onClick={() => setPage("apps")}
           />
-          <Button 
+          <Button
             dark={dark}
             Icon={BiLibrary}
             title="Library"
@@ -108,14 +121,14 @@ export default function Home(props: HomeProps) {
           />
         </div>
         <div className="flex flex-row">
-          <Button 
+          <Button
             dark={dark}
             Icon={userIcon === "" ? VscAccount : userIcon}
             title="Account"
             description="Customise your account"
             onClick={() => setPage("user")}
           />
-          <Button 
+          <Button
             dark={dark}
             Icon={Math.random() > 0.01 ? FiSettings : getWindows()}
             no50

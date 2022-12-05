@@ -1,3 +1,1 @@
-export default function SearchResultModal() {
-         
-}
+export default function SearchResultModal() {}

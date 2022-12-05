@@ -23,8 +23,7 @@ body {
 }
 
 .def {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana,
-    sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .def-v {
@@ -76,10 +75,11 @@ code {
   user-select: none;
 }
 
-.modal h1, .style-h1 {
+.modal h1,
+.style-h1 {
   font-weight: 900;
   font-size: 5ch;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   @apply text-blue-900;
 }
 

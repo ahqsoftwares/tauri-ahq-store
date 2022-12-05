@@ -34,7 +34,7 @@ export default function Developers(props: DevProps) {
     overlay: {
       backgroundColor: !props.dark
         ? "rgb(55, 65, 81, 0.5)"
-        : "rgb(107, 114, 128, 0.75)"
+        : "rgb(107, 114, 128, 0.75)",
     },
   };
 
@@ -48,11 +48,8 @@ export default function Developers(props: DevProps) {
   }
   return (
     <div className={`${darkMode(["menu"], dark)}`}>
-      <Modal
-        style={customStyles}
-        isOpen={popUp}
-      >
-        <Submit 
+      <Modal style={customStyles} isOpen={popUp}>
+        <Submit
           toggle={() => {
             setPopUp(false);
           }}
@@ -75,7 +72,9 @@ export default function Developers(props: DevProps) {
         ShowCaseIcon={AiOutlineAppstoreAdd}
         title={"Add"}
         description="Submit a new app to the store (soon)"
-        onClick={() => {setPopUp((value) => !value)}}
+        onClick={() => {
+          setPopUp((value) => !value);
+        }}
         PopUp={FiExternalLink}
       />
     </div>

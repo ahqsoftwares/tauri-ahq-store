@@ -1,14 +1,21 @@
 import { fetch } from "@tauri-apps/api/http";
+import packageImg from "../package.png";
 
-type cacheData = {
+type appData = {
   title: string;
   description: string;
   id: string;
   img: string;
   download_url: string;
-  author: any;
   version: string;
   exe: string;
+  author: {
+    id: string
+  }
+};
+
+interface cacheData extends appData {
+  author: any;
 };
 
 let cache: {
@@ -26,21 +33,19 @@ export default async function fetchApps(
   }
 }
 
-export async function fetchAuthor(
-  id: string
-) {
-  return await fetch(
+export async function fetchAuthor(id: string) {
+  return (await fetch(
     `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/user${id}.json`,
     {
       method: "GET",
       responseType: 1,
     }
-  ) as any;
+  )) as any;
 }
 
 async function resolveApps(apps: string[]) {
   let promises = [];
-
+  console.log(apps);
   for (let i = 0; i < apps.length; i++) {
     const app = apps[i];
     promises.push(getApp(app));
@@ -55,24 +60,51 @@ async function getApp(appName: string) {
   if (cache[appName]) {
     data = cache[appName];
   } else {
-    const { data: mainAppData }: any = await fetch(
+    const mainAppData = await fetch(
       `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/${appName}.json`,
       {
         method: "GET",
         responseType: 1,
       }
-    );
-
-    const { data: authorData }: any = await fetch(
+    )
+    .then(({ data, ok }) => {
+      if (ok) {
+        return data as appData;
+      } else {
+        throw new Error("Not Found!");
+      }
+    })
+    .catch(() => {
+      return {
+        title: `Unknown`,
+        description: "App not Found",
+        id: appName,
+        download_url: "",
+        version: "v0.0.0",
+        img: packageImg,
+        author: {
+          id: "unknown"
+        }
+      } as appData;
+    });
+    
+    const authorData = await fetch(
       `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/user${mainAppData.author.id}.json`,
       {
         method: "GET",
         responseType: 1,
       }
-    );
+    )
+    .then(({ data }) => {
+      return data as any;
+    })
+    .catch(() => {
+      return {
+
+      };
+    });
 
     let fullAnswer = {
-      id: appName,
       ...mainAppData,
       author: {
         id: mainAppData.author.id,

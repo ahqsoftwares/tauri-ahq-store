@@ -1,20 +1,20 @@
 class Greet {
-         greet: boolean;
+  greet: boolean;
 
-         constructor() {
-                  this.greet = false;
-         }
+  constructor() {
+    this.greet = false;
+  }
 
-         greeted() {
-                  this.greet = true;
-         }
+  greeted() {
+    this.greet = true;
+  }
 }
 
 const greet = new Greet();
 export function didGreet() {
-         return greet.greet;
+  return greet.greet;
 }
 
 export function greeted() {
-         greet.greeted();
-} 
+  greet.greeted();
+}

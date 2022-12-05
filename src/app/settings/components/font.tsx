@@ -47,11 +47,13 @@ export default function FontSelector(props: {
       <div className="mx-auto"></div>
 
       <select
-        className={`select ${props.dark ? "select-d text-blue-700" : "text-red-700"}`}
+        className={`select ${
+          props.dark ? "select-d text-blue-700" : "text-red-700"
+        }`}
         defaultValue={initial}
         onChange={onChange}
         style={{
-          fontWeight: "bold"
+          fontWeight: "bold",
         }}
       >
         <optgroup label="Store Style">
