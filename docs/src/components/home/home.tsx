@@ -1,6 +1,7 @@
 import getAppInstallerFile from "../../components/api/model/fetchDownload";
 import { get, set } from "../../components/api/database";
 
+import UAParser from "ua-parser-js";
 import logo from "../logo.png";
 
 import { useEffect, useState } from "react";
@@ -14,6 +15,8 @@ export default function Home(props: HomeProps) {
 
   const [download, setDownload] = useState("%loading");
   const [version, setV] = useState("0.0.0");
+  const parser = new UAParser();
+  const os = parser.getOS();
 
   useEffect(() => {
     (async () => {
@@ -64,7 +67,7 @@ export default function Home(props: HomeProps) {
       <div className="h-[100%] w-[100%] flex flex-col justify-center items-center text-center">
         <button
           className={`button flex justify-center items-center text-center`}
-          disabled={download === "%loading" || download === "%error"}
+          disabled={download === "%loading" || download === "%error" || os.name !== "Windows"}
           id="btn"
           style={{
             minHeight: "3.5rem",
@@ -98,7 +101,7 @@ export default function Home(props: HomeProps) {
           ) : (
             <></>
           )}
-          {download.startsWith("https://") ? "Download" : ""}
+          {download.startsWith("https://") ? `Download ${os.name !== "Windows" ? `(Not for ${os.name})` : os.version === "10" ? "" : `(Partially Supported for Windows ${os.version})`}` : ""}
         </button>
       </div>
     </div>

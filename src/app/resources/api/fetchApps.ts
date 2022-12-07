@@ -7,6 +7,7 @@ type appData = {
   img: string;
   id?: string;
   download_url: string;
+  longDesc: string;
   version: string;
   exe: string;
   author: {
@@ -78,6 +79,7 @@ async function getApp(appName: string) {
       return {
         title: `Unknown`,
         description: "App not Found",
+        longDesc: "",
         id: appName,
         download_url: "",
         version: "v0.0.0",

@@ -8,6 +8,7 @@ specifiers:
   '@types/node': ^16.11.65
   '@types/react': ^18.0.21
   '@types/react-dom': ^18.0.6
+  '@types/ua-parser-js': ^0.7.36
   autoprefixer: ^10.4.12
   firebase-tools: ^11.14.2
   postcss: ^8.4.18
@@ -18,6 +19,7 @@ specifiers:
   react-spring: ^9.5.5
   tailwindcss: ^3.1.8
   typescript: ^4.8.4
+  ua-parser-js: ^1.0.32
   web-vitals: ^2.1.4
 
 dependencies:
@@ -28,6 +30,7 @@ dependencies:
   '@types/node': 16.11.65
   '@types/react': 18.0.21
   '@types/react-dom': 18.0.6
+  '@types/ua-parser-js': 0.7.36
   autoprefixer: 10.4.12_postcss@8.4.18
   postcss: 8.4.18
   react: 18.2.0
@@ -36,6 +39,7 @@ dependencies:
   react-spring: 9.5.5_biqbaboplfbrettd7655fr4n2y
   tailwindcss: 3.1.8_postcss@8.4.18
   typescript: 4.8.4
+  ua-parser-js: 1.0.32
   web-vitals: 2.1.4
 
 devDependencies:
@@ -2835,6 +2839,10 @@ packages:
 
   /@types/trusted-types/2.0.2:
     resolution: {integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==}
+    dev: false
+
+  /@types/ua-parser-js/0.7.36:
+    resolution: {integrity: sha512-N1rW+njavs70y2cApeIw1vLMYXRwfBy+7trgavGuuTfOd7j1Yh7QTRc/yqsPl6ncokt72ZXuxEU0PiCp9bSwNQ==}
     dev: false
 
   /@types/ws/8.5.3:
@@ -12183,6 +12191,10 @@ packages:
     resolution: {integrity: sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==}
     engines: {node: '>=4.2.0'}
     hasBin: true
+    dev: false
+
+  /ua-parser-js/1.0.32:
+    resolution: {integrity: sha512-dXVsz3M4j+5tTiovFVyVqssXBu5HM47//YSOeZ9fQkdDKkfzv2v3PP1jmH6FUyPW+yCSn7aBVK1fGGKNhowdDA==}
     dev: false
 
   /uc.micro/1.0.6:

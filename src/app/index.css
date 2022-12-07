@@ -254,6 +254,10 @@ User Panel
   @apply bg-gray-300 !important;
 }
 
+.img-dev .div-l  {
+  @apply bg-gray-100 shadow-xl !important;
+}
+
 .user-d img,
 .user img {
   transition: all 250ms linear;
@@ -298,6 +302,10 @@ User Panel
   text-align: center;
 }
 
+.text-l {
+  @apply text-slate-400;
+}
+
 .select {
   @apply px-2 py-[auto] w-[10.5rem] h-[30px] my-auto ml-auto rounded-xl bg-gray-300 text-slate-700;
   cursor: pointer;
@@ -322,4 +330,27 @@ User Panel
 
 .select-d option {
   @apply text-blue-700;
+}
+
+
+.img-dev {
+  @apply mt-2 mx-auto rounded-md;
+  width: 256px;
+  height: 256px;
+  position: relative;
+}
+
+.img-dev img {
+  @apply rounded-lg;
+}
+
+.div-m {
+  margin: 0 !important;
+  height: 256px !important;
+  width: 256px !important;
+  min-height: 256px !important;
+  min-width: 256px !important;
+  max-width: 256px !important;
+  min-width: 256px !important;
+  border-radius: 0.375rem !important;
 }
