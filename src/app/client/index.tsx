@@ -115,6 +115,7 @@ export default function Init(props: UserProps) {
           },
           method: "GET",
           responseType: 1,
+          timeout: 5
         })
           .then(({ data }) => {
             setUser(data as any);
@@ -176,6 +177,7 @@ export default function Init(props: UserProps) {
                 "x-uid": auth.currentUser?.uid,
                 "x-password": cookies.temptokenforuse,
               },
+              timeout: 6
             })
               .then(({ ok }) => {
                 if (!ok) {
@@ -234,6 +236,20 @@ export default function Init(props: UserProps) {
               (
                 document.getElementById("accpwdhost") as HTMLInputElement
               ).value = "";
+              fetch(`${base}`, {
+                headers: {
+                  uid: auth.currentUser?.uid,
+                },
+                method: "GET",
+                responseType: 1,
+                timeout: 5
+              })
+                .then(({ data }) => {
+                  setUser(data as any);
+                })
+                .catch(() => {
+                  setUser(GeneralUser);
+                });
               setpPopop(false);
             }}
           >
@@ -258,6 +274,7 @@ export default function Init(props: UserProps) {
                 "x-password": inputPassword,
               },
               responseType: 1,
+              timeout: 6
             }).then(({ ok }) => {
               if (ok) {
                 setCookie("temptokenforuse", inputPassword, {
@@ -283,6 +300,9 @@ export default function Init(props: UserProps) {
               } else {
                 error.innerText = "Wrong Password!";
               }
+            }).catch((e) => {
+              console.log(e);
+              error.innerText = "You must be registered for more than 10 minutes!";
             });
           }}
         >
@@ -631,7 +651,7 @@ interface AccountNameProps {
 function ChangeAccountName(props: AccountNameProps) {
   const { close, dark, user, updateName } = props;
   const name = user.displayName as string;
-  const dev = name.startsWith("(dev)");
+  const dev = name?.startsWith("(dev)");
 
   let [value, setValue] = useState(dev ? name.replace("(dev)", "") : name);
 
@@ -720,7 +740,7 @@ async function ChangeProfile(
         "x-password": pwd,
       },
       body: Body.json({ data: fs.result }),
-      timeout: 60,
+      timeout: 20
     }).then((data) => {
       const { ok } = data;
       if (!ok) {
@@ -731,12 +751,14 @@ async function ChangeProfile(
             uid: auth.currentUser?.uid,
           },
           responseType: 1,
+          timeout: 20
         })
           .then(({ data }) => {
             setUser(data);
             setPFD({});
           })
-          .catch(() => {
+          .catch((e) => {
+            console.log(e);
             setUser(GeneralUser);
             setPFD({});
           });
