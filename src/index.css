@@ -60,11 +60,15 @@ code {
 }
 
 .background {
-  background-image: url("./bg.jpg");
+  /*background-image: url("./bg.jpg");*/
+  background-image: url("./bg.png");
+  background-size: 100% 100%;
 }
 
 .login-background {
-  background-image: url("./bg.jpg");
+  /*background-image: url("./bg.jpg");*/
+  background-image: url("./bg.png");
+  background-size: 100% 100%;
   @apply h-screen w-screen flex items-center justify-center;
   transition: all 25ms linear;
 }
@@ -75,12 +79,20 @@ code {
   user-select: none;
 }
 
+.modal-d {
+  @apply bg-gray-700;
+}
+
 .modal h1,
 .style-h1 {
   font-weight: 900;
   font-size: 5ch;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   @apply text-blue-900;
+}
+
+.modal-d h1 {
+  @apply text-blue-700;
 }
 
 .style-h1-d {
@@ -91,6 +103,10 @@ code {
   font-weight: 300;
   font-size: 30px;
   @apply text-violet-800;
+}
+
+.modal-d h2 {
+  @apply text-white;
 }
 
 .modal input,
@@ -110,7 +126,7 @@ code {
   @apply bg-gray-200 w-[90%] rounded-md shadow-lg focus:shadow-xl focus:rounded-t-lg focus:rounded-b-none;
 }
 
-.style-input-d {
+.modal-d input, .style-input-d {
   @apply bg-gray-500 text-white;
 }
 

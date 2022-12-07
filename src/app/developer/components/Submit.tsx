@@ -115,8 +115,12 @@ export default function Submit(props: { toggle: Function; dark: boolean }) {
           </div>
         </div>
         <button className="button button-success" type="submit" onClick={(e) => {
-          console.log(e);
-          e.preventDefault();
+          const {
+            name, description, longDescription
+          } = appData;
+          if (name.length >= 3 && description.length >= 64 && longDescription.length >= 1040) {
+            e.preventDefault();
+          }
         }} >Submit</button>
       </form>
     </div>

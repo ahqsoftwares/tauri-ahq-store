@@ -1,9 +1,21 @@
 import { getVersion } from "@tauri-apps/api/app";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import fetchPrefs, {appData} from "../app/resources/utilities/preferences";
 import logo from "./index.png";
 
 function App(props: { info: string }) {
   const [version, setVersion] = useState("");
+  const [perfs, setP] = useState<appData>({
+    dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
+    autoUpdate: false,
+    font: "bhn"
+  });
+
+  useEffect(() => {
+    fetchPrefs().then((preferences) => {
+      setP(preferences);
+    });
+  }, []);
 
   getVersion().then((value) => setVersion(value));
 
@@ -16,7 +28,7 @@ function App(props: { info: string }) {
 
   return (
     <header className="login-background">
-      <div className="modal">
+      <div className={`modal ${perfs?.dark ? "modal-d" : ""}`}>
         <div className="mt-10"></div>
         <h1>AHQ Store</h1>
         <div className="mt-[5rem]"></div>

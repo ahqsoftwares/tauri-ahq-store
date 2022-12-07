@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getCurrent } from "@tauri-apps/api/window";
+import fetchPrefs, { appData } from "./app/resources/utilities/preferences";
 
 /**
  * Forgot Password Component
@@ -50,7 +51,7 @@ function ForgotPwd(props: any) {
 
       <div className="mt-auto"></div>
 
-      <form className="modal" onSubmit={submit}>
+      <form className={`modal ${props.dark ? "modal-d" : ""}`} onSubmit={submit}>
         <div className="mt-auto"></div>
 
         {step !== 0 ? (
@@ -65,6 +66,7 @@ function ForgotPwd(props: any) {
 
             <input
               type="email"
+              autoComplete={"off"}
               disabled={step !== 1}
               placeholder="Email"
               value={email}
@@ -102,7 +104,7 @@ function ForgotPwd(props: any) {
         )}
       </form>
       {step === 1 ? (
-        <div className="flex w-[90%]">
+        <div className={`flex w-[90%] ${props.dark ? "text-white" : ""}`}>
           <button
             onClick={() => {
               props.change("login");
@@ -169,11 +171,12 @@ function SignUp(props: any) {
       <div className="mt-auto"></div>
 
       {step !== 0 ? (
-        <form className="modal" onSubmit={contd}>
+        <form className={`modal ${props.dark ? "modal-d" : ""}`} onSubmit={contd}>
           <div className="mt-auto"></div>
 
           <input
             type={"email"}
+            autoComplete={"off"}
             required={true}
             placeholder={"Email ID"}
             disabled={step === 2}
@@ -232,7 +235,7 @@ function SignUp(props: any) {
       )}
 
       {step === 1 ? (
-        <div className="flex w-[90%]">
+        <div className={`flex w-[90%] ${props.dark ? "text-white" : ""}`}>
           <button
             onClick={() => {
               props.change("login");
@@ -262,9 +265,10 @@ type log = {
   change: Function;
   auth: any;
   login: any;
+  dark: boolean;
 };
 function Login(props: log) {
-  const { auth, login } = props;
+  const { auth, login, dark } = props;
 
   let [e, setE] = useState(""),
     [email, setEmail] = useState(""),
@@ -281,7 +285,7 @@ function Login(props: log) {
       <div className="mt-[15rem]"></div>
 
       <form
-        className="modal"
+        className={`modal ${dark ? "modal-d" : ""}`}
         onSubmit={(e) => {
           e.preventDefault();
           login(auth, email, pwd)
@@ -319,6 +323,7 @@ function Login(props: log) {
       >
         <input
           type={"email"}
+          autoComplete={"off"}
           required={true}
           placeholder={"Email ID"}
           onChange={(e) => setEmail(e.target.value)}
@@ -339,7 +344,7 @@ function Login(props: log) {
 
       <div className="mt-auto"></div>
 
-      <div className="flex w-[90%]">
+      <div className={`flex w-[90%] ${dark ? "text-white" : ""}`}>
         <button
           onClick={() => {
             props.change("signup");
@@ -366,12 +371,23 @@ function Init(props: any) {
   const { create, login, verify, reset, auth, verifyCode, resetEmail } =
     props.data;
   let [type, setType] = useState("login");
+  const [prefs, setP] = useState<appData>({
+    dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
+    autoUpdate: false,
+    font: "bhn"
+  });
+
+  useEffect(() => {
+    fetchPrefs().then((preferences) => {
+      setP(preferences);
+    });
+  }, []);
 
   getCurrent().setTitle("Accounts - AHQ Store");
 
   return (
     <header className="login-background">
-      <div className="modal">
+      <div className={`modal ${prefs?.dark ? "modal-d" : ""}`}>
         {type === "login" ? (
           <Login
             change={(page: string) => {
@@ -379,6 +395,7 @@ function Init(props: any) {
             }}
             login={login}
             auth={auth}
+            dark={prefs.dark}
           />
         ) : (
           <></>
@@ -392,6 +409,7 @@ function Init(props: any) {
             create={create}
             verify={verify}
             auth={auth}
+            dark={prefs.dark}
           />
         ) : (
           <></>
@@ -406,6 +424,7 @@ function Init(props: any) {
             verify={verifyCode}
             email={resetEmail}
             auth={auth}
+            dark={prefs.dark}
           />
         ) : (
           <></>
