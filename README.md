@@ -15,7 +15,7 @@ You are allowed to:
 - [X] Adapt - remix and contribute back
 
 **Under the following restrictions**
-- ☒ You are not allowed to reditribute this copy to people
-- ☒ You are not allowed to reuse the copy for commercial or public purposes
+- You are **not** allowed to reditribute this copy to people
+- You are **not** allowed to _**reuse**_ *the copy for commercial or public purposes*
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store?ref=badge_large)
