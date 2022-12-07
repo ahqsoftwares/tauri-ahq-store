@@ -2,9 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  user-select: none;
+}
+
 @font-face {
   font-family: "Extatica";
   src: url("./special.otf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: url("./Roboto.ttf");
 }
 
 body {
@@ -14,15 +23,19 @@ body {
 }
 
 .def {
-  font-family: 'Segoe UI Variable', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.def-v {
+  font-family: "Roboto";
 }
 
 .tnr {
-  font-family: 'Times New Roman', Times, serif;
+  font-family: "Times New Roman", Times, serif;
 }
 
 .geo {
-  font-family: Georgia, 'Segoe UI';
+  font-family: Georgia, "Segoe UI";
 }
 
 .gra {
@@ -34,7 +47,7 @@ body {
 }
 
 .ext {
-  font-family: 'Extatica';
+  font-family: "Extatica";
 }
 
 .bhn {
@@ -42,16 +55,20 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
 .background {
-  background-image: url("./bg.jpg");
+  /*background-image: url("./bg.jpg");*/
+  background-image: url("./bg.png");
+  background-size: 100% 100%;
 }
 
 .login-background {
-  background-image: url("./bg.jpg");
+  /*background-image: url("./bg.jpg");*/
+  background-image: url("./bg.png");
+  background-size: 100% 100%;
   @apply h-screen w-screen flex items-center justify-center;
   transition: all 25ms linear;
 }
@@ -62,19 +79,38 @@ code {
   user-select: none;
 }
 
-.modal h1 {
+.modal-d {
+  @apply bg-gray-700;
+}
+
+.modal h1,
+.style-h1 {
   font-weight: 900;
   font-size: 5ch;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   @apply text-blue-900;
+}
+
+.modal-d h1 {
+  @apply text-blue-700;
+}
+
+.style-h1-d {
+  @apply text-blue-700;
 }
 
 .modal h2 {
   font-weight: 300;
   font-size: 30px;
-  @apply text-violet-800
+  @apply text-violet-800;
 }
 
-.modal input, .style-input {
+.modal-d h2 {
+  @apply text-white;
+}
+
+.modal input,
+.style-input {
   border-bottom: 3px solid gray;
   outline: none;
   transition: all 500ms linear;
@@ -90,22 +126,26 @@ code {
   @apply bg-gray-200 w-[90%] rounded-md shadow-lg focus:shadow-xl focus:rounded-t-lg focus:rounded-b-none;
 }
 
-.style-input-d {
+.modal-d input, .style-input-d {
   @apply bg-gray-500 text-white;
 }
 
-.modal input:enabled:hover, .style-input:enabled:hover, .style-input:enabled:hover, .modal input:enabled:focus {
+.modal input:enabled:hover,
+.style-input:enabled:hover,
+.style-input:enabled:hover,
+.modal input:enabled:focus {
   border-bottom: 3px solid black;
 }
 
-.modal input:disabled, .style-input:disabled {
+.modal input:disabled,
+.style-input:disabled {
   @apply rounded-lg border-none shadow-lg;
 }
 
 .button {
   @apply bg-blue-800 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
-  min-height:  50px;
-  transition:  all 250ms linear;
+  min-height: 50px;
+  transition: all 250ms linear;
 }
 .button:hover {
   @apply bg-blue-900;
@@ -117,14 +157,15 @@ code {
 
 .button-danger {
   @apply bg-red-700 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
-  min-height:  50px;
-  transition:  all 250ms linear;
+  min-height: 50px;
+  transition: all 250ms linear;
 }
 .button-danger:hover {
   @apply bg-red-800;
 }
 
-.button:disabled, .button-danger:disabled {
+.button:disabled,
+.button-danger:disabled {
   @apply bg-gray-500;
 }
 
@@ -142,7 +183,7 @@ code {
   .toast {
     @apply text-white p-2 m-3 rounded-md shadow-md min-w-[20rem] min-h-[3rem] flex flex-col justify-center;
     transition: all 250ms linear;
-    z-index:1000;
+    z-index: 1000;
   }
 
   .toast-success {

@@ -1,9 +1,21 @@
-import { getVersion } from '@tauri-apps/api/app';
-import { useState } from 'react';
-import logo from './index.png';
+import { getVersion } from "@tauri-apps/api/app";
+import { useEffect, useState } from "react";
+import fetchPrefs, {appData} from "../app/resources/utilities/preferences";
+import logo from "./index.png";
 
-function App(props: { info: string}) {
+function App(props: { info: string }) {
   const [version, setVersion] = useState("");
+  const [perfs, setP] = useState<appData>({
+    dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
+    autoUpdate: false,
+    font: "bhn"
+  });
+
+  useEffect(() => {
+    fetchPrefs().then((preferences) => {
+      setP(preferences);
+    });
+  }, []);
 
   getVersion().then((value) => setVersion(value));
 
@@ -11,21 +23,24 @@ function App(props: { info: string}) {
     "Made possible with open source!",
     "The work of AHQ Softwares",
     "ahqstore.cf",
-    `${version !== "" ? `v${version}` : ""}`
+    `${version !== "" ? `v${version}` : ""}`,
   ];
-
 
   return (
     <header className="login-background">
-      <div className="modal">
+      <div className={`modal ${perfs?.dark ? "modal-d" : ""}`}>
         <div className="mt-10"></div>
         <h1>AHQ Store</h1>
-        <div className='mt-[5rem]'></div>
+        <div className="mt-[5rem]"></div>
         <img src={logo} alt={"logo"} width={"200px"} />
-        <div className='mt-auto'></div>
-        <h2><strong>{props.info}</strong></h2>
-        <div className='mb-auto'></div>
-        <h2 className="text-bold text-center mb-2">{splashScreens[Math.floor(Math.random() * splashScreens.length)]}</h2>
+        <div className="mt-auto"></div>
+        <h2>
+          <strong>{props.info}</strong>
+        </h2>
+        <div className="mb-auto"></div>
+        <h2 className="text-bold text-center mb-2">
+          {splashScreens[Math.floor(Math.random() * splashScreens.length)]}
+        </h2>
       </div>
     </header>
   );

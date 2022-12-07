@@ -1,59 +1,61 @@
 import { MouseEventHandler } from "react";
 import { IconType } from "react-icons";
-import {IoIosArrowForward} from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
 
 function darkMode(classes: Array<string>, dark: boolean) {
-         return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+  return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
 }
 
-export default function SettingOption(
-         props: {
-                  dark: boolean,
-                  ShowCaseIcon: IconType,
-                  PopUp?: IconType,
-                  title: string,
-                  description: string,
-                  onClick: MouseEventHandler<HTMLDivElement>,
-                  Extra?: JSX.Element
-         }
-) {
-         const {
-                  dark,
-                  title,
-                  description,
-                  ShowCaseIcon,
-                  onClick,
-                  PopUp,
-                  Extra
-         } = props;
+export default function SettingOption(props: {
+  dark: boolean;
+  ShowCaseIcon: IconType;
+  PopUp?: IconType;
+  title: string;
+  description: string;
+  onClick: MouseEventHandler<HTMLDivElement>;
+  Extra?: JSX.Element;
+}) {
+  const { dark, title, description, ShowCaseIcon, onClick, PopUp, Extra } =
+    props;
 
-         const LinkIcon = PopUp || IoIosArrowForward;
+  const LinkIcon = PopUp || IoIosArrowForward;
 
-        return (
-                <div className={`${darkMode(["checkbox"], dark)} checkbox-special mt-3`} onClick={onClick}>
-                        <div className="checkbox-special-child">
-                                <div className="ml-3"></div>            
+  return (
+    <div
+      className={`${darkMode(["checkbox"], dark)} checkbox-special mt-3`}
+      onClick={onClick}
+    >
+      <div className="checkbox-special-child">
+        <div className="ml-3"></div>
 
-                                <div className={`flex items-center justify-center ${dark ? "text-slate-300" : "text-slate-700"}`}>
-                                        <ShowCaseIcon size="2.5em" />
-                                </div>
+        <div
+          className={`flex items-center justify-center ${
+            dark ? "text-slate-300" : "text-slate-700"
+          }`}
+        >
+          <ShowCaseIcon size="2.5em" />
+        </div>
 
-                                <div className="ml-3"></div>
+        <div className="ml-3"></div>
 
-                                <h6>{title}<p>{description}</p></h6>
+        <h6>
+          {title}
+          <p>{description}</p>
+        </h6>
 
-                                <div className="mx-auto"></div>
+        <div className="mx-auto"></div>
 
-                                <LinkIcon size="3em" className={`my-auto ml-auto mr-1 ${dark ? "text-slate-300" : "text-slate-700"}`}/>
-                                    
-                                <div className="mr-3"></div>
-                        </div>
+        <LinkIcon
+          size="3em"
+          className={`my-auto ml-auto mr-1 ${
+            dark ? "text-slate-300" : "text-slate-700"
+          }`}
+        />
 
-                        {Extra ? 
-                                <>{Extra}</>
-                                : <>
-                                </>
-                        }
-                </div>
-         )
+        <div className="mr-3"></div>
+      </div>
+
+      {Extra ? <>{Extra}</> : <></>}
+    </div>
+  );
 }

@@ -1,14 +1,14 @@
 {
-         "files.watcherExclude": {
-                  "**/node_modules": true,
-                  "**/docs": true,
-                  "**/build": true
-         },
-         "files.maxMemoryForLargeFilesMB": 1024,
-         "files.exclude": {
-                  "**/node_modules": true,
-                  "**/build": true,
-                  "**/docs": true
-         },
-         "editor.minimap.enabled": false
+  "files.watcherExclude": {
+    "**/node_modules": true,
+    "**/docs": true,
+    "**/build": true
+  },
+  "files.maxMemoryForLargeFilesMB": 1024,
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/build": true,
+    "**/docs": true
+  },
+  "editor.minimap.enabled": false
 }

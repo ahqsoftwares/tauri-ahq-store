@@ -24,7 +24,16 @@
       },
       "http": {
         "all": true,
-        "scope": ["https://github.com/ahqsoftwares/ahq-store-data/*", "http://n7.danbot.host:2061/*", "http://n7.danbot.host:2061/", "http://localhost:2030/", "http://localhost:2030/*"]
+        "scope": [
+          "https://github.com/ahqsoftwares/ahq-store-data/*",
+          "https://raw.githack.com/ahqsoftwares/ahq-store-data/*",
+          "http://n7.danbot.host:2061/*",
+          "http://n7.danbot.host:2061/",
+          "http://api.simplehost.cf:2082/*",
+          "http://api.simplehost.cf:2082/",
+          "http://localhost:2030/",
+          "http://localhost:2030/*"
+        ]
       },
       "path": {
         "all": true
@@ -33,7 +42,12 @@
         "readFile": true,
         "writeFile": true,
         "createDir": true,
-        "scope": ["$APP", "$APP/*", "C:\\ProgramData\\AHQ Store Applications\\Updaters\\*", "C:\\ProgramData\\AHQ Store Applications\\Updaters"]
+        "scope": [
+          "$APP",
+          "$APP/*",
+          "C:\\ProgramData\\AHQ Store Applications\\Updaters\\*",
+          "C:\\ProgramData\\AHQ Store Applications\\Updaters"
+        ]
       },
       "window": {
         "all": false,
@@ -83,9 +97,9 @@
         "digestAlgorithm": "sha256",
         "timestampUrl": "",
         "allowDowngrades": false,
-	      "wix": {
-	        "template": "assets/install.wix"
-	      }
+        "wix": {
+          "template": "assets/install.wix"
+        }
       }
     },
     "security": {
@@ -93,9 +107,7 @@
     },
     "updater": {
       "active": true,
-      "endpoints": [
-        "https://ahq-store.cf/api/updater"
-      ],
+      "endpoints": ["https://ahq-store.cf/api/updater"],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFBQUQxRTExODc4NUUyQUMKUldTczRvV0hFUjZ0cWlOczRIQjlVTDFiWUhRUlNsMERZTm9hdGJzVTc1UUtEajBPSnVydWVMc0YK",
       "dialog": false
     },

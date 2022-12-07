@@ -129,8 +129,8 @@ fn main() {
         .unwrap();
 
     let window = tauri::Manager::get_window(&app, "main").unwrap();
-    let window3 = tauri::Manager::get_window(&app, "main").unwrap();
-    let window4 = tauri::Manager::get_window(&app, "main").unwrap();
+    let window3 = window.clone();
+    let window4 = window.clone();
 
     window3.listen("sendUpdaterStatus", move |event| {
         window4.emit("sendUpdaterStatus", event.payload().unwrap()).unwrap();
@@ -183,7 +183,7 @@ fn list_all_apps() -> [Vec<String>; 2] {
     for page in pages {
         let name = page.unwrap().file_name().into_string().unwrap();
 
-        let version = fs::read_to_string(format!(r"{}\ProgramData\AHQ Store Applications\Programs\{}\ahqStoreVersion", sys_dir.clone(), name.clone())).unwrap();
+        let version = fs::read_to_string(format!(r"{}\ProgramData\AHQ Store Applications\Programs\{}\ahqStoreVersion", sys_dir.clone(), name.clone())).unwrap_or("v0.0.0".to_string());
 
         versions.push(version);
         apps.push(name);

@@ -7,21 +7,20 @@ name: Mark stale issues and pull requests
 
 on:
   schedule:
-  - cron: '21 0 * * *'
+    - cron: "21 0 * * *"
 
 jobs:
   stale:
-
     runs-on: ubuntu-latest
     permissions:
       issues: write
       pull-requests: write
 
     steps:
-    - uses: actions/stale@v5
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'This issue seems to have no interactiion, closing...'
-        stale-pr-message: 'Seems like no activity, cloding...'
-        stale-issue-label: 'no-activity'
-        stale-pr-label: 'no-activity'
+      - uses: actions/stale@v5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: "This issue seems to have no interactiion, closing..."
+          stale-pr-message: "Seems like no activity, cloding..."
+          stale-issue-label: "no-activity"
+          stale-pr-label: "no-activity"

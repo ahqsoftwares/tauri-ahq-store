@@ -1,76 +1,161 @@
-/*import {useState} from "react";
-import {writeFile, createDir} from "@tauri-apps/api/fs";
-import { invoke } from '@tauri-apps/api/tauri';*/
+//React
+import React, { useEffect, useRef, useState } from "react";
+import { BiLibrary, BiExtension } from "react-icons/bi";
+import { FiSettings } from "react-icons/fi";
+import { VscAccount } from "react-icons/vsc";
+
+//image
+import AHQStore from "./index.png";
+
+//components
+import Button from "./components/Button";
+import base from "../server";
+
+//API
+import { didGreet, greeted } from "../resources/utilities/greet";
+import { fetch } from "@tauri-apps/api/http";
+import { getData, setData } from "../resources/utilities/database";
+import { Auth } from "firebase/auth";
+import { getAppVersion } from "../resources/api/version";
+import getWindows from "../resources/api/os";
+import { BsCodeSlash } from "react-icons/bs";
 
 function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+  return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
 }
 
 interface HomeProps {
-    dark: boolean
+  dark: boolean;
+  setPage: React.Dispatch<React.SetStateAction<string>>;
+  auth: Auth;
+  dev: boolean;
 }
 
 export default function Home(props: HomeProps) {
-    return (<div className={`${darkMode(["menu"], props.dark)} flex flex-col`}>
+  const [userIcon, setUserIcon] = useState<string>(
+    (getData("x-icon") as string) || ""
+  );
 
-    </div>);
-//     let apps = "C:\\ProgramData\\AHQ Store Applications\\Updaters";
+  const { dark, setPage, auth } = props;
 
-//     let [status, setState] = useState("Install Simple Host Desktop (SAMPLE APP);"),
-//     [install, set] = useState(true);
+  fetch(`${base}`, {
+    headers: {
+      uid: auth.currentUser?.uid as string,
+    },
+    method: "GET",
+  })
+    .then(({ data }: any) => {
+      setData("x-icon", data);
+      setUserIcon(data);
+    })
+    .catch(console.log);
 
-//     createDir(apps, {recursive: true})
-//     .then(() => {
-//         writeFile(`${apps}\\Simple Host.updater`, "{version: \"1.0.0\"}");
-//     });
+  const [greet, setGreet] = useState(didGreet());
+  const version = getAppVersion();
+  const [first] = useState(!didGreet());
+  const textBox = useRef<HTMLHeadingElement>("" as any);
 
-//     (async() => {
-//         const status = await invoke("check_app", {appName: "C3J2k2OnXv7ZfvFAnyYv"});
-//         if (status) {
-//             setState("Uninstall!");
-//             set(false);
-//         }
-//     })()
+  useEffect(() => {
+    if (!greet) {
+      greeted();
+      setTimeout(() => {
+        setGreet(true);
+        const greetText = "What would you like to do today!";
+        for (let i = 0; i < greetText.length; i++) {
+          const h1 = textBox.current as HTMLHeadElement;
+          if (i === 0) {
+            h1.innerHTML = "";
+          }
+          setTimeout(() => {
+            h1.innerHTML += greetText[i];
+          }, 50 * i);
+        }
+      }, 1750);
+    }
+  }, [greet]);
 
-//     function Download() {
-//         setState("Downloading...;-disabled");
-//         invoke("clean", {path: `C:\\ProgramData\\AHQ Store Applications\\Installers\\C3J2k2OnXv7ZfvFAnyYv.zip`});
-//                 invoke("download", { url: "https://github.com/ahqsoftwares/Simple-Host-App/releases/download/v2.1.0/Simple-Host-Desktop-2.1.0-win.zip", name: "C3J2k2OnXv7ZfvFAnyYv.zip"})
-// .then(() => {
-//     setState("Installing...;-disabled");
-//   invoke("extract", {app: "C3J2k2OnXv7ZfvFAnyYv", version: "5.0.0"})
-//   .then(() => {
-//     invoke("clean", {path: `C:\\ProgramData\\AHQ Store Applications\\Installers\\C3J2k2OnXv7ZfvFAnyYv.zip`});
-//     invoke("shortcut", { app: "C3J2k2OnXv7ZfvFAnyYv\\Simple Host Desktop.exe", appName: "Simple Host Desktop" })
-//         setState("Success;");
-//         setTimeout(() => {
-//             setState("Uninstall")
-//         }, 2000);
-//   });
-// })
-// .catch((e) => {
-//   console.log(e);
-// });
-//     }
-
-//          return (<div className={`${darkMode(["menu"], props.dark)} flex flex-col items-center justify-center`}><button
-//             className={`button`}
-//             disabled={status.split(";")[1] === "-disabled"}
-//             onClick={async() => {
-//                 if (install) {
-//                     Download()
-//                 } else {
-//                     invoke("uninstall", {appName: "Simple Host", appFullName: "Simple Host Desktop"})
-//                     .then(() => {
-//                         console.log("Uninstalled!");
-//                         setState("Install Simple Host Desktop (SAMPLE APP);");
-//                         set(true);
-//                     })
-//                     .catch(() => {
-//                         console.log("Failed!");
-//                     });
-//                 }
-//             }}>
-//             {status.split(";")[0]}
-//          </button></div>);
+  return (
+    <div
+      className={`${darkMode(
+        ["menu"],
+        props.dark
+      )} flex flex-col justify-center`}
+    >
+      <div className="flex justify-center items-center mb-auto mt-3">
+        <img src={AHQStore} alt="Logo" width={"100px"} draggable={false} />
+        <h1
+          className={`block ml-2 style-h1 ${props.dark ? "style-h1-d" : ""}`}
+          style={{ fontSize: "100px" }}
+        >
+          AHQ Store
+        </h1>
+        <span
+          className={`block mt-auto text-red-600 ml-2`}
+          style={{ fontSize: "50px", fontWeight: "10px" }}
+        >
+          v{version}
+        </span>
+      </div>
+      <h1
+        ref={textBox}
+        className={`text-3xl ${
+          dark ? "text-slate-300" : "text-slate-600"
+        } mb-2`}
+        style={{ transition: "all 125ms fade-in" }}
+      >
+        {!first && greet ? "What would you like to do today!" : "Welcome!"}
+      </h1>
+      <div className="flex flex-col mb-auto">
+        <div className="flex flex-row">
+          <Button
+            dark={dark}
+            Icon={BiExtension}
+            title={"Apps"}
+            description="Explore Apps"
+            onClick={() => setPage("apps")}
+          />
+          <Button
+            dark={dark}
+            Icon={BiLibrary}
+            title="Library"
+            calibrate="1.5"
+            description="Check for app updates"
+            onClick={() => setPage("library")}
+          />
+        </div>
+        <div className="flex flex-row">
+          <Button
+            dark={dark}
+            Icon={userIcon === "" ? VscAccount : userIcon}
+            title="Account"
+            description="Customise your account"
+            onClick={() => setPage("user")}
+          />
+          <Button
+            dark={dark}
+            Icon={Math.random() > 0.01 ? FiSettings : getWindows()}
+            no50
+            title="Settings"
+            calibrate="1"
+            description="Set your preferences"
+            onClick={() => setPage("settings")}
+          />
+        </div>
+        {props.dev ? 
+          <div className="flex justify-center items-center mb-auto mt-3">
+            <Button
+              dark={dark}
+              Icon={BsCodeSlash}
+              no50
+              calibrate="1.5"
+              title="Developer"
+              description="Hola! Hello!"
+              onClick={() => setPage("developer")}
+            />
+          </div>
+          : <></>
+        }
+      </div>
+    </div>
+  );
 }

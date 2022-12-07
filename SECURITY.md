@@ -4,9 +4,9 @@
 
 DEV BUILDS
 
-| Version | Supported          |
-| --------- | ------------------- |
-| < 1.0.x  | :x:                  |
+| Version | Supported |
+| ------- | --------- |
+| < 1.0.x | :x:       |
 
 ## Reporting a Vulnerability
 

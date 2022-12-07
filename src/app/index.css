@@ -2,8 +2,8 @@
 @tailwind components;
 
 :root {
-         --opacity: 0.75;
-         --text: white;
+  --opacity: 0.75;
+  --text: white;
 }
 
 ::-webkit-scrollbar {
@@ -18,29 +18,34 @@
 Navigation
 */
 .nav {
-         transition: all 1s linear;
-         background-color: white;
+  transition: all 500ms linear;
+  background-color: white;
 }
 .nav-d {
-         transition: all 1s linear;
-         background-color: gray;
+  transition: all 500ms linear;
+  background-color: gray;
 }
 
 /*
 Item pallete
 */
 .n-item {
-         @apply w-16 h-16 justify-center items-center relative flex text-white hover:text-white bg-orange-400 hover:bg-blue-400;
-         border-radius: 20%;
-         border-color: rgb(251 146 60);
-         margin-top: 8px;
-         transition: all 200ms linear;
+  @apply w-16 h-16 justify-center items-center relative flex text-white hover:text-white bg-orange-400 hover:bg-blue-400;
+  border-radius: 20%;
+  border-color: rgb(251 146 60);
+  margin-top: 8px;
+  transition: all 200ms linear;
 }
-.n-item:active, .n-item:focus, .active {
+
+.n-item:active,
+.n-item:focus,
+.active {
   @apply text-white;
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
+  transition: padding 125ms linear;
+  animation: clickAnimation 250ms linear;
   @apply border-blue-400 bg-blue-400;
 }
 
@@ -48,53 +53,65 @@ Item pallete
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
-  @apply border-blue-400
+  @apply border-blue-400;
+}
+
+@keyframes clickAnimation {
+  from {
+    padding: 0%;
+  }
+  50% {
+    padding: 10%;
+  }
+  100% {
+    padding: 0%;
+  }
 }
 
 /*
 Backgrounds Super
 */
 .bg-blue-super {
-         @apply bg-gray-300;
+  @apply bg-gray-300;
 }
 .bg-blue-super-d {
-         @apply bg-gray-700;
+  @apply bg-gray-700;
 }
 
 /*
 */
 .menu {
-         @apply items-center flex w-[99%] h-[98vh] bg-gray-300 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
-         transition: all 500ms linear;
-         overflow-x: hidden;
-         overflow-y: scroll;
-         scroll-behavior: smooth;
+  @apply items-center flex w-[99%] h-[98vh] bg-gray-300 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
+  transition: all 500ms linear;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 .menu-d {
-         @apply items-center flex w-[99%] h-[98vh] bg-gray-600 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
-         transition: all 500ms linear;
-         overflow-x: hidden;
-         overflow-y: scroll;
-         scroll-behavior: smooth;
+  @apply items-center flex w-[99%] h-[98vh] bg-gray-700 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
+  transition: all 500ms linear;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 /*
 App pallete
 */
 .apps {
-         background: white;
+  background: white;
 }
 .apps-d {
-         @apply bg-gray-800;
+  @apply bg-gray-800;
 }
 
 /*
 Checkbox
 */
 .checkbox {
-         @apply bg-white w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
-         transition: all 125ms linear;
-         cursor: pointer;
+  @apply bg-white w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
+  transition: all 125ms linear;
+  cursor: pointer;
 }
 
 .checkbox-special {
@@ -106,68 +123,70 @@ Checkbox
 }
 
 .checkbox:hover {
-         @apply bg-gray-200;
+  @apply bg-gray-200;
 }
 
 .checkbox h6 {
-         @apply text-black my-auto;
-         cursor: pointer;
+  @apply text-black my-auto;
+  cursor: pointer;
 }
 .checkbox p {
-         @apply text-gray-600;
+  @apply text-gray-600;
 }
 
 .checkbox-d p {
-         @apply text-gray-400;
+  @apply text-gray-400;
 }
 
 .checkbox-d {
-         @apply bg-gray-700 w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
-         transition: all 500ms linear;
-         cursor: pointer;
+  @apply bg-gray-800 w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
+  transition: all 500ms linear;
+  cursor: pointer;
 }
 
 .checkbox-d:hover {
-         background-color: rgb(88, 95, 108);
+  @apply bg-gray-900;
 }
 
 .checkbox-d h6 {
-         @apply my-auto;
-         cursor: pointer;
-         color: var(--text)
+  @apply my-auto;
+  cursor: pointer;
+  color: var(--text);
 }
 
 .slider {
-         -webkit-appearance: none;  /* Override default CSS styles */
-         appearance: none;
-         padding: auto;
-         width: 40px; /* Full-width */
-         height: 20px; /* Specified height */
-         @apply bg-gray-400 my-auto rounded-lg;
-         outline: none; /* Remove outline */
-         opacity: var(--opacity); /* Set transparency (for mouse-over effects on hover) */
-         -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-         transition: opacity .2s;
-         cursor: pointer;
+  -webkit-appearance: none; /* Override default CSS styles */
+  appearance: none;
+  padding: auto;
+  width: 40px; /* Full-width */
+  height: 20px; /* Specified height */
+  @apply bg-gray-400 my-auto rounded-lg;
+  outline: none; /* Remove outline */
+  opacity: var(
+    --opacity
+  ); /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
+  transition: opacity 0.2s;
+  cursor: pointer;
 }
 .checkbox-d .slider {
-         @apply bg-gray-300;
-         cursor: pointer;
+  @apply bg-gray-300;
+  cursor: pointer;
 }
 
 .slider::-webkit-slider-thumb {
-         -webkit-appearance: none; /* Override default look */
-         appearance: none;
-         width: 14px; /* Set a specific slider handle width */
-         height: 14px; /* Slider handle height */
-         background: darkgreen; /* Green background */
-         border-radius: 50%;
-         cursor: pointer; /* Cursor on hover */
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 14px; /* Set a specific slider handle width */
+  height: 14px; /* Slider handle height */
+  background: darkgreen; /* Green background */
+  border-radius: 50%;
+  cursor: pointer; /* Cursor on hover */
 }
 .slider::-moz-range-thumb {
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #04AA6D; /* Green background */
+  background: #04aa6d; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
@@ -182,24 +201,22 @@ Checkbox
 }
 
 .slider-disabled::-moz-range-thumb {
-width: 25px; /* Set a specific slider handle width */
-height: 25px; /* Slider handle height */
-background: rgb(170, 4, 4); /* Green background */
-cursor: pointer; /* Cursor on hover */
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: rgb(170, 4, 4); /* Green background */
+  cursor: pointer; /* Cursor on hover */
 }
 
-.checkbox-d:hover, .checkbox:hover {
-         --opacity: 1;
+.checkbox-d:hover,
+.checkbox:hover {
+  --opacity: 1;
 }
-
-
-
 
 /*
 User Panel
 */
 .user-d {
-  @apply mt-4 bg-gray-700 w-[98%] rounded-lg shadow-lg p-[auto] h-[43rem] flex flex-col;
+  @apply mt-4 bg-gray-800 w-[98%] rounded-lg shadow-lg p-[auto] h-[43rem] flex flex-col;
   transition: all 500ms linear;
 }
 .user {
@@ -228,7 +245,7 @@ User Panel
   height: 500px;
   width: 500px;
   opacity: 0;
-  transition: .5s ease;
+  transition: 0.5s ease;
   cursor: pointer;
   border-radius: 50%;
 }
@@ -237,7 +254,12 @@ User Panel
   @apply bg-gray-300 !important;
 }
 
-.user-d img, .user img {
+.img-dev .div-l  {
+  @apply bg-gray-100 shadow-xl !important;
+}
+
+.user-d img,
+.user img {
   transition: all 250ms linear;
   @apply mx-auto mt-2;
   display: block;
@@ -255,15 +277,17 @@ User Panel
 }
 
 .name h6 {
-  margin-top:  1px;
+  margin-top: 1px;
   font-size: 25px;
 }
 
-.user h1, .user h6 {
+.user h1,
+.user h6 {
   @apply text-gray-800;
 }
 
-.user-d h1, .user-d h6 {
+.user-d h1,
+.user-d h6 {
   @apply text-gray-400;
 }
 
@@ -278,12 +302,55 @@ User Panel
   text-align: center;
 }
 
+.text-l {
+  @apply text-slate-400;
+}
+
 .select {
   @apply px-2 py-[auto] w-[10.5rem] h-[30px] my-auto ml-auto rounded-xl bg-gray-300 text-slate-700;
   cursor: pointer;
   transition: all 250ms linear;
 }
 
+.select optgroup {
+  @apply text-black;
+}
+
+.select option {
+  @apply text-red-700;
+}
+
 .select-d {
-  @apply bg-gray-800 text-slate-100;
+  @apply bg-black text-slate-100;
+}
+
+.select-d optgroup {
+  @apply text-white;
+}
+
+.select-d option {
+  @apply text-blue-700;
+}
+
+
+.img-dev {
+  @apply mt-2 mx-auto rounded-md;
+  width: 256px;
+  height: 256px;
+  position: relative;
+}
+
+.img-dev img {
+  @apply rounded-lg;
+}
+
+.div-m {
+  margin: 0 !important;
+  height: 256px !important;
+  width: 256px !important;
+  min-height: 256px !important;
+  min-width: 256px !important;
+  max-width: 256px !important;
+  min-width: 256px !important;
+  border-radius: 0.375rem !important;
 }

@@ -7,54 +7,58 @@
   @apply w-[100%] min-h-screen h-[auto] flex flex-col bg-gray-100 text-slate-800;
 }
 
-/*
-Nav Bar
-*/
-.nav {
-  transition: all 1s linear;
-  background-color: white;
+* {
+  user-select: none;
 }
-.nav-d {
-  transition: all 1s linear;
-  background-color: gray;
+
+::-webkit-scrollbar {
+  width: none;
+  display: none;
+}
+
+::-webkit-scrollbar:horizontal {
+  width: 1px;
 }
 
 /*
-Nav Items
+Item pallete
 */
 .n-item {
-  @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black bg-orange-400;
+  @apply w-16 h-16 justify-center items-center relative flex text-white hover:text-white bg-orange-400 hover:bg-blue-400;
   border-radius: 20%;
+  border-color: rgb(251 146 60);
   margin-top: 8px;
   transition: all 200ms linear;
 }
-.n-item-s {
-  @apply w-16 h-16 justify-center items-center relative flex text-black hover:text-black bg-orange-400;
-  border-radius: 20%;
-  margin-top: 8px;
-  transition: all 500ms linear;
-}
 
-.n-item-s:active, .n-item-s:hover {
-border-width: 9px;
-border-style: solid;
-border-radius: 30%;
-@apply border-orange-400
-}
-
-.n-item:active, .n-item:focus, .active {
-@apply text-white;
-border-width: 9px;
-border-style: solid;
-border-radius: 30%;
-@apply border-orange-400
+.n-item:active,
+.n-item:focus,
+.active {
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  transition: padding 125ms linear;
+  animation: clickAnimation 250ms linear;
+  @apply text-white border-blue-400 bg-blue-400;
 }
 
 .n-item:hover {
-border-width: 9px;
-border-style: solid;
-border-radius: 30%;
-@apply border-orange-400
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  @apply border-blue-400;
+}
+
+@keyframes clickAnimation {
+  from {
+    padding: 0%;
+  }
+  50% {
+    padding: 10%;
+  }
+  100% {
+    padding: 0%;
+  }
 }
 
 /*
@@ -70,8 +74,8 @@ Backgrounds Super
 @layer utilities {
   .button {
     @apply bg-blue-800 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
-    min-height:  50px;
-    transition:  all 250ms linear;
+    min-height: 50px;
+    transition: all 250ms linear;
   }
 
   .button:hover {
@@ -84,15 +88,16 @@ Backgrounds Super
 
   .button-danger {
     @apply bg-red-700 text-white rounded-lg w-[60%] h-[50px] mt-[10px];
-    min-height:  50px;
-    transition:  all 250ms linear;
+    min-height: 50px;
+    transition: all 250ms linear;
   }
-  
+
   .button-danger:hover {
     @apply bg-red-800;
   }
 
-  .button:disabled, .button-danger:disabled {
+  .button:disabled,
+  .button-danger:disabled {
     @apply bg-gray-500;
   }
 
@@ -101,4 +106,21 @@ Backgrounds Super
     transition: all 200ms linear;
     font-size: 20px;
   }
+}
+
+/*
+*/
+.menu {
+  @apply items-center flex w-[99%] h-[97%] bg-gray-300 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
+  transition: all 500ms linear;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+.menu-d {
+  @apply items-center flex w-[99%] h-[97%] bg-gray-700 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
+  transition: all 500ms linear;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }

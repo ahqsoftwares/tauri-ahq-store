@@ -4,7 +4,7 @@ on:
     branches:
       - master
   schedule:
-    - cron: '0 0 * * 1,5'
+    - cron: "0 0 * * 1,5"
 
 jobs:
   publish-tauri:
@@ -15,41 +15,41 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-    - uses: actions/checkout@v2
-    - name: setup node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 16
-    - name: install Rust stable
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-    - name: install dependencies (ubuntu only)
-      if: matrix.platform == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
-    - name: Cache store
-      uses: ahqsoftwares/cache@v21
-      with:
-        key: ${{ runner.os }}-build
-        path: |
-          src-tauri/target/release
-          build
-          node_modules
-      env:
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: install app dependencies and build it
-      run: yarn && yarn build
-      env:
-        CI: "false"
-    - uses: tauri-apps/tauri-action@v0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TAURI_PRIVATE_KEY: ${{secrets.TAURI}}
-      with:
-        tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-        releaseName: "AHQ Store __VERSION__"
-        releaseBody: "AHQ Store __VERSION__ Update\n**Changes**:"
-        releaseDraft: true
-        prerelease: false
+      - uses: actions/checkout@v2
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+      - name: Cache store
+        uses: ahqsoftwares/cache@v21
+        with:
+          key: ${{ runner.os }}-build
+          path: |
+            src-tauri/target/release
+            build
+            node_modules
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: install app dependencies and build it
+        run: yarn && yarn build
+        env:
+          CI: "false"
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{secrets.TAURI}}
+        with:
+          tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+          releaseName: "AHQ Store __VERSION__"
+          releaseBody: "AHQ Store __VERSION__ Update\n**Changes**:"
+          releaseDraft: true
+          prerelease: false

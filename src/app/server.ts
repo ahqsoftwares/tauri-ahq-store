@@ -1,3 +1,3 @@
-const server = "http://n7.danbot.host:2061/"/*"http://localhost:2030/"*/;
+const server = "http://api.simplehost.cf:2082/";
 
 export default server;
