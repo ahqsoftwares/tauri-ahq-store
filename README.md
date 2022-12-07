@@ -10,9 +10,9 @@ The Microsoft Store Open Source Alternative
 ### Protected with Creative Commons license
 You are allowed to:
 
-[x] Share - copy and redistribute
+[X] Share - copy and redistribute
 
-[x] Adapt - remix and contribute back
+[X] Adapt - remix and contribute back
 
 **Under the following restrictions**
 - You are not allowed to reditribute this copy to people
