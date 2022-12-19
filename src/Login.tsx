@@ -51,7 +51,10 @@ function ForgotPwd(props: any) {
 
       <div className="mt-auto"></div>
 
-      <form className={`modal ${props.dark ? "modal-d" : ""}`} onSubmit={submit}>
+      <form
+        className={`modal ${props.dark ? "modal-d" : ""}`}
+        onSubmit={submit}
+      >
         <div className="mt-auto"></div>
 
         {step !== 0 ? (
@@ -171,7 +174,10 @@ function SignUp(props: any) {
       <div className="mt-auto"></div>
 
       {step !== 0 ? (
-        <form className={`modal ${props.dark ? "modal-d" : ""}`} onSubmit={contd}>
+        <form
+          className={`modal ${props.dark ? "modal-d" : ""}`}
+          onSubmit={contd}
+        >
           <div className="mt-auto"></div>
 
           <input
@@ -374,7 +380,7 @@ function Init(props: any) {
   const [prefs, setP] = useState<appData>({
     dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
     autoUpdate: false,
-    font: "bhn"
+    font: "bhn",
   });
 
   useEffect(() => {

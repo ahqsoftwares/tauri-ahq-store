@@ -5,6 +5,7 @@ import Modal from "react-modal";
 //Components
 import InstalledAppsMenu from "./components/Style";
 import AppList from "./components/AppsList";
+import { updaterStatus } from "../resources/api/updateInstallWorker";
 
 interface LibraryProps {
   dark: boolean;
@@ -40,9 +41,9 @@ export default function Library(props: LibraryProps) {
     [appList, setAppList] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      setStatus("You are up to date!");
-    })();
+    const status = updaterStatus();
+    console.log(status);
+    setStatus("You are up to date!");
   }, []);
 
   function darkMode(classes: Array<string>) {

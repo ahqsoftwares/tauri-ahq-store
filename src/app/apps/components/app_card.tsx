@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { VscExtensions } from "react-icons/vsc";
-import fetchApps from "../api/fetchApps";
+import fetchApps from "../../resources/api/fetchApps";
 
 export default function AppCard(props: {
   id: string;
@@ -21,6 +21,7 @@ export default function AppCard(props: {
   useEffect(() => {
     (async () => {
       const dta = await fetchApps(props.id);
+
       setAppData(dta);
     })();
   }, [props.id]);

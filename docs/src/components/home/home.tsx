@@ -67,7 +67,11 @@ export default function Home(props: HomeProps) {
       <div className="h-[100%] w-[100%] flex flex-col justify-center items-center text-center">
         <button
           className={`button flex justify-center items-center text-center`}
-          disabled={download === "%loading" || download === "%error" || os.name !== "Windows"}
+          disabled={
+            download === "%loading" ||
+            download === "%error" ||
+            os.name !== "Windows"
+          }
           id="btn"
           style={{
             minHeight: "3.5rem",
@@ -101,7 +105,15 @@ export default function Home(props: HomeProps) {
           ) : (
             <></>
           )}
-          {download.startsWith("https://") ? `Download ${os.name !== "Windows" ? `(Not for ${os.name})` : os.version === "10" ? "" : `(Partially Supported for Windows ${os.version})`}` : ""}
+          {download.startsWith("https://")
+            ? `Download ${
+                os.name !== "Windows"
+                  ? `(Not for ${os.name})`
+                  : os.version === "10"
+                  ? ""
+                  : `(Partially Supported for Windows ${os.version})`
+              }`
+            : ""}
         </button>
       </div>
     </div>

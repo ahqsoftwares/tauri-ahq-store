@@ -300,28 +300,27 @@ fn check_app(app_name: &str) -> Result<bool, bool> {
 #[tauri::command(async)]
 fn uninstall(app_name: &str, app_full_name: &str) -> Result<(), bool> {
     let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
-    let path = format!(r"{}\ProgramData\Microsoft\Windows\Start Menu\Programs\AHQ Store\{}.lnk", sys_dir.clone(), app_full_name.clone());
+    
+    let path = format!("{}\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\AHQ Store\\{}.lnk", sys_dir.clone(), app_full_name.clone());
 
-    let dir = std::path::Path::new(&path);
     fs::remove_dir_all(
         format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}", sys_dir.clone()).as_str(),
     )
-    .expect("Failed!");
+    .unwrap_or(());
 
-    fs::remove_file(
-        format!("{}\\ProgramData\\AHQ Store Applications\\Updaters\\{app_name}.updater", sys_dir.clone()).as_str(),
+    match std::process::Command::new(
+        "powershell"
     )
-    .expect("Failed!");
-
-    fs::remove_file(
-        dir
-    ).expect("Failed");
-
-    match fs::remove_file(&std::path::Path::new(&format!(r"{sys_dir}\Users\Public\Desktop\{app_full_name}.lnk"))) {
-        Err(_err) => {
-            println!("App wasn't found maybe?");
-            Ok(())
-        }
-        Ok(()) => Ok(()),
+    .arg(format!("Remove-item \"{}\", \"{}\"",
+        format!(r"{sys_dir}\Users\Public\Desktop\{app_full_name}.lnk"),
+        path
+    ))
+    .spawn()
+    .unwrap()
+    .wait()
+    .unwrap()
+    .success() {
+        true => Ok(()),
+        false => Err(false)
     }
 }

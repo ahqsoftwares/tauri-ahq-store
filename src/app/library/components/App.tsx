@@ -31,7 +31,6 @@ export default function App({
   async function handleClick() {
     const Toast = toast("Please wait...", "warn", "never");
     try {
-      console.log(appInfo.id);
       await unInstall(appInfo.id as string);
       Toast?.edit(`Successfully uninstalled ${appInfo.title}`, "success");
       setTimeout(() => {
@@ -82,7 +81,7 @@ export default function App({
         draggable={false}
       ></img>
 
-      <div className="flex flex-col my-auto">
+      <div className="flex flex-col my-auto text-start">
         <h1
           className={`block text-2xl ${
             dark ? "text-blue-400" : "text-blue-700"
@@ -90,7 +89,10 @@ export default function App({
         >
           {appInfo.title}
         </h1>
-        <h2 className="block">{appInfo.description}</h2>
+        <h2 className="block">
+          {appInfo.description.substring(0, 64)}
+          {appInfo.description.length > 64 ? "..." : ""}
+        </h2>
       </div>
 
       {updating ? (

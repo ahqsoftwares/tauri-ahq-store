@@ -1,58 +1,55 @@
-use std::fs::File;
-use std::path::Path;
-use std::{fs, io};
-use std::process::Command;
-use zip;
+use winapi_easy::ui::{Window, Taskbar, ProgressState};
+use std::{path::Path, process::Command};
 
 pub fn extract(path: &Path, location: &Path) -> i32 {
+         match Taskbar::new() {
+                  Ok(mut taskbar) => {
+                           match Window::get_console_window() {
+                                    Some(mut window) => {
+                                             taskbar.set_progress_state(&mut window, ProgressState::Indeterminate).expect("");
+                                    },
+                                    _ => {}
+                           }
+                  },
+                  _ => {}
+         }
+
          let args: (&Path, &Path) = (path, location);
          print!("{} {}", args.0.to_string_lossy(), args.1.to_string_lossy());
 
-         let file = fs::File::open(&args.0).unwrap();
-
-         let mut archive = zip::ZipArchive::new(file).unwrap();
-
-         for i in 0..archive.len() {
-                  let mut file = archive.by_index(i).unwrap();
-
-                  let outpath = match file.enclosed_name() {
-                           Some(path) => Path::join(location, path),
-                           None => continue,
-                  };
-
-                  {
-                           let comment = file.comment();
-                           if !comment.is_empty() {
-                                    println!("File {} comment: {}", i, comment);
+         match Command::new("powershell")
+         .args([
+                  "-NoProfile",
+                  "-WindowStyle", 
+                  "Hidden"
+         ])
+         .args(["Expand-Archive", format!("-Path \"{}\"", args.0.to_string_lossy()).as_str(), format!("-DestinationPath \"{}\"", args.1.to_string_lossy()).as_str(), "-Force"])
+         .spawn() {
+                  Ok(mut child) => {
+                           match child.wait() {
+                                    Ok(status) => {
+                                             if status.success() {
+                                                      match Taskbar::new() {
+                                                               Ok(mut taskbar) => {
+                                                                        match Window::get_console_window() {
+                                                                                 Some(mut window) => {
+                                                                                          taskbar.set_progress_state(&mut window, ProgressState::NoProgress).expect("");
+                                                                                 },
+                                                                                 _ => {}
+                                                                        }
+                                                               },
+                                                               _ => return 1
+                                                      }
+                                             } else {
+                                                      return 1
+                                             }
+                                    },
+                                    _ => return 1
                            }
-                  }
-
-                  if (*file.name()).ends_with("/") {
-                           println!("File {} extracted to {}", i, outpath.display());
-                  } else {
-                           println!("File {} extracted to {}",
-                           i,
-                           outpath.display());
-
-                           if let Some(p) = outpath.parent() {
-                                    if !p.exists() {
-                                             match fs::create_dir_all(&p) {
-                                                      Ok(_) => {},
-                                                      Err(_) => {return 1}
-                                             };
-                                    }
-                           }
-                           let mut outfile: File;
-                           match fs::File::create(&outpath) {
-                                    Ok(file) => {outfile = file},
-                                    Err(_) => {return 1}
-                           };
-                           match io::copy(&mut file, &mut outfile) {
-                                    Ok(_) => {},
-                                    Err(_) => {return 1}
-                           }
-                  }
+                  },
+                  _ => return 1
          }
+
          return 0;
 }
 

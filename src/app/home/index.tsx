@@ -141,7 +141,7 @@ export default function Home(props: HomeProps) {
             onClick={() => setPage("settings")}
           />
         </div>
-        {props.dev ? 
+        {props.dev ? (
           <div className="flex justify-center items-center mb-auto mt-3">
             <Button
               dark={dark}
@@ -153,8 +153,9 @@ export default function Home(props: HomeProps) {
               onClick={() => setPage("developer")}
             />
           </div>
-          : <></>
-        }
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

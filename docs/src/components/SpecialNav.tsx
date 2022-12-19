@@ -27,7 +27,12 @@ export default function Nav(props: prop) {
       break;
   }
 
-  (document.querySelector("title") as HTMLTitleElement).innerHTML = `${active[0].toUpperCase()}${active.replace(active[0], "")} - AHQ Store`;
+  (
+    document.querySelector("title") as HTMLTitleElement
+  ).innerHTML = `${active[0].toUpperCase()}${active.replace(
+    active[0],
+    ""
+  )} - AHQ Store`;
 
   return (
     <div

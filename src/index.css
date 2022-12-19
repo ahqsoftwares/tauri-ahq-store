@@ -126,7 +126,15 @@ code {
   @apply bg-gray-200 w-[90%] rounded-md shadow-lg focus:shadow-xl focus:rounded-t-lg focus:rounded-b-none;
 }
 
-.modal-d input, .style-input-d {
+.git-input {
+  outline: none;
+  transition: all 500ms linear;
+  padding: 10px 15px;
+  @apply bg-gray-200 rounded-md shadow-lg focus:shadow-xl focus:rounded-xl;
+}
+
+.modal-d input,
+.style-input-d {
   @apply bg-gray-500 text-white;
 }
 

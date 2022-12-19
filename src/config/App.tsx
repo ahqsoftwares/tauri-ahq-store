@@ -1,6 +1,6 @@
 import { getVersion } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
-import fetchPrefs, {appData} from "../app/resources/utilities/preferences";
+import fetchPrefs, { appData } from "../app/resources/utilities/preferences";
 import logo from "./index.png";
 
 function App(props: { info: string }) {
@@ -8,7 +8,7 @@ function App(props: { info: string }) {
   const [perfs, setP] = useState<appData>({
     dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
     autoUpdate: false,
-    font: "bhn"
+    font: "bhn",
   });
 
   useEffect(() => {

@@ -13,8 +13,8 @@ import Search from "./functions/search";
 Components
 */
 import Layer from "./components/layer";
-import Card from "../resources/components/app_card";
-import Modal from "./components/modal";
+import Card from "./components/app_card";
+import Modal from "./components/app_modal";
 
 /*
 StyleSheets

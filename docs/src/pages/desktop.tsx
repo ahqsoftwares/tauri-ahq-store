@@ -3,18 +3,38 @@ import Nav from "../components/SpecialNav";
 
 //Pages
 import Home from "../components/home";
+import Apps from "../components/apps";
 
-export default function MainPage({ dark }: { dark: boolean }) {
+export default function MainPage({
+  dark,
+  path,
+}: {
+  dark: boolean;
+  path: string;
+}) {
   const [App, setApp] = useState<JSX.Element>(<Home dark={dark} />);
   const [page, setPage] = useState("home");
 
+  function modifyState(page: string) {
+    window.history.replaceState(null, "", `/${page}`);
+  }
+
   useEffect(() => {
+    if (path === "/apps") {
+      setPage("apps");
+    } else if (path === "/docs") {
+      setPage("docs");
+    }
+  }, [path]);
+
+  useEffect(() => {
+    modifyState(page);
     switch (page) {
       case "docs":
         setApp(<></>);
         break;
       case "apps":
-        setApp(<></>);
+        setApp(<Apps />);
         break;
       default:
         setApp(<Home dark={dark} />);
