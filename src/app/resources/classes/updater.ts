@@ -75,11 +75,10 @@ export default class Updater {
                 title: "Updates Available",
                 body: "Installing app updates...",
               });
+              global.installUpdates(updatableApps);
             }
 
             global.emitter();
-
-            global.installUpdates(updatableApps);
           })
           .catch(() => {
             setTimeout(() => {
@@ -120,7 +119,7 @@ export default class Updater {
           this.updatingAppList?.splice(0, 1);
         }
       }
-    }, apps).install(true);
+    }, apps).install();
 
     this.updateStatus = "updated";
     this.emitter();

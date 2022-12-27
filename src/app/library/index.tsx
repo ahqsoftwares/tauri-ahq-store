@@ -5,7 +5,10 @@ import Modal from "react-modal";
 //Components
 import InstalledAppsMenu from "./components/Style";
 import AppList from "./components/AppsList";
-import { updaterStatus } from "../resources/api/updateInstallWorker";
+
+//tauri and updater
+import { appWindow } from "@tauri-apps/api/window";
+import { updaterStatus, runManualUpdate } from "../resources/api/updateInstallWorker";
 
 interface LibraryProps {
   dark: boolean;
@@ -37,13 +40,26 @@ export default function Library(props: LibraryProps) {
 
   Modal.setAppElement("body");
 
-  const [status, setStatus] = useState("Checking status..."),
-    [appList, setAppList] = useState(false);
+  const [status, setStatus] = useState("Checking..."),
+    [appList, setAppList] = useState<boolean>(false),
+    [apps, setApps] = useState<string[]>([]),
+    [current, setCurrent] = useState<string>("");
 
   useEffect(() => {
     const status = updaterStatus();
-    console.log(status);
-    setStatus("You are up to date!");
+    setTimeout(() => {
+      setStatus(status.status ? status.status.replace("updated", "Check for Updates").replace("updating", "Updates Available").replace("checking", "Checking...") : "");
+      setApps(status.apps || []);
+      setCurrent(status.updating || "");
+    }, 250);
+
+    appWindow.listen("sendUpdaterStatus", ({ payload }: {payload: string}) => {
+      const status = JSON.parse(payload);
+
+      setStatus(status.status ? status.status.replace("updated", "Check for Updates").replace("updating", "Updates Available").replace("checking", "Checking...") : "");
+      setApps(status.totalApps || []);
+      setCurrent(status.currentlyUpdating || "");
+    });
   }, []);
 
   function darkMode(classes: Array<string>) {
@@ -73,13 +89,22 @@ export default function Library(props: LibraryProps) {
                 dark ? "text-slate-200" : "text-slate-800"
               } text-2xl`}
             >
-              {status}
+              {status === "Check for Updates" ? "You are up to date!" : status === "Checking..." ? "Checking for updates..." : `${apps.length} update${apps.length > 1 ? "s" : ""} available`}
             </h1>
             <button
               className="button ml-auto"
+              disabled={status !== "Check for Updates"}
               style={{ maxWidth: "10rem", maxHeight: "30px" }}
+              onClick={() => {
+                if (status === "Check for Updates") {
+                  setStatus("Checking...");
+                  setTimeout(() => {
+                    runManualUpdate();
+                  }, 1500);
+                }
+              }}
             >
-              Check for Updates
+              {status}
             </button>
           </div>
         </div>

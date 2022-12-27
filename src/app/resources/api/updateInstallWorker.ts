@@ -15,7 +15,7 @@ export async function installApp(
   appId: string[],
   callback: (event: string, data: any) => void
 ) {
-  await new installWorker(callback).install(false, appId);
+  await new installWorker(callback).install(appId);
 }
 
 export async function unInstall(appId: string) {

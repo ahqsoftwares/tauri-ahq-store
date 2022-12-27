@@ -59,9 +59,6 @@ function Render(props: AppProps) {
     App: any = () => <></>;
 
   useEffect(() => {
-    appWindow.listen("sendUpdaterStatus", ({ payload }: any) => {
-      console.log(payload);
-    });
     appWindow.listen("app", ({ payload }: { payload: string }) => {
       if (payload.startsWith("ahqstore://")) {
         const [page] = payload.replace("ahqstore://", "").split("/");

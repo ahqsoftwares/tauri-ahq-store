@@ -195,7 +195,6 @@ export default function Init(props: UserProps) {
           fs.readAsDataURL(blob);
           fs.onload = async () => {
             setUser(Loading);
-          };
 
           setPFD({ fs });
 
@@ -226,6 +225,7 @@ export default function Init(props: UserProps) {
                 console.warn("The Server didn't respond");
               });
           }
+        }
         }
       }
     });
@@ -748,6 +748,7 @@ async function ChangeProfile(
       body: Body.json({ data: fs.result }),
       timeout: 20,
     }).then((data) => {
+      console.log(data);
       const { ok } = data;
       if (!ok) {
         sendNotification("Failed to update profile picture!");

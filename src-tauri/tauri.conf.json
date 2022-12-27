@@ -29,8 +29,8 @@
           "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/*",
           "https://api.github.com/repos/*",
 
-          "http://api.simplehost.cf:2082/*",
-          "http://api.simplehost.cf:2082/",
+          "https://astore.simplehost.ml/*",
+          "https://astore.simplehost.ml/",
 
           "http://localhost:2082/",
           "http://localhost:2082/*"

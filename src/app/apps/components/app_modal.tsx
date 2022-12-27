@@ -145,7 +145,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                     } else if (event === "installing") {
                       button.current.innerHTML = "Installing...";
                     }
-                  }).install(false, [installData]);
+                  }).install([installData]);
                   button.current.innerHTML = "Installed!";
                   setWorking(false);
                   setInstalled(await isInstalled(installData));

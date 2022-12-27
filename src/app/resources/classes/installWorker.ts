@@ -31,7 +31,6 @@ export default class installWorker {
     download_url: string;
     exe: string;
     name: string;
-    update?: boolean;
   }) {
     const sysDir = await invoke("sys_handler");
 
@@ -39,13 +38,15 @@ export default class installWorker {
       `${sysDir}\\ProgramData\\AHQ Store Applications\\Installers\\${appData.id}.zip`
     );
 
+    this.callback("installing", {
+      ...appData,
+    });
+
+    await this.uninstall(appData.id);
+
     await invoke("download", {
       url: appData.download_url,
       name: `${appData.id}.zip`,
-    });
-
-    this.callback("installing", {
-      ...appData,
     });
 
     await invoke("extract", {
@@ -57,15 +58,13 @@ export default class installWorker {
       path: `${sysDir}\\ProgramData\\AHQ Store Applications\\Installers\\${appData.id}.zip`,
     });
 
-    if (!appData.update) {
-      await invoke("shortcut", {
-        app: `${appData.id}\\${appData.exe}`,
-        appName: appData.name,
-      });
-    }
+    await invoke("shortcut", {
+      app: `${appData.id}\\${appData.exe}`,
+      appName: appData.name,
+    });
   }
 
-  async install(update?: boolean, appId?: string[]) {
+  async install(appId?: string[]) {
     let apps: {
       download_url: string;
       version: string;
@@ -100,8 +99,7 @@ export default class installWorker {
         version: app.version,
         exe: app.exe,
         name: app.name,
-        download_url: app.download_url,
-        update,
+        download_url: app.download_url
       });
     }
   }
