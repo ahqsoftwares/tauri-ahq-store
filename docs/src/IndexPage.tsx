@@ -15,7 +15,7 @@ export default function App({ path }: { path: string }) {
 
   return (
     <div>
-      <Page dark={dark} />
+      <Page dark={dark} path={path} />
     </div>
   );
 }

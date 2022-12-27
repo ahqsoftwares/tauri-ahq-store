@@ -109,6 +109,7 @@ Backgrounds Super
 }
 
 /*
+Menu items
 */
 .menu {
   @apply items-center flex w-[99%] h-[97%] bg-gray-300 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;

@@ -31,15 +31,18 @@ export default function ShowModal(props: AppDataPropsModal) {
   const [working, setWorking] = useState(false);
   const button = useRef<HTMLButtonElement>("" as any);
   const [installed, setInstalled] = useState(false);
-  const [updating, setUpdating] = useState(false);
+  const [updating, setUpdating] = useState(true);
 
   useEffect(() => {
     (async () => {
-      setInstalled(await isInstalled(installData));
-      setAppData(await fetchApps(installData));
-      setUpdating(
-        updaterStatus().apps?.includes(installData) === true ? true : false
-      );
+      if ((installData || "") !== "") {
+        setInstalled(await isInstalled(installData));
+        setAppData(await fetchApps(installData));
+
+        setUpdating(
+          updaterStatus().apps?.includes(installData) === true ? true : false
+        );
+      }
     })();
   }, [installData]);
 
@@ -142,7 +145,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                     } else if (event === "installing") {
                       button.current.innerHTML = "Installing...";
                     }
-                  }).install(false, [installData]);
+                  }).install([installData]);
                   button.current.innerHTML = "Installed!";
                   setWorking(false);
                   setInstalled(await isInstalled(installData));

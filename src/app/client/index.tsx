@@ -46,6 +46,51 @@ interface UserProps {
   dark: boolean;
 }
 
+async function verifyUserPassword(uid: string, password: string) {
+  return await fetch(`${base}verify`, {
+    method: "GET",
+    responseType: 1,
+    headers: {
+      "x-uid": uid,
+      "x-password": password,
+    },
+    timeout: 6,
+  })
+    .then(({ ok, status }) => {
+      if (ok) {
+        return true;
+      } else if (status >= 500) {
+        throw new Error("Server Error!");
+      } else {
+        return false;
+      }
+    })
+    .catch((_) => {
+      throw new Error("Server Error!");
+    });
+}
+
+async function fetchUser(uid: string) {
+  return await fetch(`${base}`, {
+    method: "GET",
+    headers: {
+      uid,
+    },
+    responseType: 1,
+    timeout: 5,
+  })
+    .then(({ ok, data }) => {
+      if (ok) {
+        return data as string;
+      } else {
+        return GeneralUser;
+      }
+    })
+    .catch(() => {
+      return GeneralUser;
+    });
+}
+
 export default function Init(props: UserProps) {
   Modal.setAppElement("#root");
 
@@ -109,19 +154,7 @@ export default function Init(props: UserProps) {
           setName("Guest");
         }
         setUser(Loading);
-        fetch(`${base}`, {
-          headers: {
-            uid: auth.currentUser?.uid,
-          },
-          method: "GET",
-          responseType: 1,
-        })
-          .then(({ data }) => {
-            setUser(data as any);
-          })
-          .catch(() => {
-            setUser(GeneralUser);
-          });
+        setUser(await fetchUser(auth?.currentUser?.uid as string));
         setAlt(
           auth.currentUser?.photoURL
             ? "Click to edit picture"
@@ -162,22 +195,17 @@ export default function Init(props: UserProps) {
           fs.readAsDataURL(blob);
           fs.onload = async () => {
             setUser(Loading);
-          };
 
           setPFD({ fs });
 
           if (!cookies.temptokenforuse) {
             setpPopop(true);
           } else {
-            await fetch(`${base}verify`, {
-              method: "GET",
-              responseType: 1,
-              headers: {
-                "x-uid": auth.currentUser?.uid,
-                "x-password": cookies.temptokenforuse,
-              },
-            })
-              .then(({ ok }) => {
+            verifyUserPassword(
+              auth?.currentUser?.uid as string,
+              cookies.temptokenforuse as string
+            )
+              .then((ok) => {
                 if (!ok) {
                   setpPopop(true);
                 } else {
@@ -194,15 +222,14 @@ export default function Init(props: UserProps) {
                 }
               })
               .catch((_e) => {
-                setpPopop(true);
+                console.warn("The Server didn't respond");
               });
           }
+        }
         }
       }
     });
   }, []);
-
-  /*manage();*/
 
   return (
     <>
@@ -234,6 +261,7 @@ export default function Init(props: UserProps) {
               (
                 document.getElementById("accpwdhost") as HTMLInputElement
               ).value = "";
+              fetchUser(auth?.currentUser?.uid as string).then(setUser);
               setpPopop(false);
             }}
           >
@@ -251,39 +279,37 @@ export default function Init(props: UserProps) {
               document.getElementById("accpwdhost") as HTMLInputElement
             ).value;
 
-            fetch(`${base}verify`, {
-              method: "GET",
-              headers: {
-                "x-uid": auth.currentUser?.uid,
-                "x-password": inputPassword,
-              },
-              responseType: 1,
-            }).then(({ ok }) => {
-              if (ok) {
-                setCookie("temptokenforuse", inputPassword, {
-                  expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-                });
-                setpPopop(false);
+            verifyUserPassword(auth?.currentUser?.uid as string, inputPassword)
+              .then((ok) => {
+                if (ok) {
+                  setCookie("temptokenforuse", inputPassword, {
+                    expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+                  });
+                  setpPopop(false);
 
-                ChangeProfile(
-                  auth,
-                  setAlt,
-                  setUser,
-                  {
-                    result: (profilePictureData as any).fs.result,
-                  },
-                  inputPassword,
-                  setPFD
-                );
+                  ChangeProfile(
+                    auth,
+                    setAlt,
+                    setUser,
+                    {
+                      result: (profilePictureData as any).fs.result,
+                    },
+                    inputPassword,
+                    setPFD
+                  );
 
-                error.innerText = "";
-                (
-                  document.getElementById("accpwdhost") as HTMLInputElement
-                ).value = "";
-              } else {
-                error.innerText = "Wrong Password!";
-              }
-            });
+                  error.innerText = "";
+                  (
+                    document.getElementById("accpwdhost") as HTMLInputElement
+                  ).value = "";
+                } else {
+                  error.innerText = "Wrong Password!";
+                }
+              })
+              .catch((e) => {
+                console.warn(e);
+                error.innerText = "Please try again later";
+              });
           }}
         >
           {/*eslint-disable-next-line jsx-a11y/heading-has-content*/}
@@ -631,7 +657,7 @@ interface AccountNameProps {
 function ChangeAccountName(props: AccountNameProps) {
   const { close, dark, user, updateName } = props;
   const name = user.displayName as string;
-  const dev = name.startsWith("(dev)");
+  const dev = name?.startsWith("(dev)");
 
   let [value, setValue] = useState(dev ? name.replace("(dev)", "") : name);
 
@@ -720,26 +746,16 @@ async function ChangeProfile(
         "x-password": pwd,
       },
       body: Body.json({ data: fs.result }),
-      timeout: 60,
+      timeout: 20,
     }).then((data) => {
+      console.log(data);
       const { ok } = data;
       if (!ok) {
         sendNotification("Failed to update profile picture!");
-        fetch(`${base}`, {
-          method: "GET",
-          headers: {
-            uid: auth.currentUser?.uid,
-          },
-          responseType: 1,
-        })
-          .then(({ data }) => {
-            setUser(data);
-            setPFD({});
-          })
-          .catch(() => {
-            setUser(GeneralUser);
-            setPFD({});
-          });
+        setPFD({});
+        fetchUser(auth?.currentUser?.uid as string).then((value) =>
+          setUser(value)
+        );
       } else {
         setAlt("Click to edit picture");
         setUser(fs.result);

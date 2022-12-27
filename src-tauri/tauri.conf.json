@@ -26,13 +26,14 @@
         "all": true,
         "scope": [
           "https://github.com/ahqsoftwares/ahq-store-data/*",
-          "https://raw.githack.com/ahqsoftwares/ahq-store-data/*",
-          "http://n7.danbot.host:2061/*",
-          "http://n7.danbot.host:2061/",
-          "http://api.simplehost.cf:2082/*",
-          "http://api.simplehost.cf:2082/",
-          "http://localhost:2030/",
-          "http://localhost:2030/*"
+          "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/*",
+          "https://api.github.com/repos/*",
+
+          "https://astore.simplehost.ml/*",
+          "https://astore.simplehost.ml/",
+
+          "http://localhost:2082/",
+          "http://localhost:2082/*"
         ]
       },
       "path": {

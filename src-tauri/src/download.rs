@@ -4,6 +4,7 @@
 // Clippy:
 #![warn(clippy::all, clippy::nursery, clippy::pedantic)]
 #![allow(clippy::non_ascii_literal)]
+use winapi_easy::ui::{Window, Taskbar, ProgressState};
 use downloader::Downloader;
 use std::fs::create_dir_all;
 use std::path::Path;
@@ -22,7 +23,7 @@ impl SimpleReporter {
     #[cfg(not(feature = "tui"))]
     fn create() -> std::sync::Arc<Self> {
         std::sync::Arc::new(Self {
-            private: std::sync::Mutex::new(None),
+            private: std::sync::Mutex::new(None)
         })
     }
 }
@@ -35,6 +36,18 @@ impl downloader::progress::Reporter for SimpleReporter {
             message: message.to_owned(),
         };
 
+        match Taskbar::new() {
+            Ok(mut taskbar) => {
+                match Window::get_console_window() {
+                    Some(mut window) => {
+                        taskbar.set_progress_state(&mut window, ProgressState::Normal).expect("");
+                    },
+                    _ => {}
+                }
+            },
+            _ => {}
+        }
+
         let mut guard = self.private.lock().unwrap();
         *guard = Some(private);
     }
@@ -45,6 +58,19 @@ impl downloader::progress::Reporter for SimpleReporter {
                 Some(bytes) => format!("{:?}", bytes),
                 None => "{unknown}".to_owned(),
             };
+
+            match Taskbar::new() {
+                Ok(mut taskbar) => {
+                    match Window::get_console_window() {
+                        Some(mut window) => {
+                            taskbar.set_progress_value(&mut window, current.clone(), max_bytes.clone().parse().unwrap()).expect("");
+                        },
+                        _ => {}
+                    }
+                },
+                _ => {}
+            }
+
             if p.last_update.elapsed().as_millis() >= 1000 {
                 println!(
                   "Downloading App: {} of {} bytes. [{}]",
@@ -62,6 +88,19 @@ impl downloader::progress::Reporter for SimpleReporter {
     fn done(&self) {
         let mut guard = self.private.lock().unwrap();
         *guard = None;
+
+        match Taskbar::new() {
+            Ok(mut taskbar) => {
+                match Window::get_console_window() {
+                    Some(mut window) => {
+                        taskbar.set_progress_state(&mut window, ProgressState::NoProgress).expect("");
+                    },
+                    _ => {}
+                }
+            },
+            _ => {}
+        }
+
         println!("App Download Status: [DONE]");
     }
 }

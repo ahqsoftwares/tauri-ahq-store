@@ -254,7 +254,7 @@ User Panel
   @apply bg-gray-300 !important;
 }
 
-.img-dev .div-l  {
+.img-dev .div-l {
   @apply bg-gray-100 shadow-xl !important;
 }
 
@@ -331,7 +331,6 @@ User Panel
 .select-d option {
   @apply text-blue-700;
 }
-
 
 .img-dev {
   @apply mt-2 mx-auto rounded-md;

@@ -1,6 +1,7 @@
 //Arrow
 import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
+import { GiPartyPopper } from "react-icons/gi";
 import fetchApps, { cacheData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import listAllApps from "../../resources/utilities/listAllApps";
@@ -47,12 +48,22 @@ export default function AppsList(props: Props) {
         className="min-h-[auto] h-[100%] min-w-[100%] pb-[1rem] text-center"
         style={{ overflowY: "scroll" }}
       >
-        {rawApps === 1 ? 
-          <h1 className={`my-2 ${dark ? "text-slate-400" : "text-slate-700"}`}>No Apps Found in this Workspace...</h1> :
-          apps.length === 0 ? 
-          <h1 className={`my-2 ${dark ? "text-slate-400" : "text-slate-700"}`}>Loading...</h1> : 
+        {rawApps === 1 ? (
+          <h1
+            className={`my-2 w-[100%] flex flex-row text-center items-center justify-center ${
+              dark ? "text-slate-400" : "text-slate-700"
+            }`}
+          >
+            Install some apps to get the fun started{" "}
+            <GiPartyPopper size="1.5em" />
+          </h1>
+        ) : apps.length === 0 ? (
+          <h1 className={`my-2 ${dark ? "text-slate-400" : "text-slate-700"}`}>
+            Loading...
+          </h1>
+        ) : (
           <></>
-        }
+        )}
 
         {apps.map((data) => {
           return (

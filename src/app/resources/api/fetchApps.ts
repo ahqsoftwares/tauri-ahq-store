@@ -1,6 +1,8 @@
 import { fetch } from "@tauri-apps/api/http";
 import packageImg from "../package.png";
 
+let commit_id = "";
+
 type appData = {
   title: string;
   description: string;
@@ -11,19 +13,37 @@ type appData = {
   version: string;
   exe: string;
   author: {
-    id: string
-  }
+    id: string;
+  };
 };
 
 interface cacheData extends appData {
   author: any;
-};
+}
 
 let cache: {
   [key: string]: cacheData;
 } = {};
 
 export type { cacheData };
+
+export async function init(): Promise<string> {
+  return await fetch(
+    "https://api.github.com/repos/ahqsoftwares/ahq-store-data/commits/main",
+    {
+      responseType: 1,
+      method: "GET",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+      },
+    }
+  ).then(({ data }) => {
+    commit_id = (data as any).sha;
+    return (data as any).sha as string;
+  });
+}
+
 export default async function fetchApps(
   apps: string | string[]
 ): Promise<cacheData | cacheData[]> {
@@ -36,7 +56,7 @@ export default async function fetchApps(
 
 export async function fetchAuthor(id: string) {
   return (await fetch(
-    `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/user${id}.json`,
+    `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/user${id}.json`,
     {
       method: "GET",
       responseType: 1,
@@ -46,7 +66,7 @@ export async function fetchAuthor(id: string) {
 
 async function resolveApps(apps: string[]) {
   let promises = [];
-  console.log(apps);
+
   for (let i = 0; i < apps.length; i++) {
     const app = apps[i];
     promises.push(getApp(app));
@@ -58,53 +78,67 @@ async function resolveApps(apps: string[]) {
 async function getApp(appName: string) {
   let data: any = {};
 
+  if ((appName || "") === "") {
+    throw new Error("Error reading app");
+  }
+
+  if (!commit_id) {
+    throw new Error("Error reading app");
+  }
+
   if (cache[appName]) {
     data = cache[appName];
   } else {
     const mainAppData = await fetch(
-      `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/${appName}.json`,
+      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/${appName}.json`,
       {
         method: "GET",
         responseType: 1,
       }
     )
-    .then(({ data, ok }) => {
-      if (ok) {
-        return data as appData;
-      } else {
-        throw new Error("Not Found!");
-      }
-    })
-    .catch(() => {
-      return {
-        title: `Unknown`,
-        description: "App not Found",
-        longDesc: "",
-        id: appName,
-        download_url: "",
-        version: "v0.0.0",
-        img: packageImg,
-        author: {
-          id: "unknown"
+      .then(({ data, ok }) => {
+        if (ok) {
+          return data as appData;
+        } else {
+          if (cache[appName]) {
+            return cache[appName] as appData;
+          } else {
+            throw new Error("Not Found Error!");
+          }
         }
-      } as appData;
-    });
-    
+      })
+      .catch((_e) => {
+        return {
+          title: `Unknown`,
+          description: "App not Found",
+          longDesc: "",
+          id: appName,
+          download_url: "",
+          version: "v0.0.0",
+          img: packageImg,
+          author: {
+            id: "unknown",
+          },
+        } as appData;
+      });
+
     const authorData = await fetch(
-      `https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/user${mainAppData.author.id}.json`,
+      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/user${mainAppData.author.id}.json`,
       {
         method: "GET",
         responseType: 1,
       }
     )
-    .then(({ data }) => {
-      return data as any;
-    })
-    .catch(() => {
-      return {
-
-      };
-    });
+      .then(({ data, ok }) => {
+        if (ok) {
+          return data as any;
+        } else {
+          return {} as any;
+        }
+      })
+      .catch(() => {
+        return {};
+      });
 
     let fullAnswer = {
       id: appName,

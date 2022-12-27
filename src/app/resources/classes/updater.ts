@@ -62,20 +62,31 @@ export default class Updater {
 
       this.emitter();
 
-      const updatableApps = await this.checkForUpdates();
-      this.updatingAppList = updatableApps;
-      this.updateStatus = updatableApps.length === 0 ? "updated" : "updating";
+      function updateRunner(global: Updater) {
+        global
+          .checkForUpdates()
+          .then(async (updatableApps) => {
+            global.updatingAppList = updatableApps;
+            global.updateStatus =
+              updatableApps.length === 0 ? "updated" : "updating";
 
-      if (updatableApps.length !== 0) {
-        sendNotification({
-          title: "Updates Available",
-          body: "Installing app updates...",
-        });
+            if (updatableApps.length !== 0) {
+              sendNotification({
+                title: "Updates Available",
+                body: "Installing app updates...",
+              });
+              global.installUpdates(updatableApps);
+            }
+
+            global.emitter();
+          })
+          .catch(() => {
+            setTimeout(() => {
+              updateRunner(global);
+            }, 1000);
+          });
       }
-
-      this.emitter();
-
-      this.installUpdates(updatableApps);
+      updateRunner(this);
     }
   }
 
@@ -108,7 +119,7 @@ export default class Updater {
           this.updatingAppList?.splice(0, 1);
         }
       }
-    }, apps).install(true);
+    }, apps).install();
 
     this.updateStatus = "updated";
     this.emitter();

@@ -19,6 +19,7 @@ import "./index.css";
 /*
 Components
 */
+import Loading from "../config/App";
 import Home from "./home/index";
 import Nav from "./Nav";
 import Developer from "./developer/";
@@ -28,6 +29,8 @@ import Library from "./library";
 import Settings from "./settings/index";
 
 import BaseAPI from "./server";
+
+import { init as initApi } from "./resources/api/fetchApps";
 import fetchPrefs, {
   appData,
   setConfig,
@@ -56,11 +59,7 @@ function Render(props: AppProps) {
     App: any = () => <></>;
 
   useEffect(() => {
-    appWindow.listen("sendUpdaterStatus", ({ payload }: any) => {
-      console.log(payload);
-    });
     appWindow.listen("app", ({ payload }: { payload: string }) => {
-      /*console.log(payload);*/
       if (payload.startsWith("ahqstore://")) {
         const [page] = payload.replace("ahqstore://", "").split("/");
 
@@ -76,38 +75,6 @@ function Render(props: AppProps) {
         }
       }
     });
-  }, []);
-
-  useEffect(() => {
-    //Fetch All Maps (not full data, full data will be lazy fetched)
-    (async () => {
-      //Fetch Maps
-      const { data: Mapped } = await fetch(
-        "https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/mapped.json",
-        {
-          method: "GET",
-          timeout: 30,
-          responseType: 1,
-        }
-      );
-
-      setData({
-        map: Mapped as {
-          [key: string]: Object;
-        },
-      });
-
-      const { data: Home } = await fetch(
-        "https://raw.githack.com/ahqsoftwares/ahq-store-data/main/database/home.json",
-        {
-          method: "GET",
-          timeout: 30,
-          responseType: 1,
-        }
-      );
-
-      setApps(Home);
-    })();
   }, []);
   /*
         Dark Mode
@@ -126,11 +93,43 @@ function Render(props: AppProps) {
 
       runAutoUpdate(autoUpdate);
 
-      setLoad(true);
+      //Fetch Maps
+      initApi()
+        .then(async (commit_id) => {
+          const { data: Mapped } = await fetch(
+            `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/mapped.json`,
+            {
+              method: "GET",
+              timeout: 30,
+              responseType: 1,
+            }
+          );
+
+          setData({
+            map: Mapped as {
+              [key: string]: Object;
+            },
+          });
+
+          const { data: Home } = await fetch(
+            `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/home.json`,
+            {
+              method: "GET",
+              timeout: 30,
+              responseType: 1,
+            }
+          );
+
+          setApps(Home);
+          setLoad(true);
+        })
+        .catch(() => {
+          window.location.reload();
+        });
     })();
   }, []);
 
-  (async() => {
+  (async () => {
     setInterval(() => {
       const elements = document.querySelectorAll("img");
 
@@ -138,7 +137,7 @@ function Render(props: AppProps) {
         elements[i].setAttribute("draggable", "false");
       }
     }, 1000);
-  })()
+  })();
 
   useEffect(() => {
     const element = document.querySelector("body");
@@ -238,7 +237,7 @@ function Render(props: AppProps) {
           </div>
         </header>
       ) : (
-        <></>
+        <Loading info="Almost there!" />
       )}
     </>
   );
