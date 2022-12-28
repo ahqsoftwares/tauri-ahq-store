@@ -196,36 +196,36 @@ export default function Init(props: UserProps) {
           fs.onload = async () => {
             setUser(Loading);
 
-          setPFD({ fs });
+            setPFD({ fs });
 
-          if (!cookies.temptokenforuse) {
-            setpPopop(true);
-          } else {
-            verifyUserPassword(
-              auth?.currentUser?.uid as string,
-              cookies.temptokenforuse as string
-            )
-              .then((ok) => {
-                if (!ok) {
-                  setpPopop(true);
-                } else {
-                  ChangeProfile(
-                    auth,
-                    setAlt,
-                    setUser,
-                    {
-                      result: fs.result as string,
-                    },
-                    cookies.temptokenforuse,
-                    setPFD
-                  );
-                }
-              })
-              .catch((_e) => {
-                console.warn("The Server didn't respond");
-              });
-          }
-        }
+            if (!cookies.temptokenforuse) {
+              setpPopop(true);
+            } else {
+              verifyUserPassword(
+                auth?.currentUser?.uid as string,
+                cookies.temptokenforuse as string
+              )
+                .then((ok) => {
+                  if (!ok) {
+                    setpPopop(true);
+                  } else {
+                    ChangeProfile(
+                      auth,
+                      setAlt,
+                      setUser,
+                      {
+                        result: fs.result as string,
+                      },
+                      cookies.temptokenforuse,
+                      setPFD
+                    );
+                  }
+                })
+                .catch((_e) => {
+                  console.warn("The Server didn't respond");
+                });
+            }
+          };
         }
       }
     });

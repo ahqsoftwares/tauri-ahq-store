@@ -48,6 +48,8 @@ import {
 import "./index.css";
 import { loadAppVersion } from "./app/resources/api/version";
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const config = {
   apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
   authDomain: "ahq-store.firebaseapp.com",
@@ -93,14 +95,14 @@ if (appWindow.label === "main") {
 
   render("Checking for updates...", App);
 
-  let canPerform = true;
+  var canPerform = true;
 
-  setTimeout(() => {
+  delay(15 * 1000).then(() => {
     if (canPerform) {
       canPerform = false;
       Manage();
     }
-  }, 10 * 1000);
+  });
 
   checkUpdate()
     .then(async ({ shouldUpdate, manifest }) => {
@@ -115,10 +117,16 @@ if (appWindow.label === "main") {
             await relaunch();
           }, 3000);
         }, 5000);
-      } else if (canPerform) Manage();
+      } else if (canPerform) {
+        canPerform = false;
+        Manage();
+      }
     })
     .catch((_) => {
-      if (canPerform) Manage();
+      if (canPerform) {
+        Manage();
+        canPerform = false;
+      }
     });
 
   window.addEventListener("offline", () => {

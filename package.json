@@ -58,6 +58,7 @@
     "@tauri-apps/cli": "^1.2.1",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
+    "firebase-tools": "^11.19.0",
     "onchange": "^7.1.0",
     "serve": "14.0.1"
   },

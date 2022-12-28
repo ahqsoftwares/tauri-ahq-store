@@ -73,7 +73,7 @@ export default class Updater {
             global.updateStatus =
               updatableApps.length === 0 ? "updated" : "updating";
 
-            if (updatableApps.length !== 0) {
+            if (updatableApps.length > 0) {
               sendNotification({
                 title: "Updates Available",
                 body: "Installing app updates...",

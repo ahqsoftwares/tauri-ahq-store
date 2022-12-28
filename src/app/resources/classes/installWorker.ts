@@ -99,7 +99,7 @@ export default class installWorker {
         version: app.version,
         exe: app.exe,
         name: app.name,
-        download_url: app.download_url
+        download_url: app.download_url,
       });
     }
   }
