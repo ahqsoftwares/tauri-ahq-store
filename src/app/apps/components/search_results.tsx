@@ -21,7 +21,7 @@ export default function Load(props: SearchPropsToRender) {
     >
       <img src={img} alt="Logo" />
       <div className="ml-2">
-        <h1 className="text-blue-500">{title}</h1>
+        <h1 className="text-white">{title}</h1>
         <h2>
           {description.length > 30
             ? `${description.substring(0, 30)}...`

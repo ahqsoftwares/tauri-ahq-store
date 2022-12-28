@@ -61,6 +61,9 @@
         "create": true,
         "close": true,
         "hide": true
+      },
+      "globalShortcut": {
+        "all": true
       }
     },
     "bundle": {

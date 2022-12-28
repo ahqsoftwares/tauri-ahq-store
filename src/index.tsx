@@ -10,6 +10,7 @@ import {
   requestPermission,
   sendNotification,
 } from "@tauri-apps/api/notification";
+import { register } from "@tauri-apps/api/globalShortcut";
 import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
 import { invoke } from "@tauri-apps/api/tauri";
 import { relaunch } from "@tauri-apps/api/process";
@@ -68,6 +69,22 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
+let list = [
+  "F5", //Reload
+  "CommandOrControl+R", //Reload
+  "CommandOrControl+Shift+R", //Reload
+  "CommandOrControl+Shift+E", //Find
+  "CommandOrControl+Shift+X", //Useless Screenshot
+  "CommandOrControl+F", //Find
+  "CommandOrControl+G", //Find
+  "CommandOrControl+P", //Print
+  "CommandOrControl+U", //Inspect Page
+];
+
+list.forEach((item) => {
+  register(item, () => {}).catch(() => {});
+});
+
 /**Sub or main? */
 if (appWindow.label === "main") {
   loadAppVersion();
@@ -94,10 +111,9 @@ if (appWindow.label === "main") {
   })();
 
   render("Checking for updates...", App);
-
   var canPerform = true;
-
-  delay(15 * 1000).then(() => {
+  delay(15 * 1000)
+  .then(() => {
     if (canPerform) {
       canPerform = false;
       Manage();
