@@ -5,18 +5,21 @@ import listAllApps, { Apps } from "../utilities/listAllApps";
 import installWorker from "./installWorker";
 
 //Interfaces
-type updateStatus = "checking" | "updating" | "updated";
+type updateStatus = "none" | "checking" | "updating" | "updated";
 
 export type { updateStatus };
 
 export default class Updater {
   autoUpdate?: boolean;
-  updateStatus?: updateStatus;
+  updateStatus: updateStatus;
   updatingApp?: string;
   updatingAppList?: string[];
   currentTimer?: NodeJS.Timer;
   state?: number;
 
+  constructor() {
+    this.updateStatus = "none";
+  }
   /**
    * Starts the updater process
    * @param {boolean} auto Is autoupdate turned on?

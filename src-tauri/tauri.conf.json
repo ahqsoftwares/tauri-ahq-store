@@ -45,9 +45,7 @@
         "createDir": true,
         "scope": [
           "$APP",
-          "$APP/*",
-          "C:\\ProgramData\\AHQ Store Applications\\Updaters\\*",
-          "C:\\ProgramData\\AHQ Store Applications\\Updaters"
+          "$APP/database/config.astore"
         ]
       },
       "window": {

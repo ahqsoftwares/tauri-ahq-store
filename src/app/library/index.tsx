@@ -43,6 +43,7 @@ export default function Library(props: LibraryProps) {
   const [status, setStatus] = useState("Checking..."),
     [appList, setAppList] = useState<boolean>(false),
     [apps, setApps] = useState<string[]>([]),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     [current, setCurrent] = useState<string>("");
 
   useEffect(() => {
@@ -55,7 +56,6 @@ export default function Library(props: LibraryProps) {
 
     appWindow.listen("sendUpdaterStatus", ({ payload }: {payload: string}) => {
       const status = JSON.parse(payload);
-
       setStatus(status.status ? status.status.replace("updated", "Check for Updates").replace("updating", "Updates Available").replace("checking", "Checking...") : "");
       setApps(status.totalApps || []);
       setCurrent(status.currentlyUpdating || "");
@@ -89,14 +89,14 @@ export default function Library(props: LibraryProps) {
                 dark ? "text-slate-200" : "text-slate-800"
               } text-2xl`}
             >
-              {status === "Check for Updates" ? "You are up to date!" : status === "Checking..." ? "Checking for updates..." : `${apps.length} update${apps.length > 1 ? "s" : ""} available`}
+              {status === "Check for Updates" ? "You are up to date!" : status === "Checking..." ? "Checking for updates..." : status === "none" ? "Your apps may not be up to date!" : `${apps.length} update${apps.length > 1 ? "s" : ""} available`}
             </h1>
             <button
               className="button ml-auto"
-              disabled={status !== "Check for Updates"}
+              disabled={status !== "Check for Updates" && status !== "none"}
               style={{ maxWidth: "10rem", maxHeight: "30px" }}
               onClick={() => {
-                if (status === "Check for Updates") {
+                if (status === "Check for Updates" || status === "none") {
                   setStatus("Checking...");
                   setTimeout(() => {
                     runManualUpdate();
@@ -104,7 +104,7 @@ export default function Library(props: LibraryProps) {
                 }
               }}
             >
-              {status}
+              {status.replace("none", "Check for Updates").replace("Updates Available", "Updating Apps...")}
             </button>
           </div>
         </div>

@@ -93,9 +93,19 @@ if (appWindow.label === "main") {
 
   render("Checking for updates...", App);
 
+  let canPerform = true;
+
+  setTimeout(() => {
+    if (canPerform) {
+      canPerform = false;
+      Manage();
+    }
+  }, 10 * 1000);
+
   checkUpdate()
     .then(async ({ shouldUpdate, manifest }) => {
-      if (shouldUpdate) {
+      if (shouldUpdate && canPerform) {
+        canPerform = false;
         render(`Verison ${manifest?.version} Available...`, App);
 
         setTimeout(async () => {
@@ -105,10 +115,10 @@ if (appWindow.label === "main") {
             await relaunch();
           }, 3000);
         }, 5000);
-      } else Manage();
+      } else if (canPerform) Manage();
     })
-    .catch((e) => {
-      Manage();
+    .catch((_) => {
+      if (canPerform) Manage();
     });
 
   window.addEventListener("offline", () => {
