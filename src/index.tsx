@@ -10,7 +10,7 @@ import {
   requestPermission,
   sendNotification,
 } from "@tauri-apps/api/notification";
-import { register } from "@tauri-apps/api/globalShortcut";
+import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
 import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
 import { invoke } from "@tauri-apps/api/tauri";
 import { relaunch } from "@tauri-apps/api/process";
@@ -77,12 +77,20 @@ let list = [
   "CommandOrControl+Shift+X", //Useless Screenshot
   "CommandOrControl+F", //Find
   "CommandOrControl+G", //Find
+  "CommandOrControl+Shift+G", //Find
   "CommandOrControl+P", //Print
+  "CommandOrControl+Shift+P", //Print
   "CommandOrControl+U", //Inspect Page
 ];
 
-list.forEach((item) => {
-  register(item, () => {}).catch(() => {});
+appWindow.onFocusChanged(({ payload:focused }) => {
+    if (focused) {
+      list.forEach((item) => {
+        register(item, () => {}).catch(() => {});
+      });
+    } else if (appWindow.label === "main") {
+      unregisterAll().catch(() => {});
+    }
 });
 
 /**Sub or main? */
@@ -95,6 +103,8 @@ if (appWindow.label === "main") {
   (async () => {
     let permissionGranted = await isPermissionGranted();
     const autostarted = await invoke("autostart");
+
+    appWindow.emit("ready", "");
 
     if (!autostarted) {
       appWindow.show();
@@ -245,6 +255,7 @@ if (appWindow.label === "main") {
       } else {
         load();
       }
+      appWindow.unminimize();
       appWindow.show();
     }
   });

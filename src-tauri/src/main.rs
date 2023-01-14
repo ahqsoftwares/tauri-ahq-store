@@ -8,11 +8,18 @@ pub mod extract;
 
 use tauri_plugin_autostart::MacosLauncher;
 use mslnk::ShellLink;
-use deelevate::{Token, PrivilegeLevel};
-use std::path::Path;
-use std::{fs, thread, process, env::args, process::Command};
+use std::{path::Path, fs, thread, process, env::args, process::Command, sync::{Arc, Mutex, MutexGuard}};
+
 use os_version::Windows;
-use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu, Manager};
+
+use deelevate::{Token, PrivilegeLevel};
+use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
+
+#[derive(Debug, Clone)]
+struct AppData {
+    pub name: String,
+    pub data: String
+}
 
 fn main() {
     tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
@@ -78,16 +85,57 @@ fn main() {
     }
 
     let context = tauri::generate_context!();
+
     let app = tauri::Builder::default()
         .setup(|app| {
-            let window = Manager::get_window(app, "complement");
-            tauri_plugin_deep_link::register("ahqstore", move |request| {
-                println!("Request Data {}", &request);
-                if window.clone().is_some() {
-                    window.as_ref().unwrap().emit("app", &request).unwrap();
+            let args = std::env::args();
+            let buf = std::env::current_exe().unwrap().to_owned();
+            let exec = buf.to_str().unwrap().to_owned();
+
+            let ready = Arc::new(Mutex::new(false));
+            let queue = Arc::new(Mutex::new(Vec::<AppData>::new()));
+
+            let window = tauri::Manager::get_window(app, "complement").unwrap();
+
+            let listener = window.clone();
+
+            let ready_clone = ready.clone();
+            let queue_clone = queue.clone();
+            let window_clone = window.clone();
+            listener.listen("ready", move |_| {
+                *ready_clone.lock().unwrap() = true;
+
+                for item in queue_clone.lock().unwrap().iter() {
+                    window_clone.emit(item.name.as_str(), item.data.clone()).unwrap();
                 }
-            })
+            });
+
+            if std::env::args().last().unwrap().as_str() != exec.clone().as_str() {
+                let args = args.last().unwrap_or(String::from(""));
+
+                println!("Started with {}", args);
+
+                if *ready.clone().lock().unwrap() {
+                    window.emit("app", args.clone()).unwrap();
+                } else {
+                    queue.clone().lock().unwrap().push(AppData {
+                        data: args.clone(),
+                        name: String::from("app")
+                    });
+                }
+            }
+
+            let window = window.clone();
+            tauri_plugin_deep_link::register(
+                "ahqstore",
+                move |request| {
+                    println!("{:?}", request);
+                    window.show().unwrap_or(());
+                    window.emit("ahqstore", request).unwrap_or(());
+                },
+            )
             .unwrap();
+
             Ok(())
         })
         .system_tray(SystemTray::new().with_menu(
@@ -129,12 +177,17 @@ fn main() {
         .unwrap();
 
     let window = tauri::Manager::get_window(&app, "main").unwrap();
-    let window3 = window.clone();
-    let window4 = window.clone();
+    let window_complement = tauri::Manager::get_window(&app, "complement");
+    let window2 = window.clone();
 
-    window3.listen("sendUpdaterStatus", move |event| {
-        window4.emit("sendUpdaterStatus", event.payload().unwrap()).unwrap();
-    });
+    {
+        let window = window.clone();
+        let window2 = window.clone();
+
+        window.listen("sendUpdaterStatus", move |event| {
+            window2.emit("sendUpdaterStatus", event.payload().unwrap()).unwrap();
+        });
+    }
 
     app.run(move |_, event| match event {
         RunEvent::ExitRequested { api, .. } => {

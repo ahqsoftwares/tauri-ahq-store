@@ -1,12 +1,10 @@
 {
   "files.watcherExclude": {
     "**/node_modules": true,
-    "**/build": true
   },
   "files.maxMemoryForLargeFilesMB": 1024,
   "files.exclude": {
     "**/node_modules": true,
-    "**/build": true,
   },
   "editor.minimap.enabled": false
 }

@@ -49,18 +49,7 @@
         ]
       },
       "window": {
-        "all": false,
-        "maximize": true,
-        "minimize": false,
-        "setSkipTaskbar": false,
-        "setTitle": true,
-        "show": true,
-        "startDragging": false,
-        "unmaximize": false,
-        "unminimize": false,
-        "create": true,
-        "close": true,
-        "hide": true
+        "all": true
       },
       "globalShortcut": {
         "all": true

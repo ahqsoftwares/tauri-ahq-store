@@ -96,7 +96,7 @@ export default class Updater {
   async checkForUpdates() {
     const apps: Apps = await listAllApps();
 
-    const appsData = ((await fetchApps(Object.keys(apps))) as any[]).map(
+    const appsData = ((await fetchApps(Object.keys(apps), true)) as any[]).map(
       (value) => value.version
     );
 

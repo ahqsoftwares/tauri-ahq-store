@@ -45,12 +45,13 @@ export async function init(): Promise<string> {
 }
 
 export default async function fetchApps(
-  apps: string | string[]
+  apps: string | string[],
+  forUpdate?: boolean
 ): Promise<cacheData | cacheData[]> {
   if (typeof apps === "string") {
-    return (await resolveApps([apps]))[0];
+    return (await resolveApps([apps], forUpdate))[0];
   } else {
-    return await resolveApps([...apps]);
+    return await resolveApps([...apps], forUpdate);
   }
 }
 
@@ -64,18 +65,22 @@ export async function fetchAuthor(id: string) {
   )) as any;
 }
 
-async function resolveApps(apps: string[]) {
+async function resolveApps(apps: string[], forUpdate?: boolean) {
   let promises = [];
+
+  if (forUpdate) {
+    await init();
+  }
 
   for (let i = 0; i < apps.length; i++) {
     const app = apps[i];
-    promises.push(getApp(app));
+    promises.push(getApp(app, forUpdate));
   }
 
   return await Promise.all(promises);
 }
 
-async function getApp(appName: string) {
+async function getApp(appName: string, launchForUpdate?: boolean) {
   let data: any = {};
 
   if ((appName || "") === "") {
@@ -86,7 +91,7 @@ async function getApp(appName: string) {
     throw new Error("Error reading app");
   }
 
-  if (cache[appName]) {
+  if (!launchForUpdate && cache[appName]) {
     data = cache[appName];
   } else {
     const mainAppData = await fetch(

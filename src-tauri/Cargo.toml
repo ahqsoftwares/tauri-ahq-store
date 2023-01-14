@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "0.9.2"
+version = "0.9.4"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "ISC"
@@ -18,7 +18,7 @@ tauri-build = { version = "1.2.1", features = [] }
 serde_json = "1.0"
 winapi-easy = "0.1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.2.3", features = ["dialog-all", "fs-create-dir", "fs-read-file", "fs-write-file", "global-shortcut-all", "http-all", "notification-all", "path-all", "reqwest-client", "system-tray", "updater", "window-close", "window-create", "window-hide", "window-maximize", "window-set-title", "window-show", "windows7-compat"] }
+tauri = { version = "1.2.3", features = ["dialog-all", "fs-create-dir", "fs-read-file", "fs-write-file", "global-shortcut-all", "http-all", "notification-all", "path-all", "reqwest-client", "system-tray", "updater", "window-all", "windows7-compat"] }
 tauri-plugin-single-instance = { git = "https://github.com/amrbashir/tauri-plugin-single-instance" }
 tauri-plugin-deep-link = {git = "https://github.com/FabianLars/tauri-plugin-deep-link"}
 tauri-plugin-autostart = {git = "https://github.com/tauri-apps/tauri-plugin-autostart"}
@@ -26,11 +26,13 @@ downloader = "0.2.6"
 deelevate = "0.2.0"
 mslnk = "0.1.8"
 os-version = "0.2.0"
+timer = "0.2.0"
+time = "0.1"
 
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
-default = [ "custom-protocol" ]
+default = ["custom-protocol"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
-custom-protocol = [ "tauri/custom-protocol" ]
+custom-protocol = ["tauri/custom-protocol"]
