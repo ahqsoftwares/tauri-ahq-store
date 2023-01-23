@@ -70,14 +70,14 @@ export default function App({
     <div
       className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] ${
         dark ? "bg-gray-800 text-white" : "bg-gray-100 text-slate-800"
-      } rounded-md mt-2 shadow-xl`}
+      } rounded-md mt-2 shadow-xl pl-2`}
     >
       <img
         width={"64px"}
         height={"64px"}
         src={appInfo.img}
         alt={appInfo.title}
-        className={appInfo.img === pkg ? "p-2" : ""}
+        className={`mr-2 ${appInfo.img === pkg ? "p-2" : ""}`}
         draggable={false}
       ></img>
 

@@ -16,6 +16,11 @@ General
   @apply text-gray-300;
 }
 
+#special-modal:focus {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
 /*
 Apps Layout
 */

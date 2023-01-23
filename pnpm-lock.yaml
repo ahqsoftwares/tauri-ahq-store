@@ -16,6 +16,8 @@ specifiers:
   cross-env: ^7.0.3
   firebase: ^9.13.0
   firebase-tools: ^11.19.0
+  fuse.js: ^6.6.2
+  minisearch: ^6.0.0
   onchange: ^7.1.0
   postcss: ^8.4.18
   prettier: ^2.7.1
@@ -43,6 +45,8 @@ dependencies:
   '@types/react-modal': 3.13.1
   autoprefixer: 10.4.13_postcss@8.4.18
   firebase: 9.13.0
+  fuse.js: 6.6.2
+  minisearch: 6.0.0
   postcss: 8.4.18
   prettier: 2.7.1
   react: 18.2.0
@@ -52,7 +56,7 @@ dependencies:
   react-modal: 3.16.1_biqbaboplfbrettd7655fr4n2y
   react-scripts: 5.0.1_uz2ogxeagc4rbieizlfzyaazee
   tailwindcss: 3.2.3_postcss@8.4.18
-  tauri-plugin-autostart-api: github.com/tauri-apps/tauri-plugin-autostart/031efac82d592774c986e94c6258a3dc11f54d81
+  tauri-plugin-autostart-api: github.com/tauri-apps/tauri-plugin-autostart/11d7669b5df3f50dff771b9b144d2025f4e79de7
   typescript: 4.8.4
   web-vitals: 3.0.4
 
@@ -2884,13 +2888,6 @@ packages:
     dependencies:
       defer-to-connect: 1.1.3
     dev: true
-
-  /@tauri-apps/api/1.0.0-rc.4:
-    resolution: {integrity: sha512-1HaUsx8+TzFHDoQ+Mmd6RWaMsPyZlurQHgACDt+il5e/ui6pDkumVXaS92SnY5XOcS4gBC0BkgjVfkWgcm/Oww==}
-    engines: {node: '>= 12.13.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
-    dependencies:
-      type-fest: 2.12.2
-    dev: false
 
   /@tauri-apps/api/1.2.0:
     resolution: {integrity: sha512-lsI54KI6HGf7VImuf/T9pnoejfgkNoXveP14pVV7XarrQ46rOejIVJLFqHI9sRReJMGdh2YuCoI3cc/yCWCsrw==}
@@ -6990,6 +6987,11 @@ packages:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
     dev: false
 
+  /fuse.js/6.6.2:
+    resolution: {integrity: sha512-cJaJkxCCxC8qIIcPBF9yGxY0W/tVZS3uEISDxhYIdtk8OL93pe+6Zj7LjCqVV4dzbqcriOZ+kQ/NE4RXZHsIGA==}
+    engines: {node: '>=10'}
+    dev: false
+
   /gauge/4.0.4:
     resolution: {integrity: sha512-f9m+BEN5jkg6a0fZjleidjN51VE1X+mPFQ2DJ0uv1V39oCLCbsGe6yjbBnp7eK7z/+GAon99a3nHuqbuuthyPg==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
@@ -9605,6 +9607,10 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /minisearch/6.0.0:
+    resolution: {integrity: sha512-N7yUgtH5T9iQfdmzI8Dnke8TK+grccrWUsdiwvalGv04hJggOUI/EpWIEQj3v8t7XSi/kSfQ7GdLAS540+GxpQ==}
+    dev: false
 
   /minizlib/2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
@@ -13075,11 +13081,6 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /type-fest/2.12.2:
-    resolution: {integrity: sha512-qt6ylCGpLjZ7AaODxbpyBZSs9fCI9SkL3Z9q2oxMBQhs/uyY+VD8jHA8ULCGmWQJlBgqvO3EJeAngOHD8zQCrQ==}
-    engines: {node: '>=12.20'}
-    dev: false
-
   /type-fest/2.19.0:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
     engines: {node: '>=12.20'}
@@ -14032,11 +14033,10 @@ packages:
       readable-stream: 3.6.0
     dev: true
 
-  github.com/tauri-apps/tauri-plugin-autostart/031efac82d592774c986e94c6258a3dc11f54d81:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-autostart/tar.gz/031efac82d592774c986e94c6258a3dc11f54d81}
+  github.com/tauri-apps/tauri-plugin-autostart/11d7669b5df3f50dff771b9b144d2025f4e79de7:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-autostart/tar.gz/11d7669b5df3f50dff771b9b144d2025f4e79de7}
     name: tauri-plugin-autostart-api
     version: 0.0.0
     dependencies:
-      '@tauri-apps/api': 1.0.0-rc.4
-      tslib: 2.4.1
+      '@tauri-apps/api': 1.2.0
     dev: false

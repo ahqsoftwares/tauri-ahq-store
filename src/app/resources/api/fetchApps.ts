@@ -55,6 +55,30 @@ export default async function fetchApps(
   }
 }
 
+let searchDataCache: SearchData[] = [];
+
+interface SearchData {
+  name: string;
+  id: string;
+}
+export async function fetchSearchData() {
+  if (searchDataCache.length >= 1) {
+    return searchDataCache;
+  } else {
+    let data = (
+      await fetch(
+        `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/search.json`,
+        {
+          method: "GET",
+          responseType: 1,
+        }
+      )
+    ).data;
+    searchDataCache = data as SearchData[];
+    return data as SearchData[];
+  }
+}
+
 export async function fetchAuthor(id: string) {
   return (await fetch(
     `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/user${id}.json`,

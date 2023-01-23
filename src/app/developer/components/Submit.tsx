@@ -1,12 +1,16 @@
 //React
 import { useEffect, useState } from "react";
 
+//Tauri
+import { open } from "@tauri-apps/api/dialog";
+
 //Icons
 import { BiArrowBack } from "react-icons/bi";
 import { BsGithub } from "react-icons/bs";
 
 //components
 import icon from "../../resources/package.png";
+import { readBinaryFile } from "@tauri-apps/api/fs";
 
 //types
 interface appData {
@@ -110,12 +114,48 @@ export default function Submit(props: { toggle: Function; dark: boolean }) {
             />
           </div>
           <div className="flex flex-col items-center text-center justify-center mb-auto mt-3">
-            <div className="img img-dev">
+            <div
+              className="img img-dev"
+              onClick={() => {
+                open({
+                  multiple: false,
+                  filters: [
+                    {
+                      name: "icon",
+                      extensions: ["png"],
+                    },
+                  ],
+                }).then(async (data) => {
+                  const imageData = await readBinaryFile(data as string);
+
+                  const blob = new Blob([imageData]);
+
+                  const fs = new FileReader();
+
+                  fs.readAsDataURL(blob);
+
+                  fs.onload = () => {
+                    setAppData((value) => {
+                      return {
+                        ...value,
+                        icon: fs.result as string,
+                      };
+                    });
+                  };
+                });
+              }}
+            >
               <img
                 src={appData.icon}
                 alt="icon"
                 width={"256px"}
                 height={"256px"}
+                style={{
+                  minWidth: "256px",
+                  minHeight: "256px",
+                  maxWidth: "256px",
+                  maxHeight: "256px",
+                }}
               />
               <h1
                 className={`mt-2 ${

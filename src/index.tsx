@@ -83,14 +83,14 @@ let list = [
   "CommandOrControl+U", //Inspect Page
 ];
 
-appWindow.onFocusChanged(({ payload:focused }) => {
-    if (focused) {
-      list.forEach((item) => {
-        register(item, () => {}).catch(() => {});
-      });
-    } else if (appWindow.label === "main") {
-      unregisterAll().catch(() => {});
-    }
+appWindow.onFocusChanged(({ payload: focused }) => {
+  if (focused) {
+    list.forEach((item) => {
+      register(item, () => {}).catch(() => {});
+    });
+  } else if (appWindow.label === "main") {
+    unregisterAll().catch(() => {});
+  }
 });
 
 /**Sub or main? */
@@ -122,8 +122,7 @@ if (appWindow.label === "main") {
 
   render("Checking for updates...", App);
   var canPerform = true;
-  delay(15 * 1000)
-  .then(() => {
+  delay(15 * 1000).then(() => {
     if (canPerform) {
       canPerform = false;
       Manage();
@@ -244,21 +243,25 @@ if (appWindow.label === "main") {
 } else {
   let dataHolder: string;
 
-  appWindow.listen("app", ({ payload }: { payload: string }) => {
-    console.log(payload);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_ahqstore, _useless, path, data] = payload.split("/");
-    dataHolder = data;
-    if (path === "app") {
-      if (!auth.currentUser) {
-        unload();
-      } else {
-        load();
+  appWindow
+    .listen("app", ({ payload }: { payload: string }) => {
+      console.log(payload);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [_ahqstore, _useless, path, data] = payload.split("/");
+      dataHolder = data;
+      if (path === "app") {
+        if (!auth.currentUser) {
+          unload();
+        } else {
+          load();
+        }
+        appWindow.unminimize();
+        appWindow.show();
       }
-      appWindow.unminimize();
-      appWindow.show();
-    }
-  });
+    })
+    .then(() => {
+      appWindow.emit("ready", "");
+    });
 
   onAuthStateChanged(auth, (user) => {
     if (user) {

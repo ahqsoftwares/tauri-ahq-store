@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import fetchApps from "../../resources/api/fetchApps";
+import SearchModule from "fuse.js";
+
+import fetchApps, { fetchSearchData } from "../../resources/api/fetchApps";
 import SearchResult from "../components/search_results";
+import { getData, setData } from "../../resources/utilities/database";
 
 interface SearchProps {
   map: Object;
   query: string;
   set: Function;
   show: Function;
+  dark: boolean;
 }
 interface App {
   img: string;
@@ -16,14 +20,16 @@ interface App {
 }
 
 export default function Search(props: SearchProps) {
-  const { map, query, set, show } = props;
+  const { map, query, set, show, dark } = props;
 
   const [matches, setMatches] = useState<any>([]);
+  const [searched, setSearched] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
-      const results = await getDataFromMatches(getMatches(map, query));
+      const results = await getDataFromMatches(await getMatches(map, query));
       setMatches(results);
+      setSearched(true);
     })();
   }, [map, query]);
 
@@ -32,7 +38,7 @@ export default function Search(props: SearchProps) {
       {matches.map((app: App, index: number) => {
         return (
           <>
-            <SearchResult {...app} set={set} show={show} />
+            <SearchResult dark={dark} key={app.id} {...app} set={set} show={show} />
             {String(index + 1) !== String(matches.length) ? (
               <div className="h-[2px] rounded-xl my-[3px] mb-[5px] bg-gray-900 w-[100%]"></div>
             ) : (
@@ -41,22 +47,36 @@ export default function Search(props: SearchProps) {
           </>
         );
       })}
+      {matches.length === 0 ? (
+        <div className="mx-auto my-2 flex items-center justify-center">
+          <span className="block">
+            {searched ? "0 Apps Found" : "Just a moment..."}
+          </span>
+        </div>
+      ) : (
+        <></>
+      )}
     </>
   );
 }
 
-function getMatches(maps: Object, query: string): Array<string> {
-  const keys = Object.keys(maps);
-  const ids = Object.values(maps);
+async function getMatches(maps: Object, query: string): Promise<Array<string>> {
+  let data = getData(query);
 
-  return keys
-    .filter((value) =>
-      value
-        .replaceAll(" ", "")
-        .toLowerCase()
-        .includes(query.replaceAll(" ", "").toLowerCase())
-    )
-    .map((_, index) => ids[index]);
+  if (!data) {
+    const search = new SearchModule(await fetchSearchData(), {
+      keys: ["name"],
+    });
+
+    let result = search.search(query, { limit: 5 });
+
+    let finalResult = result.map(({ item: { id } }) => id);
+    setData(query, finalResult);
+
+    return finalResult;
+  } else {
+    return data as any;
+  }
 }
 
 async function getDataFromMatches(matches: Array<string>) {

@@ -126,6 +126,19 @@ code {
   @apply bg-gray-200 w-[90%] rounded-md shadow-lg focus:shadow-xl focus:rounded-t-lg focus:rounded-b-none;
 }
 
+.search-input-modified {
+  @apply focus:rounded-md w-[97%] !important;
+}
+
+.search-input-m-modified, .search-input-m-modified:focus {
+  border-color: rgb(229, 231, 235) !important;
+  @apply rounded-md;
+}
+
+.search-input-m-modified-d, .search-input-m-modified-d:focus {
+  border-color: rgb(107, 114, 128) !important;
+}
+
 .git-input {
   outline: none;
   transition: all 500ms linear;
@@ -139,7 +152,6 @@ code {
 }
 
 .modal input:enabled:hover,
-.style-input:enabled:hover,
 .style-input:enabled:hover,
 .modal input:enabled:focus {
   border-bottom: 3px solid black;

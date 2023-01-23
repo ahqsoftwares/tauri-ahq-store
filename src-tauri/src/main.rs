@@ -8,7 +8,7 @@ pub mod extract;
 
 use tauri_plugin_autostart::MacosLauncher;
 use mslnk::ShellLink;
-use std::{path::Path, fs, thread, process, env::args, process::Command, sync::{Arc, Mutex, MutexGuard}};
+use std::{path::Path, fs, thread, process, env::args, process::Command, sync::{Arc, Mutex}};
 
 use os_version::Windows;
 
@@ -102,11 +102,20 @@ fn main() {
             let ready_clone = ready.clone();
             let queue_clone = queue.clone();
             let window_clone = window.clone();
+
             listener.listen("ready", move |_| {
+                println!("ready");
+
                 *ready_clone.lock().unwrap() = true;
 
                 for item in queue_clone.lock().unwrap().iter() {
                     window_clone.emit(item.name.as_str(), item.data.clone()).unwrap();
+                }
+
+                let lock = queue_clone.lock();
+
+                if lock.is_ok() {
+                  *lock.unwrap() = Vec::<AppData>::new();
                 }
             });
 
@@ -177,8 +186,6 @@ fn main() {
         .unwrap();
 
     let window = tauri::Manager::get_window(&app, "main").unwrap();
-    let window_complement = tauri::Manager::get_window(&app, "complement");
-    let window2 = window.clone();
 
     {
         let window = window.clone();

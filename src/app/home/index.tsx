@@ -63,12 +63,14 @@ export default function Home(props: HomeProps) {
         const greetText = "What would you like to do today!";
         for (let i = 0; i < greetText.length; i++) {
           const h1 = textBox.current as HTMLHeadElement;
-          if (i === 0) {
-            h1.innerHTML = "";
-          }
-          setTimeout(() => {
-            h1.innerHTML += greetText[i];
-          }, 50 * i);
+          try {
+            if (i === 0) {
+              h1.innerHTML = "";
+            }
+            setTimeout(() => {
+              h1.innerHTML += greetText[i];
+            }, 50 * i);
+          } catch (_) {}
         }
       }, 1750);
     }
