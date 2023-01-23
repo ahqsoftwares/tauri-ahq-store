@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - master
-  schedule:
-    - cron: "0 0 * * 1,5"
 
 jobs:
   publish-tauri:
@@ -19,7 +17,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 16
+          node-version: 18
       - name: install Rust stable
         uses: actions-rs/toolchain@v1
         with:
@@ -50,6 +48,6 @@ jobs:
         with:
           tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
           releaseName: "AHQ Store __VERSION__"
-          releaseBody: "AHQ Store __VERSION__ Update\n**Changes**:"
+          releaseBody: "AHQ Store __VERSION__ Update\n# Changes:"
           releaseDraft: true
           prerelease: false
