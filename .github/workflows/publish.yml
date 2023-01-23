@@ -54,7 +54,7 @@ jobs:
       - name: Upload Executable (folder)
         uses: actions/upload-artifact@v3
         with:
-          name: ahqstore
+          name: ahqstore-src
           path: "src-tauri/target/release/"
       - name: Upload Executable (standalone)
         uses: actions/upload-artifact@v3
