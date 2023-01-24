@@ -118,7 +118,9 @@ export default function Apps(props: AppsProps) {
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    setEnter(true);
+                    if (search.length >= 1) {
+                      setEnter(true);
+                    }
                   } else {
                     setEnter(false);
                   }
@@ -130,7 +132,9 @@ export default function Apps(props: AppsProps) {
                 type="submit"
                 id={"search-btn"}
                 onClick={() => {
-                  setEnter(true);
+                  if (search.length >= 1) {
+                    setEnter(true);
+                  }
                 }}
                 style={{
                   borderColor: "rgb(96,70,255)",
@@ -144,7 +148,7 @@ export default function Apps(props: AppsProps) {
             <div
               className={`absolute ${
                 !dark ? "bg-gray-200 text-black" : "bg-gray-500 text-white"
-              } rounded-xl mt-1`}
+              } rounded-md bg-opacity-50 shadow-xl mt-1`}
               id="search-result"
             >
               {search.length > 0 && !enter ? (
