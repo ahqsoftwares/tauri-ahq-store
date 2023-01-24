@@ -38,7 +38,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: install app dependencies and build it
-        run: yarn && yarn build
+        run: npm install && npm run build
         env:
           CI: "false"
       - uses: tauri-apps/tauri-action@v0
