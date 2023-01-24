@@ -41,7 +41,7 @@ jobs:
         with:
           version: 7.26.0
       - name: install app dependencies and build it
-        run: pnpm && pnpm build
+        run: pnpm install && pnpm build
         env:
           CI: "false"
       - uses: tauri-apps/tauri-action@v0
