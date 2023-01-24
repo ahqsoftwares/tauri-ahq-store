@@ -30,15 +30,18 @@ jobs:
       - name: Cache store
         uses: ahqsoftwares/cache@v21
         with:
-          key: ${{ runner.os }}-build
+          key: ${{ runner.os }}-new-build
           path: |
-            src-tauri/target/release
             build
             node_modules
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.26.0
       - name: install app dependencies and build it
-        run: npm install && npm run build
+        run: pnpm && pnpm build
         env:
           CI: "false"
       - uses: tauri-apps/tauri-action@v0

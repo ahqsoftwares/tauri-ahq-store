@@ -147,7 +147,8 @@ if (appWindow.label === "main") {
         Manage();
       }
     })
-    .catch((_) => {
+    .catch((e) => {
+      console.log(e);
       if (canPerform) {
         Manage();
         canPerform = false;
