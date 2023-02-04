@@ -26,11 +26,15 @@ Navigation
   background-color: gray;
 }
 
+.search-input-search-icon:focus {
+  @apply rounded-br-md rounded-tr-md !important;
+}
+
 /*
 Item pallete
 */
 .n-item {
-  @apply w-16 h-16 justify-center items-center relative flex text-white hover:text-white bg-orange-400 hover:bg-blue-400;
+  @apply w-16 h-16 justify-center items-center relative flex text-white hover:text-white bg-orange-400 hover:bg-[rgb(96,70,255)];
   border-radius: 20%;
   border-color: rgb(251 146 60);
   margin-top: 8px;
@@ -46,14 +50,32 @@ Item pallete
   border-radius: 30%;
   transition: padding 125ms linear;
   animation: clickAnimation 250ms linear;
-  @apply border-blue-400 bg-blue-400;
+  border-color: rgb(96,70,255);
+  background-color: rgb(96,70,255);
+}
+
+.n-item-settings:active svg,
+.n-item-settings:focus svg {
+  animation: circleAnimation 0.75s linear !important;
+}
+
+@keyframes circleAnimation {
+  from {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(40deg);
+  }
+  to {
+    transform: rotate(320deg);
+  }
 }
 
 .n-item:hover {
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
-  @apply border-blue-400;
+  border-color: rgb(96,70,255);
 }
 
 @keyframes clickAnimation {

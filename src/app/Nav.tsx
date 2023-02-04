@@ -88,7 +88,7 @@ export default function nav(props: prop) {
         <VscAccount size={"2.5em"} />
       </button>
 
-      <button className={`n-item ${c}`} onClick={() => changePage("settings")}>
+      <button className={`n-item n-item-settings ${c}`} onClick={() => changePage("settings")}>
         <FiSettings size={"2.5em"} />
       </button>
 

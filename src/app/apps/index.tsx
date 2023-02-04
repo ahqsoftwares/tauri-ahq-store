@@ -97,9 +97,12 @@ export default function Apps(props: AppsProps) {
             className="w-[40%] mt-2"
             onBlur={() => {
               setTimeout(() => {
-                if (!enter) {
-                  searchText("");
-                }
+                setEnter((enter) => {
+                  if (!enter) {
+                    searchText("");
+                  }
+                  return enter;
+                });
               }, 100);
             }}
           >
@@ -128,13 +131,16 @@ export default function Apps(props: AppsProps) {
                 autoComplete={"off"}
               ></input>
               <button
-                className={`search-input ${dark ? "style-input-d" : ""} max-w-[50px] min-w-[50px] p-0 m-0`}
+                className={`search-input search-input-search-icon ${dark ? "style-input-d" : ""} max-w-[50px] min-w-[50px] p-0 m-0`}
                 type="submit"
                 id={"search-btn"}
                 onClick={() => {
-                  if (search.length >= 1) {
-                    setEnter(true);
-                  }
+                  setTimeout(() => {
+                    if (search.length >= 1) {
+                      setEnter(true);
+                      searchText(search);
+                    }
+                  }, 0);
                 }}
                 style={{
                   borderColor: "rgb(96,70,255)",
@@ -147,14 +153,13 @@ export default function Apps(props: AppsProps) {
             </div>
             <div
               className={`absolute ${
-                !dark ? "bg-gray-200 text-black" : "bg-gray-500 text-white"
-              } rounded-md bg-opacity-50 shadow-xl mt-1`}
+                !dark ? "bg-gray-100 text-black" : "bg-gray-800 text-white"
+              } rounded-md shadow-2xl mt-1`}
               id="search-result"
             >
               {search.length > 0 && !enter ? (
                 <Search
                   key={"YourBestSearchAlgorithm"}
-                  {...allAppsData}
                   query={search}
                   set={setData}
                   show={change}

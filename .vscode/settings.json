@@ -6,5 +6,8 @@
   "files.exclude": {
     "**/node_modules": true,
   },
-  "editor.minimap.enabled": false
+  "editor.minimap.enabled": false,
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "master"
+  ]
 }

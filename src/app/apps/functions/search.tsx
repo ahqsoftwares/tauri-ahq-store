@@ -6,7 +6,6 @@ import SearchResult from "../components/search_results";
 import { getData, setData } from "../../resources/utilities/database";
 
 interface SearchProps {
-  map: Object;
   query: string;
   set: Function;
   show: Function;
@@ -20,18 +19,18 @@ interface App {
 }
 
 export default function Search(props: SearchProps) {
-  const { map, query, set, show, dark } = props;
+  const { query, set, show, dark } = props;
 
   const [matches, setMatches] = useState<any>([]);
   const [searched, setSearched] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
-      const results = await getDataFromMatches(await getMatches(map, query));
+      const results = await getDataFromMatches(await getMatches(query));
       setMatches(results);
       setSearched(true);
     })();
-  }, [map, query]);
+  }, [query]);
 
   return (
     <>
@@ -60,7 +59,7 @@ export default function Search(props: SearchProps) {
   );
 }
 
-async function getMatches(maps: Object, query: string): Promise<Array<string>> {
+async function getMatches(query: string): Promise<Array<string>> {
   let data = getData(query);
 
   if (!data) {
