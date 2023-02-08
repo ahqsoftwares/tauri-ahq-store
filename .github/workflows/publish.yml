@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - troubleshoot
 
 jobs:
   publish-tauri:
