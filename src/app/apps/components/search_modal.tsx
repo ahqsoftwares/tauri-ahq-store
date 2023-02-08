@@ -22,11 +22,11 @@ export default function SearchModal(props: AppDataPropsModal) {
                 change();
               }}
               style={{
-                "color": "white",
-                "backgroundColor": "rgb(96,70,255)",
-                "borderTopRightRadius": "0",
-                "borderBottomRightRadius": "0",
-                "transition": "all 250ms linear"
+                color: "white",
+                backgroundColor: "rgb(96,70,255)",
+                borderTopRightRadius: "0",
+                borderBottomRightRadius: "0",
+                transition: "all 250ms linear",
               }}
               className={`rounded-md p-2`}
             >
@@ -42,8 +42,8 @@ export default function SearchModal(props: AppDataPropsModal) {
                 searchText(e.target.value);
               }}
               style={{
-                "borderTopLeftRadius": "0",
-                "borderBottomLeftRadius": "0"
+                borderTopLeftRadius: "0",
+                borderBottomLeftRadius: "0",
               }}
               autoComplete={"off"}
               id="special-modal"

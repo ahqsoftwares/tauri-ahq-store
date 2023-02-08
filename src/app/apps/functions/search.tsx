@@ -37,7 +37,13 @@ export default function Search(props: SearchProps) {
       {matches.map((app: App, index: number) => {
         return (
           <>
-            <SearchResult dark={dark} key={app.id} {...app} set={set} show={show} />
+            <SearchResult
+              dark={dark}
+              key={app.id}
+              {...app}
+              set={set}
+              show={show}
+            />
             {String(index + 1) !== String(matches.length) ? (
               <div className="h-[2px] rounded-xl my-[3px] mb-[5px] bg-gray-900 w-[100%]"></div>
             ) : (

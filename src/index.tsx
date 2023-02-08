@@ -48,6 +48,9 @@ import {
  */
 import "./index.css";
 import { loadAppVersion } from "./app/resources/api/version";
+import initDeveloperConfiguration from "./app/resources/utilities/beta";
+
+initDeveloperConfiguration();
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -250,6 +253,8 @@ if (appWindow.label === "main") {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_ahqstore, _useless, path, data] = payload.split("/");
       dataHolder = data;
+
+      console.log(payload);
       if (path === "app") {
         if (!auth.currentUser) {
           unload();

@@ -130,12 +130,14 @@ code {
   @apply focus:rounded-md w-[97%] !important;
 }
 
-.search-input-m-modified, .search-input-m-modified:focus {
+.search-input-m-modified,
+.search-input-m-modified:focus {
   border-color: rgb(243, 244, 246) !important;
   @apply rounded-md;
 }
 
-.search-input-m-modified-d, .search-input-m-modified-d:focus {
+.search-input-m-modified-d,
+.search-input-m-modified-d:focus {
   border-color: rgb(31, 41, 55) !important;
 }
 

@@ -26,6 +26,10 @@ Navigation
   background-color: gray;
 }
 
+.nav * {
+  @apply text-slate-700 !important;
+}
+
 .search-input-search-icon:focus {
   @apply rounded-br-md rounded-tr-md !important;
 }
@@ -34,24 +38,28 @@ Navigation
 Item pallete
 */
 .n-item {
-  @apply w-16 h-16 justify-center items-center relative flex text-white hover:text-white bg-orange-400 hover:bg-[rgb(96,70,255)];
+  @apply w-16 h-16 justify-center items-center relative flex text-white bg-transparent;
   border-radius: 20%;
-  border-color: rgb(251 146 60);
+  border-color: transparent;
   margin-top: 8px;
   transition: all 200ms linear;
+}
+
+.nav .n-item:active,
+.nav .n-item:focus,
+.nav .active {
+  @apply bg-gray-100 shadow-2xl !important;
 }
 
 .n-item:active,
 .n-item:focus,
 .active {
-  @apply text-white;
+  @apply bg-gray-900 shadow-2xl;
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
   transition: padding 125ms linear;
   animation: clickAnimation 250ms linear;
-  border-color: rgb(96,70,255);
-  background-color: rgb(96,70,255);
 }
 
 .n-item-settings:active svg,
@@ -75,14 +83,16 @@ Item pallete
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
-  border-color: rgb(96,70,255);
 }
 
 @keyframes clickAnimation {
   from {
     padding: 0%;
   }
-  50% {
+  10% {
+    padding: 10%;
+  }
+  80% {
     padding: 10%;
   }
   100% {

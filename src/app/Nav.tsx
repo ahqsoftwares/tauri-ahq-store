@@ -1,7 +1,9 @@
-import { BiHome, BiExtension, BiLibrary } from "react-icons/bi";
-import { BsCodeSlash } from "react-icons/bs";
-import { FiSettings } from "react-icons/fi";
-import { VscAccount } from "react-icons/vsc";
+import { BsGear, BsFillGearFill } from "react-icons/bs";
+import { MdAccountCircle, MdOutlineAccountCircle } from "react-icons/md";
+import { AiFillExperiment, AiFillHome, AiOutlineExperiment, AiOutlineHome } from "react-icons/ai";
+import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
+import { IoLibraryOutline, IoLibrarySharp } from "react-icons/io5";
+
 import { getCurrent } from "@tauri-apps/api/window";
 
 interface prop {
@@ -60,11 +62,11 @@ export default function nav(props: prop) {
       )}`}
     >
       <button className={`n-item ${a}`} onClick={() => changePage("home")}>
-        <BiHome size={"2.5em"} />
+        {a === "active" ? <AiFillHome size={"2.5em"}></AiFillHome> : <AiOutlineHome size={"2.5em"} />}
       </button>
 
       <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
-        <BiExtension size={"2.5em"} />
+        {b === "active" ? <RiApps2Fill size={"2.5em"} /> : <RiApps2Line size={"2.5em"} />}
       </button>
 
       <div className="mt-auto mb-auto"></div>
@@ -74,22 +76,25 @@ export default function nav(props: prop) {
           className={`n-item ${e}`}
           onClick={() => changePage("developer")}
         >
-          <BsCodeSlash size={"2.5em"} />
+          {e === "active" ? <AiFillExperiment size={"2.5em"} />  : <AiOutlineExperiment size={"2.5em"} /> }
         </button>
       ) : (
         <></>
       )}
 
       <button className={`n-item ${f}`} onClick={() => changePage("library")}>
-        <BiLibrary size="2.5em" />
+        {f === "active" ? <IoLibrarySharp size="2.5em" /> : <IoLibraryOutline size="2.5em" />}
       </button>
 
       <button className={`n-item ${d}`} onClick={() => changePage("user")}>
-        <VscAccount size={"2.5em"} />
+        {d === "active" ? <MdAccountCircle size={"3em"} /> : <MdOutlineAccountCircle size={"3em"} />}
       </button>
 
-      <button className={`n-item n-item-settings ${c}`} onClick={() => changePage("settings")}>
-        <FiSettings size={"2.5em"} />
+      <button
+        className={`n-item n-item-settings ${c}`}
+        onClick={() => changePage("settings")}
+      >
+        {c === "active" ? <BsFillGearFill size={"2.5em"} /> : <BsGear size={"2.5em"} /> }
       </button>
 
       <div className="mb-[8px]"></div>

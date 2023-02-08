@@ -139,8 +139,7 @@ fn main() {
                 "ahqstore",
                 move |request| {
                     println!("{:?}", request);
-                    window.show().unwrap_or(());
-                    window.emit("ahqstore", request).unwrap_or(());
+                    window.emit("app", request).unwrap_or(());
                 },
             )
             .unwrap();

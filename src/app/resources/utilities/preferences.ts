@@ -16,6 +16,7 @@ export type { appData };
 
 export default async function fetchPrefs() {
   createDir("", { dir: BaseDirectory.App }).catch((e) => e);
+  createDir("database", { dir: BaseDirectory.App }).catch((e) => e);
 
   return await readTextFile("database/config.astore", {
     dir: BaseDirectory.App,

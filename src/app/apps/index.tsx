@@ -22,6 +22,7 @@ import SearchModal from "./components/search_modal";
 StyleSheets
 */
 import "./index.css";
+import { getData } from "../resources/utilities/database";
 
 /*
 Interfaces
@@ -30,11 +31,6 @@ interface AppsProps {
   dark: boolean;
   auth: Auth;
   apps: Array<any>;
-  allAppsData: {
-    map: {
-      [key: string]: any;
-    };
-  };
 }
 
 function darkMode(classes: Array<string>, dark: boolean) {
@@ -42,7 +38,7 @@ function darkMode(classes: Array<string>, dark: boolean) {
 }
 
 export default function Apps(props: AppsProps) {
-  const { dark, apps, allAppsData } = props;
+  const { dark, apps } = props;
 
   const [shown, showModal] = useState(false),
     [search, searchText] = useState(""),
@@ -96,33 +92,42 @@ export default function Apps(props: AppsProps) {
           <div
             className="w-[40%] mt-2"
             onBlur={() => {
-              setTimeout(() => {
-                setEnter((enter) => {
-                  if (!enter) {
-                    searchText("");
-                  }
-                  return enter;
-                });
-              }, 100);
+              let searchOnEnter = getData("enableSearchOnEnter");
+
+              if (searchOnEnter) {
+                setTimeout(() => {
+                  setEnter((enter) => {
+                    if (!enter) {
+                      searchText("");
+                    }
+                    return enter;
+                  });
+                }, 100);
+              }
             }}
           >
             <div className="w-[100%] flex" id="get-width">
               <input
-                className={`search-input search-input-m-modified ${dark ? "style-input-d search-input-m-modified-d" : ""}`}
+                className={`search-input search-input-m-modified ${
+                  dark ? "style-input-d search-input-m-modified-d" : ""
+                }`}
                 placeholder={`Quick Search`}
                 id={"quick-search"}
                 value={search}
                 style={{
-                  "borderTopRightRadius": "0",
-                  "borderBottomRightRadius": "0"
+                  borderTopRightRadius: "0",
+                  borderBottomRightRadius: "0",
                 }}
                 onChange={(e) => {
                   searchText(e.target.value);
                 }}
                 onKeyUp={(e) => {
+                  let data = getData("enableSearchOnEnter");
                   if (e.key === "Enter") {
-                    if (search.length >= 1) {
-                      setEnter(true);
+                    if (data) {
+                      if (search.length >= 1) {
+                        setEnter(true);
+                      }
                     }
                   } else {
                     setEnter(false);
@@ -131,25 +136,34 @@ export default function Apps(props: AppsProps) {
                 autoComplete={"off"}
               ></input>
               <button
-                className={`search-input search-input-search-icon ${dark ? "style-input-d" : ""} max-w-[50px] min-w-[50px] p-0 m-0`}
+                className={`search-input search-input-search-icon ${
+                  dark ? "style-input-d" : ""
+                } max-w-[50px] min-w-[50px] p-0 m-0`}
                 type="submit"
                 id={"search-btn"}
                 onClick={() => {
-                  setTimeout(() => {
-                    if (search.length >= 1) {
-                      setEnter(true);
-                      searchText(search);
-                    }
-                  }, 0);
+                  let searchBiggerBoxEnabled = getData("enableSearchOnEnter");
+
+                  if (searchBiggerBoxEnabled) {
+                    setTimeout(() => {
+                      if (search.length >= 1) {
+                        setEnter(true);
+                        searchText(search);
+                      }
+                    }, 0);
+                  }
                 }}
                 style={{
                   borderColor: "rgb(96,70,255)",
                   color: "white",
                   backgroundColor: "rgb(96,70,255)",
                   borderTopLeftRadius: "0",
-                  borderBottomLeftRadius: "0"
+                  borderBottomLeftRadius: "0",
                 }}
-              > <FcSearch size={"1.2em"} /> </button>
+              >
+                {" "}
+                <FcSearch size={"1.2em"} />{" "}
+              </button>
             </div>
             <div
               className={`absolute ${
