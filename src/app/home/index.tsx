@@ -1,8 +1,10 @@
 //React
 import React, { useEffect, useRef, useState } from "react";
-import { BiLibrary, BiExtension } from "react-icons/bi";
-import { FiSettings } from "react-icons/fi";
-import { VscAccount } from "react-icons/vsc";
+import { RiApps2Line } from "react-icons/ri";
+import { BsGear } from "react-icons/bs";
+import { AiFillExperiment } from "react-icons/ai";
+import { IoLibraryOutline } from "react-icons/io5";
+import { MdAccountCircle } from "react-icons/md";
 
 //image
 import AHQStore from "./index.png";
@@ -18,7 +20,6 @@ import { getData, setData } from "../resources/utilities/database";
 import { Auth } from "firebase/auth";
 import { getAppVersion } from "../resources/api/version";
 import getWindows from "../resources/api/os";
-import { BsCodeSlash } from "react-icons/bs";
 
 function darkMode(classes: Array<string>, dark: boolean) {
   return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
@@ -45,8 +46,10 @@ export default function Home(props: HomeProps) {
     method: "GET",
   })
     .then(({ data }: any) => {
-      setData("x-icon", data);
-      setUserIcon(data);
+      if (!data.includes("<!DOCTYPE html>")) {
+        setData("x-icon", data);
+        setUserIcon(data);
+      }
     })
     .catch(console.log);
 
@@ -87,7 +90,10 @@ export default function Home(props: HomeProps) {
         <img src={AHQStore} alt="Logo" width={"100px"} draggable={false} />
         <h1
           className={`block ml-2 style-h1 ${props.dark ? "style-h1-d" : ""}`}
-          style={{ fontSize: "100px" }}
+          style={{
+            fontSize: "100px",
+            color: "rgb(96,70,255)",
+          }}
         >
           AHQ Store
         </h1>
@@ -111,14 +117,14 @@ export default function Home(props: HomeProps) {
         <div className="flex flex-row">
           <Button
             dark={dark}
-            Icon={BiExtension}
+            Icon={RiApps2Line}
             title={"Apps"}
             description="Explore Apps"
             onClick={() => setPage("apps")}
           />
           <Button
             dark={dark}
-            Icon={BiLibrary}
+            Icon={IoLibraryOutline}
             title="Library"
             calibrate="1.5"
             description="Check for app updates"
@@ -128,14 +134,14 @@ export default function Home(props: HomeProps) {
         <div className="flex flex-row">
           <Button
             dark={dark}
-            Icon={userIcon === "" ? VscAccount : userIcon}
+            Icon={userIcon === "" ? MdAccountCircle : userIcon}
             title="Account"
             description="Customise your account"
             onClick={() => setPage("user")}
           />
           <Button
             dark={dark}
-            Icon={Math.random() > 0.01 ? FiSettings : getWindows()}
+            Icon={Math.random() > 0.01 ? BsGear : getWindows()}
             no50
             title="Settings"
             calibrate="1"
@@ -147,7 +153,7 @@ export default function Home(props: HomeProps) {
           <div className="flex justify-center items-center mb-auto mt-3">
             <Button
               dark={dark}
-              Icon={BsCodeSlash}
+              Icon={AiFillExperiment}
               no50
               calibrate="1.5"
               title="Developer"

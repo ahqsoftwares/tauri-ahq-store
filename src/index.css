@@ -123,20 +123,22 @@ code {
   outline: none;
   transition: all 500ms linear;
   padding: 10px 15px;
-  @apply bg-gray-200 w-[90%] rounded-md shadow-lg focus:shadow-xl focus:rounded-t-lg focus:rounded-b-none;
+  @apply bg-gray-100 w-[90%] rounded-md shadow-lg focus:shadow-xl focus:rounded-t-lg focus:rounded-b-none;
 }
 
 .search-input-modified {
   @apply focus:rounded-md w-[97%] !important;
 }
 
-.search-input-m-modified, .search-input-m-modified:focus {
-  border-color: rgb(229, 231, 235) !important;
+.search-input-m-modified,
+.search-input-m-modified:focus {
+  border-color: rgb(243, 244, 246) !important;
   @apply rounded-md;
 }
 
-.search-input-m-modified-d, .search-input-m-modified-d:focus {
-  border-color: rgb(107, 114, 128) !important;
+.search-input-m-modified-d,
+.search-input-m-modified-d:focus {
+  border-color: rgb(31, 41, 55) !important;
 }
 
 .git-input {
@@ -148,7 +150,7 @@ code {
 
 .modal-d input,
 .style-input-d {
-  @apply bg-gray-500 text-white;
+  @apply bg-gray-800 text-white;
 }
 
 .modal input:enabled:hover,

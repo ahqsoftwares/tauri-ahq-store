@@ -45,7 +45,10 @@
         "createDir": true,
         "scope": [
           "$APP",
-          "$APP/database/config.astore"
+          "$APP/database",
+          "$APP/database/",
+          "$APP/database/config.astore",
+          "$APP/database/config.developer"
         ]
       },
       "window": {

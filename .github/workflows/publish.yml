@@ -1,8 +1,5 @@
 name: "publish"
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
   publish-tauri:
@@ -21,7 +18,7 @@ jobs:
       - name: install Rust stable
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: 1.66.0
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
         run: |
@@ -30,15 +27,18 @@ jobs:
       - name: Cache store
         uses: ahqsoftwares/cache@v21
         with:
-          key: ${{ runner.os }}-build
+          key: ${{ runner.os }}-new-build
           path: |
-            src-tauri/target/release
             build
             node_modules
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.26.0
       - name: install app dependencies and build it
-        run: yarn && yarn build
+        run: pnpm install && pnpm build
         env:
           CI: "false"
       - uses: tauri-apps/tauri-action@v0
@@ -54,7 +54,7 @@ jobs:
       - name: Upload Executable (folder)
         uses: actions/upload-artifact@v3
         with:
-          name: ahqstore
+          name: ahqstore-src
           path: "src-tauri/target/release/"
       - name: Upload Executable (standalone)
         uses: actions/upload-artifact@v3

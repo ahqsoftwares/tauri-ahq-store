@@ -4,7 +4,7 @@ import fetchApps from "../../resources/api/fetchApps";
 
 export default function AppCard(props: {
   id: string;
-  onClick: any;
+  onClick: Function;
   dark: boolean;
 }) {
   const [appData, setAppData] = useState<any>({
@@ -32,7 +32,7 @@ export default function AppCard(props: {
         props.dark ? "hover:bg-gray-900 " : "hover:bg-gray-200 "
       }hover:mb-2 hover:shadow-xl`}
       style={{ cursor: "pointer" }}
-      onClick={props.onClick}
+      onClick={props.onClick as React.MouseEventHandler<HTMLDivElement>}
     >
       {title === "Loading..." ? (
         <div className="mx-auto mt-[1rem] mb-[0.75rem]">

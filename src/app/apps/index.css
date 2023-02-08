@@ -30,6 +30,11 @@ Apps Layout
   margin-bottom: 1rem;
 }
 
+.search-app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+}
+
 /*
 Layers
 */
