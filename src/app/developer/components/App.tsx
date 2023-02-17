@@ -2,14 +2,13 @@ import { useRef } from "react";
 import pkg from "../../resources/package.png";
 
 //Icons
-import { BsTrash } from "react-icons/bs";
+import { MdModeEdit } from "react-icons/md";
 import { IoIosNotifications } from "react-icons/io";
 
 //API
 import { cacheData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import {
-  unInstall,
   updaterStatus,
 } from "../../resources/api/updateInstallWorker";
 
@@ -18,43 +17,26 @@ export default function App({
   dark,
   reload,
   toast,
+  lastIndex
 }: {
   appInfo: cacheData;
   dark: boolean;
   reload: Function;
   toast: typeof Toast;
+  lastIndex: boolean;
 }) {
   const updating = updaterStatus().apps?.includes(appInfo.id as string);
   const data = useRef<HTMLDivElement>("" as any);
 
   async function handleClick() {
-    const Toast = toast("Please wait...", "warn", "never");
-    try {
-      await unInstall(appInfo.id as string);
-      Toast?.edit(`Successfully uninstalled ${appInfo.title}`, "success");
-      setTimeout(() => {
-        reload();
-        setTimeout(() => {
-          Toast?.unmount();
-        }, 2000);
-      }, 125);
-    } catch (e) {
-      console.log(e);
-      Toast?.edit(`Something might went wrong...`, "danger");
-      setTimeout(() => {
-        reload();
-        setTimeout(() => {
-          Toast?.unmount();
-        }, 2000);
-      }, 125);
-    }
+    toast("Coming soon", "warn", 1);
   }
 
   return (
     <div
       className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] ${
         dark ? "bg-gray-800 text-white" : "bg-gray-100 text-slate-800"
-      } rounded-md mt-2 shadow-xl pl-2`}
+      } ${lastIndex ? "rounded-b-md" : ""} mt-2 shadow-xl pl-2 cursor-default`}
     >
       <img
         width={"64px"}
@@ -85,12 +67,12 @@ export default function App({
       {!updating ? (
         <div className="ml-auto mr-3 my-auto" ref={data}>
           <button
-            className="flex min-w-[100%] p-4 min-h-[3rem] justify-center items-center text-center text-red-700 hover:text-white hover:bg-red-700 rounded-xl transition-all"
+            className="flex min-w-[100%] p-4 min-h-[3rem] justify-center items-center text-center text-blue-800 hover:text-white hover:bg-blue-800 rounded-xl transition-all cursor-pointer"
             onClick={() => {
               handleClick();
             }}
           >
-            <BsTrash size="1.5em" />
+            <MdModeEdit size="1.5em" />
           </button>
         </div>
       ) : (

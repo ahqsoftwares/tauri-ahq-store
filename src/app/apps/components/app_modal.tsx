@@ -58,7 +58,7 @@ export default function ShowModal(props: AppDataPropsModal) {
       transform: "translate(-50%, -50%)",
       width: "95%",
       height: "90%",
-      transition: "all 500ms linear",
+      transition: "all 0.5s linear",
       borderRadius: "20px",
       borderColor: dark ? "rgb(30, 41, 59)" : "rgb(209, 213, 219)",
       backgroundColor: dark ? "rgb(30, 41, 59)" : "rgb(209, 213, 219)",

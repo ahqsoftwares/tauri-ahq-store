@@ -3,7 +3,7 @@ const toastElement = document.getElementById("toast") as HTMLDivElement;
 export default function Toast(
   text: string,
   type: "success" | "warn" | "danger",
-  expireAfter: number | "never"
+  expireAfterSeconds: number | "never"
 ) {
   const toast = document.createElement("div");
   toast.setAttribute("class", `toast toast-${type}`);
@@ -11,13 +11,13 @@ export default function Toast(
 
   const elementToRemove = toastElement.appendChild(toast);
 
-  if (expireAfter !== "never") {
+  if (expireAfterSeconds !== "never") {
     setTimeout(() => {
       elementToRemove.setAttribute("hidden", "true");
       setTimeout(() => {
         toastElement.removeChild(elementToRemove);
-      }, (expireAfter as number) + 1000);
-    }, expireAfter as number);
+      }, (expireAfterSeconds * 1000) + 1000);
+    }, expireAfterSeconds * 1000);
   } else {
     return {
       unmount: () => {

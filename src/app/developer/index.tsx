@@ -1,21 +1,31 @@
 //Icons
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { VscExtensions } from "react-icons/vsc";
 
+import { Auth } from "firebase/auth";
+
 //Components
 import Option from "./components/Options";
 import Submit from "./components/Submit";
 import Modal from "react-modal";
+import fetchApps, { cacheData, fetchAuthor } from "../resources/api/fetchApps";
+import App from "./components/App";
+import Toast from "../resources/api/toast";
 
 interface DevProps {
+  auth: Auth;
   dark: boolean;
 }
 
 export default function Developers(props: DevProps) {
+  const [publishedApps, setPublishedApps] = useState<cacheData[] | undefined>(undefined);
+
   Modal.setAppElement("body");
+
+  const uid = props.auth?.currentUser?.uid;
 
   const customStyles = {
     content: {
@@ -43,6 +53,24 @@ export default function Developers(props: DevProps) {
   const [Icon, setIcon] = useState(true);
   const [popUp, setPopUp] = useState(false);
 
+  useEffect(() => {
+    (async() => {
+      try {
+        const {
+          apps
+        } = await fetchAuthor(uid as string).then((promise) => promise.data);
+
+        fetchApps(apps).then((apps) => {
+          console.log(apps);
+          setPublishedApps(apps as cacheData[]);
+        });
+      } catch (e) {
+        console.log(e);
+        setPublishedApps([]);
+      }
+    })()
+  }, [uid]);
+
   function darkMode(classes: Array<string>, dark: boolean) {
     return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
   }
@@ -60,12 +88,18 @@ export default function Developers(props: DevProps) {
         dark={dark}
         ShowCaseIcon={VscExtensions}
         title={"My Apps"}
-        description="View apps published by me (soon)"
+        description="View apps published by me"
         PopUp={Icon ? IoIosArrowForward : IoIosArrowDown}
         onClick={() => {
           setIcon((value) => !value);
         }}
-        Extra={Icon ? <></> : <h1>Hi</h1>}
+        Extra={
+          Icon ? 
+          <></> : 
+          <div className="flex flex-col">
+            {publishedApps === undefined ? <h1>Fetching...</h1> : publishedApps.map((value, index) => <App appInfo={value} dark={props.dark} reload={() => {}} toast={Toast} lastIndex={index === (publishedApps.length - 1)} />)}
+          </div>
+        }
       />
       <Option
         dark={dark}

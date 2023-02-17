@@ -113,6 +113,8 @@ export default function Apps(props: AppsProps) {
                 }`}
                 placeholder={`Quick Search`}
                 id={"quick-search"}
+                autoCorrect={"off"}
+                autoCapitalize={"off"}
                 value={search}
                 style={{
                   borderTopRightRadius: "0",

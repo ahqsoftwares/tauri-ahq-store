@@ -23,9 +23,8 @@ export default function SettingOption(props: {
   return (
     <div
       className={`${darkMode(["checkbox"], dark)} checkbox-special mt-3`}
-      onClick={onClick}
     >
-      <div className="checkbox-special-child">
+      <div className="checkbox-special-child" onClick={onClick}>
         <div className="ml-3"></div>
 
         <div
