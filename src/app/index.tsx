@@ -96,31 +96,38 @@ function Render(props: AppProps) {
       //Fetch Maps
       initApi()
         .then(async (commit_id) => {
-          const { data: Mapped } = await fetch(
-            `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/mapped.json`,
-            {
-              method: "GET",
-              timeout: 30,
-              responseType: 1,
-            }
-          );
+          console.log(commit_id);
+          if (
+            commit_id !== "" ||
+            commit_id !== undefined ||
+            commit_id !== null
+          ) {
+            const { data: Mapped } = await fetch(
+              `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/mapped.json`,
+              {
+                method: "GET",
+                timeout: 30,
+                responseType: 1,
+              }
+            );
 
-          setData({
-            map: Mapped as {
-              [key: string]: Object;
-            },
-          });
+            setData({
+              map: Mapped as {
+                [key: string]: Object;
+              },
+            });
 
-          const { data: Home } = await fetch(
-            `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/home.json`,
-            {
-              method: "GET",
-              timeout: 30,
-              responseType: 1,
-            }
-          );
+            const { data: Home } = await fetch(
+              `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/home.json`,
+              {
+                method: "GET",
+                timeout: 30,
+                responseType: 1,
+              }
+            );
 
-          setApps(Home);
+            setApps(Home);
+          }
           setLoad(true);
         })
         .catch(() => {

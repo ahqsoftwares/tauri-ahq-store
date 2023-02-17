@@ -9,5 +9,8 @@
   "editor.minimap.enabled": false,
   "githubPullRequests.ignoredPullRequestBranches": [
     "master"
-  ]
+  ],
+  "editor.hover.above": true,
+  "editor.hover.enabled": true,
+  "editor.hover.sticky": true
 }

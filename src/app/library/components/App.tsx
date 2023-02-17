@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import pkg from "../../resources/package.png";
 
 //Icons
-import { BsThreeDotsVertical, BsTrash } from "react-icons/bs";
+import { BsTrash } from "react-icons/bs";
 import { IoIosNotifications } from "react-icons/io";
 
 //API
@@ -25,7 +25,6 @@ export default function App({
   toast: typeof Toast;
 }) {
   const updating = updaterStatus().apps?.includes(appInfo.id as string);
-  const [active, setActive] = useState(false);
   const data = useRef<HTMLDivElement>("" as any);
 
   async function handleClick() {
@@ -51,21 +50,6 @@ export default function App({
     }
   }
 
-  useEffect(() => {
-    if (!updating) {
-      if ((data.current as any) !== "") {
-        data.current.addEventListener("focusout", () => {
-          setTimeout(() => {
-            setActive(false);
-          }, 125);
-        });
-        data.current.addEventListener("click", () => {
-          setActive(true);
-        });
-      }
-    }
-  }, [updating]);
-
   return (
     <div
       className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] ${
@@ -82,12 +66,15 @@ export default function App({
       ></img>
 
       <div className="flex flex-col my-auto text-start">
-        <h1
-          className={`block text-2xl ${
-            dark ? "text-blue-400" : "text-blue-700"
-          }`}
-        >
-          {appInfo.title}
+        <h1 className={`flex ${dark ? "text-blue-400" : "text-blue-700"}`}>
+          <span className="text-2xl">{appInfo.title}</span>
+          {updating ? (
+            <div className={`${dark ? "text-yellow-500" : "text-yellow-900"}`}>
+              <IoIosNotifications />
+            </div>
+          ) : (
+            <></>
+          )}
         </h1>
         <h2 className="block">
           {appInfo.description.substring(0, 64)}
@@ -95,47 +82,16 @@ export default function App({
         </h2>
       </div>
 
-      {updating ? (
-        <div className="mt-2 text-yellow-500">
-          <IoIosNotifications />
-        </div>
-      ) : (
-        <></>
-      )}
-
       {!updating ? (
         <div className="ml-auto mr-3 my-auto" ref={data}>
           <button
-            className={`p-2 ${
-              active ? (dark ? "bg-gray-900" : "bg-gray-200") : ""
-            } ${
-              !active ? (dark ? "hover:bg-black" : "hover:bg-gray-300") : ""
-            } rounded-md`}
-            style={{ transition: "all 120ms linear" }}
+            className="flex min-w-[100%] p-4 min-h-[3rem] justify-center items-center text-center text-red-700 hover:text-white hover:bg-red-700 rounded-xl"
+            onClick={() => {
+              handleClick();
+            }}
           >
-            <BsThreeDotsVertical />
+            <BsTrash size="1.5em" />
           </button>
-          {active ? (
-            <div
-              className={`mt-1 absolute ${
-                dark ? "bg-gray-900" : "bg-gray-300"
-              } min-h-[1rem] min-w-[6rem] rounded-xl shadow-xl`}
-              style={{
-                right: "2rem",
-              }}
-            >
-              <button
-                className="flex w-[100%] h-[3rem] justify-center items-center text-center text-red-700 hover:text-white hover:bg-red-700 rounded-xl"
-                onClick={() => {
-                  handleClick();
-                }}
-              >
-                <BsTrash size="1.5em" /> Uninstall
-              </button>
-            </div>
-          ) : (
-            <></>
-          )}
         </div>
       ) : (
         <></>

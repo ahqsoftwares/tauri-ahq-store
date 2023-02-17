@@ -38,21 +38,23 @@ Navigation
 Item pallete
 */
 .n-item {
-  @apply w-16 h-16 justify-center items-center relative flex text-white bg-transparent;
+  @apply w-16 h-16 justify-center items-center relative flex text-white bg-transparent hover:bg-gray-800;
   border-radius: 20%;
   border-color: transparent;
   margin-top: 8px;
   transition: all 200ms linear;
 }
 
+.nav .n-item {
+  @apply hover:bg-gray-100 !important;
+}
+
 .nav .n-item:active,
-.nav .n-item:focus,
 .nav .active {
   @apply bg-gray-100 shadow-2xl !important;
 }
 
 .n-item:active,
-.n-item:focus,
 .active {
   @apply bg-gray-900 shadow-2xl;
   border-width: 9px;
@@ -63,7 +65,7 @@ Item pallete
 }
 
 .n-item-settings:active svg,
-.n-item-settings:focus svg {
+.active-settings svg {
   animation: circleAnimation 0.75s linear !important;
 }
 
@@ -92,7 +94,7 @@ Item pallete
   10% {
     padding: 10%;
   }
-  80% {
+  85% {
     padding: 10%;
   }
   100% {

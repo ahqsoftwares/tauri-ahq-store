@@ -146,7 +146,9 @@ export default function Home(props: HomeProps) {
             title="Settings"
             calibrate="1"
             description="Set your preferences"
-            onClick={() => setPage("settings")}
+            onClick={() => {
+              document.getElementById("settings")?.click();
+            }}
           />
         </div>
         {props.dev ? (

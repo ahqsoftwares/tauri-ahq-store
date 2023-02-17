@@ -70,7 +70,7 @@ export default function ShowModal(props: AppDataPropsModal) {
       opacity: "1",
     },
   };
-  Modal.setAppElement("#root");
+  Modal.setAppElement("body");
 
   return (
     <Modal isOpen={shown} contentLabel={"App Information"} style={modalStyles}>

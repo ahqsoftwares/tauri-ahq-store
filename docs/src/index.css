@@ -24,36 +24,62 @@
 Item pallete
 */
 .n-item {
-  @apply w-16 h-16 justify-center items-center relative flex text-white hover:text-white bg-orange-400 hover:bg-blue-400;
+  @apply w-16 h-16 justify-center items-center relative flex text-white bg-transparent hover:bg-gray-800;
   border-radius: 20%;
-  border-color: rgb(251 146 60);
+  border-color: transparent;
   margin-top: 8px;
   transition: all 200ms linear;
 }
 
+.nav .n-item {
+  @apply text-slate-700 hover:bg-gray-100 !important;
+}
+
+.nav .n-item:active,
+.nav .active {
+  @apply bg-gray-100 shadow-2xl !important;
+}
+
 .n-item:active,
-.n-item:focus,
 .active {
+  @apply bg-gray-900 shadow-2xl;
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
   transition: padding 125ms linear;
   animation: clickAnimation 250ms linear;
-  @apply text-white border-blue-400 bg-blue-400;
+}
+
+.n-item-settings:active svg, .active-settings svg {
+  animation: circleAnimation 0.75s linear !important;
+}
+
+@keyframes circleAnimation {
+  from {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(40deg);
+  }
+  to {
+    transform: rotate(320deg);
+  }
 }
 
 .n-item:hover {
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
-  @apply border-blue-400;
 }
 
 @keyframes clickAnimation {
   from {
     padding: 0%;
   }
-  50% {
+  10% {
+    padding: 10%;
+  }
+  85% {
     padding: 10%;
   }
   100% {

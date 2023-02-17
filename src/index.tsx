@@ -11,10 +11,9 @@ import {
   sendNotification,
 } from "@tauri-apps/api/notification";
 import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
-import { checkUpdate, installUpdate } from "@tauri-apps/api/updater";
 import { invoke } from "@tauri-apps/api/tauri";
-import { relaunch } from "@tauri-apps/api/process";
 import { appWindow } from "@tauri-apps/api/window";
+import { fetch, ResponseType } from "@tauri-apps/api/http";
 
 /*Apps
  */
@@ -49,10 +48,9 @@ import {
 import "./index.css";
 import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
+import { getVersion } from "@tauri-apps/api/app";
 
 initDeveloperConfiguration();
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const config = {
   apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
@@ -124,39 +122,76 @@ if (appWindow.label === "main") {
   })();
 
   render("Checking for updates...", App);
-  var canPerform = true;
-  delay(15 * 1000).then(() => {
-    if (canPerform) {
-      canPerform = false;
+
+  (async () => {
+    try {
+      const { data } = (await fetch(
+        "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest",
+        {
+          method: "GET",
+          timeout: 30,
+          responseType: ResponseType.JSON,
+          headers: {
+            "User-Agent": "AHQSoftwares/AHQ-Store",
+          },
+        }
+      )) as any;
+      const currentVersion = await getVersion();
+
+      if (!data.assets) {
+        throw new Error("");
+      }
+
+      let { data: signature } = await fetch(
+        data.assets.filter((asset: any) =>
+          asset.name.endsWith(".msi.zip.sig")
+        )[0][`browser_download_url`],
+        {
+          responseType: ResponseType.Text,
+          method: "GET",
+          headers: {
+            "User-Agent": "ahq-store",
+          },
+        }
+      );
+
+      console.log( data["tag_name"], currentVersion)
+
+      invoke("check_update", {
+        version: data["tag_name"],
+        currentVersion: currentVersion,
+        downloadUrl: data.assets.filter((asset: any) =>
+          asset.name.endsWith(".msi.zip")
+        )[0][`browser_download_url`],
+        signature,
+      })
+        .then(async (shouldUpdate: any) => {
+          const manifest = {
+            version: data["tag_name"]
+          };
+
+          if (shouldUpdate) {
+            render(`Verison ${manifest?.version} Available...`, App);
+
+            setTimeout(async () => {
+              render(`Installing ${manifest?.version}`, App);
+              setTimeout(async () => {
+                await invoke("install_update");
+              }, 3000);
+            }, 5000);
+          } else {
+            Manage();
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          Manage();
+        });
+    } catch (e) {
+      console.log(e);
       Manage();
     }
-  });
-
-  checkUpdate()
-    .then(async ({ shouldUpdate, manifest }) => {
-      if (shouldUpdate && canPerform) {
-        canPerform = false;
-        render(`Verison ${manifest?.version} Available...`, App);
-
-        setTimeout(async () => {
-          render(`Installing ${manifest?.version}`, App);
-          setTimeout(async () => {
-            await installUpdate();
-            await relaunch();
-          }, 3000);
-        }, 5000);
-      } else if (canPerform) {
-        canPerform = false;
-        Manage();
-      }
-    })
-    .catch((e) => {
-      console.log(e);
-      if (canPerform) {
-        Manage();
-        canPerform = false;
-      }
-    });
+  })();
 
   window.addEventListener("offline", () => {
     render("Offline, waiting for network", App);

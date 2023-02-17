@@ -1,6 +1,11 @@
 import { BsGear, BsFillGearFill } from "react-icons/bs";
 import { MdAccountCircle, MdOutlineAccountCircle } from "react-icons/md";
-import { AiFillExperiment, AiFillHome, AiOutlineExperiment, AiOutlineHome } from "react-icons/ai";
+import {
+  AiFillExperiment,
+  AiFillHome,
+  AiOutlineExperiment,
+  AiOutlineHome,
+} from "react-icons/ai";
 import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
 import { IoLibraryOutline, IoLibrarySharp } from "react-icons/io5";
 
@@ -62,11 +67,19 @@ export default function nav(props: prop) {
       )}`}
     >
       <button className={`n-item ${a}`} onClick={() => changePage("home")}>
-        {a === "active" ? <AiFillHome size={"2.5em"}></AiFillHome> : <AiOutlineHome size={"2.5em"} />}
+        {a === "active" ? (
+          <AiFillHome size={"2.5em"}></AiFillHome>
+        ) : (
+          <AiOutlineHome size={"2.5em"} />
+        )}
       </button>
 
       <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
-        {b === "active" ? <RiApps2Fill size={"2.5em"} /> : <RiApps2Line size={"2.5em"} />}
+        {b === "active" ? (
+          <RiApps2Fill size={"2.5em"} />
+        ) : (
+          <RiApps2Line size={"2.5em"} />
+        )}
       </button>
 
       <div className="mt-auto mb-auto"></div>
@@ -76,25 +89,44 @@ export default function nav(props: prop) {
           className={`n-item ${e}`}
           onClick={() => changePage("developer")}
         >
-          {e === "active" ? <AiFillExperiment size={"2.5em"} />  : <AiOutlineExperiment size={"2.5em"} /> }
+          {e === "active" ? (
+            <AiFillExperiment size={"2.5em"} />
+          ) : (
+            <AiOutlineExperiment size={"2.5em"} />
+          )}
         </button>
       ) : (
         <></>
       )}
 
       <button className={`n-item ${f}`} onClick={() => changePage("library")}>
-        {f === "active" ? <IoLibrarySharp size="2.5em" /> : <IoLibraryOutline size="2.5em" />}
+        {f === "active" ? (
+          <IoLibrarySharp size="2.5em" />
+        ) : (
+          <IoLibraryOutline size="2.5em" />
+        )}
       </button>
 
       <button className={`n-item ${d}`} onClick={() => changePage("user")}>
-        {d === "active" ? <MdAccountCircle size={"3em"} /> : <MdOutlineAccountCircle size={"3em"} />}
+        {d === "active" ? (
+          <MdAccountCircle size={"2.8em"} />
+        ) : (
+          <MdOutlineAccountCircle size={"2.8em"} />
+        )}
       </button>
 
       <button
-        className={`n-item n-item-settings ${c}`}
+        className={`n-item n-item-settings ${
+          c === "active" ? `active active-settings` : ""
+        }`}
+        id="settings"
         onClick={() => changePage("settings")}
       >
-        {c === "active" ? <BsFillGearFill size={"2.5em"} /> : <BsGear size={"2.5em"} /> }
+        {c === "active" ? (
+          <BsFillGearFill size={"2.5em"} />
+        ) : (
+          <BsGear size={"2.5em"} />
+        )}
       </button>
 
       <div className="mb-[8px]"></div>
