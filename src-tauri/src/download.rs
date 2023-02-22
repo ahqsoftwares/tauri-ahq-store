@@ -10,6 +10,7 @@ use std::fs::create_dir_all;
 use std::path::Path;
 
 // Define a custom progress reporter:
+#[allow(dead_code)]
 struct SimpleReporterPrivate {
     last_update: std::time::Instant,
     max_progress: Option<u64>,
@@ -17,13 +18,15 @@ struct SimpleReporterPrivate {
 }
 struct SimpleReporter {
     private: std::sync::Mutex<Option<SimpleReporterPrivate>>,
+    logger: fn(u64, u64) -> ()
 }
 
 impl SimpleReporter {
     #[cfg(not(feature = "tui"))]
-    fn create() -> std::sync::Arc<Self> {
+    fn create(logger: fn(u64, u64) -> ()) -> std::sync::Arc<Self> {
         std::sync::Arc::new(Self {
-            private: std::sync::Mutex::new(None)
+            private: std::sync::Mutex::new(None),
+            logger: logger,
         })
     }
 }
@@ -71,13 +74,8 @@ impl downloader::progress::Reporter for SimpleReporter {
                 _ => {}
             }
 
-            if p.last_update.elapsed().as_millis() >= 1000 {
-                println!(
-                  "Downloading App: {} of {} bytes. [{}]",
-                  current, max_bytes, p.message
-                );
-                p.last_update = std::time::Instant::now();
-            }
+            let max_bytes: u64 = max_bytes.parse().unwrap_or(0);
+            (self.logger)(current, max_bytes);
         }
     }
 
@@ -105,7 +103,7 @@ impl downloader::progress::Reporter for SimpleReporter {
     }
 }
 
-pub fn download(file: &str, path: &str, name: &str) -> u8 {
+pub fn download(file: &str, path: &str, name: &str, logger: fn(u64, u64) -> ()) -> u8 {
     let datas = create_dir_all(path);
     match datas {
         Err(daras) => println!("{}", daras.to_string()),
@@ -121,7 +119,7 @@ pub fn download(file: &str, path: &str, name: &str) -> u8 {
     let dl = downloader::Download::new(file).file_name(std::path::Path::new(name));
 
     #[cfg(not(feature = "tui"))]
-    let dl = dl.progress(SimpleReporter::create());
+    let dl = dl.progress(SimpleReporter::create(logger));
 
     let result = downloader.download(&[dl]).unwrap();
 

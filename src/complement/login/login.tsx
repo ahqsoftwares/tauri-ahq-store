@@ -2,7 +2,7 @@ import { appWindow, getAll } from "@tauri-apps/api/window";
 
 export default function Login() {
   return (
-    <div className="w-[100%] h-screen bg-black">
+    <div className="w-[100%] h-screen bg-gray-900">
       <button
         className="button"
         onClick={() => {

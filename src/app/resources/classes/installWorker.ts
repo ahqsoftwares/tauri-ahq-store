@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { invoke } from "@tauri-apps/api/tauri";
+import { appWindow } from "@tauri-apps/api/window";
 import fetchApps, { cacheData } from "../api/fetchApps";
 
 export default class installWorker {
   appId?: string[];
-  callback: (event: "installing" | "downloading", data: any) => void;
+  callback: (event: "installing" | "downloading" | "downloadstat", data: any) => void;
 
   /**
    * Starts the downloader
@@ -12,7 +13,7 @@ export default class installWorker {
    * @param {boolean} appId
    */
   constructor(
-    callback: (event: "installing" | "downloading", data: any) => void,
+    callback: (event: "installing" | "downloading" | "downloadstat", data: any) => void,
     appId?: string[]
   ) {
     this.appId = appId;
@@ -38,15 +39,28 @@ export default class installWorker {
       `${sysDir}\\ProgramData\\AHQ Store Applications\\Installers\\${appData.id}.zip`
     );
 
-    this.callback("installing", {
+    await this.uninstall(appData.id);
+
+    this.callback("downloading", {
       ...appData,
     });
 
-    await this.uninstall(appData.id);
+    const unlistenWindow = await appWindow.listen("download-status", ({ payload }: {payload: any}) => {
+      this.callback("downloadstat", {
+        percent: Math.round(payload[0] / payload[1] * 100),
+        total: payload[1],
+      });
+    });
 
     await invoke("download", {
       url: appData.download_url,
       name: `${appData.id}.zip`,
+    });
+
+    unlistenWindow();
+
+    this.callback("installing", {
+      ...appData,
     });
 
     await invoke("extract", {

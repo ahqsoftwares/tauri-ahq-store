@@ -155,8 +155,6 @@ if (appWindow.label === "main") {
         }
       );
 
-      console.log( data["tag_name"], currentVersion)
-
       invoke("check_update", {
         version: data["tag_name"],
         currentVersion: currentVersion,

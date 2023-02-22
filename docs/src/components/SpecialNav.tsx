@@ -1,4 +1,14 @@
-import { BiHome, BiExtension, BiBook } from "react-icons/bi";
+import { 
+    HiDocument,
+    HiOutlineDocument
+} from "react-icons/hi";
+import {
+  AiFillHome,
+  AiFillInfoCircle,
+  AiOutlineHome,
+  AiOutlineInfoCircle
+} from "react-icons/ai";
+import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
 
 interface prop {
   active: string;
@@ -14,7 +24,8 @@ export default function Nav(props: prop) {
 
   let a = "",
     b = "",
-    c = "";
+    c = "",
+    d = "";
   switch (active) {
     case "home":
       a = "active";
@@ -24,6 +35,9 @@ export default function Nav(props: prop) {
       break;
     case "docs":
       c = "active";
+      break;
+    case "about":
+      d="active";
       break;
   }
 
@@ -36,23 +50,43 @@ export default function Nav(props: prop) {
 
   return (
     <div
-      className={`w-[80px] h-screen flex flex-col items-center ${darkMode(
+      className={`w-[80px] h-[97%] rounded-lg my-auto ml-2 flex flex-col items-center ${darkMode(
         ["nav", "bg-blue-super"],
         mode
       )}`}
     >
       <button className={`n-item ${a}`} onClick={() => changePage("home")}>
-        <BiHome size={"2.5em"} />
+        {a === "active" ? (
+          <AiFillHome size={"2.5em"}></AiFillHome>
+        ) : (
+          <AiOutlineHome size={"2.5em"} />
+        )}
       </button>
 
       <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
-        <BiExtension size={"2.5em"} />
+        {b === "active" ? (
+            <RiApps2Fill size={"2.5em"} />
+          ) : (
+            <RiApps2Line size={"2.5em"} />
+          )}
       </button>
 
       <div className="mt-auto mb-auto"></div>
 
-      <button className={`n-item ${c} mb-5`} onClick={() => changePage("docs")}>
-        <BiBook size={"2.5em"} />
+      <button className={`n-item ${c}`} onClick={() => changePage("docs")}>
+        {c === "active" ? (
+          <HiDocument size={"2.5em"} />
+        ) : (
+          <HiOutlineDocument size={"2.5em"} />
+        )}
+      </button>
+
+      <button className={`n-item ${d} mb-5`} onClick={() => changePage("about")}>
+        {d === "active" ? (
+          <AiFillInfoCircle size={"2.5em"} />
+        ) : (
+          <AiOutlineInfoCircle size={"2.5em"} />
+        )}
       </button>
     </div>
   );

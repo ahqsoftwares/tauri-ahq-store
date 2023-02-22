@@ -10,6 +10,7 @@ pub mod extract;
 use minisign_verify::{PublicKey, Signature, Error};
 use base64::{self, Engine};
 use mslnk::ShellLink;
+use windows::{Win32::{UI::Shell::{TaskbarList, ITaskbarList4 as ITaskbarList, TBPFLAG}, System::Com::{CLSCTX_SERVER, CoCreateInstance}}};
 use deelevate::{Token, PrivilegeLevel};
 
 use std::env::current_exe;
@@ -27,6 +28,8 @@ struct AppData {
     pub name: String,
     pub data: String
 }
+
+static mut WINDOW: Option<tauri::Window<tauri::Wry>> = None;
 
 fn main() {
     tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
@@ -194,6 +197,30 @@ fn main() {
 
     let window = tauri::Manager::get_window(&app, "main").unwrap();
 
+    unsafe {
+        let window = window.clone();
+        WINDOW = Some(window);
+    }
+
+    /*
+    {
+        let window = window.clone();
+
+        thread::spawn(move || unsafe {
+            thread::sleep(std::time::Duration::from_secs(5));
+
+            let window = window.hwnd().unwrap();
+
+            let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+            taskbar_list.SetProgressState(window, TBPFLAG(0x00000002)).unwrap();
+            println!("Injected State");
+            taskbar_list.SetProgressValue(window, 85, 100).unwrap();
+            println!("Injected Data");
+        });
+    }
+    */
+
     {
         let window = window.clone();
         let window2 = window.clone();
@@ -245,7 +272,7 @@ async fn check_update(version: String, current_version: String, download_url: St
 
         let path2 = path.clone();
         thread::spawn(move || {
-            download::download(download_url.as_str(), path2.as_str(), "updater.zip");
+            download::download(download_url.as_str(), path2.as_str(), "updater.zip", |_, _| {});
         }).join().unwrap();
 
         let data = std::fs::read(
@@ -412,6 +439,19 @@ fn download(url: String, name: String) -> Result<(), u8> {
             url.as_str(),
             &format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()).as_str(),
             name.as_str(),
+            |current, total| {
+                unsafe {
+                    let window = WINDOW.clone().unwrap();
+                    window.emit("download-status", [current.clone(), total.clone()]).unwrap_or(());
+
+                    let window = window.hwnd().unwrap();
+            
+                    let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+            
+                    taskbar_list.SetProgressState(window, TBPFLAG(0x00000002)).unwrap();
+                    taskbar_list.SetProgressValue(window, current, total).unwrap();
+                }
+            }
         );
     })
     .join();
@@ -424,8 +464,38 @@ fn download(url: String, name: String) -> Result<(), u8> {
 
 #[tauri::command(async)]
 fn install(path: String) -> Result<bool, i32> {
+    unsafe {
+        let window = WINDOW.clone().unwrap();
+        let window = window.hwnd().unwrap();
+
+        let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+        taskbar_list.SetProgressValue(window, 0, 0).unwrap();
+        taskbar_list.SetProgressState(window, TBPFLAG(0x00000001)).unwrap();
+    }
+
     let status = extract::run(path);
     
+    unsafe {
+        let status = status.clone();
+        let window = WINDOW.clone().unwrap();
+
+        thread::spawn(move || {
+            let window = window.hwnd().unwrap();
+
+            let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+            let error = TBPFLAG(0x00000003);
+            let none = TBPFLAG(0x00000000);
+
+            taskbar_list.SetProgressState(window, if status { error } else { none }).unwrap();
+            thread::sleep(std::time::Duration::from_secs(2));
+            if status {
+                taskbar_list.SetProgressState(window, none).unwrap();
+            };
+        });
+    }
+
     if status == true {
         Ok(true)
     } else  {
@@ -435,6 +505,16 @@ fn install(path: String) -> Result<bool, i32> {
 
 #[tauri::command(async)]
 fn extract(app: &str, version: &str) -> Result<(), i32> {
+    unsafe {
+        let window = WINDOW.clone().unwrap();
+        let window = window.hwnd().unwrap();
+
+        let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+        taskbar_list.SetProgressValue(window, 0, 0).unwrap();
+        taskbar_list.SetProgressState(window, TBPFLAG(0x00000001)).unwrap();
+    }
+
     let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
     let status = extract::extract(
         &Path::new(
@@ -447,6 +527,27 @@ fn extract(app: &str, version: &str) -> Result<(), i32> {
         &Path::new(&format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{}\\ahqStoreVersion", sys_dir.clone(), app.clone())), 
         &version
     );
+
+    unsafe {
+        let status = status.clone();
+        let status2 = status2.is_err();
+        let window = WINDOW.clone().unwrap();
+
+        thread::spawn(move || {
+            let window = window.hwnd().unwrap();
+
+            let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+            let error = TBPFLAG(0x00000003);
+            let none = TBPFLAG(0x00000000);
+
+            taskbar_list.SetProgressState(window, if status != 0 || status2 { error } else { none }).unwrap();
+            thread::sleep(std::time::Duration::from_secs(2));
+            if status != 0 || status2 {
+                taskbar_list.SetProgressState(window, none).unwrap();
+            };
+        });
+    }
 
     if status == 0 && !status2.is_err() {
         Ok(())

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
-import { VscExtensions } from "react-icons/vsc";
+import { RiApps2Line } from "react-icons/ri";
 
 import { Auth } from "firebase/auth";
 
@@ -86,7 +86,7 @@ export default function Developers(props: DevProps) {
       </Modal>
       <Option
         dark={dark}
-        ShowCaseIcon={VscExtensions}
+        ShowCaseIcon={RiApps2Line}
         title={"My Apps"}
         description="View apps published by me"
         PopUp={Icon ? IoIosArrowForward : IoIosArrowDown}

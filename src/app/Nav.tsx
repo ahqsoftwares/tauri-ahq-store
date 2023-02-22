@@ -61,7 +61,7 @@ export default function nav(props: prop) {
 
   return (
     <div
-      className={`w-[80px] h-screen flex flex-col items-center ${darkMode(
+      className={`w-[80px] h-[98vh] my-auto ml-2 rounded-lg flex flex-col items-center ${darkMode(
         ["nav", "bg-blue-super"],
         mode
       )}`}

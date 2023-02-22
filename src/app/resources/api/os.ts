@@ -13,8 +13,6 @@ export function init() {
   if (Math.round(Math.random() * 100) <= 95) {
     invoke("get_windows")
       .then((version: any) => {
-        console.log(version);
-
         if (version === "7") {
           windowsVersion = windows7;
         } else if (version === "8" || version === "8.1" || version === "10") {

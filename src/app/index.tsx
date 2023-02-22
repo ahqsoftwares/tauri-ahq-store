@@ -96,7 +96,6 @@ function Render(props: AppProps) {
       //Fetch Maps
       initApi()
         .then(async (commit_id) => {
-          console.log(commit_id);
           if (
             commit_id !== "" ||
             commit_id !== undefined ||

@@ -4,6 +4,7 @@ import Nav from "../components/SpecialNav";
 //Pages
 import Home from "../components/home";
 import Apps from "../components/apps";
+import About from "../components/about";
 
 export default function MainPage({
   dark,
@@ -24,6 +25,8 @@ export default function MainPage({
       setPage("apps");
     } else if (path === "/docs") {
       setPage("docs");
+    } else if (path === "/about") {
+      setPage("about");
     }
   }, [path]);
 
@@ -36,13 +39,16 @@ export default function MainPage({
       case "apps":
         setApp(<Apps />);
         break;
+      case "about":
+        setApp(<About dark={dark} />);
+        break;
       default:
         setApp(<Home dark={dark} />);
     }
   }, [page, dark]);
 
   return (
-    <div className="w-screen h-screen flex">
+    <div className="w-screen h-screen flex dark:bg-gray-800">
       <Nav
         dark={dark}
         active={page}
@@ -50,7 +56,7 @@ export default function MainPage({
           setPage(page);
         }}
       />
-      <div className="w-[100%] h-screen dark:bg-gray-800 flex justify-center">
+      <div className="w-[100%] h-screen flex justify-center">
         {App}
       </div>
     </div>

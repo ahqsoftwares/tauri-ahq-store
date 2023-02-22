@@ -19,6 +19,18 @@ interface AppDataPropsModal {
   installData: any;
 }
 
+function formatBytes(bytes: number, decimals = 2) {
+  if (!+bytes) return '0 Bytes'
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
 export default function ShowModal(props: AppDataPropsModal) {
   const { shown, dark, change, installData } = props;
 
@@ -92,9 +104,9 @@ export default function ShowModal(props: AppDataPropsModal) {
         </div>
         <div className="flex w-[100%] h-[100%]">
           <div
-            className={`w-[40%] flex flex-col items-center rounded-xl shadow-xl`}
+            className={`w-[40%] flex flex-col items-center rounded-xl shadow-xl mt-2`}
           >
-            <img src={img} alt="Logo" className="rounded-3xl shadow-2xl"></img>
+            <img width={128} height={128} src={img} alt="Logo" className="rounded-3xl shadow-2xl"></img>
 
             <h1
               className={`mt-5 text-3xl ${
@@ -139,10 +151,12 @@ export default function ShowModal(props: AppDataPropsModal) {
                 onClick={async () => {
                   setWorking(true);
                   button.current.innerHTML = "Working...";
-                  await new installWorker((event) => {
+                  await new installWorker((event, data) => {
                     if (event === "downloading") {
                       button.current.innerHTML = "Downloading...";
-                    } else if (event === "installing") {
+                    } else if (event === "downloadstat") {
+                      button.current.innerHTML = `${data.percent}% of ${formatBytes(data.total)}`;
+                    }else if (event === "installing") {
                       button.current.innerHTML = "Installing...";
                     }
                   }).install([installData]);
