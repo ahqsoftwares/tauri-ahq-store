@@ -8,10 +8,12 @@ import AppList from "./components/AppsList";
 
 //tauri and updater
 import { appWindow } from "@tauri-apps/api/window";
+import { fetch } from "@tauri-apps/api/http";
 import {
   updaterStatus,
   runManualUpdate,
 } from "../resources/api/updateInstallWorker";
+import server from "../server";
 
 interface LibraryProps {
   dark: boolean;
@@ -42,6 +44,10 @@ export default function Library(props: LibraryProps) {
   };
 
   Modal.setAppElement("body");
+
+  fetch(`${server}apps`, {
+    method: "GET"
+  }).then(console.log);
 
   const [status, setStatus] = useState("Checking..."),
     [appList, setAppList] = useState<boolean>(false),

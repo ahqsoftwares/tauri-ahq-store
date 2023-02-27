@@ -36,7 +36,19 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7.26.0
+          version: 7.26
+      - name: Load Encryptor Key
+        run: node encryptor.js
+        env:
+          KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
+      - name: Clone VCpkg
+        run: git clone https://github.com/Microsoft/vcpkg.git
+      - name: Install Via VCpkg
+        run: .\vcpkg\bootstrap-vcpkg.bat
+      - name: Install openssl
+        run: .\vcpkg\vcpkg install openssl --triplet x64-windows-static-md
+      - name: Integrate
+        run: .\vcpkg\vcpkg integrate install
       - name: install app dependencies and build it
         run: pnpm install && pnpm build
         env:
@@ -51,11 +63,6 @@ jobs:
           releaseBody: "AHQ Store __VERSION__ Update\n# Changes:"
           releaseDraft: true
           prerelease: false
-      - name: Upload Executable (folder)
-        uses: actions/upload-artifact@v3
-        with:
-          name: ahqstore-src
-          path: "src-tauri/target/release/"
       - name: Upload Executable (standalone)
         uses: actions/upload-artifact@v3
         with:
