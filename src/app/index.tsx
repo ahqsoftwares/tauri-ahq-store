@@ -102,7 +102,7 @@ function Render(props: AppProps) {
             commit_id !== null
           ) {
             const { data: Mapped } = await fetch(
-              `https://rawcdn.githack.com/altalt/ahq-store-data/${commit_id}/database/mapped.json`,
+              `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/mapped.json`,
               {
                 method: "GET",
                 timeout: 30,
@@ -117,7 +117,7 @@ function Render(props: AppProps) {
             });
 
             const { data: Home } = await fetch(
-              `https://rawcdn.githack.com/altalt/ahq-store-data/${commit_id}/database/home.json`,
+              `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/home.json`,
               {
                 method: "GET",
                 timeout: 30,

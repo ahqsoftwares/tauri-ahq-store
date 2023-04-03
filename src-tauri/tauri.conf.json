@@ -25,9 +25,9 @@
       "http": {
         "all": true,
         "scope": [
-          "https://github.com/ahqalt/ahq-store-data/*",
-          "https://github.com/ahqalt/tauri-ahq-store/releases/*",
-          "https://rawcdn.githack.com/altalt/ahq-store-data/*",
+          "https://github.com/ahqsoftwares/ahq-store-data/*",
+          "https://github.com/ahqsoftwares/tauri-ahq-store/releases/*",
+          "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/*",
           "https://api.github.com/repos/*",
 
           "https://astore.simplehost.ml/*",

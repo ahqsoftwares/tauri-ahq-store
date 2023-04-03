@@ -10,7 +10,7 @@ pub fn encrypt(payload: String) -> Option<Vec<u8>> {
 #[tauri::command(async)]
 pub fn decrypt(encrypted: Vec<u8>) -> Option<String> {
     let pass = include!("./encrypt");
-    
+
     let decrypted = crypter::decrypt(pass.as_bytes(), &encrypted)?;
 
     let string = String::from_utf8(decrypted);

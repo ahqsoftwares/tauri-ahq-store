@@ -4,101 +4,117 @@
 )]
 
 pub mod download;
-pub mod extract;
 pub mod encryption;
+pub mod extract;
 
 //utilities
-use encryption::{encrypt, decrypt};
-use minisign_verify::{PublicKey, Signature, Error};
 use base64::{self, Engine};
+use encryption::{decrypt, encrypt};
+use is_elevated::is_elevated;
+use minisign_verify::{Error, PublicKey, Signature};
 use mslnk::ShellLink;
-use windows::{Win32::{UI::Shell::{TaskbarList, ITaskbarList4 as ITaskbarList, TBPFLAG}, System::Com::{CLSCTX_SERVER, CoCreateInstance}}};
-use deelevate::{Token, PrivilegeLevel};
+use windows::Win32::{
+    System::Com::{CoCreateInstance, CLSCTX_SERVER},
+    UI::Shell::{ITaskbarList4 as ITaskbarList, TaskbarList, TBPFLAG},
+};
 
 use std::env::current_exe;
 //std
-use std::os::windows::process::CommandExt;
-use std::{path::Path, fs, thread, process::{self, Stdio, exit}, env::args, process::Command, sync::{Arc, Mutex}};
 use os_version::Windows;
+use std::os::windows::process::CommandExt;
+use std::{
+    env::args,
+    fs,
+    path::Path,
+    process::Command,
+    process::{self, exit, Stdio},
+    sync::{Arc, Mutex},
+    thread,
+};
 
 //tauri
-use tauri_plugin_autostart::MacosLauncher;
 use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri_plugin_autostart::MacosLauncher;
 
 #[derive(Debug, Clone)]
 struct AppData {
     pub name: String,
-    pub data: String
+    pub data: String,
 }
 
 static mut WINDOW: Option<tauri::Window<tauri::Wry>> = None;
 
 fn main() {
     tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
-    let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
-    match Token::with_current_process().unwrap().privilege_level().unwrap() {
-        PrivilegeLevel::NotPrivileged => {
-            let buf = std::env::current_exe().unwrap().to_owned();
-            let exec = buf.clone().to_str().unwrap().to_owned();
+    let sys_dir = std::env::var("SYSTEMROOT")
+        .unwrap()
+        .to_uppercase()
+        .as_str()
+        .replace("\\WINDOWS", "")
+        .replace("\\Windows", "");
+    
+    if !is_elevated() {
+        let buf = std::env::current_exe().unwrap().to_owned();
+        let exec = buf.clone().to_str().unwrap().to_owned();
 
-            let args = std::env::args();
+        let args = std::env::args();
 
-            if std::env::args().last().unwrap().as_str() != exec.clone().as_str() {
-                Command::new("powershell")
-                    .creation_flags(0x08000000)
-                    .args([
-                        "-NoProfile",
-                        "-WindowStyle", 
-                        "Minimized"
-                    ])
-                    .args([
-                        "Start-Process",
-                        "-FilePath",
-                        format!("\"{}\"", exec.as_str()).as_str(),
-                        format!("\"{}\"", args.last().unwrap()).as_str(),
-                        "-verb",
-                        "runas"
-                    ])
-                    .spawn()
-                    .unwrap()
-                    .wait()
-                    .unwrap();
-            } else {
-                Command::new("powershell")
-                    .creation_flags(0x08000000)
-                    .args([
-                        "-NoProfile",
-                        "-WindowStyle", 
-                        "Minimized"
-                    ])
-                    .args([
-                        "Start-Process",
-                        "-FilePath",
-                        format!(r#""{}""#, exec.as_str()).as_str(),
-                        "-verb",
-                        "runas"
-                    ])
-                    .spawn()
-                    .unwrap()
-                    .wait()
-                    .unwrap();
-            }
-            process::exit(0);
+        if std::env::args().last().unwrap().as_str() != exec.clone().as_str() {
+            Command::new("powershell")
+                .creation_flags(0x08000000)
+                .args(["-NoProfile", "-WindowStyle", "Minimized"])
+                .args([
+                    "Start-Process",
+                    "-FilePath",
+                    format!("\"{}\"", exec.as_str()).as_str(),
+                    format!("\"{}\"", args.last().unwrap()).as_str(),
+                    "-verb",
+                    "runas",
+                ])
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap();
+        } else {
+            Command::new("powershell")
+                .creation_flags(0x08000000)
+                .args(["-NoProfile", "-WindowStyle", "Minimized"])
+                .args([
+                    "Start-Process",
+                    "-FilePath",
+                    format!(r#""{}""#, exec.as_str()).as_str(),
+                    "-verb",
+                    "runas",
+                ])
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap();
         }
-        _ => {
-                        
-        }
+        process::exit(0);
     }
 
-    fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()))
-        .unwrap();
-    fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Programs", sys_dir.clone()))
-        .unwrap();
-    fs::remove_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Updaters", sys_dir.clone()))
-        .unwrap_or(());
-    fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Updaters", sys_dir.clone()))
-        .unwrap();
-    
+    fs::create_dir_all(format!(
+        "{}\\ProgramData\\AHQ Store Applications\\Installers",
+        sys_dir.clone()
+    ))
+    .unwrap();
+    fs::create_dir_all(format!(
+        "{}\\ProgramData\\AHQ Store Applications\\Programs",
+        sys_dir.clone()
+    ))
+    .unwrap();
+    fs::remove_dir_all(format!(
+        "{}\\ProgramData\\AHQ Store Applications\\Updaters",
+        sys_dir.clone()
+    ))
+    .unwrap_or(());
+    fs::create_dir_all(format!(
+        "{}\\ProgramData\\AHQ Store Applications\\Updaters",
+        sys_dir.clone()
+    ))
+    .unwrap();
+
     let context = tauri::generate_context!();
 
     let app = tauri::Builder::default()
@@ -124,13 +140,15 @@ fn main() {
                 *ready_clone.lock().unwrap() = true;
 
                 for item in queue_clone.lock().unwrap().iter() {
-                    window_clone.emit(item.name.as_str(), item.data.clone()).unwrap();
+                    window_clone
+                        .emit(item.name.as_str(), item.data.clone())
+                        .unwrap();
                 }
 
                 let lock = queue_clone.lock();
 
                 if lock.is_ok() {
-                  *lock.unwrap() = Vec::<AppData>::new();
+                    *lock.unwrap() = Vec::<AppData>::new();
                 }
             });
 
@@ -144,19 +162,16 @@ fn main() {
                 } else {
                     queue.clone().lock().unwrap().push(AppData {
                         data: args.clone(),
-                        name: String::from("app")
+                        name: String::from("app"),
                     });
                 }
             }
 
             let window = window.clone();
-            tauri_plugin_deep_link::register(
-                "ahqstore",
-                move |request| {
-                    println!("{:?}", request);
-                    window.emit("app", request).unwrap_or(());
-                },
-            )
+            tauri_plugin_deep_link::register("ahqstore", move |request| {
+                println!("{:?}", request);
+                window.emit("app", request).unwrap_or(());
+            })
             .unwrap();
 
             Ok(())
@@ -170,7 +185,10 @@ fn main() {
                 .show()
                 .unwrap();
         }))
-        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(["autostart"].to_vec())))
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            Some(["autostart"].to_vec()),
+        ))
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
                 println!("Received a left Click");
@@ -188,9 +206,21 @@ fn main() {
             }
         })
         .invoke_handler(tauri::generate_handler![
-            download, install, extract, clean, shortcut, check_app, uninstall,
-            autostart, get_windows, list_all_apps, sys_handler, check_update, install_update,
-            encrypt, decrypt
+            download,
+            install,
+            extract,
+            clean,
+            shortcut,
+            check_app,
+            uninstall,
+            autostart,
+            get_windows,
+            list_all_apps,
+            sys_handler,
+            check_update,
+            install_update,
+            encrypt,
+            decrypt
         ])
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
@@ -231,7 +261,9 @@ fn main() {
         let window2 = window.clone();
 
         window.listen("sendUpdaterStatus", move |event| {
-            window2.emit("sendUpdaterStatus", event.payload().unwrap()).unwrap();
+            window2
+                .emit("sendUpdaterStatus", event.payload().unwrap())
+                .unwrap();
         });
     }
 
@@ -248,11 +280,10 @@ fn main() {
         },
         _ => {}
     });
-
 }
 
 fn base64_to_string(base64_string: &str) -> Option<String> {
-    let base64decoder =  base64::engine::general_purpose::STANDARD;
+    let base64decoder = base64::engine::general_purpose::STANDARD;
     let decoded_string = base64decoder.decode(base64_string).unwrap_or(vec![]);
 
     let result = String::from_utf8(decoded_string).unwrap_or("".to_string());
@@ -262,27 +293,40 @@ fn base64_to_string(base64_string: &str) -> Option<String> {
 const UPDATER_PATH: &str = "%root%\\ProgramData\\AHQ Store Applications\\Updaters";
 
 #[tauri::command]
-async fn check_update(version: String, current_version: String, download_url: String, signature: String) -> bool {
+async fn check_update(
+    version: String,
+    current_version: String,
+    download_url: String,
+    signature: String,
+) -> bool {
     let mut update_available = &version != &current_version;
 
     if update_available.clone() {
         println!("Update Available!");
-        let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
-        
+        let sys_dir = std::env::var("SYSTEMROOT")
+            .unwrap()
+            .to_uppercase()
+            .as_str()
+            .replace("\\WINDOWS", "")
+            .replace("\\Windows", "");
+
         let path = UPDATER_PATH.replace("%root%", sys_dir.as_str());
 
-        fs::remove_file(
-            format!("{}\\updater.zip", path.clone())
-        ).unwrap_or(());
+        fs::remove_file(format!("{}\\updater.zip", path.clone())).unwrap_or(());
 
         let path2 = path.clone();
         thread::spawn(move || {
-            download::download(download_url.as_str(), path2.as_str(), "updater.zip", |_, _| {});
-        }).join().unwrap();
+            download::download(
+                download_url.as_str(),
+                path2.as_str(),
+                "updater.zip",
+                |_, _| {},
+            );
+        })
+        .join()
+        .unwrap();
 
-        let data = std::fs::read(
-            format!("{}\\updater.zip", path.clone())
-        ).unwrap_or(vec![]);
+        let data = std::fs::read(format!("{}\\updater.zip", path.clone())).unwrap_or(vec![]);
 
         update_available = verify_signature(data, signature.as_str()).unwrap_or(false);
     }
@@ -303,7 +347,12 @@ fn verify_signature(data: Vec<u8>, release_signature: &str) -> Result<bool, Erro
 
 #[tauri::command]
 async fn install_update() {
-    let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
+    let sys_dir = std::env::var("SYSTEMROOT")
+        .unwrap()
+        .to_uppercase()
+        .as_str()
+        .replace("\\WINDOWS", "")
+        .replace("\\Windows", "");
     let path = UPDATER_PATH.replace("%root%", sys_dir.as_str());
 
     Command::new("powershell")
@@ -312,7 +361,7 @@ async fn install_update() {
             "Expand-Archive",
             format!("-Path \"{}\\updater.zip\"", path.clone()).as_str(),
             format!("-DestinationPath \"{}\"", path.clone()).as_str(),
-            "-Force"
+            "-Force",
         ])
         .spawn()
         .unwrap()
@@ -332,16 +381,13 @@ async fn install_update() {
     }
 
     let mut current_exe_arg = std::ffi::OsString::new();
-        current_exe_arg.push("\"");
-        current_exe_arg.push(current_exe().unwrap());
-        current_exe_arg.push("\"");
+    current_exe_arg.push("\"");
+    current_exe_arg.push(current_exe().unwrap());
+    current_exe_arg.push("\"");
 
     Command::new("powershell")
         .creation_flags(0x08000000)
-        .args([
-            "Start-Process",
-            "-Wait",
-        ])
+        .args(["Start-Process", "-Wait"])
         .arg(app_executable)
         .arg("/qb+; start-process")
         .arg(current_exe_arg)
@@ -353,36 +399,53 @@ async fn install_update() {
 
 #[tauri::command]
 fn sys_handler() -> String {
-    std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "")
+    std::env::var("SYSTEMROOT")
+        .unwrap()
+        .to_uppercase()
+        .as_str()
+        .replace("\\WINDOWS", "")
+        .replace("\\Windows", "")
 }
 
 #[tauri::command(async)]
 fn autostart() -> bool {
-  let mut status = false;
+    let mut status = false;
 
-  if args().len() > 1 {
-    if args().last().unwrap() == "autostart" {
-        status = true;
+    if args().len() > 1 {
+        if args().last().unwrap() == "autostart" {
+            status = true;
+        }
     }
-  }
 
-  status.into()
+    status.into()
 }
 
 #[tauri::command(async)]
 fn list_all_apps() -> [Vec<String>; 2] {
     let mut apps: Vec<String> = Vec::new();
     let mut versions: Vec<String> = Vec::new();
-    let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
+    let sys_dir = std::env::var("SYSTEMROOT")
+        .unwrap()
+        .to_uppercase()
+        .as_str()
+        .replace("\\WINDOWS", "")
+        .replace("\\Windows", "");
 
-    let pages = fs::read_dir(
-        format!(r"{}\ProgramData\AHQ Store Applications\Programs", sys_dir.clone())
-    ).unwrap();
+    let pages = fs::read_dir(format!(
+        r"{}\ProgramData\AHQ Store Applications\Programs",
+        sys_dir.clone()
+    ))
+    .unwrap();
 
     for page in pages {
         let name = page.unwrap().file_name().into_string().unwrap();
 
-        let version = fs::read_to_string(format!(r"{}\ProgramData\AHQ Store Applications\Programs\{}\ahqStoreVersion", sys_dir.clone(), name.clone())).unwrap_or("v0.0.0".to_string());
+        let version = fs::read_to_string(format!(
+            r"{}\ProgramData\AHQ Store Applications\Programs\{}\ahqStoreVersion",
+            sys_dir.clone(),
+            name.clone()
+        ))
+        .unwrap_or("v0.0.0".to_string());
 
         versions.push(version);
         apps.push(name);
@@ -404,66 +467,83 @@ fn get_windows() -> Option<String> {
             } else {
                 Some(win.version)
             }
-        },
-        Err(_) => None
+        }
+        Err(_) => None,
     }
 }
 
 fn is_windows_11() -> bool {
     let version = Command::new("cmd")
-    .args([
-        "/c",
-        "ver"
-    ])
-    .stdout(Stdio::piped())
-    .spawn()
-    .unwrap()
-    .wait_with_output()
-    .unwrap()
-    .stdout;
+        .args(["/c", "ver"])
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap()
+        .stdout;
 
     let string = String::from_utf8(version).unwrap();
-    let splitted = string.replace("\n", "").replace("Microsoft Windows [", "").replace("]", "");
+    let splitted = string
+        .replace("\n", "")
+        .replace("Microsoft Windows [", "")
+        .replace("]", "");
     let version: Vec<&str> = splitted.split(".").collect();
-    
+
     let version: usize = version[2].parse().unwrap_or(0);
-    
+
     version >= 22000
 }
 
 #[tauri::command(async)]
 fn download(url: String, name: String) -> Result<(), u8> {
     let data = thread::spawn(move || {
-        let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
-        let result = fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()));
+        let sys_dir = std::env::var("SYSTEMROOT")
+            .unwrap()
+            .to_uppercase()
+            .as_str()
+            .replace("\\WINDOWS", "")
+            .replace("\\Windows", "");
+        let result = fs::create_dir_all(format!(
+            "{}\\ProgramData\\AHQ Store Applications\\Installers",
+            sys_dir.clone()
+        ));
         match result {
             Ok(()) => println!("Success!"),
             Err(_status) => println!("Error"),
         }
         download::download(
             url.as_str(),
-            &format!("{}\\ProgramData\\AHQ Store Applications\\Installers", sys_dir.clone()).as_str(),
+            &format!(
+                "{}\\ProgramData\\AHQ Store Applications\\Installers",
+                sys_dir.clone()
+            )
+            .as_str(),
             name.as_str(),
-            |current, total| {
-                unsafe {
-                    let window = WINDOW.clone().unwrap();
-                    window.emit("download-status", [current.clone(), total.clone()]).unwrap_or(());
+            |current, total| unsafe {
+                let window = WINDOW.clone().unwrap();
+                window
+                    .emit("download-status", [current.clone(), total.clone()])
+                    .unwrap_or(());
 
-                    let window = window.hwnd().unwrap();
-            
-                    let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
-            
-                    taskbar_list.SetProgressState(window, TBPFLAG(0x00000002)).unwrap();
-                    taskbar_list.SetProgressValue(window, current, total).unwrap();
-                }
-            }
+                let window = window.hwnd().unwrap();
+
+                let taskbar_list: ITaskbarList =
+                    CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+                taskbar_list
+                    .SetProgressState(window, TBPFLAG(0x00000002))
+                    .unwrap();
+                taskbar_list
+                    .SetProgressValue(window, current, total)
+                    .unwrap();
+            },
         );
     })
     .join();
 
     match data {
         Ok(()) => Ok(().into()),
-        Err(_) => Err(1)
+        Err(_) => Err(1),
     }
 }
 
@@ -473,14 +553,17 @@ fn install(path: String) -> Result<bool, i32> {
         let window = WINDOW.clone().unwrap();
         let window = window.hwnd().unwrap();
 
-        let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+        let taskbar_list: ITaskbarList =
+            CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
 
         taskbar_list.SetProgressValue(window, 0, 0).unwrap();
-        taskbar_list.SetProgressState(window, TBPFLAG(0x00000001)).unwrap();
+        taskbar_list
+            .SetProgressState(window, TBPFLAG(0x00000001))
+            .unwrap();
     }
 
     let status = extract::run(path);
-    
+
     unsafe {
         let status = status.clone();
         let window = WINDOW.clone().unwrap();
@@ -488,12 +571,15 @@ fn install(path: String) -> Result<bool, i32> {
         thread::spawn(move || {
             let window = window.hwnd().unwrap();
 
-            let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+            let taskbar_list: ITaskbarList =
+                CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
 
             let error = TBPFLAG(0x00000003);
             let none = TBPFLAG(0x00000000);
 
-            taskbar_list.SetProgressState(window, if status { error } else { none }).unwrap();
+            taskbar_list
+                .SetProgressState(window, if status { error } else { none })
+                .unwrap();
             thread::sleep(std::time::Duration::from_secs(2));
             if status {
                 taskbar_list.SetProgressState(window, none).unwrap();
@@ -503,7 +589,7 @@ fn install(path: String) -> Result<bool, i32> {
 
     if status == true {
         Ok(true)
-    } else  {
+    } else {
         Err(32)
     }
 }
@@ -514,23 +600,41 @@ fn extract(app: &str, version: &str) -> Result<(), i32> {
         let window = WINDOW.clone().unwrap();
         let window = window.hwnd().unwrap();
 
-        let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+        let taskbar_list: ITaskbarList =
+            CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
 
         taskbar_list.SetProgressValue(window, 0, 0).unwrap();
-        taskbar_list.SetProgressState(window, TBPFLAG(0x00000001)).unwrap();
+        taskbar_list
+            .SetProgressState(window, TBPFLAG(0x00000001))
+            .unwrap();
     }
 
-    let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
+    let sys_dir = std::env::var("SYSTEMROOT")
+        .unwrap()
+        .to_uppercase()
+        .as_str()
+        .replace("\\WINDOWS", "")
+        .replace("\\Windows", "");
     let status = extract::extract(
-        &Path::new(
-            &format!("{}\\ProgramData\\AHQ Store Applications\\Installers\\{}.zip", sys_dir.clone(), app.clone()),
-        ),
-        &Path::new(&format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{}", sys_dir.clone(), app.clone())),
+        &Path::new(&format!(
+            "{}\\ProgramData\\AHQ Store Applications\\Installers\\{}.zip",
+            sys_dir.clone(),
+            app.clone()
+        )),
+        &Path::new(&format!(
+            "{}\\ProgramData\\AHQ Store Applications\\Programs\\{}",
+            sys_dir.clone(),
+            app.clone()
+        )),
     );
 
     let status2 = fs::write(
-        &Path::new(&format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{}\\ahqStoreVersion", sys_dir.clone(), app.clone())), 
-        &version
+        &Path::new(&format!(
+            "{}\\ProgramData\\AHQ Store Applications\\Programs\\{}\\ahqStoreVersion",
+            sys_dir.clone(),
+            app.clone()
+        )),
+        &version,
     );
 
     unsafe {
@@ -541,12 +645,15 @@ fn extract(app: &str, version: &str) -> Result<(), i32> {
         thread::spawn(move || {
             let window = window.hwnd().unwrap();
 
-            let taskbar_list: ITaskbarList = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+            let taskbar_list: ITaskbarList =
+                CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
 
             let error = TBPFLAG(0x00000003);
             let none = TBPFLAG(0x00000000);
 
-            taskbar_list.SetProgressState(window, if status != 0 || status2 { error } else { none }).unwrap();
+            taskbar_list
+                .SetProgressState(window, if status != 0 || status2 { error } else { none })
+                .unwrap();
             thread::sleep(std::time::Duration::from_secs(2));
             if status != 0 || status2 {
                 taskbar_list.SetProgressState(window, none).unwrap();
@@ -565,59 +672,89 @@ fn extract(app: &str, version: &str) -> Result<(), i32> {
 fn clean(path: String) -> Result<(), bool> {
     match fs::remove_file(path) {
         Ok(_) => Ok(()),
-        Err(_) => Err(true)
+        Err(_) => Err(true),
     }
 }
 
 #[tauri::command(async)]
 fn shortcut(app: &str, app_name: &str) {
-    let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
-    let base = format!(r"{}\ProgramData\AHQ Store Applications\Programs\", sys_dir).to_owned() + app;
+    let sys_dir = std::env::var("SYSTEMROOT")
+        .unwrap()
+        .to_uppercase()
+        .as_str()
+        .replace("\\WINDOWS", "")
+        .replace("\\Windows", "");
+    let base =
+        format!(r"{}\ProgramData\AHQ Store Applications\Programs\", sys_dir).to_owned() + app;
 
     let sl = ShellLink::new(base).unwrap();
 
-    sl.create_lnk(&std::path::Path::new(&format!(r"{}\Users\Public\Desktop\{app_name}.lnk", sys_dir.clone()))).unwrap();
-    sl.create_lnk(std::path::Path::new(&format!(r"{}\ProgramData\Microsoft\Windows\Start Menu\Programs\AHQ Store\{}.lnk", sys_dir, app_name))).unwrap();
+    sl.create_lnk(&std::path::Path::new(&format!(
+        r"{}\Users\Public\Desktop\{app_name}.lnk",
+        sys_dir.clone()
+    )))
+    .unwrap();
+    sl.create_lnk(std::path::Path::new(&format!(
+        r"{}\ProgramData\Microsoft\Windows\Start Menu\Programs\AHQ Store\{}.lnk",
+        sys_dir, app_name
+    )))
+    .unwrap();
 }
 
 #[tauri::command(async)]
 fn check_app(app_name: &str) -> Result<bool, bool> {
-    let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
-    Ok(
-        Path::new(
-            format!("{sys_dir}\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}").as_str(),
-        )
-        .is_dir()
-        .into(),
+    let sys_dir = std::env::var("SYSTEMROOT")
+        .unwrap()
+        .to_uppercase()
+        .as_str()
+        .replace("\\WINDOWS", "")
+        .replace("\\Windows", "");
+    Ok(Path::new(
+        format!("{sys_dir}\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}").as_str(),
     )
+    .is_dir()
+    .into())
 }
 
 #[tauri::command(async)]
 fn uninstall(app_name: &str, app_full_name: &str) -> Result<(), bool> {
-    let sys_dir = std::env::var("SYSTEMROOT").unwrap().to_uppercase().as_str().replace("\\WINDOWS", "").replace("\\Windows", "");
-    
-    let path = format!("{}\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\AHQ Store\\{}.lnk", sys_dir.clone(), app_full_name.clone());
+    let sys_dir = std::env::var("SYSTEMROOT")
+        .unwrap()
+        .to_uppercase()
+        .as_str()
+        .replace("\\WINDOWS", "")
+        .replace("\\Windows", "");
+
+    let path = format!(
+        "{}\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\AHQ Store\\{}.lnk",
+        sys_dir.clone(),
+        app_full_name.clone()
+    );
 
     fs::remove_dir_all(
-        format!("{}\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}", sys_dir.clone()).as_str(),
+        format!(
+            "{}\\ProgramData\\AHQ Store Applications\\Programs\\{app_name}",
+            sys_dir.clone()
+        )
+        .as_str(),
     )
     .unwrap_or(());
 
-    match std::process::Command::new(
-        "powershell"
-    )
-    .creation_flags(0x08000000)
-    .args(["-WindowStyle", "Minimized"])
-    .arg(format!("Remove-item \"{}\", \"{}\"",
-        format!(r"{sys_dir}\Users\Public\Desktop\{app_full_name}.lnk"),
-        path
-    ))
-    .spawn()
-    .unwrap()
-    .wait()
-    .unwrap()
-    .success() {
+    match std::process::Command::new("powershell")
+        .creation_flags(0x08000000)
+        .args(["-WindowStyle", "Minimized"])
+        .arg(format!(
+            "Remove-item \"{}\", \"{}\"",
+            format!(r"{sys_dir}\Users\Public\Desktop\{app_full_name}.lnk"),
+            path
+        ))
+        .spawn()
+        .unwrap()
+        .wait()
+        .unwrap()
+        .success()
+    {
         true => Ok(()),
-        false => Err(false)
+        false => Err(false),
     }
 }

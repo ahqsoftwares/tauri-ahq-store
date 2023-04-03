@@ -126,7 +126,7 @@ if (appWindow.label === "main") {
   (async () => {
     try {
       const { data } = (await fetch(
-        "https://api.github.com/repos/ahqalt/tauri-ahq-store/releases/latest",
+        "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest",
         {
           method: "GET",
           timeout: 30,

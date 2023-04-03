@@ -4,10 +4,10 @@
 // Clippy:
 #![warn(clippy::all, clippy::nursery, clippy::pedantic)]
 #![allow(clippy::non_ascii_literal)]
-use winapi_easy::ui::{Window, Taskbar, ProgressState};
 use downloader::Downloader;
 use std::fs::create_dir_all;
 use std::path::Path;
+use winapi_easy::ui::{ProgressState, Taskbar, Window};
 
 // Define a custom progress reporter:
 #[allow(dead_code)]
@@ -18,7 +18,7 @@ struct SimpleReporterPrivate {
 }
 struct SimpleReporter {
     private: std::sync::Mutex<Option<SimpleReporterPrivate>>,
-    logger: fn(u64, u64) -> ()
+    logger: fn(u64, u64) -> (),
 }
 
 impl SimpleReporter {
@@ -40,13 +40,13 @@ impl downloader::progress::Reporter for SimpleReporter {
         };
 
         match Taskbar::new() {
-            Ok(mut taskbar) => {
-                match Window::get_console_window() {
-                    Some(mut window) => {
-                        taskbar.set_progress_state(&mut window, ProgressState::Normal).expect("");
-                    },
-                    _ => {}
+            Ok(mut taskbar) => match Window::get_console_window() {
+                Some(mut window) => {
+                    taskbar
+                        .set_progress_state(&mut window, ProgressState::Normal)
+                        .expect("");
                 }
+                _ => {}
             },
             _ => {}
         }
@@ -63,13 +63,17 @@ impl downloader::progress::Reporter for SimpleReporter {
             };
 
             match Taskbar::new() {
-                Ok(mut taskbar) => {
-                    match Window::get_console_window() {
-                        Some(mut window) => {
-                            taskbar.set_progress_value(&mut window, current.clone(), max_bytes.clone().parse().unwrap()).expect("");
-                        },
-                        _ => {}
+                Ok(mut taskbar) => match Window::get_console_window() {
+                    Some(mut window) => {
+                        taskbar
+                            .set_progress_value(
+                                &mut window,
+                                current.clone(),
+                                max_bytes.clone().parse().unwrap(),
+                            )
+                            .expect("");
                     }
+                    _ => {}
                 },
                 _ => {}
             }
@@ -88,13 +92,13 @@ impl downloader::progress::Reporter for SimpleReporter {
         *guard = None;
 
         match Taskbar::new() {
-            Ok(mut taskbar) => {
-                match Window::get_console_window() {
-                    Some(mut window) => {
-                        taskbar.set_progress_state(&mut window, ProgressState::NoProgress).expect("");
-                    },
-                    _ => {}
+            Ok(mut taskbar) => match Window::get_console_window() {
+                Some(mut window) => {
+                    taskbar
+                        .set_progress_state(&mut window, ProgressState::NoProgress)
+                        .expect("");
                 }
+                _ => {}
             },
             _ => {}
         }
@@ -130,11 +134,11 @@ pub fn download(file: &str, path: &str, name: &str, logger: fn(u64, u64) -> ()) 
             Err(e) => {
                 println!("Error: {}", e.to_string());
                 status = 1;
-            },
+            }
             Ok(s) => {
                 println!("Success: {}", &s);
                 status = 0;
-            },
+            }
         };
     }
     status

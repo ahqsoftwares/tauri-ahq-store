@@ -1,15 +1,13 @@
 {
   "files.watcherExclude": {
-    "**/node_modules": true,
+    "**/node_modules": true
   },
   "files.maxMemoryForLargeFilesMB": 1024,
   "files.exclude": {
-    "**/node_modules": true,
+    "**/node_modules": true
   },
   "editor.minimap.enabled": false,
-  "githubPullRequests.ignoredPullRequestBranches": [
-    "master"
-  ],
+  "githubPullRequests.ignoredPullRequestBranches": ["master"],
   "editor.hover.above": true,
   "editor.hover.enabled": true,
   "editor.hover.sticky": true
