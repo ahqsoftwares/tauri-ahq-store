@@ -6,7 +6,6 @@ React && Native
 import { useEffect, useState } from "react";
 import { sendNotification } from "@tauri-apps/api/notification";
 import { Body, fetch } from "@tauri-apps/api/http";
-import { useCookies } from "react-cookie";
 import Modal from "react-modal";
 import Toast from "../resources/api/toast";
 
@@ -37,6 +36,7 @@ import PopUp from "../resources/components/popup";
 import { open } from "@tauri-apps/api/dialog";
 import { readBinaryFile } from "@tauri-apps/api/fs";
 import { VscKey } from "react-icons/vsc";
+import { invoke } from "@tauri-apps/api/tauri";
 
 /*
 Interfaces
@@ -97,10 +97,6 @@ export default function Init(props: UserProps) {
   function darkMode(classes: Array<string>, dark: boolean) {
     return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
   }
-
-  const [cookies, setCookie /*, removeCookie*/] = useCookies([
-    "temptokenforuse",
-  ]);
 
   let { auth, dark } = props;
 
@@ -198,13 +194,14 @@ export default function Init(props: UserProps) {
 
             setPFD({ fs });
 
-            if (!cookies.temptokenforuse) {
+            const password: string | false = await invoke<string>("decrypt", {
+              encrypted: JSON.parse(localStorage.getItem("password") || "[]"),
+            }).catch(() => false);
+
+            if (password === false) {
               setpPopop(true);
             } else {
-              verifyUserPassword(
-                auth?.currentUser?.uid as string,
-                cookies.temptokenforuse as string
-              )
+              verifyUserPassword(auth?.currentUser?.uid as string, password)
                 .then((ok) => {
                   if (!ok) {
                     setpPopop(true);
@@ -216,7 +213,7 @@ export default function Init(props: UserProps) {
                       {
                         result: fs.result as string,
                       },
-                      cookies.temptokenforuse,
+                      password,
                       setPFD
                     );
                   }
@@ -280,11 +277,16 @@ export default function Init(props: UserProps) {
             ).value;
 
             verifyUserPassword(auth?.currentUser?.uid as string, inputPassword)
-              .then((ok) => {
+              .then(async (ok) => {
                 if (ok) {
-                  setCookie("temptokenforuse", inputPassword, {
-                    expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-                  });
+                  const data: string | false = await invoke<string>("encrypt", {
+                    payload: inputPassword,
+                  }).catch(() => false);
+
+                  if (data !== false) {
+                    localStorage.setItem("password", JSON.stringify(data));
+                  }
+
                   setpPopop(false);
 
                   ChangeProfile(
@@ -404,7 +406,10 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
       <div className="flex w-[100%] flex-row">
         <button
           className="button mx-auto flex items-center text-center justify-center"
-          onClick={() => auth.signOut()}
+          onClick={() => {
+            localStorage.removeItem("password");
+            auth.signOut();
+          }}
           style={{
             minWidth: "15rem",
             maxWidth: "15rem",

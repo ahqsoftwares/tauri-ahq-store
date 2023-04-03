@@ -25,9 +25,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
       - name: Cache store
-        uses: ahqsoftwares/cache@v21
+        uses: actions/cache@v3
         with:
-          key: ${{ runner.os }}-new-build
+          key: ${{ runner.os }}-build
           path: |
             build
             node_modules
@@ -36,7 +36,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7.26
+          version: 8.1.0
       - name: Load Encryptor Key
         run: node encryptor.js
         env:

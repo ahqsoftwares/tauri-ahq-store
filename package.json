@@ -1,6 +1,6 @@
 {
   "name": "ahq-store-tauri",
-  "version": "0.9.82",
+  "version": "0.9.81",
   "private": true,
   "license": "Creative Commons",
   "dependencies": {
@@ -66,6 +66,6 @@
     "serve": "14.0.1"
   },
   "packageManager": "yarn@3.2.2",
-  "repository": "https://github.com/ahqsoftwares/tauri-ahq-store.git",
-  "author": "AHQSoftwares@AHQStore"
+  "repository": "https://github.com/ahqalt/tauri-ahq-store.git",
+  "author": "AHQ@AHQStore"
 }

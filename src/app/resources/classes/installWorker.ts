@@ -5,7 +5,10 @@ import fetchApps, { cacheData } from "../api/fetchApps";
 
 export default class installWorker {
   appId?: string[];
-  callback: (event: "installing" | "downloading" | "downloadstat", data: any) => void;
+  callback: (
+    event: "installing" | "downloading" | "downloadstat",
+    data: any
+  ) => void;
 
   /**
    * Starts the downloader
@@ -13,7 +16,10 @@ export default class installWorker {
    * @param {boolean} appId
    */
   constructor(
-    callback: (event: "installing" | "downloading" | "downloadstat", data: any) => void,
+    callback: (
+      event: "installing" | "downloading" | "downloadstat",
+      data: any
+    ) => void,
     appId?: string[]
   ) {
     this.appId = appId;
@@ -45,12 +51,15 @@ export default class installWorker {
       ...appData,
     });
 
-    const unlistenWindow = await appWindow.listen("download-status", ({ payload }: {payload: any}) => {
-      this.callback("downloadstat", {
-        percent: Math.round(payload[0] / payload[1] * 100),
-        total: payload[1],
-      });
-    });
+    const unlistenWindow = await appWindow.listen(
+      "download-status",
+      ({ payload }: { payload: any }) => {
+        this.callback("downloadstat", {
+          percent: Math.round((payload[0] / payload[1]) * 100),
+          total: payload[1],
+        });
+      }
+    );
 
     await invoke("download", {
       url: appData.download_url,

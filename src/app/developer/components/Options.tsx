@@ -21,9 +21,7 @@ export default function SettingOption(props: {
   const LinkIcon = PopUp || IoIosArrowForward;
 
   return (
-    <div
-      className={`${darkMode(["checkbox"], dark)} checkbox-special mt-3`}
-    >
+    <div className={`${darkMode(["checkbox"], dark)} checkbox-special mt-3`}>
       <div className="checkbox-special-child" onClick={onClick}>
         <div className="ml-3"></div>
 

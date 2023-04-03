@@ -1,10 +1,10 @@
 [package]
 name = "ahq-store-app"
-version = "0.9.82"
+version = "0.9.81"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "ISC"
-repository = "https://www.github.com/ahqsoftwares/tauri-ahq-store"
+repository = "https://www.github.com/altalt/tauri-ahq-store"
 default-run = "ahq-store-app"
 edition = "2021"
 rust-version = "1.57"

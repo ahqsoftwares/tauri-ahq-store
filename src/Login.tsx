@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getCurrent } from "@tauri-apps/api/window";
 import fetchPrefs, { appData } from "./app/resources/utilities/preferences";
+import { invoke } from "@tauri-apps/api/tauri";
 
 /**
  * Forgot Password Component
@@ -292,8 +293,14 @@ function Login(props: log) {
 
       <form
         className={`modal ${dark ? "modal-d" : ""}`}
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
+          try {
+            let data = await invoke("encrypt", {
+              payload: pwd,
+            });
+            localStorage.setItem("password", JSON.stringify(data));
+          } catch (_) {}
           login(auth, email, pwd)
             .then(() => {
               setE("");

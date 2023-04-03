@@ -46,7 +46,7 @@ export default function Library(props: LibraryProps) {
   Modal.setAppElement("body");
 
   fetch(`${server}apps`, {
-    method: "GET"
+    method: "GET",
   }).then(console.log);
 
   const [status, setStatus] = useState("Checking..."),

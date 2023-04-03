@@ -16,7 +16,7 @@ export default function Toast(
       elementToRemove.setAttribute("hidden", "true");
       setTimeout(() => {
         toastElement.removeChild(elementToRemove);
-      }, (expireAfterSeconds * 1000) + 1000);
+      }, expireAfterSeconds * 1000 + 1000);
     }, expireAfterSeconds * 1000);
   } else {
     return {

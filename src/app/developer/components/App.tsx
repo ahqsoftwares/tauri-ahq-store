@@ -8,16 +8,14 @@ import { IoIosNotifications } from "react-icons/io";
 //API
 import { cacheData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
-import {
-  updaterStatus,
-} from "../../resources/api/updateInstallWorker";
+import { updaterStatus } from "../../resources/api/updateInstallWorker";
 
 export default function App({
   appInfo,
   dark,
   reload,
   toast,
-  lastIndex
+  lastIndex,
 }: {
   appInfo: cacheData;
   dark: boolean;

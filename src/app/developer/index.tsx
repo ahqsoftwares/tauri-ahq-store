@@ -21,7 +21,9 @@ interface DevProps {
 }
 
 export default function Developers(props: DevProps) {
-  const [publishedApps, setPublishedApps] = useState<cacheData[] | undefined>(undefined);
+  const [publishedApps, setPublishedApps] = useState<cacheData[] | undefined>(
+    undefined
+  );
 
   Modal.setAppElement("body");
 
@@ -54,11 +56,11 @@ export default function Developers(props: DevProps) {
   const [popUp, setPopUp] = useState(false);
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       try {
-        const {
-          apps
-        } = await fetchAuthor(uid as string).then((promise) => promise.data);
+        const { apps } = await fetchAuthor(uid as string).then(
+          (promise) => promise.data
+        );
 
         fetchApps(apps).then((apps) => {
           console.log(apps);
@@ -68,7 +70,7 @@ export default function Developers(props: DevProps) {
         console.log(e);
         setPublishedApps([]);
       }
-    })()
+    })();
   }, [uid]);
 
   function darkMode(classes: Array<string>, dark: boolean) {
@@ -94,11 +96,25 @@ export default function Developers(props: DevProps) {
           setIcon((value) => !value);
         }}
         Extra={
-          Icon ? 
-          <></> : 
-          <div className="flex flex-col">
-            {publishedApps === undefined ? <h1>Fetching...</h1> : publishedApps.map((value, index) => <App appInfo={value} dark={props.dark} reload={() => {}} toast={Toast} lastIndex={index === (publishedApps.length - 1)} />)}
-          </div>
+          Icon ? (
+            <></>
+          ) : (
+            <div className="flex flex-col">
+              {publishedApps === undefined ? (
+                <h1>Fetching...</h1>
+              ) : (
+                publishedApps.map((value, index) => (
+                  <App
+                    appInfo={value}
+                    dark={props.dark}
+                    reload={() => {}}
+                    toast={Toast}
+                    lastIndex={index === publishedApps.length - 1}
+                  />
+                ))
+              )}
+            </div>
+          )
         }
       />
       <Option

@@ -5,8 +5,10 @@
 
 pub mod download;
 pub mod extract;
+pub mod encryption;
 
 //utilities
+use encryption::{encrypt, decrypt};
 use minisign_verify::{PublicKey, Signature, Error};
 use base64::{self, Engine};
 use mslnk::ShellLink;
@@ -92,6 +94,8 @@ fn main() {
         .unwrap();
     fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Programs", sys_dir.clone()))
         .unwrap();
+    fs::remove_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Updaters", sys_dir.clone()))
+        .unwrap_or(());
     fs::create_dir_all(format!("{}\\ProgramData\\AHQ Store Applications\\Updaters", sys_dir.clone()))
         .unwrap();
     
@@ -185,7 +189,8 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             download, install, extract, clean, shortcut, check_app, uninstall,
-            autostart, get_windows, list_all_apps, sys_handler, check_update, install_update
+            autostart, get_windows, list_all_apps, sys_handler, check_update, install_update,
+            encrypt, decrypt
         ])
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
@@ -338,7 +343,7 @@ async fn install_update() {
             "-Wait",
         ])
         .arg(app_executable)
-        .arg("; start-process")
+        .arg("/qb+; start-process")
         .arg(current_exe_arg)
         .spawn()
         .unwrap();

@@ -29,7 +29,7 @@ export type { cacheData };
 
 export async function init(): Promise<string> {
   return await fetch(
-    "https://api.github.com/repos/ahqsoftwares/ahq-store-data/commits/main",
+    "https://api.github.com/repos/ahqalt/ahq-store-data/commits/main",
     {
       responseType: 1,
       method: "GET",
@@ -67,7 +67,7 @@ export async function fetchSearchData() {
   } else {
     let data = (
       await fetch(
-        `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/search.json`,
+        `https://rawcdn.githack.com/altalt/ahq-store-data/${commit_id}/database/search.json`,
         {
           method: "GET",
           responseType: 1,
@@ -81,7 +81,7 @@ export async function fetchSearchData() {
 
 export async function fetchAuthor(id: string) {
   return (await fetch(
-    `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/user${id}.json`,
+    `https://rawcdn.githack.com/altalt/ahq-store-data/${commit_id}/database/user${id}.json`,
     {
       method: "GET",
       responseType: 1,
@@ -119,7 +119,7 @@ async function getApp(appName: string, launchForUpdate?: boolean) {
     data = cache[appName];
   } else {
     const mainAppData = await fetch(
-      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/${appName}.json`,
+      `https://rawcdn.githack.com/altalt/ahq-store-data/${commit_id}/database/${appName}.json`,
       {
         method: "GET",
         responseType: 1,
@@ -152,7 +152,7 @@ async function getApp(appName: string, launchForUpdate?: boolean) {
       });
 
     const authorData = await fetch(
-      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/user${mainAppData.author.id}.json`,
+      `https://rawcdn.githack.com/altalt/ahq-store-data/${commit_id}/database/user${mainAppData.author.id}.json`,
       {
         method: "GET",
         responseType: 1,

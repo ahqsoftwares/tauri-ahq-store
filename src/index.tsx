@@ -126,7 +126,7 @@ if (appWindow.label === "main") {
   (async () => {
     try {
       const { data } = (await fetch(
-        "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest",
+        "https://api.github.com/repos/ahqalt/tauri-ahq-store/releases/latest",
         {
           method: "GET",
           timeout: 30,
@@ -165,7 +165,7 @@ if (appWindow.label === "main") {
       })
         .then(async (shouldUpdate: any) => {
           const manifest = {
-            version: data["tag_name"]
+            version: data["tag_name"],
           };
 
           if (shouldUpdate) {
@@ -303,7 +303,7 @@ if (appWindow.label === "main") {
     });
 
   onAuthStateChanged(auth, (user) => {
-    if (user) {
+    if (user && localStorage.getItem("password")) {
       load();
     } else {
       unload();

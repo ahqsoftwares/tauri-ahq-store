@@ -1,6 +1,6 @@
 export default async function getAppInstallerFile() {
   const { tag_name, assets } = await fetch(
-    "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest"
+    "https://api.github.com/repos/ahqalt/tauri-ahq-store/releases/latest"
   )
     .then((data) => data.json())
     .catch(() => {
