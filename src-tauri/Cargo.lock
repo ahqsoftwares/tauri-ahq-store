@@ -71,7 +71,7 @@ dependencies = [
  "tauri-plugin-autostart",
  "tauri-plugin-deep-link",
  "tauri-plugin-single-instance",
- "time 0.1.45",
+ "time 0.3.20",
  "timer",
  "winapi-easy",
  "windows 0.39.0",
