@@ -1,3 +1,3 @@
-const server = /*"https://astore.simplehost.ml/";*/ "http://localhost:2082/";
+const server = "http://pnode1.danbot.host:3454/";
 
 export default server;
