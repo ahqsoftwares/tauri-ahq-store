@@ -30,8 +30,8 @@
           "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/*",
           "https://api.github.com/repos/*",
 
-          "https://astore.simplehost.ml/*",
-          "https://astore.simplehost.ml/",
+          "http://pnode1.danbot.host:3454/*",
+          "http://pnode1.danbot.host:3454/",
 
           "http://localhost:2082/",
           "http://localhost:2082/*"
