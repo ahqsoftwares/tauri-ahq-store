@@ -20,4 +20,4 @@ You are allowed to:
 - You are **not** allowed to reditribute this copy to people
 - You are **not** allowed to _**reuse**_ _the copy for commercial or public purposes_
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fahqsoftwarestwares%2Ftauri-ahq-store?ref=badge_large)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store?ref=badge_large)

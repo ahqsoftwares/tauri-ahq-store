@@ -67,7 +67,7 @@ export async function fetchSearchData() {
   } else {
     let data = (
       await fetch(
-        `https://rawcdn.githack.com/ahqsoftwarestwares/ahq-store-data/${commit_id}/database/search.json`,
+        `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/search.json`,
         {
           method: "GET",
           responseType: 1,

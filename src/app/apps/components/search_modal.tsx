@@ -36,7 +36,7 @@ export default function SearchModal(props: AppDataPropsModal) {
               className={`search-input search-input-m-modified search-input-modified ${
                 dark ? "style-input-d search-input-m-modified-d" : ""
               } mx-auto`}
-              placeholder={`🔎 Search the whole of AHQ Store`}
+              placeholder={`Search the whole of AHQ Store`}
               value={search}
               onChange={(e) => {
                 searchText(e.target.value);

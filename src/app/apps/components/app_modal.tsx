@@ -80,6 +80,7 @@ export default function ShowModal(props: AppDataPropsModal) {
         ? "rgb(55, 65, 81, 0.5)"
         : "rgb(107, 114, 128, 0.75)",
       opacity: "1",
+      zIndex: 1000
     },
   };
   Modal.setAppElement("body");

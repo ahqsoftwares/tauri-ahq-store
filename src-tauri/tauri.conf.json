@@ -27,8 +27,9 @@
         "scope": [
           "https://github.com/ahqsoftwares/ahq-store-data/*",
           "https://github.com/ahqsoftwares/tauri-ahq-store/releases/*",
+          "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/",
           "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/*",
-          "https://api.github.com/repos/*",
+          "https://api.github.com/repos/ahqsoftwares/*",
 
           "http://pnode1.danbot.host:3454/*",
           "http://pnode1.danbot.host:3454/",

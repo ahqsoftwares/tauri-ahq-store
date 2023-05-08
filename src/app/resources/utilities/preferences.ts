@@ -10,6 +10,7 @@ interface appData {
   dark: boolean;
   font: string;
   autoUpdate: boolean;
+  sidebar: string;
 }
 
 export type { appData };

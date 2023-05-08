@@ -47,6 +47,7 @@ export default function Developers(props: DevProps) {
       backgroundColor: !props.dark
         ? "rgb(55, 65, 81, 0.5)"
         : "rgb(107, 114, 128, 0.75)",
+      zIndex: 1000
     },
   };
 

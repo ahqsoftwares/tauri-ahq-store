@@ -20,8 +20,9 @@ import CheckBox from "./components/checkbox";
 import FontSelector from "./components/font";
 
 import { BiMoon, BiSun } from "react-icons/bi";
-import { BsCodeSlash, BsFonts } from "react-icons/bs";
+import { BsCodeSlash, BsFonts, BsWindowSidebar } from "react-icons/bs";
 import { FiDownload } from "react-icons/fi";
+import SidebarSelector from "./components/sidebar";
 
 interface InitProps {
   dark: boolean;
@@ -32,6 +33,8 @@ interface InitProps {
   setFont: Function;
   autoUpdate: boolean;
   setAutoUpdate: Function;
+  sidebar: string;
+  setSidebar: Function;
 }
 
 export default function Init(props: InitProps) {
@@ -57,6 +60,7 @@ export default function Init(props: InitProps) {
         ? "rgb(55, 65, 81, 0.5)"
         : "rgb(107, 114, 128, 0.75)",
       opacity: "1",
+      zIndex: 1000
     },
   };
   Modal.setAppElement("body");
@@ -145,6 +149,15 @@ export default function Init(props: InitProps) {
           initial={props.font}
           onChange={(e) => {
             props.setFont(e.target.value);
+          }}
+        />
+
+        <SidebarSelector
+          dark={props.dark}
+          Icon={BsWindowSidebar}
+          initial={props.sidebar}
+          onChange={(e) => {
+            props.setSidebar(e.target.value);
           }}
         />
 

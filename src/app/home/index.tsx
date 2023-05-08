@@ -71,7 +71,11 @@ export default function Home(props: HomeProps) {
               h1.innerHTML = "";
             }
             setTimeout(() => {
-              h1.innerHTML += greetText[i];
+              try {
+                h1.innerHTML += greetText[i];
+              } catch (e) {
+                console.log(e);
+              }
             }, 50 * i);
           } catch (_) {}
         }

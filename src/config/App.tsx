@@ -9,6 +9,7 @@ function App(props: { info: string }) {
     dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
     autoUpdate: false,
     font: "bhn",
+    sidebar: "flex-row"
   });
 
   useEffect(() => {

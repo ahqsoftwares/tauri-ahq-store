@@ -18,11 +18,11 @@
 Navigation
 */
 .nav {
-  transition: all 500ms linear;
+  transition: color 500ms linear;
   background-color: white;
 }
 .nav-d {
-  transition: all 500ms linear;
+  transition: color 500ms linear;
   background-color: gray;
 }
 
@@ -42,7 +42,15 @@ Item pallete
   border-radius: 20%;
   border-color: transparent;
   margin-top: 8px;
+  margin-left: 0px;
+  margin-right: 0px;
   transition: all 200ms linear;
+}
+
+.n-item-h {
+  margin-top: 0px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 .nav .n-item {
@@ -67,6 +75,11 @@ Item pallete
 .n-item-settings:active svg,
 .active-settings svg {
   animation: circleAnimation 0.75s linear !important;
+}
+
+.n-item-h:active {
+
+  animation: none;
 }
 
 @keyframes circleAnimation {
@@ -386,4 +399,8 @@ User Panel
   max-width: 256px !important;
   min-width: 256px !important;
   border-radius: 0.375rem !important;
+}
+
+.nav-h-d {
+  @apply bg-black absolute z-[10] opacity-75;
 }

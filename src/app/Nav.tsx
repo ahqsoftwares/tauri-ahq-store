@@ -1,4 +1,4 @@
-import { BsGear, BsFillGearFill } from "react-icons/bs";
+import { BsGear, BsFillGearFill, BsThreeDotsVertical } from "react-icons/bs";
 import { MdAccountCircle, MdOutlineAccountCircle } from "react-icons/md";
 import {
   AiFillExperiment,
@@ -11,26 +11,39 @@ import { IoLibraryOutline, IoLibrarySharp } from "react-icons/io5";
 
 import { getCurrent } from "@tauri-apps/api/window";
 
+import drag from "./drag";
+import { useEffect } from "react";
+
 interface prop {
   active: string;
   home: Function;
   dark: [boolean, Function];
   dev: boolean | undefined;
+  horizontal: boolean;
+  top: boolean;
 }
 
-export default function nav(props: prop) {
+export default function Nav(props: prop) {
   function darkMode(classes: Array<string>, dark: boolean) {
     return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
   }
   let { active, home: changePage, dark, dev } = props,
     [mode] = dark;
 
-  let a = "",
-    b = "",
-    c = "",
-    d = "",
-    e = "",
-    f = "";
+  const horizontal = "n-item-h ";
+
+  useEffect(() => {
+    if (props.horizontal) {
+      drag(document.getElementById("sidebar"));
+    }
+  }, [props.horizontal]);
+
+  let a = props.horizontal ? horizontal :"",
+    b = props.horizontal ? horizontal :"",
+    c = props.horizontal ? horizontal :"",
+    d = props.horizontal ? horizontal :"",
+    e = props.horizontal ? horizontal :"",
+    f = props.horizontal ? horizontal :"";
   switch (active) {
     case "home":
       a = "active";
@@ -61,11 +74,17 @@ export default function nav(props: prop) {
 
   return (
     <div
-      className={`w-[80px] h-[98vh] my-auto ml-2 rounded-lg flex flex-col items-center ${darkMode(
-        ["nav", "bg-blue-super"],
+      className={`${props.horizontal ? "absolute w-[98vh]" : "w-[80px]"} ${props.horizontal ? "h-[15vh] px-[1rem]" : "h-[98vh]"} my-auto ${props.horizontal ? "mt-2" : "ml-2"} rounded-lg flex ${props.horizontal ? "flex-row" : "flex-col"} items-center ${darkMode(
+        ["nav", "bg-blue-super", ...(props.horizontal ? ["nav-h"] : [])],
         mode
       )}`}
+      id={"sidebar"}
     >
+      {props.horizontal ?
+        <span id="sidebarheader" className="text-white hover:cursor-move">
+          <BsThreeDotsVertical size={"2.5em"} />
+        </span>
+       : <></>}
       <button className={`n-item ${a}`} onClick={() => changePage("home")}>
         {a === "active" ? (
           <AiFillHome size={"2.5em"}></AiFillHome>
@@ -82,7 +101,7 @@ export default function nav(props: prop) {
         )}
       </button>
 
-      <div className="mt-auto mb-auto"></div>
+      <div className={props.horizontal ? "mx-auto" : "mt-auto mb-auto"}></div>
 
       {dev ? (
         <button

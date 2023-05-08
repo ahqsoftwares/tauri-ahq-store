@@ -50,6 +50,7 @@ function Render(props: AppProps) {
     ),
     [dark, setD] = useState(true),
     [font, setFont] = useState("def"),
+    [sidebar, setSidebar] = useState("flex-row"),
     [load, setLoad] = useState(false),
     [autoUpdate, setUpdate] = useState(false),
     [apps, setApps] = useState<any>([]),
@@ -85,11 +86,12 @@ function Render(props: AppProps) {
 
   useEffect(() => {
     (async () => {
-      const { autoUpdate, dark, font } = await fetchPrefs();
+      const { autoUpdate, dark, font, sidebar } = await fetchPrefs();
 
       setD(dark);
       setFont(font);
       setUpdate(autoUpdate);
+      setSidebar(sidebar);
 
       runAutoUpdate(autoUpdate);
 
@@ -171,15 +173,19 @@ function Render(props: AppProps) {
 
   function setDark(dark: boolean) {
     setD(dark);
-    updateConfig({ dark, font, autoUpdate });
+    updateConfig({ dark, font, autoUpdate, sidebar });
   }
   function changeFont(newFont: string) {
     setFont(newFont);
-    updateConfig({ dark, font: newFont, autoUpdate });
+    updateConfig({ dark, font: newFont, autoUpdate, sidebar });
   }
   function setAutoUpdate(newStatus: boolean) {
     setUpdate(newStatus);
-    updateConfig({ dark, font, autoUpdate: newStatus });
+    updateConfig({ dark, font, autoUpdate: newStatus, sidebar });
+  }
+  function updateSidebar(newSidebar: string) {
+    setSidebar(newSidebar);
+    updateConfig({ dark, sidebar: newSidebar, font, autoUpdate });
   }
 
   /*
@@ -214,14 +220,16 @@ function Render(props: AppProps) {
   return (
     <>
       {load === true ? (
-        <header className={`apps${dark ? "-d" : ""} flex transition-all`}>
+        <header className={`apps${dark ? "-d" : ""} ${sidebar} flex transition-all`}>
           <Nav
             active={page}
             home={(page: string) => changePage(page)}
             dev={dev}
             dark={[dark, setDark]}
+            horizontal={sidebar.includes("flex-col")}
+            top={sidebar.endsWith("col")}
           />
-          <div className="w-screen h-screen">
+          <div className={`w-screen h-screen`}>
             <div className="flex flex-col w-[100%] h-[100%] justify-center">
               <App
                 baseApi={BaseAPI}
@@ -238,6 +246,8 @@ function Render(props: AppProps) {
                 setAutoUpdate={setAutoUpdate}
                 setPage={changePage}
                 dev={dev}
+                sidebar={sidebar}
+                setSidebar={updateSidebar}
               />
             </div>
           </div>
