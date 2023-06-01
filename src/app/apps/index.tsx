@@ -228,7 +228,14 @@ export default function Apps(props: AppsProps) {
           </div>
         </>
       ) : (
-        <></>
+        <Search
+          key={"YourBestSearchAlgo2"}
+          special={true}
+          query={search}
+          set={setData}
+          show={change}
+          dark={dark}
+        />
       )}
     </div>
   );

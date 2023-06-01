@@ -33,6 +33,8 @@ Apps Layout
 .search-app-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  -ms-grid-row-align: start;
+  -ms-grid-column-align: start;
 }
 
 /*

@@ -57,15 +57,9 @@ export default function SidebarSelector(props: {
         }}
       >
         <optgroup label="General">
-          <option value="flex-row">
-            Left
-          </option>
-          <option value="flex-row-reverse">
-            Right
-          </option>
-          <option value="flex-col">
-            Dock {"(UnStable)"}
-          </option>
+          <option value="flex-row">Left</option>
+          <option value="flex-row-reverse">Right</option>
+          <option value="flex-col">Dock {"(UnStable)"}</option>
         </optgroup>
       </select>
 

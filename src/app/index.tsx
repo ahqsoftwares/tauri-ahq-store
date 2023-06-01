@@ -220,7 +220,9 @@ function Render(props: AppProps) {
   return (
     <>
       {load === true ? (
-        <header className={`apps${dark ? "-d" : ""} ${sidebar} flex transition-all`}>
+        <header
+          className={`apps${dark ? "-d" : ""} ${sidebar} flex transition-all`}
+        >
           <Nav
             active={page}
             home={(page: string) => changePage(page)}

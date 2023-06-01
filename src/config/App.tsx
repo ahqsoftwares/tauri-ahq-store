@@ -9,7 +9,7 @@ function App(props: { info: string }) {
     dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
     autoUpdate: false,
     font: "bhn",
-    sidebar: "flex-row"
+    sidebar: "flex-row",
   });
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function App(props: { info: string }) {
   const splashScreens = [
     "Made possible with open source!",
     "The work of AHQ Softwares",
-    "ahqstore.cf",
+    "ahq-store.ml",
     `${version !== "" ? `v${version}` : ""}`,
   ];
 

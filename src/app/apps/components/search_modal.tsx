@@ -11,11 +11,10 @@ interface AppDataPropsModal {
 
 export default function SearchModal(props: AppDataPropsModal) {
   const { shown, dark, change, searchText, search } = props;
-
   return (
     <>
       {shown ? (
-        <div className="flex flex-col w-[100%] h-[100%] mt-3 p-2 pb-4 px-4">
+        <div className="flex flex-col w-[100%] h-[auto] mt-3 p-2 pb-4 px-4">
           <div className={`flex ${dark ? "text-slate-300" : "text-slate-800"}`}>
             <button
               onClick={() => {
@@ -49,7 +48,6 @@ export default function SearchModal(props: AppDataPropsModal) {
               id="special-modal"
             ></input>
           </div>
-          <div className="w-[100%] h-[100%] search-app-grid"></div>
         </div>
       ) : (
         <></>

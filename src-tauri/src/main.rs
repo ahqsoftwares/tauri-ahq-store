@@ -133,6 +133,7 @@ fn main() {
             let ready_clone = ready.clone();
             let queue_clone = queue.clone();
             let window_clone = window.clone();
+            let window_clone_2 = tauri::Manager::get_window(app, "main").unwrap();
 
             listener.listen("ready", move |_| {
                 println!("ready");
@@ -151,6 +152,9 @@ fn main() {
                     *lock.unwrap() = Vec::<AppData>::new();
                 }
             });
+            listener.listen("activate", move |_| {
+                window_clone_2.show().unwrap();
+            }); 
 
             if std::env::args().last().unwrap().as_str() != exec.clone().as_str() {
                 let args = args.last().unwrap_or(String::from(""));
@@ -176,7 +180,7 @@ fn main() {
 
             Ok(())
         })
-        .system_tray(SystemTray::new().with_menu(
+        .system_tray(SystemTray::new().with_tooltip("AHQ Store is running in background").with_menu(
             SystemTrayMenu::new().add_item(CustomMenuItem::new("quit".to_string(), "Close App")),
         ))
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {

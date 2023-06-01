@@ -4,12 +4,14 @@ import SearchModule from "fuse.js";
 import fetchApps, { fetchSearchData } from "../../resources/api/fetchApps";
 import SearchResult from "../components/search_results";
 import { getData, setData } from "../../resources/utilities/database";
+import AppCard from "../components/app_card";
 
 interface SearchProps {
   query: string;
   set: Function;
   show: Function;
   dark: boolean;
+  special?: boolean;
 }
 interface App {
   img: string;
@@ -19,7 +21,7 @@ interface App {
 }
 
 export default function Search(props: SearchProps) {
-  const { query, set, show, dark } = props;
+  const { query, set, show, dark, special } = props;
 
   const [matches, setMatches] = useState<any>([]);
   const [searched, setSearched] = useState<boolean>(false);
@@ -32,37 +34,66 @@ export default function Search(props: SearchProps) {
     })();
   }, [query]);
 
-  return (
-    <>
-      {matches.map((app: App, index: number) => {
-        return (
-          <>
-            <SearchResult
-              dark={dark}
-              key={app.id}
-              {...app}
-              set={set}
-              show={show}
-            />
-            {String(index + 1) !== String(matches.length) ? (
-              <div className="h-[2px] rounded-xl my-[3px] mb-[5px] bg-gray-900 w-[100%]"></div>
-            ) : (
-              <></>
-            )}
-          </>
-        );
-      })}
-      {matches.length === 0 ? (
-        <div className="mx-auto my-2 flex items-center justify-center">
-          <span className="block">
-            {searched ? "0 Apps Found" : "Just a moment..."}
-          </span>
-        </div>
-      ) : (
-        <></>
-      )}
-    </>
-  );
+  if (!special) {
+    return (
+      <>
+        {matches.map((app: App, index: number) => {
+          return (
+            <>
+              <SearchResult
+                dark={dark}
+                key={app.id}
+                {...app}
+                set={set}
+                show={show}
+              />
+              {String(index + 1) !== String(matches.length) ? (
+                <div className="h-[2px] rounded-xl my-[3px] mb-[5px] bg-gray-900 w-[100%]"></div>
+              ) : (
+                <></>
+              )}
+            </>
+          );
+        })}
+        {matches.length === 0 ? (
+          <div className="mx-auto my-2 flex items-center justify-center">
+            <span className="block">
+              {searched ? "0 Apps Found" : "Just a moment..."}
+            </span>
+          </div>
+        ) : (
+          <></>
+        )}
+      </>
+    );
+  } else {
+    return (
+      <div className="w-[100%] h-[auto] overflow-scroll search-app-grid">
+        {matches.map((app: App) => {
+          return (
+              <AppCard
+                id={app.id}
+                key={app.id}
+                dark={dark}
+                onClick={() => {
+                  set(app.id)
+                  show();
+                }}
+              />
+          );
+        })}
+        {matches.length === 0 ? (
+          <div className="mx-auto my-2 flex items-center justify-center">
+            <span className="block">
+              {searched ? "0 Apps Found" : "Just a moment..."}
+            </span>
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+    );
+  }
 }
 
 async function getMatches(query: string): Promise<Array<string>> {
@@ -99,3 +130,5 @@ async function getDataFromMatches(matches: Array<string>) {
 
   return answer;
 }
+
+export { getMatches, getDataFromMatches };

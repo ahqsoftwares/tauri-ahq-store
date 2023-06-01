@@ -296,6 +296,8 @@ if (appWindow.label === "main") {
         }
         appWindow.unminimize();
         appWindow.show();
+      } else {
+        appWindow.emit("activate", "");
       }
     })
     .then(() => {

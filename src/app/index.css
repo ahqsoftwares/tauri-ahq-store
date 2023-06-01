@@ -78,7 +78,6 @@ Item pallete
 }
 
 .n-item-h:active {
-
   animation: none;
 }
 
@@ -399,6 +398,11 @@ User Panel
   max-width: 256px !important;
   min-width: 256px !important;
   border-radius: 0.375rem !important;
+}
+
+.nav-h {
+  @apply absolute z-[10];
+  background-color: rgb(174, 174, 175);
 }
 
 .nav-h-d {

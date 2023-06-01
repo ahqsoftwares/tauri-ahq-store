@@ -56,9 +56,7 @@ export default function MainPage({
           setPage(page);
         }}
       />
-      <div className="w-[100%] h-screen flex justify-center">
-        {App}
-      </div>
+      <div className="w-[100%] h-screen flex justify-center">{App}</div>
     </div>
   );
 }

@@ -388,7 +388,7 @@ function Init(props: any) {
     dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
     autoUpdate: false,
     font: "bhn",
-    sidebar: "flex-row"
+    sidebar: "flex-row",
   });
 
   useEffect(() => {

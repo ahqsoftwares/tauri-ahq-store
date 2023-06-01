@@ -1,12 +1,9 @@
-import { 
-    HiDocument,
-    HiOutlineDocument
-} from "react-icons/hi";
+import { HiDocument, HiOutlineDocument } from "react-icons/hi";
 import {
   AiFillHome,
   AiFillInfoCircle,
   AiOutlineHome,
-  AiOutlineInfoCircle
+  AiOutlineInfoCircle,
 } from "react-icons/ai";
 import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
 
@@ -37,7 +34,7 @@ export default function Nav(props: prop) {
       c = "active";
       break;
     case "about":
-      d="active";
+      d = "active";
       break;
   }
 
@@ -65,10 +62,10 @@ export default function Nav(props: prop) {
 
       <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
         {b === "active" ? (
-            <RiApps2Fill size={"2.5em"} />
-          ) : (
-            <RiApps2Line size={"2.5em"} />
-          )}
+          <RiApps2Fill size={"2.5em"} />
+        ) : (
+          <RiApps2Line size={"2.5em"} />
+        )}
       </button>
 
       <div className="mt-auto mb-auto"></div>
@@ -81,7 +78,10 @@ export default function Nav(props: prop) {
         )}
       </button>
 
-      <button className={`n-item ${d} mb-5`} onClick={() => changePage("about")}>
+      <button
+        className={`n-item ${d} mb-5`}
+        onClick={() => changePage("about")}
+      >
         {d === "active" ? (
           <AiFillInfoCircle size={"2.5em"} />
         ) : (

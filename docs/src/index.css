@@ -50,7 +50,8 @@ Item pallete
   animation: clickAnimation 250ms linear;
 }
 
-.n-item-settings:active svg, .active-settings svg {
+.n-item-settings:active svg,
+.active-settings svg {
   animation: circleAnimation 0.75s linear !important;
 }
 

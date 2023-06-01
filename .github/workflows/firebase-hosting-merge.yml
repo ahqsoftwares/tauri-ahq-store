@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-'on':
+"on":
   push:
     branches:
       - master
@@ -19,7 +19,7 @@ jobs:
         run: cd docs && npm i && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_AHQ_STORE }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_AHQ_STORE }}"
           channelId: live
           projectId: ahq-store

@@ -60,7 +60,7 @@ export default function Init(props: InitProps) {
         ? "rgb(55, 65, 81, 0.5)"
         : "rgb(107, 114, 128, 0.75)",
       opacity: "1",
-      zIndex: 1000
+      zIndex: 1000,
     },
   };
   Modal.setAppElement("body");
@@ -134,6 +134,8 @@ export default function Init(props: InitProps) {
       </Modal>
 
       <div className={darkMode(["menu"], props.dark)}>
+        <h1 className="mt-2 text-3xl text-white mr-auto ml-3">General</h1>
+
         <CheckBox
           dark={props.dark}
           title="Dark Mode"
@@ -160,6 +162,8 @@ export default function Init(props: InitProps) {
             props.setSidebar(e.target.value);
           }}
         />
+
+        <h1 className="mt-2 text-3xl text-white mr-auto ml-3">Advanced</h1>
 
         <CheckBox
           dark={props.dark}
