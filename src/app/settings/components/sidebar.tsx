@@ -48,7 +48,7 @@ export default function SidebarSelector(props: {
 
       <select
         className={`select ${
-          props.dark ? "select-d text-blue-700" : "text-red-700"
+          props.dark ? "select-d text-gray-300" : "text-red-700"
         }`}
         defaultValue={initial}
         onChange={onChange}

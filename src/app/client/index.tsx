@@ -31,7 +31,7 @@ Database Refs
 import base from "../server";
 import GeneralUser from "./user.png";
 import Loading from "./loading.gif";
-import { BiLogOut, BiUserCheck, BiUserX } from "react-icons/bi";
+import { BiLogOut, BiUserX } from "react-icons/bi";
 import PopUp from "../resources/components/popup";
 import { open } from "@tauri-apps/api/dialog";
 import { readBinaryFile } from "@tauri-apps/api/fs";
@@ -100,7 +100,8 @@ export default function Init(props: UserProps) {
 
   let { auth, dark } = props;
 
-  let [user, setUser] = useState(Loading),
+  let [backupUser, setBackup] = useState(""), 
+    [user, setUser] = useState(Loading),
     [name, setName] = useState(""),
     [alt, setAlt] = useState("Please wait..."),
     [showDelete, setDelete] = useState(false),
@@ -191,6 +192,7 @@ export default function Init(props: UserProps) {
 
           fs.readAsDataURL(blob);
           fs.onload = async () => {
+            setBackup(user);
             setUser(Loading);
 
             setPFD({ fs });
@@ -205,9 +207,9 @@ export default function Init(props: UserProps) {
               verifyUserPassword(auth?.currentUser?.uid as string, password)
                 .then((ok) => {
                   if (!ok) {
-                    setpPopop(true);
+                    return setpPopop(true);
                   } else {
-                    ChangeProfile(
+                    return ChangeProfile(
                       auth,
                       setAlt,
                       setUser,
@@ -220,6 +222,11 @@ export default function Init(props: UserProps) {
                   }
                 })
                 .catch((_e) => {
+                  setUser(backupUser);
+                  sendNotification({
+                    title: "Error",
+                    body: "Server Error / Your account must be at least an hour old"
+                  });
                   console.warn("The Server didn't respond");
                 });
             }
@@ -525,6 +532,7 @@ function DeleteAccount(props: DeleteAccountProps) {
       EmailAuthProvider.credential(auth.currentUser?.email as string, pass)
     )
       .then(() => {
+        reverse("");
         setStep(1);
       })
       .catch((e) => {
@@ -536,7 +544,7 @@ function DeleteAccount(props: DeleteAccountProps) {
 
         switch (msg) {
           case "auth/wrong-password":
-            reverse("Wrong Passwod!");
+            reverse("Wrong Password!");
             break;
           case "Firebase: Access to this account has been temporarily disabled due to many failed login attempts You can immediately restore it by resetting your password or you can try again later auth/too-many-requests":
             reverse("Too many login attempts!");
@@ -613,7 +621,7 @@ function DeleteAccount(props: DeleteAccountProps) {
                 style={{ transition: "all 500ms linear" }}
                 disabled={text.split(";")[2] === "true"}
               >
-                <BiUserX size="2.5em" className="mx-2" /> {text.split(";")[0]}
+                {text.split(";")[0]}
               </button>
             </>
           ) : (
@@ -634,14 +642,12 @@ function DeleteAccount(props: DeleteAccountProps) {
                     className="button button-success flex items-center text-center justify-center"
                     onClick={() => cancel()}
                   >
-                    <BiUserCheck size="2em" />
-                    <h1 className="block text-bold ml-1">NO</h1>
+                    <h1 className="block text-bold">NO</h1>
                   </button>
                 </div>
                 <div className="w-[12rem]">
                   <button className="button-danger flex items-center text-center justify-center">
-                    <BiUserX size="2em" />
-                    <h1 className="block text-bold ml-1">YES</h1>
+                    <h1 className="block text-bold">YES</h1>
                   </button>
                 </div>
                 <div className="w-[10rem]"></div>

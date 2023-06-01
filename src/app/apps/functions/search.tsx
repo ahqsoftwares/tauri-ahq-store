@@ -56,7 +56,7 @@ export default function Search(props: SearchProps) {
           );
         })}
         {matches.length === 0 ? (
-          <div className="mx-auto my-2 flex items-center justify-center">
+          <div className={`mx-auto my-2 flex items-center justify-center ${dark ? "text-slate-200" : ""}`}>
             <span className="block">
               {searched ? "0 Apps Found" : "Just a moment..."}
             </span>
@@ -83,7 +83,7 @@ export default function Search(props: SearchProps) {
           );
         })}
         {matches.length === 0 ? (
-          <div className="mx-auto my-2 flex items-center justify-center">
+          <div className={`mx-auto my-2 flex items-center justify-center ${dark ? "text-slate-200" : ""}`}>
             <span className="block">
               {searched ? "0 Apps Found" : "Just a moment..."}
             </span>

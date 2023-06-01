@@ -145,10 +145,10 @@ Backgrounds Super
 App pallete
 */
 .apps {
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
 }
 .apps-d {
-  @apply bg-gray-800;
+  @apply bg-gray-800 bg-opacity-90;
 }
 
 /*
@@ -375,7 +375,7 @@ User Panel
 }
 
 .select-d option {
-  @apply text-blue-700;
+  @apply text-gray-300;
 }
 
 .img-dev {

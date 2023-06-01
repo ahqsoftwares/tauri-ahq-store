@@ -1,10 +1,23 @@
+import { unregisterAll } from "@tauri-apps/api/globalShortcut";
 import { appWindow, getAll } from "@tauri-apps/api/window";
+import { AiOutlineClose } from "react-icons/ai";
 
 export default function Login() {
   return (
-    <div className="w-[100%] h-screen bg-gray-900">
+    <div className='w-[100vw] h-[100vh] bg-[url(bg.png)] flex flex-col p-5 transition-all rounded-2xl'>
       <button
-        className="button"
+        className="text-blue-800 p-2 hover:bg-orange-400 hover:shadow-xl rounded-md mr-auto transition-all"
+        onClick={() => {
+          appWindow.minimize();
+          appWindow.hide();
+          unregisterAll().catch(() => {});
+        }}
+      >
+        <AiOutlineClose size={"1em"} />
+      </button>
+      <div className="h-[100%]"></div>
+      <button
+        className="button mx-auto mb-[2rem]"
         onClick={() => {
           getAll()
             .filter((window) => window.label === "main")
@@ -15,6 +28,7 @@ export default function Login() {
             });
           appWindow.minimize();
           appWindow.hide();
+          unregisterAll().catch(() => {});
         }}
       >
         Login

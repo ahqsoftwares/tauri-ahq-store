@@ -220,7 +220,7 @@ if (appWindow.label === "main") {
       }
 
       if (auth.currentUser && !auth.currentUser?.emailVerified) {
-        sendEmailVerification(auth.currentUser);
+        sendEmailVerification(auth.currentUser).catch(() => {});
         sendNotification({
           title: "Email Verification",
           body: "Email verification link send! Please verify",
@@ -229,7 +229,8 @@ if (appWindow.label === "main") {
 
       auth.onAuthStateChanged((user) => {
         if (user && !user.emailVerified) {
-          sendEmailVerification(user);
+          sendEmailVerification(user)
+            .catch(() => {});
           sendNotification({
             title: "Email Verification",
             body: "Email verification link send! Please verify",
@@ -282,12 +283,10 @@ if (appWindow.label === "main") {
 
   appWindow
     .listen("app", ({ payload }: { payload: string }) => {
-      console.log(payload);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [_ahqstore, _useless, path, data] = payload.split("/");
+      const [_, __, path, data] = payload.split("/");
       dataHolder = data;
 
-      console.log(payload);
       if (path === "app") {
         if (!auth.currentUser) {
           unload();
@@ -297,6 +296,7 @@ if (appWindow.label === "main") {
         appWindow.unminimize();
         appWindow.show();
       } else {
+        unregisterAll().catch(() => {});
         appWindow.emit("activate", "");
       }
     })

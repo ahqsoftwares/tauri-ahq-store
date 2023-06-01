@@ -9,8 +9,9 @@ export default function CheckBox(props: {
   Icon: IconType | string;
   active: boolean;
   onClick: MouseEventHandler<HTMLDivElement>;
+  noCheckbox?: boolean;
 }) {
-  const { Icon } = props;
+  const { Icon, noCheckbox } = props;
 
   function darkMode(classes: Array<string>, dark: boolean) {
     return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
@@ -34,7 +35,7 @@ export default function CheckBox(props: {
           <img
             src={Icon}
             alt="Icon"
-            style={{ minHeight: "2.5em", minWidth: "2.5em" }}
+            style={{ minHeight: "2.5em", minWidth: "2.5em", maxHeight: "2.5em", maxWidth: "2.5em" }}
           />
         )}
       </div>
@@ -54,14 +55,16 @@ export default function CheckBox(props: {
 
       <div className="mx-auto"></div>
 
-      <input
-        className={props.active ? "slider" : "slider slider-disabled"}
-        type={"range"}
-        min="0"
-        max="60"
-        value={props.active ? "55" : "5"}
-        readOnly
-      ></input>
+      {noCheckbox ? <></> :
+        <input
+          className={props.active ? "slider" : "slider slider-disabled"}
+          type={"range"}
+          min="0"
+          max="60"
+          value={props.active ? "55" : "5"}
+          readOnly
+        ></input>
+      }
 
       <div className="mr-3"></div>
     </div>

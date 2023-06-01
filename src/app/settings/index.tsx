@@ -5,12 +5,7 @@ import { Auth, User, updateProfile } from "firebase/auth";
 //packages
 import Modal from "react-modal";
 import Toast from "../resources/api/toast";
-import getWindows from "../resources/api/os";
-import {
-  isAutostartEnabled,
-  enableAutostart,
-  disableAutoStart,
-} from "../resources/api/autostart";
+import getWindows, { getWindowsName, versionToBuild } from "../resources/api/os";
 
 //Tauri
 import { sendNotification } from "@tauri-apps/api/notification";
@@ -23,6 +18,7 @@ import { BiMoon, BiSun } from "react-icons/bi";
 import { BsCodeSlash, BsFonts, BsWindowSidebar } from "react-icons/bs";
 import { FiDownload } from "react-icons/fi";
 import SidebarSelector from "./components/sidebar";
+import { getVersion } from "@tauri-apps/api/app";
 
 interface InitProps {
   dark: boolean;
@@ -69,17 +65,11 @@ export default function Init(props: InitProps) {
   const [dev, setDev] = useState(
     user?.displayName?.startsWith("(dev)") as boolean
   );
-  const [runOn, setRunOn] = useState(false);
-  const windowsVersion = getWindows();
+
+  const [ver, setVer] = useState("0.9.0");
 
   useEffect(() => {
-    isAutostartEnabled()
-      .then((value) => {
-        setRunOn(value);
-      })
-      .catch((e) => {
-        Toast("Sorry! We ran into an error!", "danger", 3000);
-      });
+    getVersion().then(setVer).catch(() => {});
   }, []);
 
   async function Update() {
@@ -134,7 +124,7 @@ export default function Init(props: InitProps) {
       </Modal>
 
       <div className={darkMode(["menu"], props.dark)}>
-        <h1 className="mt-2 text-3xl text-white mr-auto ml-3">General</h1>
+        <h1 className={`mt-3 text-3xl ${props.dark? "text-white" : "text-slate-700"} mr-auto ml-3`}>General</h1>
 
         <CheckBox
           dark={props.dark}
@@ -163,7 +153,7 @@ export default function Init(props: InitProps) {
           }}
         />
 
-        <h1 className="mt-2 text-3xl text-white mr-auto ml-3">Advanced</h1>
+        <h1 className={`mt-3 text-3xl ${props.dark? "text-white" : "text-slate-700"} mr-auto ml-3`}>Advanced</h1>
 
         <CheckBox
           dark={props.dark}
@@ -190,43 +180,83 @@ export default function Init(props: InitProps) {
           active={dev}
         />
 
-        <CheckBox
-          dark={props.dark}
-          title="Run on startup"
-          description="Run AHQ Store on login (silent run)"
-          Icon={windowsVersion}
-          onClick={() => {
-            const toast = Toast("Please wait...", "warn", "never");
+        <h1 className={`mt-3 text-3xl ${props.dark? "text-white" : "text-slate-700"} mr-auto ml-3`}>About</h1>
 
-            function unmount() {
-              setTimeout(() => {
-                toast?.unmount();
-              }, 2000);
-            }
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
+          <CheckBox
+            dark={props.dark}
+            title="OS"
+            description={`You are running Windows ${getWindowsName()}`}
+            Icon={getWindows()}
+            onClick={() => {}}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
 
-            (runOn ? disableAutoStart() : enableAutostart())
-              .then(() => {
-                toast?.edit(
-                  `Successfully ${
-                    runOn ? "disabled" : "enabled"
-                  } run on startup!`,
-                  "success"
-                );
-                setRunOn(!runOn);
-                unmount();
-              })
-              .catch(() => {
-                toast?.edit(
-                  `Could not ${runOn ? "disable" : "enable"} run on startup`,
-                  "danger"
-                );
-                unmount();
-              });
-          }}
-          active={runOn}
-        />
+          <div className="w-[1.2rem]"></div>
 
-        <></>
+          <CheckBox
+            dark={props.dark}
+            title="Build"
+            description={`AHQ Store v${ver} (Build ${versionToBuild(ver)})`}
+            Icon={"/logo192.png"}
+            onClick={() => {}}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+        </div>
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
+          <CheckBox
+            dark={props.dark}
+            title="Frontend Framework"
+            description={`React (TypeScript)`}
+            Icon={"/react.webp"}
+            onClick={() => {}}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+
+          <div className="w-[1.2rem]"></div>
+
+          <CheckBox
+            dark={props.dark}
+            title="Backend Framework"
+            description={`Tauri (Rust)`}
+            Icon={"/tauri.svg"}
+            onClick={() => {}}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+        </div>
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center mb-5">
+          <CheckBox
+            dark={props.dark}
+            title="Developer"
+            description={`AHQ (github.com/ahqsoftwares)`}
+            Icon={"/ahq.png"}
+            onClick={() => {}}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+
+          <div className="w-[1.2rem]"></div>
+
+          <CheckBox
+            dark={props.dark}
+            title="Github Repo"
+            description={`https://github.com/ahqsoftwares/tauri-ahq-store`}
+            Icon={props.dark ? "/github-dark.png" : "/github.png"}
+            onClick={() => {}}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+        </div>
       </div>
     </>
   );

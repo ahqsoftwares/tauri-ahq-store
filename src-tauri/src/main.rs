@@ -134,7 +134,7 @@ fn main() {
             let queue_clone = queue.clone();
             let window_clone = window.clone();
             let window_clone_2 = tauri::Manager::get_window(app, "main").unwrap();
-
+            
             listener.listen("ready", move |_| {
                 println!("ready");
 

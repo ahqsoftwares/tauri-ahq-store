@@ -31,8 +31,8 @@
           "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/*",
           "https://api.github.com/repos/ahqsoftwares/*",
 
-          "http://pnode1.danbot.host:3454/*",
-          "http://pnode1.danbot.host:3454/",
+          "http://zeus.daki.cc:6008/*",
+          "http://zeus.daki.cc:6008/",
 
           "http://localhost:2082/",
           "http://localhost:2082/*"
@@ -116,22 +116,24 @@
         "width": 1240,
         "minHeight": 700,
         "minWidth": 1200,
-        "visible": false
+        "visible": false,
+        "transparent": true
       },
       {
         "center": true,
         "height": 550,
-        "width": 450,
+        "width": 400,
         "minHeight": 550,
-        "minWidth": 450,
+        "minWidth": 400,
         "maxHeight": 550,
-        "maxWidth": 450,
+        "maxWidth": 400,
         "title": "AHQ Store Complement",
         "alwaysOnTop": true,
         "decorations": false,
         "visible": false,
         "resizable": false,
-        "label": "complement"
+        "label": "complement",
+        "transparent": true
       }
     ]
   }
