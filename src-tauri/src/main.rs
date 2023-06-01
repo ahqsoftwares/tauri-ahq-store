@@ -180,7 +180,7 @@ fn main() {
 
             Ok(())
         })
-        .system_tray(SystemTray::new().with_tooltip("AHQ Store is running in background").with_menu(
+        .system_tray(SystemTray::new().with_tooltip("AHQ Store is running").with_menu(
             SystemTrayMenu::new().add_item(CustomMenuItem::new("quit".to_string(), "Close App")),
         ))
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
