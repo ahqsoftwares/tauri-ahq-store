@@ -80,7 +80,7 @@
       "longDescription": "AHQ Store\nA New Store for downloading apps!",
       "resources": [],
       "shortDescription": "A store to download apps",
-      "targets": ["msi", "deb"],
+      "targets": ["msi", "deb", "updater"],
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
