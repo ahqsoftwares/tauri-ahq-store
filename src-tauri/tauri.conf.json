@@ -78,16 +78,9 @@
       ],
       "identifier": "com.ahqsoftwares.store",
       "longDescription": "AHQ Store\nA New Store for downloading apps!",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
       "resources": [],
       "shortDescription": "A store to download apps",
-      "targets": "all",
+      "targets": ["msi", "deb"],
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
