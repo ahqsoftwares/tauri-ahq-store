@@ -36,6 +36,9 @@ use std::{
 use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tauri_plugin_autostart::MacosLauncher;
 
+//link Launcher
+use open;
+
 #[derive(Debug, Clone)]
 struct AppData {
     pub name: String,
@@ -224,7 +227,8 @@ fn main() {
             check_update,
             install_update,
             encrypt,
-            decrypt
+            decrypt,
+            open
         ])
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
@@ -295,6 +299,13 @@ fn base64_to_string(base64_string: &str) -> Option<String> {
 }
 
 const UPDATER_PATH: &str = "%root%\\ProgramData\\AHQ Store Applications\\Updaters";
+
+#[tauri::command]
+async fn open(
+    url: String
+) -> std::io::Result<()> {
+    open::that(url)
+}
 
 #[tauri::command]
 async fn check_update(
