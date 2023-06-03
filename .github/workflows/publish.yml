@@ -1,5 +1,8 @@
-name: "publish"
-on: push
+name: "Build & Publish (App + Service)"
+on: 
+  push:
+    branches:
+     - master
 
 jobs:
   publish-tauri:
@@ -10,20 +13,24 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
       - name: setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 18
+
       - name: install Rust stable
         uses: actions-rs/toolchain@v1
         with:
           toolchain: 1.66.0
+
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+      
       - name: Cache store
         uses: actions/cache@v3
         with:
@@ -33,8 +40,14 @@ jobs:
             node_modules
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            src-tauri -> target
+            src-service -> target
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -43,28 +56,53 @@ jobs:
         run: node encryptor.js
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
+
       - name: Clone VCpkg
         run: git clone https://github.com/Microsoft/vcpkg.git
+
       - name: Install Via VCpkg
         run: .\vcpkg\bootstrap-vcpkg.bat
+
       - name: Install openssl
         run: .\vcpkg\vcpkg install openssl --triplet x64-windows-static-md
+
       - name: Integrate
         run: .\vcpkg\vcpkg integrate install
+
+      - name: Get Version from package.json
+        run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
       - name: install app dependencies and build it
-        run: pnpm install && pnpm build
+        run: pnpm install; pnpm build
         env:
           CI: "false"
-      - uses: tauri-apps/tauri-action@v0
+
+      - name: Build Service
+        run: cd src-service; cargo build --release; cd ..
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: service.exe
+          path: src-service/target/release/ahqstore_service.exe
+
+      - name: Release Service
+        uses: softprops/action-gh-release@v1
+        id: release
+        with:
+          name: AHQ Store ${{ secrets.PACKAGE_VERSION }}
+          tag_name: ${{ secrets.PACKAGE_VERSION }}
+          draft: true
+          files: |
+            src-service/target/release/ahqstore_service.exe
+
+      - name: Build Tauri App
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{secrets.TAURI}}
         with:
-          tagName: __VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          releaseName: "AHQ Store __VERSION__"
-          releaseBody: "AHQ Store __VERSION__ Update\n# Changes:"
-          releaseDraft: true
-          prerelease: false
+          releaseId: ${{ steps.release.outputs.id }}
+
       - name: Upload Executable (standalone)
         uses: actions/upload-artifact@v3
         with:
