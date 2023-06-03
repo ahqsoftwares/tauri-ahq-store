@@ -1,9 +1,12 @@
 [package]
 name = "ahqstore_service"
 version = "0.1.0"
+description = "AHQ Store on Tauri and Rust"
+authors = ["AHQ Softwares@AHQ Store"]
+license = "ISC"
+repository = "https://www.github.com/ahqsoftwares/tauri-ahq-store"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+rust-version = "1.57"
 
 [dependencies]
 bcrypt = "0.14.0"
