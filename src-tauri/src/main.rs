@@ -303,8 +303,11 @@ const UPDATER_PATH: &str = "%root%\\ProgramData\\AHQ Store Applications\\Updater
 #[tauri::command]
 async fn open(
     url: String
-) -> std::io::Result<()> {
-    open_2::that(url)
+) -> Option<()> {
+    match open_2::that(url) {
+        Ok(_) => Some(()),
+        _ => None
+    }
 }
 
 #[tauri::command]
