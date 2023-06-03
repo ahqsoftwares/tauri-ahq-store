@@ -37,7 +37,7 @@ use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMen
 use tauri_plugin_autostart::MacosLauncher;
 
 //link Launcher
-use open;
+use open as open_2;
 
 #[derive(Debug, Clone)]
 struct AppData {
@@ -304,7 +304,7 @@ const UPDATER_PATH: &str = "%root%\\ProgramData\\AHQ Store Applications\\Updater
 async fn open(
     url: String
 ) -> std::io::Result<()> {
-    open::that(url)
+    open_2::that(url)
 }
 
 #[tauri::command]
