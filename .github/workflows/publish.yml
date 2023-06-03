@@ -57,25 +57,12 @@ jobs:
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
 
-      - name: Clone VCpkg
-        run: git clone https://github.com/Microsoft/vcpkg.git
-
-      - name: Install Via VCpkg
-        run: .\vcpkg\bootstrap-vcpkg.bat
-
-      - name: Install openssl
-        run: .\vcpkg\vcpkg install openssl --triplet x64-windows-static-md
-
-      - name: Integrate
-        run: .\vcpkg\vcpkg integrate install
-
       - name: Get Version from package.json
-        run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-
-      - name: install app dependencies and build it
-        run: pnpm install; pnpm build
-        env:
-          CI: "false"
+        uses: actions/github-script@v6
+        id: result
+        with:
+          script: return require("./package.json").version
+          result-encoding: string
 
       - name: Build Service
         run: cd src-service; cargo build --release; cd ..
@@ -89,11 +76,28 @@ jobs:
         uses: softprops/action-gh-release@v1
         id: release
         with:
-          name: AHQ Store ${{ secrets.PACKAGE_VERSION }}
-          tag_name: ${{ secrets.PACKAGE_VERSION }}
+          name: AHQ Store ${{ steps.result.outputs.result }}
+          tag_name: ${{ steps.result.outputs.result }}
           draft: true
           files: |
             src-service/target/release/ahqstore_service.exe
+
+      - name: Clone VCpkg
+        run: git clone https://github.com/Microsoft/vcpkg.git
+
+      - name: Install Via VCpkg
+        run: .\vcpkg\bootstrap-vcpkg.bat
+
+      - name: Install openssl
+        run: .\vcpkg\vcpkg install openssl --triplet x64-windows-static-md
+
+      - name: Integrate
+        run: .\vcpkg\vcpkg integrate install
+
+      - name: install app dependencies and build it
+        run: pnpm install; pnpm build
+        env:
+          CI: "false"
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
