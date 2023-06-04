@@ -52,6 +52,11 @@ jobs:
         with:
           version: latest
           
+      - name: install Encryptor & Vite dependencies and build React App
+        run: pnpm install; pnpm build
+        env:
+          CI: "false"
+
       - name: Load Encryptor Key
         run: node encryptor.js
         env:
@@ -99,11 +104,6 @@ jobs:
 
       - name: Integrate
         run: .\vcpkg\vcpkg integrate install
-
-      - name: install app dependencies and build it
-        run: pnpm install; pnpm build
-        env:
-          CI: "false"
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
