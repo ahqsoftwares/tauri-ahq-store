@@ -47,11 +47,13 @@ jobs:
           workspaces: |
             src-tauri -> target
             src-service -> target
+            src-service-tools -> target
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8.1.0
+          
       - name: Load Encryptor Key
         run: node encryptor.js
         env:
@@ -67,10 +69,15 @@ jobs:
       - name: Build Service
         run: cd src-service; cargo build --release; cd ..
 
+      - name: Build Service Installer
+        run: cd src-service-tools; cargo build --release; cd ..
+
       - uses: actions/upload-artifact@v3
         with:
           name: service.exe
-          path: src-service/target/release/ahqstore_service.exe
+          path: |
+            src-service/target/release/ahqstore_service.exe
+            src-service-tools/target/release/store-tools-installer.exe
 
       - name: Release Service
         uses: softprops/action-gh-release@v1
@@ -81,6 +88,7 @@ jobs:
           draft: true
           files: |
             src-service/target/release/ahqstore_service.exe
+            src-service-tools/target/release/store-tools-installer.exe
 
       - name: Clone VCpkg
         run: git clone https://github.com/Microsoft/vcpkg.git
