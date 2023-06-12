@@ -109,8 +109,7 @@
         "width": 1240,
         "minHeight": 700,
         "minWidth": 1200,
-        "visible": false,
-        "transparent": true
+        "visible": false
       },
       {
         "center": true,

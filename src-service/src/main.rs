@@ -5,8 +5,6 @@ mod ws_receiver;
 
 pub mod app;
 pub mod auth;
-///Re - Export
-pub mod db;
 
 use std::{
     ffi::OsString,
@@ -74,12 +72,17 @@ fn run_server(port: String, handle: ServiceStatusHandle) {
     std::thread::spawn(move || {
         update_file("STARTING").unwrap();
 
-        db::main();
         app::init();
 
         update_file(&port).unwrap();
 
+        let mut set = false;
+
         match listen(&format!("127.0.0.1:{}", port), |out| {
+            if !set {
+                unsafe{app::set_sender(out.clone());}
+                set = true;
+            }
             move |msg: Message| {
                 handle_ws(msg, out.clone());
                 Ok(())

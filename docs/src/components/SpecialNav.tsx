@@ -6,6 +6,7 @@ import {
   AiOutlineInfoCircle,
 } from "react-icons/ai";
 import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
+import { useEffect, useState } from "react";
 
 interface prop {
   active: string;
@@ -18,6 +19,17 @@ export default function Nav(props: prop) {
     return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
   }
   let { active, changePage, dark: mode } = props;
+
+  const [secretKeyUsed, setKey] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener("keydown", (e) => {
+      //If the key is Esc
+      if (e.key === "Escape") {
+        setKey(true);
+      }
+    });
+  }, []);
 
   let a = "",
     b = "",
@@ -60,23 +72,23 @@ export default function Nav(props: prop) {
         )}
       </button>
 
-      <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
+      {secretKeyUsed ? <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
         {b === "active" ? (
           <RiApps2Fill size={"2.5em"} />
         ) : (
           <RiApps2Line size={"2.5em"} />
         )}
-      </button>
+      </button> : <></>}
 
       <div className="mt-auto mb-auto"></div>
 
-      <button className={`n-item ${c}`} onClick={() => changePage("docs")}>
+      {secretKeyUsed ? <button className={`n-item ${c}`} onClick={() => changePage("docs")}>
         {c === "active" ? (
           <HiDocument size={"2.5em"} />
         ) : (
           <HiOutlineDocument size={"2.5em"} />
         )}
-      </button>
+      </button> : <></>}
 
       <button
         className={`n-item ${d} mb-5`}

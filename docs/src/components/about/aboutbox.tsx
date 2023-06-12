@@ -1,18 +1,15 @@
-import { MouseEventHandler } from "react";
 import { IconType } from "react-icons/lib";
 
-export default function CheckBox(props: {
+export default function InfoBox(props: {
   dark: boolean;
   disabled?: boolean;
   title: string;
   description: string;
   Icon: IconType | string;
-  active: boolean;
-  onClick: MouseEventHandler<HTMLDivElement>;
-  noCheckbox?: boolean;
-  roundedImage?: boolean;
+  rounded?: boolean;
+  url: string;
 }) {
-  const { Icon, noCheckbox, roundedImage } = props;
+  const { Icon, rounded, url } = props;
 
   function darkMode(classes: Array<string>, dark: boolean) {
     return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
@@ -21,7 +18,9 @@ export default function CheckBox(props: {
   return (
     <div
       className={`${darkMode(["checkbox"], props.dark)} mt-3`}
-      onClick={props.onClick}
+      onClick={() => {
+        window.open(url, "_blank");
+      }}
     >
       <div className="ml-3"></div>
 
@@ -36,7 +35,8 @@ export default function CheckBox(props: {
           <img
             src={Icon}
             alt="Icon"
-            style={{ minHeight: "2.5em", minWidth: "2.5em", maxHeight: "2.5em", maxWidth: "2.5em", borderRadius: roundedImage ? "20%" : 0  }}
+            style={{ minHeight: "2.5em", minWidth: "2.5em", maxHeight: "2.5em", maxWidth: "2.5em" }}
+            className={rounded ? "rounded-[15%]" : ""}
           />
         )}
       </div>
@@ -44,7 +44,9 @@ export default function CheckBox(props: {
       <div className="ml-3"></div>
 
       <h6>
-        {props.title}
+        <span
+          className={props.dark ? "text-gray-100" : "text-gray-900"}
+        >{props.title}</span>
         <p
           className={`${
             props.disabled ? (props.dark ? "text-red-700" : "text-red-500") : ""
@@ -55,17 +57,6 @@ export default function CheckBox(props: {
       </h6>
 
       <div className="mx-auto"></div>
-
-      {noCheckbox ? <></> :
-        <input
-          className={props.active ? "slider" : "slider slider-disabled"}
-          type={"range"}
-          min="0"
-          max="60"
-          value={props.active ? "55" : "5"}
-          readOnly
-        ></input>
-      }
 
       <div className="mr-3"></div>
     </div>

@@ -88,6 +88,7 @@ jobs:
         with:
           name: AHQ Store ${{ steps.result.outputs.result }}
           tag_name: ${{ steps.result.outputs.result }}
+          body_path: /latest.md
           draft: true
           files: |
             src-service/target/release/ahqstore_service.exe

@@ -1,9 +1,13 @@
-mod get_app;
-mod download_app;
 mod check_for_updates;
+mod get_app;
+mod install_app;
+mod list_apps;
 mod util;
 
-pub use get_app::*;
-pub use download_app::*;
+pub mod install_app_helpers;
+
 pub use check_for_updates::*;
+pub use get_app::*;
+pub use install_app::*;
+pub use list_apps::*;
 pub use util::*;

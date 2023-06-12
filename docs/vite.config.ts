@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import reactRefresh from '@vitejs/plugin-react'
+import reactRefresh from '@vitejs/plugin-react-swc'
 import svgrPlugin from 'vite-plugin-svgr'
 
 // https://vitejs.dev/config/

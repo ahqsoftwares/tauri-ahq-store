@@ -19,6 +19,7 @@ import { BsCodeSlash, BsFonts, BsWindowSidebar } from "react-icons/bs";
 import { FiDownload } from "react-icons/fi";
 import SidebarSelector from "./components/sidebar";
 import { getVersion } from "@tauri-apps/api/app";
+import { invoke } from "@tauri-apps/api/tauri";
 
 interface InitProps {
   dark: boolean;
@@ -105,6 +106,29 @@ export default function Init(props: InitProps) {
 
   function darkMode(classes: Array<string>, dark: boolean) {
     return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+  }
+
+  function openUrl(url: string) {
+    let toast = Toast("Please Wait...", "warn", "never");
+
+    function unMount() {
+      const timer = setTimeout(() => {
+        clearTimeout(timer);
+        toast?.unmount();
+      }, 1500);
+    }
+
+    invoke("open", {
+      url
+    })
+      .then(() => {
+        toast?.edit("Opened in default browser", "success");
+        unMount();
+      })
+      .catch(() => {
+        toast?.edit(`Could not open ${url}`, "danger");
+        unMount();
+      });
   }
 
   return (
@@ -201,7 +225,9 @@ export default function Init(props: InitProps) {
             title="Build"
             description={`AHQ Store v${ver} (Build ${versionToBuild(ver)})`}
             Icon={"/logo192.png"}
-            onClick={() => {}}
+            onClick={() => {
+              openUrl("https://ahq-store.ml");
+            }}
             disabled={true}
             active={true}
             noCheckbox={true}
@@ -213,7 +239,9 @@ export default function Init(props: InitProps) {
             title="Frontend Framework"
             description={`React (TypeScript)`}
             Icon={"/react.webp"}
-            onClick={() => {}}
+            onClick={() => {
+              openUrl("https://react.dev");
+            }}
             disabled={true}
             active={true}
             noCheckbox={true}
@@ -226,7 +254,9 @@ export default function Init(props: InitProps) {
             title="Backend Framework"
             description={`Tauri (Rust)`}
             Icon={"/tauri.svg"}
-            onClick={() => {}}
+            onClick={() => {
+              openUrl("https://tauri.app");
+            }}
             disabled={true}
             active={true}
             noCheckbox={true}
@@ -238,10 +268,13 @@ export default function Init(props: InitProps) {
             title="Developer"
             description={`AHQ (github.com/ahqsoftwares)`}
             Icon={"/ahq.png"}
-            onClick={() => {}}
+            onClick={() => {
+              openUrl("https://github.com/ahqsoftwares");
+            }}
             disabled={true}
             active={true}
             noCheckbox={true}
+            roundedImage={true}
           />
 
           <div className="w-[1.2rem]"></div>
@@ -249,9 +282,11 @@ export default function Init(props: InitProps) {
           <CheckBox
             dark={props.dark}
             title="Github Repo"
-            description={`https://github.com/ahqsoftwares/tauri-ahq-store`}
+            description={`Click to open in default browser`}
             Icon={props.dark ? "/github-dark.png" : "/github.png"}
-            onClick={() => {}}
+            onClick={() => {
+              openUrl("https://github.com/ahqsoftwares/tauri-ahq-store");
+            }}
             disabled={true}
             active={true}
             noCheckbox={true}

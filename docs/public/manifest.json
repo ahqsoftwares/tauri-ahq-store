@@ -1,6 +1,6 @@
 {
-  "short_name": "ahq store",
-  "name": "AHQ Store",
+  "short_name": "ahq_store",
+  "name": "AHQ Store Installer Page",
   "icons": [
     {
       "src": "favicon.ico",
