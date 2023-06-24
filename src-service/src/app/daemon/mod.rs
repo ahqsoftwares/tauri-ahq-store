@@ -54,6 +54,7 @@ struct WsResponse {
     method: String,
     payload: String,
     ref_id: String,
+    auth: String
 }
 
 unsafe fn start_receiving() {
@@ -73,6 +74,7 @@ unsafe fn start_receiving() {
                     method: method.clone(),
                     payload: payload.clone(),
                     ref_id: ref_id.clone(),
+                    auth: include!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/auth/hash")).to_string()
                 };
 
                 if &ref_id == &String::from("CASUALUPDATE") {

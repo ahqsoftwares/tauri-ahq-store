@@ -11,7 +11,7 @@ The Microsoft Store Open Source Alternative
 
 You are allowed to:
 
-- [x] Share - copy and redistribute
+- [x] Share - copy and redistribute **(only as a separate product with changes involved & _NOT_ utilizing the servers/services/repos used here)**
 
 - [x] Adapt - remix and contribute back
 

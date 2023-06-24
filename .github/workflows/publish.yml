@@ -38,14 +38,6 @@ jobs:
             node_modules
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-     
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: |
-            src-tauri -> target
-            src-service -> target
-            src-service-tools -> target
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2

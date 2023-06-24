@@ -4,7 +4,7 @@ use crate::{
 };
 
 use serde::{Deserialize, Serialize};
-use serde_json::{from_str, to_string};
+use serde_json::{from_str, to_string_pretty};
 
 use ws::{CloseCode, Message, Sender};
 
@@ -112,10 +112,11 @@ pub fn handle_ws(msg: Message, out: Sender) {
 }
 
 #[derive(Serialize, Deserialize)]
-struct HTTPWSERROR {
+struct HTTPWsResponse {
     reason: Option<String>,
     status: Option<String>,
     ref_id: String,
+    auth: String
 }
 
 fn send_invalid(reason: &str, payload: String, out: &mut Sender) {
@@ -153,13 +154,14 @@ fn send_resp(
     payload: String,
     out: &mut Sender,
 ) {
-    let err = HTTPWSERROR {
+    let err = HTTPWsResponse {
         reason,
         status,
         ref_id: payload,
+        auth: include!("./auth/hash").to_string()
     };
 
-    let new_reason = to_string(&err).unwrap();
+    let new_reason = to_string_pretty(&err).unwrap();
 
     out.send(new_reason).unwrap_or(());
 

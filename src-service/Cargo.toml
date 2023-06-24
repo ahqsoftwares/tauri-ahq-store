@@ -1,6 +1,6 @@
 [package]
 name = "ahqstore_service"
-version = "0.5.0"
+version = "0.5.1"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Store"]
 license = "ISC"
