@@ -7,7 +7,6 @@
 use downloader::Downloader;
 use std::fs::create_dir_all;
 use std::path::Path;
-use winapi_easy::ui::{ProgressState, Taskbar, Window};
 
 // Define a custom progress reporter:
 #[allow(dead_code)]
@@ -39,18 +38,6 @@ impl downloader::progress::Reporter for SimpleReporter {
             message: message.to_owned(),
         };
 
-        match Taskbar::new() {
-            Ok(mut taskbar) => match Window::get_console_window() {
-                Some(mut window) => {
-                    taskbar
-                        .set_progress_state(&mut window, ProgressState::Normal)
-                        .expect("");
-                }
-                _ => {}
-            },
-            _ => {}
-        }
-
         let mut guard = self.private.lock().unwrap();
         *guard = Some(private);
     }
@@ -61,22 +48,6 @@ impl downloader::progress::Reporter for SimpleReporter {
                 Some(bytes) => format!("{:?}", bytes),
                 None => "{unknown}".to_owned(),
             };
-
-            match Taskbar::new() {
-                Ok(mut taskbar) => match Window::get_console_window() {
-                    Some(mut window) => {
-                        taskbar
-                            .set_progress_value(
-                                &mut window,
-                                current.clone(),
-                                max_bytes.clone().parse().unwrap(),
-                            )
-                            .expect("");
-                    }
-                    _ => {}
-                },
-                _ => {}
-            }
 
             let max_bytes: u64 = max_bytes.parse().unwrap_or(0);
             (self.logger)(current, max_bytes);
@@ -90,18 +61,6 @@ impl downloader::progress::Reporter for SimpleReporter {
     fn done(&self) {
         let mut guard = self.private.lock().unwrap();
         *guard = None;
-
-        match Taskbar::new() {
-            Ok(mut taskbar) => match Window::get_console_window() {
-                Some(mut window) => {
-                    taskbar
-                        .set_progress_state(&mut window, ProgressState::NoProgress)
-                        .expect("");
-                }
-                _ => {}
-            },
-            _ => {}
-        }
 
         println!("App Download Status: [DONE]");
     }

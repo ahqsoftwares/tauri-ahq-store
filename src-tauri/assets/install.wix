@@ -149,6 +149,9 @@
 							   Value="1"
 							   KeyPath="yes" />
             </Component>
+            <Component Id="UninstallService" Guid="*">
+                <ServiceControl Id="runner_service" Name="AHQ Store Service" Stop="both" Remove="both" Wait="yes" />
+            </Component>
         </DirectoryRef>
 
         <Property Id="MSIUSEREALADMINDETECTION" Value="1" />

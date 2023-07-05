@@ -52,11 +52,11 @@ async function verifyUserPassword(uid: string, password: string) {
     responseType: 1,
     headers: {
       "x-uid": uid,
-      "x-password": password,
+      "x-password": String(password),
     },
     timeout: 6,
   })
-    .then(({ ok, status }) => {
+    .then(({ ok, status, data }) => {
       if (ok) {
         return true;
       } else if (status >= 500) {
@@ -65,8 +65,8 @@ async function verifyUserPassword(uid: string, password: string) {
         return false;
       }
     })
-    .catch((_) => {
-      throw new Error("Server Error!");
+    .catch((_e) => {
+      throw new Error("Server Fetch Error!");
     });
 }
 
@@ -100,7 +100,7 @@ export default function Init(props: UserProps) {
 
   let { auth, dark } = props;
 
-  let [backupUser, setBackup] = useState(""), 
+  let [backupUser, setBackup] = useState(""),
     [user, setUser] = useState(Loading),
     [name, setName] = useState(""),
     [alt, setAlt] = useState("Please wait..."),
@@ -225,7 +225,7 @@ export default function Init(props: UserProps) {
                   setUser(backupUser);
                   sendNotification({
                     title: "Error",
-                    body: "Server Error / Your account must be at least an hour old"
+                    body: "Server Error / Your account must be at least an hour old",
                   });
                   console.warn("The Server didn't respond");
                 });

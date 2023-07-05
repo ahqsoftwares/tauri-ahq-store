@@ -11,10 +11,7 @@ pub fn deploy_zip(app_id: String, version: String) -> u8 {
     fs::remove_dir_all(&install_dir).unwrap_or(());
     fs::create_dir_all(&install_dir).unwrap_or(());
 
-    let updater_file = fs::write(
-        format!("{}\\ahqStoreVersion", &install),
-        version
-    );
+    let updater_file = fs::write(format!("{}\\ahqStoreVersion", &install), version);
 
     let cmd = Command::new("powershell")
         .creation_flags(0x08000000)
@@ -41,20 +38,10 @@ pub fn deploy_zip(app_id: String, version: String) -> u8 {
                 if status.success() {
                     cleanup(false);
                     return 0;
-                } else {
-                    cleanup(true);
-                    return 1;
                 }
-            } else {
-                cleanup(true);
-                return 1;
             }
-        } else {
-            cleanup(true);
-            return 1;
         }
-    } else {
-        cleanup(true);
-        return 1;
     }
+    cleanup(true);
+    return 1;
 }

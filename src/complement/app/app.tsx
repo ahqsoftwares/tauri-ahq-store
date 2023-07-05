@@ -15,7 +15,7 @@ export default function App({ appId }: AppProps) {
         onClick={() => {
           appWindow.minimize();
           appWindow.hide();
-          unregisterAll().catch(() => {})
+          unregisterAll().catch(() => {});
         }}
       >
         <BiArrowBack />

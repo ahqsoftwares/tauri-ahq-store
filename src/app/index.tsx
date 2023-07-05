@@ -30,11 +30,13 @@ import Settings from "./settings/index";
 
 import BaseAPI from "./server";
 
-import { init as initApi } from "./resources/api/fetchApps";
 import fetchPrefs, {
   appData,
   setConfig,
 } from "./resources/utilities/preferences";
+import { runner } from "./resources/core/handler";
+import { init } from "./resources/api/fetchApps";
+import { invoke } from "@tauri-apps/api/tauri";
 
 interface AppProps {
   data: {
@@ -43,11 +45,14 @@ interface AppProps {
 }
 
 function Render(props: AppProps) {
+  runner();
+
   const { auth } = props.data;
   let [page, changePage] = useState("home"),
     [dev, setDev] = useState(
       auth.currentUser?.displayName?.startsWith("(dev)")
     ),
+    [admin, setIsAdmin] = useState(false),
     [dark, setD] = useState(true),
     [font, setFont] = useState("def"),
     [sidebar, setSidebar] = useState("flex-row"),
@@ -96,8 +101,11 @@ function Render(props: AppProps) {
       runAutoUpdate(autoUpdate);
 
       //Fetch Maps
-      initApi()
+      init()
         .then(async (commit_id) => {
+          const admin = await invoke("is_an_admin").catch(() => false);
+          setIsAdmin(admin as boolean);
+
           if (
             commit_id !== "" ||
             commit_id !== undefined ||
@@ -250,6 +258,7 @@ function Render(props: AppProps) {
                 dev={dev}
                 sidebar={sidebar}
                 setSidebar={updateSidebar}
+                admin={admin}
               />
             </div>
           </div>

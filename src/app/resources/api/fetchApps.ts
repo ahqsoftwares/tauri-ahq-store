@@ -1,57 +1,53 @@
 import { fetch } from "@tauri-apps/api/http";
-import packageImg from "../package.png";
+import { get_apps, get_commit } from "../core";
 
 let commit_id = "";
 
-type appData = {
-  title: string;
-  description: string;
-  img: string;
-  id?: string;
-  download_url: string;
-  longDesc: string;
-  version: string;
-  exe: string;
-  author: {
-    id: string;
-  };
-};
+interface AuthorObject {
+  displayName: string;
+  email: string;
+  apps:
+    | []
+    | {
+        apps: string[];
+        ignored: string[];
+      };
+}
 
-interface cacheData extends appData {
-  author: any;
+interface appData {
+  author: string;
+  AuthorObject?: AuthorObject;
+  description: string;
+  download: string;
+  exe: string;
+  icon: string;
+  repo: {
+    author: string;
+    repo: string;
+  };
+  title: string;
+  displayName: string;
+  version: string;
+  id: string;
 }
 
 let cache: {
-  [key: string]: cacheData;
+  [key: string]: appData;
 } = {};
 
-export type { cacheData };
+export async function init() {
+  commit_id = await get_commit();
 
-export async function init(): Promise<string> {
-  return await fetch(
-    "https://api.github.com/repos/ahqsoftwares/ahq-store-data/commits/main",
-    {
-      responseType: 1,
-      method: "GET",
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-      },
-    }
-  ).then(({ data }) => {
-    commit_id = (data as any).sha;
-    return (data as any).sha as string;
-  });
+  return commit_id;
 }
 
 export default async function fetchApps(
-  apps: string | string[],
-  forUpdate?: boolean
-): Promise<cacheData | cacheData[]> {
+  apps: string | string[]
+): Promise<appData | appData[]> {
   if (typeof apps === "string") {
-    return (await resolveApps([apps], forUpdate))[0];
+    return (await resolveApps([apps]))[0];
   } else {
-    return await resolveApps([...apps], forUpdate);
+    return await resolveApps([...apps]);
   }
 }
 
@@ -79,108 +75,68 @@ export async function fetchSearchData() {
   }
 }
 
-export async function fetchAuthor(id: string) {
-  return (await fetch(
-    `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/user${id}.json`,
-    {
-      method: "GET",
-      responseType: 1,
-    }
-  )) as any;
+export async function fetchAuthor(id: string, partial = true) {
+  let author = (
+    await fetch(
+      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/dev_${id}.json`,
+      {
+        method: "GET",
+        responseType: 1,
+      }
+    )
+  ).data as AuthorObject;
+
+  if (!partial) {
+    const apps = (
+      await fetch(
+        `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/apps_dev_${id}.json`,
+        {
+          method: "GET",
+          responseType: 1,
+        }
+      )
+    ).data as any;
+
+    author = {
+      ...author,
+      apps,
+    };
+  }
+
+  return author;
 }
 
-async function resolveApps(apps: string[], forUpdate?: boolean) {
-  let promises = [];
+async function resolveApps(apps: string[]): Promise<appData[]> {
+  let promises: Promise<appData>[] = [];
 
-  if (forUpdate) {
-    await init();
-  }
+  apps.forEach((appId) => {
+    if (cache[appId]) {
+      promises.push(
+        (async () => {
+          return cache[appId];
+        })()
+      );
+    } else {
+      promises.push(
+        (async () => {
+          const app = await get_apps([appId]);
+          const authorObj = await fetchAuthor(app[0].author);
 
-  for (let i = 0; i < apps.length; i++) {
-    const app = apps[i];
-    promises.push(getApp(app, forUpdate));
-  }
+          cache[appId] = {
+            ...app[0],
+            AuthorObject: authorObj,
+          };
+
+          return {
+            ...app[0],
+            AuthorObject: authorObj,
+          };
+        })()
+      );
+    }
+  });
 
   return await Promise.all(promises);
 }
 
-async function getApp(appName: string, launchForUpdate?: boolean) {
-  let data: any = {};
-
-  if ((appName || "") === "") {
-    throw new Error("Error reading app");
-  }
-
-  if (!commit_id) {
-    throw new Error("Error reading app");
-  }
-
-  if (!launchForUpdate && cache[appName]) {
-    data = cache[appName];
-  } else {
-    const mainAppData = await fetch(
-      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/${appName}.json`,
-      {
-        method: "GET",
-        responseType: 1,
-      }
-    )
-      .then(({ data, ok }) => {
-        if (ok) {
-          return data as appData;
-        } else {
-          if (cache[appName]) {
-            return cache[appName] as appData;
-          } else {
-            throw new Error("Not Found Error!");
-          }
-        }
-      })
-      .catch((_e) => {
-        return {
-          title: `Unknown`,
-          description: "App not Found",
-          longDesc: "",
-          id: appName,
-          download_url: "",
-          version: "v0.0.0",
-          img: packageImg,
-          author: {
-            id: "unknown",
-          },
-        } as appData;
-      });
-
-    const authorData = await fetch(
-      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/user${mainAppData.author.id}.json`,
-      {
-        method: "GET",
-        responseType: 1,
-      }
-    )
-      .then(({ data, ok }) => {
-        if (ok) {
-          return data as any;
-        } else {
-          return {} as any;
-        }
-      })
-      .catch(() => {
-        return {};
-      });
-
-    let fullAnswer = {
-      id: appName,
-      ...mainAppData,
-      author: {
-        id: mainAppData.author.id,
-        ...authorData,
-      },
-    };
-
-    cache[appName] = fullAnswer;
-    data = fullAnswer;
-  }
-
-  return data;
-}
+export type { appData };

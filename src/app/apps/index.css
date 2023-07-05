@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*
 General
 */
@@ -31,10 +35,32 @@ Apps Layout
 }
 
 .search-app-grid {
+  padding-left: 1rem;
+  padding-right: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-  -ms-grid-row-align: start;
-  -ms-grid-column-align: start;
+  grid-template-columns: repeat(auto-fit, minmax(20vw, 25vw));
+}
+
+@layer utilities {
+  .search-app-grid .card {
+    @apply m-0 mx-[5vw] my-[0.45vw] min-w-[16vw];
+  }
+}
+
+.search-app-grid .card:hover {
+  @apply m-0 mx-[5vw] shadow-none;
+}
+
+.special-app-grid {
+  @apply text-start items-start;
+}
+
+.special-app-grid div {
+  @apply justify-start w-[100%];
+}
+
+.special-app-grid span {
+  @apply mr-auto;
 }
 
 /*

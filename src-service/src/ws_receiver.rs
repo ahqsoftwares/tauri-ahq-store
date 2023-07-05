@@ -1,5 +1,8 @@
 use crate::{
-    app::{get_apps, get_update_stats, install_apps, list_apps, run_update},
+    app::{
+        get_apps, get_commit_id, get_update_stats, install_apps, list_apps, run_update,
+        uninstall_apps,
+    },
     auth,
 };
 
@@ -62,7 +65,12 @@ pub fn handle_ws(msg: Message, out: Sender) {
                     "UNINSTALL" => {
                         let data = json.data.clone().unwrap_or(String::new());
 
-                        if let Ok(_apps) = from_str::<AppList>(data.as_str()) {
+                        if let Ok(apps) = from_str::<AppList>(data.as_str()) {
+                            if uninstall_apps(txt.clone().to_string(), apps, out.clone()) {
+                                send_processing(&mut out, txt.clone().to_string());
+                            } else {
+                                send_error(&mut out, txt.clone().to_string());
+                            }
                         } else {
                             send_invalid_payload(&mut out, txt.to_owned());
                         }
@@ -94,6 +102,15 @@ pub fn handle_ws(msg: Message, out: Sender) {
                             send_processing(&mut out, txt.clone().to_owned());
                         }
                     }
+                    "COMMIT" => {
+                        let no_err = get_commit_id(txt.clone().to_string(), out.clone());
+
+                        if !no_err {
+                            send_error(&mut out, txt.clone().to_owned());
+                        } else {
+                            send_processing(&mut out, txt.clone().to_owned());
+                        }
+                    }
                     _ => {
                         send_invalid(r#""Invalid Method""#, txt.clone().to_owned(), &mut out);
                     }
@@ -116,7 +133,7 @@ struct HTTPWsResponse {
     reason: Option<String>,
     status: Option<String>,
     ref_id: String,
-    auth: String
+    auth: String,
 }
 
 fn send_invalid(reason: &str, payload: String, out: &mut Sender) {
@@ -158,7 +175,7 @@ fn send_resp(
         reason,
         status,
         ref_id: payload,
-        auth: include!("./auth/hash").to_string()
+        auth: include!("./auth/hash").to_string(),
     };
 
     let new_reason = to_string_pretty(&err).unwrap();

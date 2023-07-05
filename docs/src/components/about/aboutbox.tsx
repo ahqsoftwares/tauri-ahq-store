@@ -35,7 +35,12 @@ export default function InfoBox(props: {
           <img
             src={Icon}
             alt="Icon"
-            style={{ minHeight: "2.5em", minWidth: "2.5em", maxHeight: "2.5em", maxWidth: "2.5em" }}
+            style={{
+              minHeight: "2.5em",
+              minWidth: "2.5em",
+              maxHeight: "2.5em",
+              maxWidth: "2.5em",
+            }}
             className={rounded ? "rounded-[15%]" : ""}
           />
         )}
@@ -44,9 +49,9 @@ export default function InfoBox(props: {
       <div className="ml-3"></div>
 
       <h6>
-        <span
-          className={props.dark ? "text-gray-100" : "text-gray-900"}
-        >{props.title}</span>
+        <span className={props.dark ? "text-gray-100" : "text-gray-900"}>
+          {props.title}
+        </span>
         <p
           className={`${
             props.disabled ? (props.dark ? "text-red-700" : "text-red-500") : ""

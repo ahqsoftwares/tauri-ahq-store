@@ -14,7 +14,7 @@ export default class Updater {
   updateStatus: updateStatus;
   updatingApp?: string;
   updatingAppList?: string[];
-  currentTimer?: NodeJS.Timer;
+  currentTimer?: number;
   state?: number;
 
   constructor() {
@@ -96,7 +96,7 @@ export default class Updater {
   async checkForUpdates() {
     const apps: Apps = await listAllApps();
 
-    const appsData = ((await fetchApps(Object.keys(apps), true)) as any[]).map(
+    const appsData = ((await fetchApps(Object.keys(apps))) as any[]).map(
       (value) => value.version
     );
 

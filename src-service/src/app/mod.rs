@@ -2,7 +2,10 @@ use reqwest::blocking::Client;
 
 pub mod daemon;
 
-pub use daemon::{set_sender, get_apps, get_update_stats, install_apps, list_apps, run_update};
+pub use daemon::{
+    get_apps, get_commit_id, get_update_stats, install_apps, list_apps, run_update, set_sender,
+    uninstall_apps,
+};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct Commit {

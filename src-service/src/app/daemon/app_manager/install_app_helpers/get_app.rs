@@ -12,12 +12,17 @@ pub fn get_apps_download_url(
 
     apps.iter()
         .map(|app| {
-            let url = app.app.download_url.clone();
+            let url = app.app.download.clone();
             let exec = app.app.exe.clone();
             let name = app.app.title.clone();
             let version = app.app.version.clone();
 
-            AppDownloaded { url, exec, name, version }
+            AppDownloaded {
+                url,
+                exec,
+                name,
+                version,
+            }
         })
         .collect()
 }

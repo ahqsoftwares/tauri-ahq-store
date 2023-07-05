@@ -1,14 +1,15 @@
+use reqwest::blocking::Client;
+use serde_json::{from_str, to_string};
 use std::{
+    collections::HashMap,
     sync::mpsc::{Receiver, Sender, TryRecvError},
     thread::spawn,
     time::{Duration, SystemTime},
 };
-
-use reqwest::blocking::Client;
-use serde_json::{from_str, to_string};
+use threadpool::ThreadPool;
 
 use super::{
-    app_manager::{check_for_updates, get_apps, install_apps, list_apps},
+    app_manager::{check_for_updates, get_apps, install_apps, list_apps, uninstall},
     get_commit,
 };
 
@@ -20,10 +21,12 @@ enum Order {
     GetUpdateStats(String),
     RunUpdateCheck(String),
     ListApps(String),
+    Commit(String),
     Stop(),
 }
 
 const ID: &str = "ā";
+static mut CACHE: Option<HashMap<String, String>> = None;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub enum Status {
@@ -40,6 +43,7 @@ pub struct UpdateStatus {
 }
 
 pub fn run(tx: Sender<String>, rx: Receiver<String>, client: Client) {
+    init_cache();
     spawn(move || {
         let mut queue: Vec<Order> = vec![];
 
@@ -57,6 +61,8 @@ pub fn run(tx: Sender<String>, rx: Receiver<String>, client: Client) {
             status: Status::Initial,
             updating: vec![],
         };
+
+        let pool = ThreadPool::new(30);
 
         loop {
             for _ in 0..20 {
@@ -83,6 +89,8 @@ pub fn run(tx: Sender<String>, rx: Receiver<String>, client: Client) {
             if difference > 60 * 60 {
                 commit_id = get_commit(0);
                 last_time = SystemTime::now();
+                init_cache();
+
                 check_for_updates(
                     client.clone(),
                     commit_id.clone(),
@@ -94,7 +102,20 @@ pub fn run(tx: Sender<String>, rx: Receiver<String>, client: Client) {
 
             for order in cloned_queue {
                 match order {
+                    Order::FetchApps(_, _) => {
+                        let tx = tx.clone();
+                        let order = order.clone();
+                        let client = client.clone();
+                        let commit = commit_id.clone();
+                        let status = update_status.clone();
+
+                        pool.execute(move || {
+                            execute_order(tx, order, commit, status, client);
+                        });
+                    }
                     Order::RunUpdateCheck(ref_id) => {
+                        pool.join();
+
                         check_for_updates(
                             client.clone(),
                             commit_id.clone(),
@@ -110,6 +131,14 @@ pub fn run(tx: Sender<String>, rx: Receiver<String>, client: Client) {
                                 .unwrap_or(())
                             },
                         );
+
+                        terminate(&tx, &&ref_id);
+                    }
+                    Order::Commit(ref_id) => {
+                        tx.send(format!("COMMIT{}{ref_id}{}{}", ID, ID, &commit_id))
+                            .unwrap_or(());
+
+                        terminate(&tx, &&ref_id);
                     }
                     _ => {
                         let tx = tx.clone();
@@ -149,9 +178,17 @@ fn execute_order(
                 to_string(&apps).unwrap_or("[]".to_string())
             ))
             .unwrap_or(());
+
+            terminate(&tx, &ref_id);
         }
         Order::InstallApps(apps, ref_id) => {
-            let unsuccessful = install_apps(apps.clone(), commit_id.clone(), client.clone());
+            let unsuccessful = install_apps(
+                apps.clone(),
+                commit_id.clone(),
+                client.clone(),
+                &tx,
+                &ref_id,
+            );
 
             tx.send(format!(
                 "INSTALLAPP{}{}{}{}",
@@ -161,8 +198,23 @@ fn execute_order(
                 to_string(&unsuccessful).unwrap_or("[]".to_string())
             ))
             .unwrap_or(());
+
+            terminate(&tx, &ref_id);
         }
-        Order::UninstallApps(_apps, _ref_id) => {}
+        Order::UninstallApps(apps, ref_id) => {
+            let unsuccessful = uninstall(apps.clone(), commit_id.clone(), client.clone());
+
+            tx.send(format!(
+                "UNINSTALLAPP{}{}{}{}",
+                ID,
+                ref_id,
+                ID,
+                to_string(&unsuccessful).unwrap_or("[]".to_string())
+            ))
+            .unwrap_or(());
+
+            terminate(&tx, &ref_id);
+        }
         Order::GetUpdateStats(ref_id) => {
             tx.send(format!(
                 "GET-UPDATE{}{}{}{}",
@@ -172,6 +224,8 @@ fn execute_order(
                 to_string(&update_status).unwrap_or("[]".to_string())
             ))
             .unwrap_or(());
+
+            terminate(&tx, &ref_id);
         }
         Order::ListApps(ref_id) => {
             let apps = list_apps();
@@ -184,9 +238,16 @@ fn execute_order(
                 to_string(&apps).unwrap_or("[]".to_string())
             ))
             .unwrap_or(());
+
+            terminate(&tx, &ref_id);
         }
         _ => {}
     }
+}
+
+fn terminate(tx: &Sender<String>, ref_id: &&String) {
+    tx.send(format!("TERMINATE{}{}{}{}", ID, ref_id, ID, ""))
+        .unwrap_or(());
 }
 
 fn check_rx(rx: &Receiver<String>, queue: &mut Vec<Order>) {
@@ -228,6 +289,9 @@ fn check_rx(rx: &Receiver<String>, queue: &mut Vec<Order>) {
             "LISTAPPS" => {
                 queue.push(Order::ListApps(ref_id.clone()));
             }
+            "COMMIT" => {
+                queue.push(Order::Commit(ref_id.clone()));
+            }
             "STOP" => {
                 queue.push(Order::Stop());
             }
@@ -241,4 +305,26 @@ fn check_rx(rx: &Receiver<String>, queue: &mut Vec<Order>) {
             _ => {}
         }
     }
+}
+
+fn init_cache() {
+    unsafe {
+        CACHE = Some(HashMap::new());
+    }
+}
+
+pub fn get_cache(key: String) -> Option<&'static String> {
+    unsafe {
+        if let Some(cache) = CACHE.as_ref() {
+            return cache.get(&key);
+        }
+    }
+    None
+}
+
+pub fn set_cache(key: String, value: String) -> Option<()> {
+    unsafe {
+        CACHE.as_mut()?.insert(key, value);
+    }
+    None
 }

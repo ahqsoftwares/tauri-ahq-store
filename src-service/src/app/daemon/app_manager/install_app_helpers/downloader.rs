@@ -81,14 +81,12 @@ pub fn download(url: String, folder: String, file_name: String, logger: fn(u64, 
 
     let mut downloader = Downloader::builder()
         .download_folder(Path::new(&folder.clone()))
-        .parallel_requests(1)
         .build()
         .unwrap();
 
-    let dl = downloader::Download::new(&url).file_name(file);
-
-    #[cfg(not(feature = "tui"))]
-    let dl = dl.progress(SimpleReporter::create(logger));
+    let dl = downloader::Download::new(&url)
+        .file_name(file)
+        .progress(SimpleReporter::create(logger));
 
     let result = downloader.download(&[dl]).unwrap();
 

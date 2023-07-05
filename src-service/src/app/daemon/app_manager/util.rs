@@ -6,7 +6,8 @@ pub static GITHACK: &str =
 pub static APPS_FOLDER: &str = "\\ProgramData\\AHQ Store Applications\\Programs";
 pub static INSTALLER_FOLDER: &str = "\\ProgramData\\AHQ Store Applications\\Installers";
 pub static DESKTOP_FOLDER: &str = "\\Users\\Public\\Desktop\\[app].lnk";
-pub static START_FOLDER: &str = "\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\AHQ Store\\[app].lnk";
+pub static START_FOLDER: &str =
+    "\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\AHQ Store\\[app].lnk";
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[allow(non_snake_case)]
@@ -17,14 +18,9 @@ pub struct Author {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RawAuthor {
-    pub id: String,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Repo {
     pub author: String,
-    pub location: String,
+    pub repo: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -37,15 +33,14 @@ pub struct RawApp {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[allow(non_snake_case)]
 pub struct GithubApp {
-    pub api: String,
-    pub appFinder: String,
-    pub author: RawAuthor,
+    pub author: String,
     pub description: String,
-    pub download_url: String,
+    pub download: String,
     pub exe: String,
-    pub img: String,
+    pub icon: String,
     pub repo: Repo,
     pub title: String,
+    pub displayName: String,
     pub version: String,
 }
 
@@ -61,7 +56,7 @@ pub struct AppDownloaded {
     pub url: String,
     pub exec: String,
     pub name: String,
-    pub version: String
+    pub version: String,
 }
 
 pub fn get_root() -> String {

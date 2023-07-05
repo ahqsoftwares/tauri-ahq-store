@@ -5,21 +5,26 @@ import { Auth, User, updateProfile } from "firebase/auth";
 //packages
 import Modal from "react-modal";
 import Toast from "../resources/api/toast";
-import getWindows, { getWindowsName, versionToBuild } from "../resources/api/os";
+import getWindows, {
+  getWindowsName,
+  versionToBuild,
+} from "../resources/api/os";
 
 //Tauri
 import { sendNotification } from "@tauri-apps/api/notification";
+import { getVersion } from "@tauri-apps/api/app";
+import { invoke } from "@tauri-apps/api/tauri";
 
 //Components
 import CheckBox from "./components/checkbox";
 import FontSelector from "./components/font";
+import SidebarSelector from "./components/sidebar";
+import PopUp from "./components/popup";
 
 import { BiMoon, BiSun } from "react-icons/bi";
 import { BsCodeSlash, BsFonts, BsWindowSidebar } from "react-icons/bs";
 import { FiDownload } from "react-icons/fi";
-import SidebarSelector from "./components/sidebar";
-import { getVersion } from "@tauri-apps/api/app";
-import { invoke } from "@tauri-apps/api/tauri";
+import { FaUsersGear } from "react-icons/fa6";
 
 interface InitProps {
   dark: boolean;
@@ -32,6 +37,7 @@ interface InitProps {
   setAutoUpdate: Function;
   sidebar: string;
   setSidebar: Function;
+  admin: boolean;
 }
 
 export default function Init(props: InitProps) {
@@ -70,7 +76,9 @@ export default function Init(props: InitProps) {
   const [ver, setVer] = useState("0.9.0");
 
   useEffect(() => {
-    getVersion().then(setVer).catch(() => {});
+    getVersion()
+      .then(setVer)
+      .catch(() => {});
   }, []);
 
   async function Update() {
@@ -119,7 +127,7 @@ export default function Init(props: InitProps) {
     }
 
     invoke("open", {
-      url
+      url,
     })
       .then(() => {
         toast?.edit("Opened in default browser", "success");
@@ -148,9 +156,16 @@ export default function Init(props: InitProps) {
       </Modal>
 
       <div className={darkMode(["menu"], props.dark)}>
-        <h1 className={`mt-3 text-3xl ${props.dark? "text-white" : "text-slate-700"} mr-auto ml-3`}>General</h1>
+        <h1
+          className={`mt-3 text-3xl ${
+            props.dark ? "text-white" : "text-slate-700"
+          } mr-auto ml-3`}
+        >
+          General
+        </h1>
 
         <CheckBox
+          url={false}
           dark={props.dark}
           title="Dark Mode"
           description="Enables or disables dark mode"
@@ -177,10 +192,17 @@ export default function Init(props: InitProps) {
           }}
         />
 
-        <h1 className={`mt-3 text-3xl ${props.dark? "text-white" : "text-slate-700"} mr-auto ml-3`}>Advanced</h1>
+        <h1
+          className={`mt-3 text-3xl ${
+            props.dark ? "text-white" : "text-slate-700"
+          } mr-auto ml-3`}
+        >
+          Advanced
+        </h1>
 
         <CheckBox
           dark={props.dark}
+          url={false}
           title="Auto Update Apps"
           description="Automatically update apps when I launch AHQ Store"
           Icon={FiDownload}
@@ -192,6 +214,7 @@ export default function Init(props: InitProps) {
 
         <CheckBox
           dark={props.dark}
+          url={false}
           title="Developer Mode"
           description={
             props.auth?.currentUser?.emailVerified
@@ -204,11 +227,30 @@ export default function Init(props: InitProps) {
           active={dev}
         />
 
-        <h1 className={`mt-3 text-3xl ${props.dark? "text-white" : "text-slate-700"} mr-auto ml-3`}>About</h1>
+        {props.admin ? (
+          <PopUp
+            dark={props.dark}
+            Icon={FaUsersGear}
+            title="Access Policy (todo!)"
+            description="Edit the policy for who can access AHQ Store"
+            onClick={() => {}}
+          />
+        ) : (
+          <></>
+        )}
+
+        <h1
+          className={`mt-3 text-3xl ${
+            props.dark ? "text-white" : "text-slate-700"
+          } mr-auto ml-3`}
+        >
+          About
+        </h1>
 
         <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
           <CheckBox
             dark={props.dark}
+            url={false}
             title="OS"
             description={`You are running Windows ${getWindowsName()}`}
             Icon={getWindows()}
@@ -223,6 +265,7 @@ export default function Init(props: InitProps) {
           <CheckBox
             dark={props.dark}
             title="Build"
+            url={true}
             description={`AHQ Store v${ver} (Build ${versionToBuild(ver)})`}
             Icon={"/logo192.png"}
             onClick={() => {
@@ -236,6 +279,7 @@ export default function Init(props: InitProps) {
         <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
           <CheckBox
             dark={props.dark}
+            url={true}
             title="Frontend Framework"
             description={`React (TypeScript)`}
             Icon={"/react.webp"}
@@ -251,6 +295,7 @@ export default function Init(props: InitProps) {
 
           <CheckBox
             dark={props.dark}
+            url={true}
             title="Backend Framework"
             description={`Tauri (Rust)`}
             Icon={"/tauri.svg"}
@@ -265,6 +310,7 @@ export default function Init(props: InitProps) {
         <div className="flex mx-auto w-[98%] h-auto items-center justify-center mb-5">
           <CheckBox
             dark={props.dark}
+            url={true}
             title="Developer"
             description={`AHQ (github.com/ahqsoftwares)`}
             Icon={"/ahq.png"}
@@ -281,6 +327,7 @@ export default function Init(props: InitProps) {
 
           <CheckBox
             dark={props.dark}
+            url={true}
             title="Github Repo"
             description={`Click to open in default browser`}
             Icon={props.dark ? "/github-dark.png" : "/github.png"}

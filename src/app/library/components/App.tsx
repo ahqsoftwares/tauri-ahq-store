@@ -6,7 +6,7 @@ import { BsTrash } from "react-icons/bs";
 import { IoIosNotifications } from "react-icons/io";
 
 //API
-import { cacheData } from "../../resources/api/fetchApps";
+import { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import {
   unInstall,
@@ -19,7 +19,7 @@ export default function App({
   reload,
   toast,
 }: {
-  appInfo: cacheData;
+  appInfo: appData;
   dark: boolean;
   reload: Function;
   toast: typeof Toast;
@@ -59,9 +59,9 @@ export default function App({
       <img
         width={"64px"}
         height={"64px"}
-        src={appInfo.img}
+        src={appInfo.icon}
         alt={appInfo.title}
-        className={`mr-2 ${appInfo.img === pkg ? "p-2" : ""}`}
+        className={`mr-2 ${appInfo.icon === pkg ? "p-2" : ""}`}
         draggable={false}
       ></img>
 

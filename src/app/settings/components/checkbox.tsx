@@ -1,8 +1,10 @@
 import { MouseEventHandler } from "react";
+import { FiExternalLink } from "react-icons/fi";
 import { IconType } from "react-icons/lib";
 
 export default function CheckBox(props: {
   dark: boolean;
+  url: boolean;
   disabled?: boolean;
   title: string;
   description: string;
@@ -12,7 +14,7 @@ export default function CheckBox(props: {
   noCheckbox?: boolean;
   roundedImage?: boolean;
 }) {
-  const { Icon, noCheckbox, roundedImage } = props;
+  const { Icon, noCheckbox, roundedImage, url } = props;
 
   function darkMode(classes: Array<string>, dark: boolean) {
     return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
@@ -36,7 +38,13 @@ export default function CheckBox(props: {
           <img
             src={Icon}
             alt="Icon"
-            style={{ minHeight: "2.5em", minWidth: "2.5em", maxHeight: "2.5em", maxWidth: "2.5em", borderRadius: roundedImage ? "20%" : 0  }}
+            style={{
+              minHeight: "2.5em",
+              minWidth: "2.5em",
+              maxHeight: "2.5em",
+              maxWidth: "2.5em",
+              borderRadius: roundedImage ? "20%" : 0,
+            }}
           />
         )}
       </div>
@@ -56,7 +64,19 @@ export default function CheckBox(props: {
 
       <div className="mx-auto"></div>
 
-      {noCheckbox ? <></> :
+      {noCheckbox ? (
+        <>
+          {url ? (
+            <FiExternalLink
+              size="2.5em"
+              className="my-auto"
+              color={props.dark ? "white" : "black"}
+            />
+          ) : (
+            <></>
+          )}
+        </>
+      ) : (
         <input
           className={props.active ? "slider" : "slider slider-disabled"}
           type={"range"}
@@ -65,7 +85,7 @@ export default function CheckBox(props: {
           value={props.active ? "55" : "5"}
           readOnly
         ></input>
-      }
+      )}
 
       <div className="mr-3"></div>
     </div>

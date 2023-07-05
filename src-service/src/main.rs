@@ -80,7 +80,9 @@ fn run_server(port: String, handle: ServiceStatusHandle) {
 
         match listen(&format!("127.0.0.1:{}", port), |out| {
             if !set {
-                unsafe{app::set_sender(out.clone());}
+                unsafe {
+                    app::set_sender(out.clone());
+                }
                 set = true;
             }
             move |msg: Message| {

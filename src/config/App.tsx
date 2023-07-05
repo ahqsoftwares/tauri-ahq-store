@@ -31,7 +31,7 @@ function App(props: { info: string }) {
     <header className="login-background">
       <div className={`modal ${perfs?.dark ? "modal-d" : ""}`}>
         <div className="mt-10"></div>
-        <h1>AHQ Store</h1>
+        <h1 style={perfs.dark ? { color: "white" } : undefined}>AHQ Store</h1>
         <div className="mt-[5rem]"></div>
         <img src={logo} alt={"logo"} width={"200px"} />
         <div className="mt-auto"></div>
@@ -40,7 +40,9 @@ function App(props: { info: string }) {
         </h2>
         <div className="mb-auto"></div>
         <h2 className="text-bold text-center mb-2">
-          {splashScreens[Math.floor(Math.random() * splashScreens.length)]}
+          {props.info === "Running PostInstall Script"
+            ? "Will be ready soon"
+            : splashScreens[Math.floor(Math.random() * splashScreens.length)]}
         </h2>
       </div>
     </header>

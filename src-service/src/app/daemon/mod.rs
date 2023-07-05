@@ -54,7 +54,7 @@ struct WsResponse {
     method: String,
     payload: String,
     ref_id: String,
-    auth: String
+    auth: String,
 }
 
 unsafe fn start_receiving() {
@@ -74,7 +74,8 @@ unsafe fn start_receiving() {
                     method: method.clone(),
                     payload: payload.clone(),
                     ref_id: ref_id.clone(),
-                    auth: include!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/auth/hash")).to_string()
+                    auth: include!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/auth/hash"))
+                        .to_string(),
                 };
 
                 if &ref_id == &String::from("CASUALUPDATE") {
@@ -84,22 +85,35 @@ unsafe fn start_receiving() {
                         sender.broadcast(data).unwrap_or(());
                     }
                 } else {
-                    iterated.clone().for_each(|(string, sender)| {
-                        if string == &ref_id {
-                            let data = to_string(&data).unwrap_or(String::from("\"Error\""));
+                    REQUESTS = iterated
+                        .filter(|(string, sender)| {
+                            if string == &ref_id {
+                                let data_clone = data.method.clone();
+                                let data = to_string(&data).unwrap_or(String::from("\"Error\""));
 
-                            sender.send(data).unwrap_or(());
-                        }
-                    });
+                                sender.send(data).unwrap_or(());
+                                return &data_clone != "TERMINATE";
+                            }
+                            true
+                        })
+                        .map(|(s, k)| (s.clone(), k.clone()))
+                        .collect();
                 }
 
-                REQUESTS = iterated
-                    .filter(|(string, _)| {
-                        string != &ref_id
-                            || (&method == &"UPDATE".to_string() && !payload.ends_with(":[]"))
-                    })
-                    .map(|(s, k)| (s.clone(), k.clone()))
-                    .collect();
+                #[cfg(debug_assertions)]
+                if let Some(sender) = &UNIVERSALSENDER {
+                    sender
+                        .broadcast(
+                            to_string(&WsResponse {
+                                auth: "%TEST%".into(),
+                                method: "STATS".into(),
+                                payload: REQUESTS.len().to_string(),
+                                ref_id: "%DEBUG%".into(),
+                            })
+                            .unwrap(),
+                        )
+                        .unwrap_or(());
+                }
             }
             _ => {}
         }
@@ -174,6 +188,40 @@ pub fn install_apps(ref_id: String, app_ids: Vec<String>, sender: WsSender) -> b
             ID,
             to_string(&app_ids).unwrap_or("".to_owned())
         )) {
+            Err(_) => {
+                return false;
+            }
+            _ => {
+                REQUESTS.push((ref_id.clone(), sender));
+                return true;
+            }
+        }
+    }
+}
+
+pub fn uninstall_apps(ref_id: String, app_ids: Vec<String>, sender: WsSender) -> bool {
+    unsafe {
+        match send(format!(
+            "{}{}UNINSTALL{}{}",
+            ref_id.clone(),
+            ID,
+            ID,
+            to_string(&app_ids).unwrap_or("".to_owned())
+        )) {
+            Err(_) => {
+                return false;
+            }
+            _ => {
+                REQUESTS.push((ref_id.clone(), sender));
+                return true;
+            }
+        }
+    }
+}
+
+pub fn get_commit_id(ref_id: String, sender: WsSender) -> bool {
+    unsafe {
+        match send(format!("{}{}COMMIT{}ee", ref_id.clone(), ID, ID)) {
             Err(_) => {
                 return false;
             }

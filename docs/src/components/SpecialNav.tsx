@@ -72,23 +72,31 @@ export default function Nav(props: prop) {
         )}
       </button>
 
-      {secretKeyUsed ? <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
-        {b === "active" ? (
-          <RiApps2Fill size={"2.5em"} />
-        ) : (
-          <RiApps2Line size={"2.5em"} />
-        )}
-      </button> : <></>}
+      {secretKeyUsed ? (
+        <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
+          {b === "active" ? (
+            <RiApps2Fill size={"2.5em"} />
+          ) : (
+            <RiApps2Line size={"2.5em"} />
+          )}
+        </button>
+      ) : (
+        <></>
+      )}
 
       <div className="mt-auto mb-auto"></div>
 
-      {secretKeyUsed ? <button className={`n-item ${c}`} onClick={() => changePage("docs")}>
-        {c === "active" ? (
-          <HiDocument size={"2.5em"} />
-        ) : (
-          <HiOutlineDocument size={"2.5em"} />
-        )}
-      </button> : <></>}
+      {secretKeyUsed ? (
+        <button className={`n-item ${c}`} onClick={() => changePage("docs")}>
+          {c === "active" ? (
+            <HiDocument size={"2.5em"} />
+          ) : (
+            <HiOutlineDocument size={"2.5em"} />
+          )}
+        </button>
+      ) : (
+        <></>
+      )}
 
       <button
         className={`n-item ${d} mb-5`}

@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
-import SearchModule from "fuse.js";
 
-import fetchApps, { fetchSearchData } from "../../resources/api/fetchApps";
+import SearchModule from "fuse.js";
+import fetchApps, {
+  appData,
+  fetchSearchData,
+} from "../../resources/api/fetchApps";
 import SearchResult from "../components/search_results";
-import { getData, setData } from "../../resources/utilities/database";
 import AppCard from "../components/app_card";
+
+import { getData, setData } from "../../resources/utilities/database";
 
 interface SearchProps {
   query: string;
@@ -12,12 +16,6 @@ interface SearchProps {
   show: Function;
   dark: boolean;
   special?: boolean;
-}
-interface App {
-  img: string;
-  title: string;
-  description: string;
-  id: string;
 }
 
 export default function Search(props: SearchProps) {
@@ -37,7 +35,7 @@ export default function Search(props: SearchProps) {
   if (!special) {
     return (
       <>
-        {matches.map((app: App, index: number) => {
+        {matches.map((app: appData, index: number) => {
           return (
             <>
               <SearchResult
@@ -48,7 +46,11 @@ export default function Search(props: SearchProps) {
                 show={show}
               />
               {String(index + 1) !== String(matches.length) ? (
-                <div className="h-[2px] rounded-xl my-[3px] mb-[5px] bg-gray-900 w-[100%]"></div>
+                <div
+                  className={`h-[2px] rounded-xl my-[3px] mb-[5px] ${
+                    dark ? "bg-white" : "bg-gray-900"
+                  } w-[100%]`}
+                ></div>
               ) : (
                 <></>
               )}
@@ -56,7 +58,11 @@ export default function Search(props: SearchProps) {
           );
         })}
         {matches.length === 0 ? (
-          <div className={`mx-auto my-2 flex items-center justify-center ${dark ? "text-slate-200" : ""}`}>
+          <div
+            className={`mx-auto my-2 flex items-center justify-center ${
+              dark ? "text-slate-200" : ""
+            }`}
+          >
             <span className="block">
               {searched ? "0 Apps Found" : "Just a moment..."}
             </span>
@@ -68,22 +74,30 @@ export default function Search(props: SearchProps) {
     );
   } else {
     return (
-      <div className="w-[100%] h-[auto] overflow-scroll search-app-grid">
-        {matches.map((app: App) => {
+      <div
+        className={`w-[100%] h-[auto] overflow-scroll search-app-grid ${
+          matches.length == 0 ? "special-app-grid" : ""
+        }`}
+      >
+        {matches.map((app: appData) => {
           return (
-              <AppCard
-                id={app.id}
-                key={app.id}
-                dark={dark}
-                onClick={() => {
-                  set(app.id)
-                  show();
-                }}
-              />
+            <AppCard
+              id={app.id}
+              key={app.id}
+              dark={dark}
+              onClick={() => {
+                set(app.id);
+                show();
+              }}
+            />
           );
         })}
         {matches.length === 0 ? (
-          <div className={`mx-auto my-2 flex items-center justify-center ${dark ? "text-slate-200" : ""}`}>
+          <div
+            className={`mx-auto my-2 flex items-center justify-center ${
+              dark ? "text-slate-200" : ""
+            }`}
+          >
             <span className="block">
               {searched ? "0 Apps Found" : "Just a moment..."}
             </span>
@@ -91,6 +105,7 @@ export default function Search(props: SearchProps) {
         ) : (
           <></>
         )}
+        <div className="h-[5rem]"></div>
       </div>
     );
   }

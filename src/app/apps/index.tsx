@@ -170,7 +170,9 @@ export default function Apps(props: AppsProps) {
             <div
               className={`absolute ${
                 !dark ? "bg-gray-100 text-black" : "bg-gray-800 text-white"
-              } rounded-md shadow-2xl mt-1`}
+              } rounded-md shadow-2xl mt-1 ${
+                search.length > 0 && !enter ? "border border-white" : ""
+              }`}
               id="search-result"
             >
               {search.length > 0 && !enter ? (

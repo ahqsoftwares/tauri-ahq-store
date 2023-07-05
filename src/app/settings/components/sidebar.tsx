@@ -41,7 +41,7 @@ export default function SidebarSelector(props: {
       <div className="ml-3"></div>
 
       <h6 style={{ cursor: "default" }}>
-        Sidebar<p>Choose the sidebar styly that suits you best!</p>
+        Sidebar<p>Choose the sidebar style that suits you best!</p>
       </h6>
 
       <div className="mx-auto"></div>

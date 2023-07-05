@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { GiPartyPopper } from "react-icons/gi";
 import { IoIosNotifications } from "react-icons/io";
-import fetchApps, { cacheData } from "../../resources/api/fetchApps";
+import fetchApps, { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import listAllApps from "../../resources/utilities/listAllApps";
 import App from "./App";
@@ -16,7 +16,7 @@ interface Props {
 export default function AppsList(props: Props) {
   const { dark, change } = props;
 
-  const [apps, setApps] = useState<cacheData[]>([]);
+  const [apps, setApps] = useState<appData[]>([]);
   const [rawApps, setRawApps] = useState(0);
 
   async function parseAppsData() {
@@ -25,7 +25,7 @@ export default function AppsList(props: Props) {
       setRawApps(1);
     }
     const resolvedApps = await fetchApps(Object.keys(apps));
-    setApps(resolvedApps as cacheData[]);
+    setApps(resolvedApps as appData[]);
   }
 
   useEffect(() => {

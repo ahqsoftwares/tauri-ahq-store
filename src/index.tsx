@@ -96,20 +96,21 @@ appWindow.onFocusChanged(({ payload: focused }) => {
 
 /**Sub or main? */
 if (appWindow.label === "main") {
+  appWindow.show();
   loadAppVersion();
   init();
+
+  const unlisten = appWindow.listen("needs_reinstall", () => {
+    unlisten.then((f) => f());
+    setInterval(() => render("Running PostInstall Script", App), 10);
+  });
 
   /*Logic
    */
   (async () => {
     let permissionGranted = await isPermissionGranted();
-    const autostarted = await invoke("autostart");
 
     appWindow.emit("ready", "");
-
-    if (!autostarted) {
-      appWindow.show();
-    }
 
     if (!(await appWindow.isMaximized())) {
       appWindow.maximize();
@@ -229,8 +230,7 @@ if (appWindow.label === "main") {
 
       auth.onAuthStateChanged((user) => {
         if (user && !user.emailVerified) {
-          sendEmailVerification(user)
-            .catch(() => {});
+          sendEmailVerification(user).catch(() => {});
           sendNotification({
             title: "Email Verification",
             body: "Email verification link send! Please verify",

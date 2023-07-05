@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 //Worker
 import { BiArrowBack } from "react-icons/bi";
 import Modal from "react-modal";
-import fetchApps from "../../resources/api/fetchApps";
+import fetchApps, { appData } from "../../resources/api/fetchApps";
 
 //AHQ Store Installer
 import {
@@ -34,11 +34,20 @@ function formatBytes(bytes: number, decimals = 2) {
 export default function ShowModal(props: AppDataPropsModal) {
   const { shown, dark, change, installData } = props;
 
-  const [appData, setAppData] = useState<any>({
-    img: "",
+  const [appData, setAppData] = useState<appData>({
+    icon: "",
     title: "",
     description: "",
-    author: {},
+    author: "",
+    displayName: "",
+    download: "",
+    exe: "",
+    id: "",
+    repo: {
+      author: "",
+      repo: "",
+    },
+    version: "",
   });
   const [working, setWorking] = useState(false);
   const button = useRef<HTMLButtonElement>("" as any);
@@ -48,8 +57,8 @@ export default function ShowModal(props: AppDataPropsModal) {
   useEffect(() => {
     (async () => {
       if ((installData || "") !== "") {
-        setInstalled(await isInstalled(installData));
-        setAppData(await fetchApps(installData));
+        /*setInstalled(await isInstalled(installData));*/
+        setAppData((await fetchApps(installData)) as any);
 
         setUpdating(
           updaterStatus().apps?.includes(installData) === true ? true : false
@@ -58,7 +67,7 @@ export default function ShowModal(props: AppDataPropsModal) {
     })();
   }, [installData]);
 
-  const { img, title, description, author } = appData;
+  const { icon, title, description, AuthorObject } = appData;
 
   const modalStyles = {
     content: {
@@ -110,7 +119,7 @@ export default function ShowModal(props: AppDataPropsModal) {
             <img
               width={128}
               height={128}
-              src={img}
+              src={icon}
               alt="Logo"
               className="rounded-3xl shadow-2xl"
             ></img>
@@ -190,7 +199,7 @@ export default function ShowModal(props: AppDataPropsModal) {
             {/*Author*/}
             <div className="w-[100%]">
               <h1 className="text-xl">About Developer</h1>
-              <h2 className="text-lg">{author.displayName}</h2>
+              <h2 className="text-lg">{AuthorObject?.displayName}</h2>
             </div>
 
             {/*Ratings (soon)*/}

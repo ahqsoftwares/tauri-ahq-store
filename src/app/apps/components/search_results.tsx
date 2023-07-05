@@ -1,6 +1,6 @@
 interface SearchPropsToRender {
-  img: string;
-  title: string;
+  icon: string;
+  displayName: string;
   description: string;
   id: string;
   set: Function;
@@ -9,7 +9,7 @@ interface SearchPropsToRender {
 }
 
 export default function Load(props: SearchPropsToRender) {
-  const { img, title, description, show, set, id, dark } = props;
+  const { icon, displayName, description, show, set, id, dark } = props;
 
   return (
     <div
@@ -20,9 +20,9 @@ export default function Load(props: SearchPropsToRender) {
         show();
       }}
     >
-      <img src={img} alt="Logo" />
+      <img src={icon} alt="Logo" />
       <div className="ml-2">
-        <h1 className={dark ? "text-white" : "text-black"}>{title}</h1>
+        <h1 className={dark ? "text-white" : "text-black"}>{displayName}</h1>
         <h2>
           {description.length > 30
             ? `${description.substring(0, 30)}...`

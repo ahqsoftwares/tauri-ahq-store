@@ -73,9 +73,7 @@ export default function Home(props: HomeProps) {
             setTimeout(() => {
               try {
                 h1.innerHTML += greetText[i];
-              } catch (e) {
-                console.log(e);
-              }
+              } catch (_) {}
             }, 50 * i);
           } catch (_) {}
         }
@@ -91,19 +89,21 @@ export default function Home(props: HomeProps) {
       )} flex flex-col justify-center`}
     >
       <div className="flex justify-center items-center mb-auto mt-3">
-        <img src={AHQStore} alt="Logo" width={"100px"} draggable={false} />
+        <img src={AHQStore} alt="Logo" width={"125px"} draggable={false} />
         <h1
           className={`block ml-2 style-h1 ${props.dark ? "style-h1-d" : ""}`}
           style={{
             fontSize: "100px",
-            color: "rgb(96,70,255)",
+            color: props.dark ? "white" : "rgb(185,28,28)",
           }}
         >
           AHQ Store
         </h1>
         <span
-          className={`block mt-auto text-red-600 ml-2`}
-          style={{ fontSize: "50px", fontWeight: "10px" }}
+          className={`block mt-auto ${
+            props.dark ? "text-red-600" : "text-black"
+          } ml-2`}
+          style={{ fontSize: "40px", fontWeight: "10px" }}
         >
           v{version}
         </span>

@@ -1,20 +1,7 @@
 use std::os::windows::process::CommandExt;
 use std::{path::Path, process::Command};
-use winapi_easy::ui::{ProgressState, Taskbar, Window};
 
 pub fn extract(path: &Path, location: &Path) -> i32 {
-    match Taskbar::new() {
-        Ok(mut taskbar) => match Window::get_console_window() {
-            Some(mut window) => {
-                taskbar
-                    .set_progress_state(&mut window, ProgressState::Indeterminate)
-                    .expect("");
-            }
-            _ => {}
-        },
-        _ => {}
-    }
-
     let args: (&Path, &Path) = (path, location);
     print!("{} {}", args.0.to_string_lossy(), args.1.to_string_lossy());
 
@@ -31,19 +18,7 @@ pub fn extract(path: &Path, location: &Path) -> i32 {
     {
         Ok(mut child) => match child.wait() {
             Ok(status) => {
-                if status.success() {
-                    match Taskbar::new() {
-                        Ok(mut taskbar) => match Window::get_console_window() {
-                            Some(mut window) => {
-                                taskbar
-                                    .set_progress_state(&mut window, ProgressState::NoProgress)
-                                    .expect("");
-                            }
-                            _ => {}
-                        },
-                        _ => return 1,
-                    }
-                } else {
+                if !status.success() {
                     return 1;
                 }
             }
