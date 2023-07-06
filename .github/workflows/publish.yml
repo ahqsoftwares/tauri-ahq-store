@@ -80,27 +80,16 @@ jobs:
           name: service.exe
           path: "src-service-tools/target/release/ahqstore_service.exe"
 
-      - name: Upload to Release
-        uses: actions/github-script@v3
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: ahqsoftwares/upload-release-asset@v20
         env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          script: |
-            const fs = require("fs");
-            const blob = fs.readFileSync("./src-service/target/release/ahqstore_service.exe");
-
-            await github.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=ahqstore_service.exe', {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: process.env.release_id,
-              data: blob,
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                "Content-Type": "application/octet-stream",
-                "Content-Length": blob.length
-              }
-            });
-
+          id: ${{ needs.create-release.outputs.release_id }}
+          asset_path: ./src-service/target/release/ahqstore_service.exe
+          asset_name: ahqstore_service.exe
+          asset_content_type: application/octet-stream
 
   make-postinstaller:
     needs: create-release
@@ -124,27 +113,17 @@ jobs:
         with:
           name: postinstall.exe
           path: "src-service-tools/target/release/store-tools-installer.exe"
-
-      - name: Upload to Release
-        uses: actions/github-script@v3
+          
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: ahqsoftwares/upload-release-asset@v20
         env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          script: |
-            const fs = require("fs");
-            const blob = fs.readFileSync("./src-service-tools/target/release/store-tools-installer.exe");
-
-            await github.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=store-tools-installer.exe', {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: process.env.release_id,
-              data: blob,
-              headers: {
-                'X-GitHub-Api-Version': '2022-11-28',
-                "Content-Type": "application/octet-stream",
-                "Content-Length": blob.length
-              }
-            });
+          id: ${{ needs.create-release.outputs.release_id }}
+          asset_path: ./src-service-tools/target/release/store-tools-installer.exe
+          asset_name: store-tools-installer.exe
+          asset_content_type: application/octet-stream
 
   publish-tauri:
     needs: create-release
