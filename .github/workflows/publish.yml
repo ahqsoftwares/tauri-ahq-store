@@ -1,11 +1,143 @@
-name: "Build & Publish (App + Service)"
+name: "Build & Publish App, Service, Scripts"
 on:
   push:
     branches:
       - master
 
 jobs:
+  create-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create-release.outputs.result }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Create Release
+        id: create-release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require("fs");
+            const version = require('./package.json').version;
+
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: version,
+              name: `AHQ Store v${version}`,
+              body: String(fs.readFileSync("./latest.md")),
+              draft: true
+            });
+            return data.id
+
+  make-service:
+    needs: create-release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Deps
+        run: pnpm install
+      
+      - name: Run Decryptor / Load Key
+        run: node encryptor.js
+        env:
+          KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
+
+      - name: Build Service
+        run: cargo build --release
+        working-directory: src-service
+      
+      - name: Upload Executable (standalone)
+        uses: actions/upload-artifact@v3
+        with:
+          name: service.exe
+          path: "src-service-tools/target/release/ahqstore_service.exe"
+
+      - name: Upload to Release
+        uses: actions/github-script@v3
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            const fs = require("fs");
+
+            await octokit.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=ahqstore_service.exe', {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.release_id,
+              data: fs.readFileSync("./src-service-tools/target/release/ahqstore_service.exe"),
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            });
+
+
+  make-postinstaller:
+    needs: create-release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Build Service Installer
+        run: cargo build --release
+        working-directory: src-service-tools
+
+      - name: Upload Executable (standalone)
+        uses: actions/upload-artifact@v3
+        with:
+          name: postinstall.exe
+          path: "src-service-tools/target/release/store-tools-installer.exe"
+
+      - name: Upload to Release
+        uses: actions/github-script@v3
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            const fs = require("fs");
+
+            await octokit.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=store-tools-installer.exe', {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.release_id,
+              data: fs.readFileSync("./src-service/target/release/store-tools-installer.exe"),
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            });
+
   publish-tauri:
+    needs: create-release
     strategy:
       fail-fast: false
       matrix:
@@ -13,14 +145,20 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: setup node
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
 
-      - name: install Rust stable
+      - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
 
       - name: install dependencies (ubuntu only)
@@ -29,62 +167,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
 
-      - name: Cache store
-        uses: actions/cache@v3
-        with:
-          key: ${{ runner.os }}-build
-          path: |
-            build
-            node_modules
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-
-      - name: install Encryptor & Vite dependencies and build React App
+      - name: install Vite dependencies and Build React App
         run: pnpm install; pnpm build
         env:
           CI: "false"
 
-      - name: Load Encryptor Key
+      - name: Decrypt Key / Load Encryption Key
         run: node encryptor.js
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
-
-      - name: Get Version from package.json
-        uses: actions/github-script@v6
-        id: result
-        with:
-          script: return require("./package.json").version
-          result-encoding: string
-
-      - name: Build Service
-        run: cd src-service; cargo build --release; cd ..
-
-      - name: Build Service Installer
-        run: cd src-service-tools; cargo build --release; cd ..
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: service.exe
-          path: |
-            src-service/target/release/ahqstore_service.exe
-            src-service-tools/target/release/store-tools-installer.exe
-
-      - name: Release Service
-        uses: softprops/action-gh-release@v1
-        id: release
-        with:
-          name: AHQ Store ${{ steps.result.outputs.result }}
-          tag_name: ${{ steps.result.outputs.result }}
-          body_path: ./latest.md
-          draft: true
-          files: |
-            src-service/target/release/ahqstore_service.exe
-            src-service-tools/target/release/store-tools-installer.exe
 
       - name: Clone VCpkg
         run: git clone https://github.com/Microsoft/vcpkg.git
@@ -104,7 +195,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{secrets.TAURI}}
         with:
-          releaseId: ${{ steps.release.outputs.id }}
+          args: --verboose
+          releaseId: ${{ needs.create-release.outputs.release_id }}
 
       - name: Upload Executable (standalone)
         uses: actions/upload-artifact@v3
