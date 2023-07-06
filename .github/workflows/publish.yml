@@ -6,9 +6,13 @@ on:
 
 jobs:
   create-release:
+    name: Create a new github release
+
     permissions:
       contents: write
+    
     runs-on: ubuntu-latest
+    
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
 
@@ -81,7 +85,6 @@ jobs:
           path: "src-service-tools/target/release/ahqstore_service.exe"
 
       - name: Upload Release Asset
-        id: upload-release-asset 
         uses: ahqsoftwares/upload-release-asset@v20
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -115,7 +118,6 @@ jobs:
           path: "src-service-tools/target/release/store-tools-installer.exe"
           
       - name: Upload Release Asset
-        id: upload-release-asset 
         uses: ahqsoftwares/upload-release-asset@v20
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -186,7 +188,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{secrets.TAURI}}
         with:
-          args: --verboose
+          args: --verbose
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
       - name: Upload Executable (standalone)
