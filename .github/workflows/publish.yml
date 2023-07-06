@@ -89,7 +89,7 @@ jobs:
             const fs = require("fs");
             const blob = fs.readFileSync("./src-service/target/release/ahqstore_service.exe");
 
-            await octokit.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=ahqstore_service.exe', {
+            await github.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=ahqstore_service.exe', {
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: process.env.release_id,
@@ -134,7 +134,7 @@ jobs:
             const fs = require("fs");
             const blob = fs.readFileSync("./src-service-tools/target/release/store-tools-installer.exe");
 
-            await octokit.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=store-tools-installer.exe', {
+            await github.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=store-tools-installer.exe', {
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: process.env.release_id,
