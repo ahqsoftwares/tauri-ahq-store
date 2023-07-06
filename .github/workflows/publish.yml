@@ -85,14 +85,17 @@ jobs:
         with:
           script: |
             const fs = require("fs");
+            const blob = fs.readFileSync("./src-service-tools/target/release/ahqstore_service.exe");
 
             await octokit.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=ahqstore_service.exe', {
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: process.env.release_id,
-              data: fs.readFileSync("./src-service-tools/target/release/ahqstore_service.exe"),
+              data: blob,
               headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
+                'X-GitHub-Api-Version': '2022-11-28',
+                "Content-Type": "application/octet-stream",
+                "Content-Length": blob.length
               }
             });
 
@@ -125,14 +128,17 @@ jobs:
         with:
           script: |
             const fs = require("fs");
+            const blob = fs.readFileSync("./src-service/target/release/store-tools-installer.exe");
 
             await octokit.request('POST /repos/{owner}/{repo}/releases/{release_id}/assets?name=store-tools-installer.exe', {
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: process.env.release_id,
-              data: fs.readFileSync("./src-service/target/release/store-tools-installer.exe"),
+              data: blob,
               headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
+                'X-GitHub-Api-Version': '2022-11-28',
+                "Content-Type": "application/octet-stream",
+                "Content-Length": blob.length
               }
             });
 
