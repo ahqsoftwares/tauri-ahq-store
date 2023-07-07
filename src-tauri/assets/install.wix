@@ -220,7 +220,7 @@
             <ComponentRef Id="{{ bin.id }}"/>
             {{/each~}}
             </Feature>
-	    <ComponentRef Id="UninstallService" Guid="*">
+	    <Component Id="UninstallService" Guid="*">
                 <ServiceControl Id="runner_service" Name="AHQ Store Service" Stop="both" Remove="both" Wait="yes" />
             </Component>
         </Feature>
