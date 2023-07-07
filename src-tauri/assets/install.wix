@@ -111,7 +111,7 @@
                     <RegistryValue Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
                 </RegistryKey>
             </Component>
-            <Component Id="Path" <DirectoryRef Id="INSTALLFOLDER">{{{path_component_guid}}}" Win64="$(var.Win64)">
+            <Component Id="Path" Guid="{{{path_component_guid}}}" Win64="$(var.Win64)">
                 <File Id="Path" Source="{{{app_exe_source}}}" KeyPath="yes" Checksum="yes"/>
                 <ServiceControl Id="DelService" Name="AHQ Store Service" Stop="both" Remove="both" />
             </Component>
