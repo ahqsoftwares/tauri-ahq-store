@@ -177,7 +177,7 @@ jobs:
         run: .\vcpkg\bootstrap-vcpkg.bat
 
       - name: Install openssl
-        run: .\vcpkg\vcpkg install openssl --triplet x64-windows-static-md
+        run: .\vcpkg\vcpkg install openssl --triplet x64-windows-static-md --parallel
 
       - name: Integrate
         run: .\vcpkg\vcpkg integrate install
