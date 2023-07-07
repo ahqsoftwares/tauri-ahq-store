@@ -111,8 +111,9 @@
                     <RegistryValue Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
                 </RegistryKey>
             </Component>
-            <Component Id="Path" Guid="{{{path_component_guid}}}" Win64="$(var.Win64)">
+            <Component Id="Path" <DirectoryRef Id="INSTALLFOLDER">{{{path_component_guid}}}" Win64="$(var.Win64)">
                 <File Id="Path" Source="{{{app_exe_source}}}" KeyPath="yes" Checksum="yes"/>
+                <ServiceControl Id="DelService" Name="AHQ Store Service" Stop="both" Remove="both" />
             </Component>
             {{#each binaries as |bin| ~}}
             <Component Id="{{ bin.id }}" Guid="{{bin.guid}}" Win64="$(var.Win64)">
@@ -220,9 +221,7 @@
             <ComponentRef Id="{{ bin.id }}"/>
             {{/each~}}
             </Feature>
-	    <ComponentRef Id="UninstallService" Guid="*">
-                <ServiceControl Id="runner_service" Name="AHQ Store Service" Stop="both" Remove="both" Wait="yes" />
-            </Component>
+
         </Feature>
 
         <Feature Id="External" AllowAdvertise="no" Absent="disallow">

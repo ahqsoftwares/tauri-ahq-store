@@ -26,6 +26,13 @@ AHQ Store is a **free** and **open sourced** App Store, which allows you to publ
  - Add support for linux[***](#references)
  - Introduce more app framework examples[*\***](#references)
 
+## Security
+Although Applications are tested by the experts before supplying the apps, the store does not have **any responsibility** for **any apps** not owned by:
+ - **AHQ Store**
+ - **ALang**
+ - **AHQ Store Framework Service**
+ - **AHQ Softwares**
+
 ## License
 
 ### Protected with Creative Commons license
