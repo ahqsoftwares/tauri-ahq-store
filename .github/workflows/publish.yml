@@ -85,22 +85,14 @@ jobs:
           path: "src-service-tools/target/release/ahqstore_service.exe"
 
       - name: Upload Release Asset
-        uses: ahqsoftwares/upload-release-asset@v21
+        uses: ahqsoftwares/upload-release-asset@v22
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           id: ${{ needs.create-release.outputs.release_id }}
           asset_path: ./src-service/target/release/ahqstore_service.exe
           asset_name: ahqstore_service.exe
-          asset_content_type: application/octet-stream
-      
-      - name: Cancel if needed
-        uses: vishnudxb/cancel-workflow@v1.2
-        if: failure()
-        with:
-          repo: ahqsoftwares/tauri-ahq-store
-          workflow_id: ${{ github.run_id }}
-          access_token: ${{ github.token }}
+          asset_content_type: application/octet-stream  
           
   make-postinstaller:
     needs: create-release
@@ -126,7 +118,7 @@ jobs:
           path: "src-service-tools/target/release/store-tools-installer.exe"
           
       - name: Upload Release Asset
-        uses: ahqsoftwares/upload-release-asset@v21
+        uses: ahqsoftwares/upload-release-asset@v22
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -135,14 +127,6 @@ jobs:
           asset_name: store-tools-installer.exe
           asset_content_type: application/octet-stream
       
-      - name: Cancel if needed
-        uses: vishnudxb/cancel-workflow@v1.2
-        if: failure()
-        with:
-          repo: ahqsoftwares/tauri-ahq-store
-          workflow_id: ${{ github.run_id }}
-          access_token: ${{ github.token }}
-
   publish-tauri:
     needs: create-release
     name: Build & Publish Tauri App
@@ -212,11 +196,3 @@ jobs:
         with:
           name: ahqstore.exe
           path: "src-tauri/target/release/AHQ Store.exe"
-
-      - name: Cancel if needed
-        uses: vishnudxb/cancel-workflow@v1.2
-        if: failure()
-        with:
-          repo: ahqsoftwares/tauri-ahq-store
-          workflow_id: ${{ github.run_id }}
-          access_token: ${{ github.token }}
