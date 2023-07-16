@@ -86,7 +86,7 @@ fn main() {
         &ahqstore_service_url
     );
 
-    std::fs::remove_file(format!("{}\\ahqstore_service.exe", &astore_dir)).unwrap_or();
+    std::fs::remove_file(format!("{}\\ahqstore_service.exe", &astore_dir)).unwrap_or(());
 
     download(&astore_dir, &ahqstore_service_url);
 
