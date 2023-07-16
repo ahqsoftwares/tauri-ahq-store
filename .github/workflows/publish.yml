@@ -50,14 +50,18 @@ jobs:
         env:
           data: ${{ steps.create-release.outputs.result }}
         with:
+          result-encoding: string
           script: |
             let data = process.env.data;
-            console.log(data);
+            
             try {
-              const data = JSON.parse(data);
+              data = JSON.parse(data);
+
+              console.log(data.id);
 
               return data.id;
             } catch (_) {
+              console.log(data.id);
               return data.id;
             }
 
@@ -67,14 +71,18 @@ jobs:
         env:
           data: ${{ steps.create-release.outputs.result }}
         with:
+          result-encoding: string
           script: |
             let data = process.env.data;
-            console.log(data);
+            
             try {
-              const data = JSON.parse(data);
+              data = JSON.parse(data);
+
+              console.log(data.upload_url);
 
               return data.upload_url;
             } catch (_) {
+              console.log(data.upload_url);
               return data.upload_url;
             }
 
