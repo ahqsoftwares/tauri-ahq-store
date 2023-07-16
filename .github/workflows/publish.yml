@@ -82,10 +82,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: service.exe
-          path: "src-service-tools/target/release/ahqstore_service.exe"
+          path: ./src-service/target/release/ahqstore_service.exe
 
       - name: Upload Release Asset
-        uses: ahqsoftwares/upload-release-asset@v20
+        uses: ahqsoftwares/upload-release-asset@v22
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -93,14 +93,6 @@ jobs:
           asset_path: ./src-service/target/release/ahqstore_service.exe
           asset_name: ahqstore_service.exe
           asset_content_type: application/vnd.microsoft.portable-executable
-      
-      - name: Cancel if needed
-        uses: vishnudxb/cancel-workflow@v1.2
-        if: failure()
-        with:
-          repo: ahqsoftwares/tauri-ahq-store
-          workflow_id: ${{ github.run_id }}
-          access_token: ${{ github.token }}
           
   make-postinstaller:
     needs: create-release
@@ -126,7 +118,7 @@ jobs:
           path: "src-service-tools/target/release/store-tools-installer.exe"
           
       - name: Upload Release Asset
-        uses: ahqsoftwares/upload-release-asset@v20
+        uses: ahqsoftwares/upload-release-asset@v22
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -134,14 +126,6 @@ jobs:
           asset_path: ./src-service-tools/target/release/store-tools-installer.exe
           asset_name: store-tools-installer.exe
           asset_content_type: application/vnd.microsoft.portable-executable
-      
-      - name: Cancel if needed
-        uses: vishnudxb/cancel-workflow@v1.2
-        if: failure()
-        with:
-          repo: ahqsoftwares/tauri-ahq-store
-          workflow_id: ${{ github.run_id }}
-          access_token: ${{ github.token }}
 
   publish-tauri:
     needs: create-release
