@@ -1,3 +1,4 @@
+[![References](https://cdn-icons-png.flaticon.com/512/2271/2271631.png =25x25)](#references)
 [![App Publish](https://github.com/ahqsoftwares/tauri-ahq-store/actions/workflows/publish.yml/badge.svg?branch=master)](https://github.com/ahqsoftwares/tauri-ahq-store/actions/workflows/publish.yml)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store?ref=badge_shield)
 
@@ -51,6 +52,7 @@ You are allowed to:
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store?ref=badge_large)
 
 # References
+- [Terms of Service](https://github.com/ahqsoftwares/tauri-ahq-store/security/policy)
 - [*](#ahq-store) Your app must not be a malware
 - [**](#features) Might work for Windows 8.1 or 7, in our vms that didn't
 - [***](#drawbacks) No ETA available for linux
