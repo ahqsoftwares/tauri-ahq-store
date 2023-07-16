@@ -4,6 +4,8 @@
 name: Deploy to Firebase Hosting on merge
 "on":
   push:
+    paths: |
+      docs
     branches:
       - master
 jobs:
