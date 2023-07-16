@@ -85,7 +85,7 @@ jobs:
           path: "src-service-tools/target/release/ahqstore_service.exe"
 
       - name: Upload Release Asset
-        uses: ahqsoftwares/upload-release-asset@v20
+        uses: ahqsoftwares/upload-release-asset@v21
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -93,7 +93,15 @@ jobs:
           asset_path: ./src-service/target/release/ahqstore_service.exe
           asset_name: ahqstore_service.exe
           asset_content_type: application/octet-stream
-
+      
+      - name: Cancel if needed
+        uses: vishnudxb/cancel-workflow@v1.2
+        if: failure()
+        with:
+          repo: ahqsoftwares/tauri-ahq-store
+          workflow_id: ${{ github.run_id }}
+          access_token: ${{ github.token }}
+          
   make-postinstaller:
     needs: create-release
     name: Build & Publish Postinstaller Script
@@ -118,7 +126,7 @@ jobs:
           path: "src-service-tools/target/release/store-tools-installer.exe"
           
       - name: Upload Release Asset
-        uses: ahqsoftwares/upload-release-asset@v20
+        uses: ahqsoftwares/upload-release-asset@v21
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -126,13 +134,21 @@ jobs:
           asset_path: ./src-service-tools/target/release/store-tools-installer.exe
           asset_name: store-tools-installer.exe
           asset_content_type: application/octet-stream
+      
+      - name: Cancel if needed
+        uses: vishnudxb/cancel-workflow@v1.2
+        if: failure()
+        with:
+          repo: ahqsoftwares/tauri-ahq-store
+          workflow_id: ${{ github.run_id }}
+          access_token: ${{ github.token }}
 
   publish-tauri:
     needs: create-release
     name: Build & Publish Tauri App
 
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         platform: [windows-latest]
 
@@ -196,3 +212,11 @@ jobs:
         with:
           name: ahqstore.exe
           path: "src-tauri/target/release/AHQ Store.exe"
+
+      - name: Cancel if needed
+        uses: vishnudxb/cancel-workflow@v1.2
+        if: failure()
+        with:
+          repo: ahqsoftwares/tauri-ahq-store
+          workflow_id: ${{ github.run_id }}
+          access_token: ${{ github.token }}
