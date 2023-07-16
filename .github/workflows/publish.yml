@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     
     outputs:
-      release_id: ${{ steps.create-release.outputs.result }}
+      upload_url: ${{ steps.get-u-url.outputs.result }}
+      release_id: ${{ steps.get-id.outputs.result }}
 
     steps:
       - name: Checkout Repo
@@ -41,7 +42,41 @@ jobs:
               body: String(fs.readFileSync("./latest.md")),
               draft: true
             });
-            return data.id
+            return data
+
+      - name: Get Release Id
+        id: get-id
+        uses: actions/github-script@v6
+        env:
+          data: ${{ steps.create-release.outputs.result }}
+        with:
+          script: |
+            let data = process.env.data;
+            console.log(data);
+            try {
+              const data = JSON.parse(data);
+
+              return data.id;
+            } catch (_) {
+              return data.id;
+            }
+
+      - name: Get Upload Url
+        id: get-u-url
+        uses: actions/github-script@v6
+        env:
+          data: ${{ steps.create-release.outputs.result }}
+        with:
+          script: |
+            let data = process.env.data;
+            console.log(data);
+            try {
+              const data = JSON.parse(data);
+
+              return data.upload_url;
+            } catch (_) {
+              return data.upload_url;
+            }
 
   make-service:
     needs: create-release
@@ -85,11 +120,12 @@ jobs:
           path: ./src-service/target/release/ahqstore_service.exe
 
       - name: Upload Release Asset
-        uses: ahqsoftwares/upload-release-asset@v22
+        id: upload-release-asset
+        uses: sekwah41/upload-release-assets@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          id: ${{ needs.create-release.outputs.release_id }}
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./src-service/target/release/ahqstore_service.exe
           asset_name: ahqstore_service.exe
           asset_content_type: application/vnd.microsoft.portable-executable
@@ -116,16 +152,18 @@ jobs:
         with:
           name: postinstall.exe
           path: "src-service-tools/target/release/store-tools-installer.exe"
-          
+
       - name: Upload Release Asset
-        uses: ahqsoftwares/upload-release-asset@v22
+        id: upload-release-asset
+        uses: sekwah41/upload-release-assets@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          id: ${{ needs.create-release.outputs.release_id }}
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./src-service-tools/target/release/store-tools-installer.exe
           asset_name: store-tools-installer.exe
           asset_content_type: application/vnd.microsoft.portable-executable
+
 
   publish-tauri:
     needs: create-release
