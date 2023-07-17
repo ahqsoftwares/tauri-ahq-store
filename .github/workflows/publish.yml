@@ -25,11 +25,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-      
-      - name: install Core Dependencies
-        run: pnpm install
-        env:
-          CI: "false"
 
       - name: Create Release
         id: create-release
