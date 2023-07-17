@@ -1,6 +1,6 @@
 {
   "name": "ahq-store-tauri",
-  "version": "0.9.99999999",
+  "version": "0.9.857",
   "private": true,
   "license": "Creative Commons",
   "dependencies": {
@@ -17,7 +17,6 @@
     "axios": "^1.4.0",
     "firebase": "^10.0.0",
     "fuse.js": "^6.6.2",
-    "minisearch": "^6.1.0",
     "postcss": "^8.4.26",
     "react": "^18.2.0",
     "react-cookie": "^4.1.1",

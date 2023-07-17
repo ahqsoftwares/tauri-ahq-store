@@ -10,9 +10,9 @@ jobs:
 
     permissions:
       contents: write
-    
+
     runs-on: ubuntu-latest
-    
+
     outputs:
       upload_url: ${{ steps.get-u-url.outputs.result }}
       release_id: ${{ steps.get-id.outputs.result }}
@@ -20,11 +20,16 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-      
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
+      
+      - name: install Core Dependencies
+        run: pnpm install
+        env:
+          CI: "false"
 
       - name: Create Release
         id: create-release
@@ -53,7 +58,7 @@ jobs:
           result-encoding: string
           script: |
             let data = process.env.data;
-            
+
             try {
               data = JSON.parse(data);
 
@@ -74,7 +79,7 @@ jobs:
           result-encoding: string
           script: |
             let data = process.env.data;
-            
+
             try {
               data = JSON.parse(data);
 
@@ -86,58 +91,6 @@ jobs:
               return data.upload_url;
             }
 
-  make-service:
-    needs: create-release
-    name: Build & Publish Service Script
-    
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-
-      - name: Install Rust Stable
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Install Deps
-        run: pnpm install
-      
-      - name: Run Decryptor / Load Key
-        run: node encryptor.js
-        env:
-          KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
-
-      - name: Build Service
-        run: cargo build --release
-        working-directory: src-service
-      
-      - name: Upload Executable (standalone)
-        uses: actions/upload-artifact@v3
-        with:
-          name: service.exe
-          path: ./src-service/target/release/ahqstore_service.exe
-
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: sekwah41/upload-release-assets@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-service/target/release/ahqstore_service.exe
-          asset_name: ahqstore_service.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
-          
   make-postinstaller:
     needs: create-release
     name: Build & Publish Postinstaller Script
@@ -150,7 +103,7 @@ jobs:
 
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
-      
+
       - name: Build Service Installer
         run: cargo build --release
         working-directory: src-service-tools
@@ -163,7 +116,7 @@ jobs:
 
       - name: Upload Release Asset
         id: upload-release-asset
-        uses: sekwah41/upload-release-assets@v1
+        uses: ahqsoftwares-projects/upload-release-assets@v59
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -172,10 +125,9 @@ jobs:
           asset_name: store-tools-installer.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
-
   publish-tauri:
     needs: create-release
-    name: Build & Publish Tauri App
+    name: Build & Publish Tauri App & Service
 
     strategy:
       fail-fast: true
@@ -187,11 +139,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Cache vcpkg
+        uses: actions/cache@v3
+        with:
+          path: vcpkg
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -215,18 +173,38 @@ jobs:
         run: node encryptor.js
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
+      
+      - name: Build Service
+        run: cargo build --release
+        working-directory: src-service
+  
+      - name: Upload Executable (standalone)
+        uses: actions/upload-artifact@v3
+        with:
+          name: service.exe
+          path: ./src-service/target/release/ahqstore_service.exe
+  
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: ahqsoftwares-projects/upload-release-assets@v59
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-service/target/release/ahqstore_service.exe
+          asset_name: ahqstore_service.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
 
-      - name: Clone VCpkg
-        run: git clone https://github.com/Microsoft/vcpkg.git
-
-      - name: Install Via VCpkg
-        run: .\vcpkg\bootstrap-vcpkg.bat
-
-      - name: Install openssl
-        run: .\vcpkg\vcpkg install openssl --triplet x64-windows-static-md
-
-      - name: Integrate
-        run: .\vcpkg\vcpkg integrate install
+      - name: Install OpenSSL with vcpkg
+        run: |
+          if [ ! -d vcpkg ]; then
+            git clone https://github.com/Microsoft/vcpkg.git
+          fi
+  
+          cd vcpkg
+          .\bootstrap-vcpkg.bat
+          .\vcpkg install openssl --triplet x64-windows-static-md
+          .\vcpkg integrate install
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
@@ -242,11 +220,3 @@ jobs:
         with:
           name: ahqstore.exe
           path: "src-tauri/target/release/AHQ Store.exe"
-
-      - name: Cancel if needed
-        uses: vishnudxb/cancel-workflow@v1.2
-        if: failure()
-        with:
-          repo: ahqsoftwares/tauri-ahq-store
-          workflow_id: ${{ github.run_id }}
-          access_token: ${{ github.token }}

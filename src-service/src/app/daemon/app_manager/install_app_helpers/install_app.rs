@@ -21,8 +21,8 @@ pub fn install_app(
     ref_id: &&String,
 ) -> u8 {
     unsafe {
-        TX = Some(tx.clone().to_owned());
-        REF = Some(ref_id.clone().to_owned());
+        TX = Some(tx.to_owned().to_owned());
+        REF = Some(ref_id.to_string());
     }
 
     let folder = format!("{}{}", get_root(), INSTALLER_FOLDER);

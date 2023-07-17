@@ -1,7 +1,4 @@
-#![cfg_attr(
-    not(debug),
-    windows_subsystem = "windows"
-)]
+#![cfg_attr(not(debug), windows_subsystem = "windows")]
 
 pub mod download;
 pub mod encryption;
@@ -11,13 +8,13 @@ pub mod util;
 mod ws;
 
 //utilities
-use windows::Win32::{
-    System::Com::{CoCreateInstance, CLSCTX_SERVER},
-    UI::Shell::{ITaskbarList4, TaskbarList, TBPFLAG}
-};
 use base64::{self, Engine};
 use encryption::{decrypt, encrypt};
 use minisign_verify::{Error, PublicKey, Signature};
+use windows::Win32::{
+    System::Com::{CoCreateInstance, CLSCTX_SERVER},
+    UI::Shell::{ITaskbarList4, TaskbarList, TBPFLAG},
+};
 
 use std::env::current_exe;
 use std::panic::catch_unwind;
@@ -89,7 +86,7 @@ fn main() {
                     *lock.unwrap() = Vec::<AppData>::new();
                 }
             });
-            
+
             listener.listen("activate", move |_| {
                 window_clone_2.show().unwrap();
             });
@@ -149,13 +146,10 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_windows,
             sys_handler,
-            
             check_update,
             install_update,
-            
             encrypt,
             decrypt,
-            
             open,
             set_progress,
             is_an_admin
@@ -194,9 +188,13 @@ fn main() {
                 let mut i = 0;
 
                 loop {
-                    WINDOW.as_mut().unwrap().emit("needs_reinstall", "None").unwrap();
+                    WINDOW
+                        .as_mut()
+                        .unwrap()
+                        .emit("needs_reinstall", "None")
+                        .unwrap();
                     thread::sleep(Duration::from_secs(1));
-                    i+=1;
+                    i += 1;
 
                     if i >= 10 {
                         break;
@@ -214,13 +212,13 @@ fn main() {
                     "astore_service_installer.exe",
                     |c, t| {
                         println!("{}", c * 100 / t);
-                    }
+                    },
                 );
 
-                if !extract::run(format!("{}\\astore\\astore_service_installer.exe", sys)) {
-                    panic!("Error")
-                }
-            }).is_err() {
+                extract::run_admin(format!("{}\\astore\\astore_service_installer.exe", sys));
+            })
+            .is_err()
+            {
                 std::process::exit(1);
             } else {
                 std::process::exit(0);
@@ -376,17 +374,20 @@ pub fn get_system_dir() -> String {
 fn set_progress(state: i32, c: Option<u64>, t: Option<u64>) {
     unsafe {
         let handle = WINDOW.clone().unwrap().hwnd().unwrap();
-        
+
         let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
 
-        taskbar.SetProgressState::<windows::Win32::Foundation::HWND>(handle, TBPFLAG(state)).unwrap();
+        taskbar
+            .SetProgressState::<windows::Win32::Foundation::HWND>(handle, TBPFLAG(state))
+            .unwrap();
 
         if let Some(c) = c {
             if let Some(t) = t {
-                taskbar.SetProgressValue::<windows::Win32::Foundation::HWND>(handle, c, t).unwrap();
+                taskbar
+                    .SetProgressValue::<windows::Win32::Foundation::HWND>(handle, c, t)
+                    .unwrap();
             }
         }
-    
     }
 }
 
@@ -410,6 +411,7 @@ fn get_windows() -> Option<String> {
 
 fn is_windows_11() -> bool {
     let version = Command::new("cmd")
+        .creation_flags(0x08000000)
         .args(["/c", "ver"])
         .stdout(Stdio::piped())
         .spawn()

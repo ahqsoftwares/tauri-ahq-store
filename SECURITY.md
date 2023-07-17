@@ -13,9 +13,10 @@ If you violate this terms of service, we may **temporarily** or **permanently** 
 # Privacy Policy
 
 At AHQ Store, we respect your privacy and do not collect any information about
-  - Your Location/Address
-  - Any other personal information, except your **E-Mail address** and your **Discord / GitHub** usernames for verification purposes.
-We store your passwords in a hashed form with your E-Mail and we never share them with any **website** or **service** that may compromise your security.
+
+- Your Location/Address
+- Any other personal information, except your **E-Mail address** and your **Discord / GitHub** usernames for verification purposes.
+  We store your passwords in a hashed form with your E-Mail and we never share them with any **website** or **service** that may compromise your security.
 
 # Security Policy
 
@@ -31,5 +32,6 @@ DEV BUILDS
 ## Reporting a Vulnerability
 
 Create an issue to report or suggest. We shall look into the matter as soon as we can, if not resolved, contact us at
+
 - 🌎 ahqsoftwares (discord)
 - 📨 ahqsecret@gmail.com

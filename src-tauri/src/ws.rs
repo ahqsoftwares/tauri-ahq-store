@@ -1,17 +1,18 @@
+use bcrypt::verify;
+use crypter::decrypt;
 use serde::ser::Serialize;
 use serde_json::{from_str, to_string, to_string_pretty};
 use std::{
+    fs::read_to_string,
     net::TcpStream,
     sync::{Arc, Mutex},
-    thread::spawn, fs::read_to_string,
+    thread::spawn,
 };
 use tungstenite::{connect, stream::MaybeTlsStream, WebSocket};
-use bcrypt::verify;
-use crypter::decrypt;
 
 use crate::{
     get_system_dir,
-    util::structs::{PayloadReq, Req, ServerResp, ToSendResp}
+    util::structs::{PayloadReq, Req, ServerResp, ToSendResp},
 };
 
 static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
@@ -25,7 +26,7 @@ struct WsConnection<'a> {
     pub binding_server: String,
     pub error: &'a dyn Fn() -> (),
     to_send: Arc<Mutex<Vec<String>>>,
-    pending: Arc<Mutex<Vec<String>>>
+    pending: Arc<Mutex<Vec<String>>>,
 }
 
 unsafe impl Send for WsConnection<'_> {}
@@ -37,7 +38,7 @@ impl<'a> WsConnection<'a> {
             binding_server: server,
             error,
             to_send: Arc::new(Mutex::new(vec![])),
-            pending: Arc::new(Mutex::new(vec![]))
+            pending: Arc::new(Mutex::new(vec![])),
         }
     }
 
@@ -49,28 +50,36 @@ impl<'a> WsConnection<'a> {
 
     pub fn recv(&mut self) -> Option<Vec<String>> {
         if let Ok(mut pending) = self.pending.try_lock() {
-            Some(pending.drain(..).into_iter().filter(|x| {
-                if let Ok(payload) = from_str::<ServerResp>(&x) {
-                    if let Ok(x) = verify(&include!("./encrypt"), &payload.auth) {
-                        return x
-                    }
-                }
-                println!("Something went to false");
-                println!("{}", &x);
-                false
-            }).map(|x| {
-                if let Ok(payload) = from_str::<ServerResp>(&x) {
-                    return to_string(&ToSendResp {
-                        method: payload.method,
-                        payload: payload.payload,
-                        reason: payload.reason,
-                        ref_id: payload.ref_id.replace(include!("./encrypt"), "****"),
-                        status: payload.status,
-                    }).unwrap()
-                }
+            Some(
+                pending
+                    .drain(..)
+                    .into_iter()
+                    .filter(|x| {
+                        if let Ok(payload) = from_str::<ServerResp>(&x) {
+                            if let Ok(x) = verify(&include!("./encrypt"), &payload.auth) {
+                                return x;
+                            }
+                        }
+                        println!("Something went to false");
+                        println!("{}", &x);
+                        false
+                    })
+                    .map(|x| {
+                        if let Ok(payload) = from_str::<ServerResp>(&x) {
+                            return to_string(&ToSendResp {
+                                method: payload.method,
+                                payload: payload.payload,
+                                reason: payload.reason,
+                                ref_id: payload.ref_id.replace(include!("./encrypt"), "****"),
+                                status: payload.status,
+                            })
+                            .unwrap();
+                        }
 
-                panic!("")
-            }).collect())
+                        panic!("")
+                    })
+                    .collect(),
+            )
         } else {
             None
         }
@@ -114,11 +123,12 @@ impl<'a> WsConnection<'a> {
 
                 if let Some(ws) = WS.as_mut() {
                     for msg in send {
-                        ws.write_message(tungstenite::Message::Text(msg)).unwrap_or(());
+                        ws.write_message(tungstenite::Message::Text(msg))
+                            .unwrap_or(());
                     }
                 }
             }
-    
+
             if let Ok(msg) = rx.try_recv() {
                 self.load_into(msg);
             }
@@ -129,14 +139,17 @@ impl<'a> WsConnection<'a> {
 }
 
 pub fn get_ws_port() -> Option<u64> {
-    let file = format!("{}\\ProgramData\\AHQ Store Applications\\server.zLsMCFKchEXbnpBDkcJjFXYoapkpXeYDJygFJqXo", get_system_dir());
+    let file = format!(
+        "{}\\ProgramData\\AHQ Store Applications\\server.zLsMCFKchEXbnpBDkcJjFXYoapkpXeYDJygFJqXo",
+        get_system_dir()
+    );
 
     if let Ok(x) = read_to_string(file) {
         if let Ok(x) = from_str::<Vec<u8>>(&x) {
             if let Some(x) = decrypt(include!("./encrypt").as_bytes(), &x) {
                 if let Ok(x) = String::from_utf8(x) {
                     if let Ok(x) = x.parse::<u64>() {
-                        return Some(x)
+                        return Some(x);
                     }
                 }
             }
@@ -154,7 +167,7 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn() -> ()) {
 
         if port == 0 {
             reinstall_astore();
-            return
+            return;
         }
 
         let port_data = format!("ws://127.0.0.1:{}", &port);
@@ -162,7 +175,7 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn() -> ()) {
         let connection = WsConnection::new(port_data, &|| {
             TERMINATED = true;
         });
-        
+
         CONNECTION = Some(connection);
 
         if let Some(win) = WINDOW.as_mut() {
@@ -172,7 +185,7 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn() -> ()) {
                         let reqwest = Req {
                             data: from_window.data,
                             module: from_window.module,
-                            token: include!("./encrypt").into()
+                            token: include!("./encrypt").into(),
                         };
                         CONNECTION.as_mut().unwrap().send_ws(reqwest);
                     }
@@ -185,7 +198,8 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn() -> ()) {
         loop {
             if let Some(resp) = CONNECTION.as_mut().unwrap().recv() {
                 if let Some(win) = WINDOW.as_mut() {
-                    win.emit("ws_resp", to_string(&resp).unwrap_or(String::from("[]"))).unwrap_or(());
+                    win.emit("ws_resp", to_string(&resp).unwrap_or(String::from("[]")))
+                        .unwrap_or(());
                 }
             }
             if TERMINATED {

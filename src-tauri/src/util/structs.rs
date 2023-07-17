@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PayloadReq {
     pub module: String,
-    pub data: Option<String>
+    pub data: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Req {
     pub token: String,
     pub module: String,
-    pub data: Option<String>
+    pub data: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -20,7 +20,7 @@ pub struct ServerResp {
     pub payload: Option<String>,
     pub ref_id: String,
     pub reason: Option<String>,
-    pub auth: String
+    pub auth: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
