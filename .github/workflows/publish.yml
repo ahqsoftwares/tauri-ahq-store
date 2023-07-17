@@ -135,6 +135,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache vcpkg
+        id: cache
         uses: actions/cache@v3
         with:
           path: vcpkg
@@ -190,12 +191,12 @@ jobs:
           asset_name: ahqstore_service.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
+      - name: Load VCPKG Page
+        if: ${{ !steps.cache.outputs.cache-hit }}
+        run: git clone https://github.com/Microsoft/vcpkg.git
+
       - name: Install OpenSSL with vcpkg
         run: |
-          if [ ! -d vcpkg ]; then
-            git clone https://github.com/Microsoft/vcpkg.git
-          fi
-  
           cd vcpkg
           .\bootstrap-vcpkg.bat
           .\vcpkg install openssl --triplet x64-windows-static-md
