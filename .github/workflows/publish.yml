@@ -203,6 +203,7 @@ jobs:
           .\vcpkg integrate install
 
       - name: Build Tauri App
+        id: tauri-app
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -216,3 +217,19 @@ jobs:
         with:
           name: ahqstore.exe
           path: "src-tauri/target/release/AHQ Store.exe"
+
+      - name: Build Service
+        run: cargo build --release
+        working-directory: src-setup
+        env:
+          FILES: ${{ steps.tauri-app.outputs.artifactPaths }}
+
+      - name: Upload Release Asset
+        uses: ahqsoftwares-projects/upload-release-assets@v59
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-setup/target/release/ahqstore_setup_x86_64.exe
+          asset_name: ahqstore_setup_x86_64.exe
+          asset_content_type: application/vnd.microsoft.portable-executable

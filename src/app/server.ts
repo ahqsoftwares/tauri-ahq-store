@@ -1,3 +1,3 @@
-const server = "http://zeus.daki.cc:6008/";
+const server = "http://free.daki.cc:5246/";
 
 export default server;

@@ -33,7 +33,6 @@ pub fn install_app(
     let url = app.clone().url;
     let mut status = spawn(move || {
         downloader::download(url, fldr, format!("{}.zip", &id), |c, t| {
-            let perc = (c * 100) / t;
             let now = SystemTime::now()
                 .duration_since(UNIX_EPOCH)
                 .unwrap_or(Duration::from_millis(1))
@@ -46,11 +45,12 @@ pub fn install_app(
 
                     if let Some(tx) = &TX.as_mut() {
                         tx.send(format!(
-                            "INSTALLAPP{}{}{}{}",
+                            "INSTALLAPP{}{}{}{}of{}",
                             &sep,
                             REF.as_mut().unwrap(),
                             &sep,
-                            perc
+                            c,
+                            t
                         ))
                         .unwrap_or(());
                     }

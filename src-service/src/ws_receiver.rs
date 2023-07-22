@@ -7,9 +7,21 @@ use crate::{
 };
 
 use serde::{Deserialize, Serialize};
-use serde_json::{from_str, to_string_pretty};
+use serde_json::from_str;
 
-use ws::{CloseCode, Message, Sender};
+use ws::{CloseCode, Message, Sender, Error};
+
+#[cfg(not(debug_assertions))]
+use crate::auth::{
+    encrypt,
+    decrypt
+};
+
+#[cfg(not(debug_assertions))]
+use serde_json::to_string;
+
+#[cfg(debug_assertions)]
+use serde_json::to_string_pretty;
 
 mod get;
 mod install;
@@ -25,13 +37,28 @@ struct WsMessage {
 
 type AppList = Vec<String>;
 
+#[derive(Debug)]
+#[allow(dead_code)]
+enum Payload<'a> {
+    Debug(Result<&'a str, Error>),
+    Prod(Option<String>)
+}
+
 pub fn handle_ws(msg: Message, out: Sender) {
     let mut out = out;
 
-    let payload = msg.as_text();
+    let payload = Payload::Debug(msg.as_text());
 
-    if let Ok(txt) = payload {
-        if let Ok(json) = from_str::<WsMessage>(txt) {
+    #[cfg(not(debug_assertions))]
+    let payload = Payload::Prod(
+        match payload {
+            Payload::Debug(Ok(txt)) => decrypt(txt.to_string()),
+            _ => None,
+        }
+    );
+
+    if let Some(txt) = extract_value(&payload) {
+        if let Ok(json) = from_str::<WsMessage>(&txt) {
             if !auth::verify_pwd(&json.token) {
                 send_invalid(r#""Invalid Token""#, txt.clone().to_owned(), &mut out);
             } else {
@@ -122,7 +149,7 @@ pub fn handle_ws(msg: Message, out: Sender) {
     } else {
         send_invalid(
             r#""Invalid Format""#,
-            format!("{:?}", payload.unwrap_err()),
+            format!("{:?}", &payload),
             &mut out,
         );
     }
@@ -178,11 +205,33 @@ fn send_resp(
         auth: include!("./auth/hash").to_string(),
     };
 
-    let new_reason = to_string_pretty(&err).unwrap();
+    #[cfg(debug_assertions)]
+    {
+        let resp = to_string_pretty(&err).unwrap();
 
-    out.send(new_reason).unwrap_or(());
+        out.send(resp).unwrap_or(());
+    }
+
+    #[cfg(not(debug_assertions))]
+    {
+        let resp = to_string(&err).unwrap();
+
+        if let Some(x) = encrypt(resp) {
+            out.send(to_string(&x).unwrap()).unwrap_or(());
+        }
+    }
 
     if let Some(code) = code {
         out.close(code).unwrap_or(());
+    }
+}
+
+fn extract_value(payload: &Payload) -> Option<String> {
+    match payload {
+        Payload::Prod(x) => x.clone(),
+        Payload::Debug(x) => match x {
+            Ok(x) => Some(x.to_string()),
+            _ => None
+        }
     }
 }

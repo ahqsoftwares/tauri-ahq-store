@@ -11,6 +11,7 @@ import {
   updaterStatus,
 } from "../../resources/api/updateInstallWorker";
 import installWorker from "../../resources/classes/installWorker";
+import { install_app } from "../../resources/core";
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -166,21 +167,27 @@ export default function ShowModal(props: AppDataPropsModal) {
                 className="button mb-4"
                 onClick={async () => {
                   setWorking(true);
-                  button.current.innerHTML = "Working...";
-                  await new installWorker((event, data) => {
-                    if (event === "downloading") {
-                      button.current.innerHTML = "Downloading...";
-                    } else if (event === "downloadstat") {
-                      button.current.innerHTML = `${
-                        data.percent
-                      }% of ${formatBytes(data.total)}`;
-                    } else if (event === "installing") {
+                  button.current.innerHTML = "Starting Download...";
+
+                  await install_app(installData, (c, t) => {
+                    if (c == 10000 && t == 0) {
                       button.current.innerHTML = "Installing...";
+                    } else {
+                      button.current.innerHTML = `${
+                        Math.round(c * 100 / t)
+                      }% of ${formatBytes(t)}`;
                     }
-                  }).install([installData]);
-                  button.current.innerHTML = "Installed!";
-                  setWorking(false);
-                  setInstalled(await isInstalled(installData));
+                  }).then(async(data: any) => {
+                    console.log(data);
+                    if (data != "[]") {
+                      button.current.innerHTML = "Failed...";
+                    } else {
+                      button.current.innerHTML = "Installed!";
+                    }
+
+                    setWorking(false);
+                    setInstalled(await isInstalled(installData));
+                  });
                 }}
               >
                 Install

@@ -1,35 +1,20 @@
-use std::{
-    os::windows::process::CommandExt,
-    process::{Command, Stdio},
-};
+use std::{fs, os::windows::process::CommandExt, process::Command, time::Duration};
 
 use is_elevated::is_elevated;
 
 mod download;
-mod powershell;
+mod get_release;
 mod shell;
 
 use download::download;
-use powershell::get_ahqstore_service;
+use get_release::get_urls;
 
-fn main() {
-    println!(r#"
-░█████╗░██╗░░██╗░██████╗░  ░██████╗████████╗░█████╗░██████╗░███████╗
-██╔══██╗██║░░██║██╔═══██╗  ██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔════╝
-███████║███████║██║██╗██║  ╚█████╗░░░░██║░░░██║░░██║██████╔╝█████╗░░
-██╔══██║██╔══██║╚██████╔╝  ░╚═══██╗░░░██║░░░██║░░██║██╔══██╗██╔══╝░░
-██║░░██║██║░░██║░╚═██╔═╝░  ██████╔╝░░░██║░░░╚█████╔╝██║░░██║███████╗
-╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░  ╚═════╝░░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚══════╝ 
+use eframe::{
+    egui::{self, RichText, Ui},
+    IconData,
+};
 
-░██████╗███████╗██████╗░██╗░░░██╗██╗░█████╗░███████╗
-██╔════╝██╔════╝██╔══██╗██║░░░██║██║██╔══██╗██╔════╝
-╚█████╗░█████╗░░██████╔╝╚██╗░██╔╝██║██║░░╚═╝█████╗░░
-░╚═══██╗██╔══╝░░██╔══██╗░╚████╔╝░██║██║░░██╗██╔══╝░░
-██████╔╝███████╗██║░░██║░░╚██╔╝░░██║╚█████╔╝███████╗
-╚═════╝░╚══════╝╚═╝░░╚═╝░░░╚═╝░░░╚═╝░╚════╝░╚══════╝"#);
-
-    std::thread::sleep(std::time::Duration::from_secs(2));
-
+fn main() -> Result<(), eframe::Error> {
     if !is_elevated() {
         let buf = std::env::current_exe().unwrap().to_owned();
         let exec = buf.clone().to_str().unwrap().to_owned();
@@ -48,90 +33,221 @@ fn main() {
         std::process::exit(0);
     }
 
-    std::thread::sleep(std::time::Duration::from_secs(2));
-
-    let sys_dir = std::env::var("SYSTEMROOT")
-        .unwrap()
-        .to_uppercase()
-        .as_str()
-        .replace("\\WINDOWS", "")
-        .replace("\\Windows", "");
-
-    let astore_dir = format!("{}\\ProgramData\\AHQ Store Applications", sys_dir);
-
-    println!("Getting AHQ Store Service release...");
-
-    let ahqstore_service_url = get_ahqstore_service(0);
-
-    let res = Command::new("sc.exe")
-        .creation_flags(0x08000000)
-        .args(["stop", "AHQ Store Service"])
-        .spawn()
-        .unwrap()
-        .wait();
-
-    drop(res);
-
-    let res = Command::new("sc.exe")
-        .creation_flags(0x08000000)
-        .args(["delete", "AHQ Store Service"])
-        .spawn()
-        .unwrap()
-        .wait();
-
-    drop(res);
+    env_logger::init();
 
     println!(
-        "Downloading AHQ Store Services... ({})",
-        &ahqstore_service_url
+        r#"
+██╗░░░░░░█████╗░██╗░░░██╗███╗░░██╗░█████╗░██╗░░██╗██╗███╗░░██╗░██████╗░  ░██████╗░██╗░░░██╗██╗
+██║░░░░░██╔══██╗██║░░░██║████╗░██║██╔══██╗██║░░██║██║████╗░██║██╔════╝░  ██╔════╝░██║░░░██║██║
+██║░░░░░███████║██║░░░██║██╔██╗██║██║░░╚═╝███████║██║██╔██╗██║██║░░██╗░  ██║░░██╗░██║░░░██║██║
+██║░░░░░██╔══██║██║░░░██║██║╚████║██║░░██╗██╔══██║██║██║╚████║██║░░╚██╗  ██║░░╚██╗██║░░░██║██║
+███████╗██║░░██║╚██████╔╝██║░╚███║╚█████╔╝██║░░██║██║██║░╚███║╚██████╔╝  ╚██████╔╝╚██████╔╝██║
+╚══════╝╚═╝░░╚═╝░╚═════╝░╚═╝░░╚══╝░╚════╝░╚═╝░░╚═╝╚═╝╚═╝░░╚══╝░╚═════╝░  ░╚═════╝░░╚═════╝░╚═╝
+
+░█████╗░██╗░░██╗░██████╗░  ░██████╗████████╗░█████╗░██████╗░███████╗
+██╔══██╗██║░░██║██╔═══██╗  ██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔════╝
+███████║███████║██║██╗██║  ╚█████╗░░░░██║░░░██║░░██║██████╔╝█████╗░░
+██╔══██║██╔══██║╚██████╔╝  ░╚═══██╗░░░██║░░░██║░░██║██╔══██╗██╔══╝░░
+██║░░██║██║░░██║░╚═██╔═╝░  ██████╔╝░░░██║░░░╚█████╔╝██║░░██║███████╗
+╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░  ╚═════╝░░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝╚══════╝
+
+░██████╗███████╗██████╗░██╗░░░██╗██╗░█████╗░███████╗
+██╔════╝██╔════╝██╔══██╗██║░░░██║██║██╔══██╗██╔════╝
+╚█████╗░█████╗░░██████╔╝╚██╗░██╔╝██║██║░░╚═╝█████╗░░
+░╚═══██╗██╔══╝░░██╔══██╗░╚████╔╝░██║██║░░██╗██╔══╝░░
+██████╔╝███████╗██║░░██║░░╚██╔╝░░██║╚█████╔╝███████╗
+╚═════╝░╚══════╝╚═╝░░╚═╝░░░╚═╝░░░╚═╝░╚════╝░╚══════╝"#
     );
 
-    std::fs::remove_file(format!("{}\\ahqstore_service.exe", &astore_dir)).unwrap_or(());
+    let mut options = eframe::NativeOptions::default();
 
-    download(&astore_dir, &ahqstore_service_url);
+    options.initial_window_size = Some(egui::vec2(950.0, 300.0));
+    options.icon_data = Some(IconData::try_from_png_bytes(include_bytes!("./icon.png")).unwrap());
+    options.resizable = false;
+    options.maximized = false;
 
-    println!("Downloaded files");
+    eframe::run_native(
+        "Install AHQ Store Tools",
+        options,
+        Box::new(|_cc| Box::<ToolsInstallerWindow>::default()),
+    )
+}
 
-    println!("Installing AHQ Store Services...");
+struct ToolsInstallerWindow {
+    install_framework: bool,
+    started_install: bool,
+}
 
-    let output = Command::new("sc.exe")
-        .creation_flags(0x08000000)
-        .args([
-            "create",
-            "AHQ Store Service",
-            "start=",
-            "auto",
-            "binpath=",
-            format!("{}\\ahqstore_service.exe", &astore_dir).as_str(),
-        ])
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
+impl Default for ToolsInstallerWindow {
+    fn default() -> Self {
+        Self {
+            install_framework: true,
+            started_install: false,
+        }
+    }
+}
 
-    let out = String::from_utf8(output.stdout).unwrap_or("".to_owned());
-    println!("{}", out);
-    println!("Installed, Starting service...");
+impl eframe::App for ToolsInstallerWindow {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+        frame.request_user_attention(egui::UserAttentionType::Critical);
+        frame.set_always_on_top(true);
+        frame.set_centered();
 
-    let output = Command::new("sc.exe")
-        .creation_flags(0x08000000)
-        .args(["start", "AHQ Store Service"])
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
+        egui::CentralPanel::default().show(ctx, |ui| {
+            ui.add_space(12.0);
+            ui.vertical_centered_justified(|ui| {
+                ui.label(
+                    RichText::new("Customize your install")
+                        .size(80.0)
+                        .text_style(egui::TextStyle::Heading)
+                        .heading(),
+                );
+            });
 
-    let out = String::from_utf8(output.stdout).unwrap_or("".to_owned());
+            ui.add_space(20.0);
 
-    println!("{}", out);
+            if ui
+                .add_enabled(!self.started_install, |ui: &mut Ui| {
+                    ui.vertical_centered(|ui: &mut Ui| {
+                        ui.checkbox(
+                            &mut self.install_framework,
+                            RichText::new("Install the AHQ Store Framework (recommended, 130-200mb)")
+                                .size(25.0)
+                                .text_style(egui::TextStyle::Button),
+                        );
+                    });
 
-    println!(r#"
-███████████████████████████████████████████████████████
-█▄─▄█▄─▀█▄─▄█─▄▄▄▄█─▄─▄─██▀▄─██▄─▄███▄─▄███▄─▄▄─█▄─▄▄▀█
-██─███─█▄▀─██▄▄▄▄─███─████─▀─███─██▀██─██▀██─▄█▀██─██─█
-▀▄▄▄▀▄▄▄▀▀▄▄▀▄▄▄▄▄▀▀▄▄▄▀▀▄▄▀▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▀▀"#);
+                    ui.add_space(20.0);
 
-    std::thread::sleep(std::time::Duration::from_secs(3));
+                    ui.vertical_centered(|ui| ui.button(RichText::new("Install").size(50.0)))
+                        .inner
+                })
+                .clicked()
+            {
+                self.started_install = true;
+
+                frame.set_visible(false);
+                ctx.request_repaint();
+
+                let install_framework = self.install_framework;
+
+                std::thread::spawn(move || {
+                    let service = get_urls(10, false);
+                    let service = &service[0];
+
+                    let sys_dir = std::env::var("SYSTEMROOT")
+                        .unwrap()
+                        .to_uppercase()
+                        .as_str()
+                        .replace("\\WINDOWS", "")
+                        .replace("\\Windows", "");
+
+                    let astore_dir = format!("{}\\ProgramData\\AHQ Store Applications", sys_dir);
+
+                    let astore_framework_dir = format!(
+                        "{}\\ProgramData\\AHQ Store Applications\\Framework",
+                        sys_dir
+                    );
+
+                    let res = Command::new("sc.exe")
+                        .creation_flags(0x08000000)
+                        .args(["stop", "AHQ Store Service"])
+                        .spawn()
+                        .unwrap()
+                        .wait();
+
+                    drop(res);
+
+                    let res = Command::new("sc.exe")
+                        .creation_flags(0x08000000)
+                        .args(["delete", "AHQ Store Service"])
+                        .spawn()
+                        .unwrap()
+                        .wait();
+
+                    drop(res);
+
+                    fs::create_dir_all(&astore_dir).unwrap_or(());
+                    fs::remove_file(format!("{}\\ahqstore_service.exe", &astore_dir)).unwrap_or(());
+
+                    download(&astore_dir, &service);
+
+                    Command::new("sc.exe")
+                        .creation_flags(0x08000000)
+                        .args([
+                            "create",
+                            "AHQ Store Service",
+                            "start=",
+                            "auto",
+                            "binpath=",
+                            format!("{}\\ahqstore_service.exe", &astore_dir).as_str(),
+                        ])
+                        .spawn()
+                        .unwrap()
+                        .wait()
+                        .unwrap();
+
+                    println!("Installed, Starting service...");
+
+                    Command::new("sc.exe")
+                        .creation_flags(0x08000000)
+                        .args(["start", "AHQ Store Service"])
+                        .spawn()
+                        .unwrap()
+                        .wait()
+                        .unwrap();
+
+                    if install_framework {
+                        let framework_urls = get_urls(10, true);
+
+                        fs::remove_dir_all(&astore_framework_dir).unwrap_or(());
+                        fs::create_dir_all(&astore_framework_dir).unwrap_or(());
+
+                        for url in framework_urls {
+                            println!("Downloading Framework Depedency: {}", &url);
+
+                            download(&astore_framework_dir, &url);
+                        }
+
+                        println!("Running Post-Install script...");
+
+                        Command::new("powershell")
+                            .arg("Expand-Archive")
+                            .arg("-Path ./js.zip")
+                            .arg("-DestinationPath ./js")
+                            .arg("-Force")
+                            .current_dir(&astore_framework_dir)
+                            .spawn()
+                            .unwrap()
+                            .wait()
+                            .unwrap();
+
+                        Command::new("powershell")
+                            .arg("Expand-Archive")
+                            .arg("-Path ./node.zip")
+                            .arg("-DestinationPath ./node")
+                            .arg("-Force")
+                            .current_dir(&astore_framework_dir)
+                            .spawn()
+                            .unwrap()
+                            .wait()
+                            .unwrap();
+
+                        fs::remove_file(format!("{}\\js.zip", &astore_framework_dir)).unwrap_or(());
+                        fs::remove_file(format!("{}\\node.zip", &astore_framework_dir)).unwrap_or(());
+
+                        println!("Installed Successfully!");
+
+                        std::thread::sleep(Duration::from_secs(2));
+
+                        std::process::exit(0);
+                    } else {
+                        std::thread::sleep(Duration::from_secs(5));
+
+                        std::process::exit(0);
+                    }
+                });
+            }
+        });
+    }
 }

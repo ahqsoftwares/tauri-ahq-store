@@ -14,6 +14,9 @@ mod runner;
 pub mod app_manager;
 pub use get_commit::get_commit;
 
+#[cfg(not(debug_assertions))]
+use crate::auth::encrypt;
+
 const ID: &str = "ā";
 
 struct Controller {
@@ -82,7 +85,17 @@ unsafe fn start_receiving() {
                     if let Some(sender) = &UNIVERSALSENDER {
                         let data = to_string(&data).unwrap_or(String::from("\"Error\""));
 
+                        #[cfg(debug_assertions)]
                         sender.broadcast(data).unwrap_or(());
+
+                        #[cfg(not(debug_assertions))]
+                        {
+                            sender
+                            .broadcast(
+                                encrypt(data).unwrap()
+                            )
+                            .unwrap_or(());
+                        }
                     }
                 } else {
                     REQUESTS = iterated
@@ -91,7 +104,14 @@ unsafe fn start_receiving() {
                                 let data_clone = data.method.clone();
                                 let data = to_string(&data).unwrap_or(String::from("\"Error\""));
 
+                                #[cfg(debug_assertions)]
                                 sender.send(data).unwrap_or(());
+
+                                #[cfg(not(debug_assertions))]
+                                if let Some(x) = encrypt(data) {
+                                    sender.send(x).unwrap_or(());
+                                }
+
                                 return &data_clone != "TERMINATE";
                             }
                             true

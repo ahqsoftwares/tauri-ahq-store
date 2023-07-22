@@ -1,5 +1,4 @@
 use bcrypt::verify;
-use crypter::decrypt;
 use serde::ser::Serialize;
 use serde_json::{from_str, to_string, to_string_pretty};
 use std::{
@@ -11,9 +10,13 @@ use std::{
 use tungstenite::{connect, stream::MaybeTlsStream, WebSocket};
 
 use crate::{
+    encryption::decrypt,
     get_system_dir,
     util::structs::{PayloadReq, Req, ServerResp, ToSendResp},
 };
+
+#[cfg(not(debug_assertions))]
+use crate::encryption::encrypt;
 
 static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
 
@@ -44,7 +47,16 @@ impl<'a> WsConnection<'a> {
 
     pub fn send_ws<T: Serialize>(&mut self, value: T) {
         if let Ok(ref mut x) = self.to_send.try_lock() {
+            #[cfg(debug_assertions)]
             x.push(to_string_pretty(&value).unwrap());
+
+            #[cfg(not(debug_assertions))]
+            {
+                let data = to_string(&value).unwrap();
+                if let Some(data) = encrypt(data) {
+                    x.push(to_string(&data).unwrap());
+                }
+            }
         }
     }
 
@@ -54,6 +66,14 @@ impl<'a> WsConnection<'a> {
                 pending
                     .drain(..)
                     .into_iter()
+                    .map(|x| {
+                        if !cfg!(debug_assertions) {
+                            if let Some(x) = decrypt(from_str(&x).unwrap()) {
+                                return x;
+                            }
+                        }
+                        x
+                    })
                     .filter(|x| {
                         if let Ok(payload) = from_str::<ServerResp>(&x) {
                             if let Ok(x) = verify(&include!("./encrypt"), &payload.auth) {
@@ -96,44 +116,46 @@ impl<'a> WsConnection<'a> {
         };
     }
 
-    pub unsafe fn start(&mut self) {
+    pub unsafe fn start(&mut self, reinstall_astore: fn()) {
         let (tx, rx) = std::sync::mpsc::channel::<String>();
         let server = self.binding_server.clone().to_string();
-        let websocket = connect(server).unwrap();
+        if let Ok(websocket) = connect(server) {
+            WS = Some(websocket.0);
 
-        WS = Some(websocket.0);
+            spawn(move || {
+                if let Some(ws) = WS.as_mut() {
+                    loop {
+                        if let Ok(msg) = ws.read_message() {
+                            if let Ok(txt) = msg.to_text() {
+                                tx.send(txt.into()).unwrap_or(());
+                            }
+                        }
+                        std::thread::sleep(std::time::Duration::from_millis(20));
+                    }
+                }
+            });
 
-        spawn(move || {
-            if let Some(ws) = WS.as_mut() {
-                loop {
-                    if let Ok(msg) = ws.read_message() {
-                        if let Ok(txt) = msg.to_text() {
-                            tx.send(txt.into()).unwrap_or(());
+            //Handle Read + Write at high speed
+            loop {
+                if let Ok(ref mut x) = self.to_send.try_lock() {
+                    let send = x.drain(..).collect::<Vec<String>>();
+
+                    if let Some(ws) = WS.as_mut() {
+                        for msg in send {
+                            ws.write_message(tungstenite::Message::Text(msg))
+                                .unwrap_or(());
                         }
                     }
-                    std::thread::sleep(std::time::Duration::from_millis(20));
                 }
-            }
-        });
 
-        //Handle Read + Write at high speed
-        loop {
-            if let Ok(ref mut x) = self.to_send.try_lock() {
-                let send = x.drain(..).collect::<Vec<String>>();
-
-                if let Some(ws) = WS.as_mut() {
-                    for msg in send {
-                        ws.write_message(tungstenite::Message::Text(msg))
-                            .unwrap_or(());
-                    }
+                if let Ok(msg) = rx.try_recv() {
+                    self.load_into(msg);
                 }
-            }
 
-            if let Ok(msg) = rx.try_recv() {
-                self.load_into(msg);
+                std::thread::sleep(std::time::Duration::from_millis(20));
             }
-
-            std::thread::sleep(std::time::Duration::from_millis(20));
+        } else {
+            reinstall_astore();
         }
     }
 }
@@ -146,11 +168,9 @@ pub fn get_ws_port() -> Option<u64> {
 
     if let Ok(x) = read_to_string(file) {
         if let Ok(x) = from_str::<Vec<u8>>(&x) {
-            if let Some(x) = decrypt(include!("./encrypt").as_bytes(), &x) {
-                if let Ok(x) = String::from_utf8(x) {
-                    if let Ok(x) = x.parse::<u64>() {
-                        return Some(x);
-                    }
+            if let Some(x) = decrypt(x) {
+                if let Ok(x) = x.parse::<u64>() {
+                    return Some(x);
                 }
             }
         }
@@ -159,7 +179,7 @@ pub fn get_ws_port() -> Option<u64> {
     None
 }
 
-pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn() -> ()) {
+pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
     spawn(move || {
         WINDOW = Some(window);
 
@@ -193,7 +213,8 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn() -> ()) {
             });
         }
 
-        spawn(|| CONNECTION.as_mut().unwrap().start());
+        let ras = reinstall_astore.clone();
+        spawn(move || CONNECTION.as_mut().unwrap().start(ras));
 
         loop {
             if let Some(resp) = CONNECTION.as_mut().unwrap().recv() {

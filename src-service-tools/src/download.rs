@@ -1,6 +1,38 @@
 use std::fs::create_dir_all;
 
-use downloader::Downloader;
+use downloader::{progress::Reporter, Downloader};
+
+struct SimpleReporter;
+
+static mut BYTES: u64 = 1;
+
+impl SimpleReporter {
+    fn create() -> std::sync::Arc<Self> {
+        std::sync::Arc::new(Self)
+    }
+}
+
+impl Reporter for SimpleReporter {
+    fn setup(&self, max_progress: Option<u64>, _: &str) {
+        unsafe {
+            BYTES = max_progress.unwrap_or(1);
+        }
+    }
+
+    fn done(&self) {
+        println!("Downloading Finished Successfully!");
+    }
+
+    fn progress(&self, c: u64) {
+        unsafe {
+            let perc = c * 100 / BYTES;
+
+            println!("Downloading: {}% of {} bytes", perc, BYTES);
+        }
+    }
+
+    fn set_message(&self, _: &str) {}
+}
 
 pub fn download(path: &str, url: &str) {
     let url = url.clone();
@@ -16,11 +48,13 @@ pub fn download(path: &str, url: &str) {
 
     let dl = downloader::Download::new(url);
 
+    let dl = dl.progress(SimpleReporter::create());
+
     let result = downloader.download(&[dl]).unwrap();
 
     for r in result {
         match r {
-            Err(e) => println!("Error: {}", e.to_string()),
+            Err(e) => println!("Error: {:#?}", e),
             Ok(s) => println!("Success: {}", &s),
         };
     }

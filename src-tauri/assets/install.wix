@@ -60,6 +60,10 @@
         <Property Id="INSTALLDIR">
             <RegistrySearch Id="PrevInstallDirReg" Root="HKCU" Key="Software\\{{{manufacturer}}}\\{{{product_name}}}" Name="InstallDir" Type="raw"/>
         </Property>
+        <!-- initialize the powershell location -->
+        <Property Id="POWERSHELLEXE">
+            <RegistrySearch Id="POWERSHELLEXE" Type="raw" Root="HKLM" Key="SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell" Name="Path" />
+        </Property>
 
         <!-- launch app checkbox -->
         <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="!(loc.LaunchApp)" />
@@ -308,6 +312,18 @@
             </Custom>
         </InstallExecuteSequence>
         {{/if}}
+
+        <CustomAction 
+            Id="RunPowerShellScriptOnUninstall" 
+            FileKey="POWERSHELLEXE" 
+            ExeCommand="-NoProfile -ExecutionPolicy Bypass -Command &quot;rm -R -Force '[WindowsVolume]\ProgramData\AHQ Store Applications'&quot;" 
+            Execute="deferred" 
+            Return="ignore" 
+            Impersonate="no" 
+        />
+        <InstallExecuteSequence>
+            <Custom Action="RunPowerShellScriptOnUninstall" After="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+        </InstallExecuteSequence>
 
         <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLDIR]" After="CostFinalize"/>
     </Product>

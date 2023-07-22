@@ -11,6 +11,8 @@ mod ws;
 use base64::{self, Engine};
 use encryption::{decrypt, encrypt};
 use minisign_verify::{Error, PublicKey, Signature};
+
+use window_vibrancy::apply_mica;
 use windows::Win32::{
     System::Com::{CoCreateInstance, CLSCTX_SERVER},
     UI::Shell::{ITaskbarList4, TaskbarList, TBPFLAG},
@@ -68,6 +70,8 @@ fn main() {
             let queue_clone = queue.clone();
             let window_clone = window.clone();
             let window_clone_2 = tauri::Manager::get_window(app, "main").unwrap();
+
+            let _ = apply_mica(&window_clone_2, None);
 
             listener.listen("ready", move |_| {
                 println!("ready");

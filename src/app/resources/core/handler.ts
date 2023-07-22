@@ -33,6 +33,22 @@ appWindow.listen<string>("ws_resp", ({ payload }) => {
   toObj.forEach((str) => {
     const toObj: any = JSON.parse(str);
 
+    if (toObj.method == "INSTALLAPP") {
+      if (Number(toObj.payload.split("of")[0]) > 0) {
+        const [c, t] = toObj.payload.split("of");
+
+        invoke("set_progress", {
+          state: 2,
+          c: Number(c),
+          t: Number(t)
+        });
+      } else if (toObj.payload.startsWith("DOWNLOAD STATUS:")) {
+        invoke("set_progress", {
+          state: 0
+        });
+      }
+    }
+
     toResolve = toResolve.filter(({ data, resolve }) => {
       let a = JSON.parse(toObj.ref_id);
       delete a["token"];
