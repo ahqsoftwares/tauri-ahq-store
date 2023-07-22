@@ -1,6 +1,8 @@
 use bcrypt::verify;
 use serde::ser::Serialize;
-use serde_json::{from_str, to_string, to_string_pretty};
+use serde_json::{from_str, to_string};
+#[cfg(debug_assertions)]
+use serde_json::to_string_pretty;
 use std::{
     fs::read_to_string,
     net::TcpStream,

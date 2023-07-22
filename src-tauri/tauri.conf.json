@@ -87,7 +87,7 @@
         "timestampUrl": "",
         "allowDowngrades": false,
         "wix": {
-          "template": "assets/install.wix"
+          "template": "assets/install.wxs"
         }
       }
     },
