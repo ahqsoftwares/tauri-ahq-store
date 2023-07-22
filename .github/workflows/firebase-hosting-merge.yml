@@ -2,10 +2,9 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-"on":
+
+on:
   push:
-    paths: |
-      docs
     branches:
       - master
 jobs:
