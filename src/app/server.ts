@@ -1,3 +1,3 @@
-const server = "http://free.daki.cc:5246/";
+const server = "http://pnode1.danbot.host:3454/";
 
 export default server;

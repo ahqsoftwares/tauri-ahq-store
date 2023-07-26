@@ -79,7 +79,7 @@ export default function MobileIndex({ dark }: { dark: boolean }) {
             ) : (
               <></>
             )}
-            {download.startsWith("https://") ? "Download (MSI package)" : ""}
+            {download.startsWith("https://") ? "Download (Exe)" : ""}
           </button>
         </div>
         <button

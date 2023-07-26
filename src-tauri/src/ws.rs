@@ -1,8 +1,6 @@
 use bcrypt::verify;
 use serde::ser::Serialize;
 use serde_json::{from_str, to_string};
-#[cfg(debug_assertions)]
-use serde_json::to_string_pretty;
 use std::{
     fs::read_to_string,
     net::TcpStream,
@@ -12,13 +10,10 @@ use std::{
 use tungstenite::{connect, stream::MaybeTlsStream, WebSocket};
 
 use crate::{
-    encryption::decrypt,
+    encryption::{encrypt, decrypt},
     get_system_dir,
     util::structs::{PayloadReq, Req, ServerResp, ToSendResp},
 };
-
-#[cfg(not(debug_assertions))]
-use crate::encryption::encrypt;
 
 static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
 
@@ -47,17 +42,13 @@ impl<'a> WsConnection<'a> {
         }
     }
 
-    pub fn send_ws<T: Serialize>(&mut self, value: T) {
+    pub fn send_ws<T: Serialize + std::fmt::Debug>(&mut self, value: T) {
         if let Ok(ref mut x) = self.to_send.try_lock() {
-            #[cfg(debug_assertions)]
-            x.push(to_string_pretty(&value).unwrap());
+            let data = to_string(&value).unwrap();
+            if let Some(data) = encrypt(data) {
+                let data = to_string(&data).unwrap();
 
-            #[cfg(not(debug_assertions))]
-            {
-                let data = to_string(&value).unwrap();
-                if let Some(data) = encrypt(data) {
-                    x.push(to_string(&data).unwrap());
-                }
+                x.push(data);
             }
         }
     }
@@ -69,8 +60,9 @@ impl<'a> WsConnection<'a> {
                     .drain(..)
                     .into_iter()
                     .map(|x| {
-                        if !cfg!(debug_assertions) {
-                            if let Some(x) = decrypt(from_str(&x).unwrap()) {
+                        if let Ok(x) = from_str(&x) {
+                            if let Some(x) = decrypt(x) {
+                                println!("{:#?}", &x);
                                 return x;
                             }
                         }
@@ -83,7 +75,6 @@ impl<'a> WsConnection<'a> {
                             }
                         }
                         println!("Something went to false");
-                        println!("{}", &x);
                         false
                     })
                     .map(|x| {

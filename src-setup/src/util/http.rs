@@ -150,4 +150,6 @@ pub async fn download_framework(out: &mut Sender<InstallerWorker>) {
     fs::remove_file(&format!("\"{}\\js.zip\"", &dir)).unwrap();
 
     out.send(InstallerWorker::Installed).await.unwrap();
+
+    sleep(Duration::from_millis(125)).await;
 }

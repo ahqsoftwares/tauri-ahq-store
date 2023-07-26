@@ -90,11 +90,7 @@ unsafe fn start_receiving() {
 
                         #[cfg(not(debug_assertions))]
                         {
-                            sender
-                            .broadcast(
-                                encrypt(data).unwrap()
-                            )
-                            .unwrap_or(());
+                            sender.broadcast(encrypt(data).unwrap()).unwrap_or(());
                         }
                     }
                 } else {

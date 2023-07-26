@@ -207,7 +207,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{secrets.TAURI}}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI }}
+          TAURI_KEY_PASSWORD: ${{ secrets.KEYPASS }}
         with:
           args: --verbose
           releaseId: ${{ needs.create-release.outputs.release_id }}

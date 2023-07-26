@@ -1,4 +1,4 @@
-#![cfg_attr(not(debug), windows_subsystem = "windows")]
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 pub mod download;
 pub mod encryption;
@@ -71,7 +71,10 @@ fn main() {
             let window_clone = window.clone();
             let window_clone_2 = tauri::Manager::get_window(app, "main").unwrap();
 
-            let _ = apply_mica(&window_clone_2, None);
+            {
+                let window = window_clone_2.clone();
+                let _ = apply_mica(&window, None);
+            }
 
             listener.listen("ready", move |_| {
                 println!("ready");
@@ -303,7 +306,7 @@ fn check_update(
 }
 
 fn verify_signature(data: Vec<u8>, release_signature: &str) -> Result<bool, Error> {
-    let pub_key = base64_to_string("dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFBQUQxRTExODc4NUUyQUMKUldTczRvV0hFUjZ0cWlOczRIQjlVTDFiWUhRUlNsMERZTm9hdGJzVTc1UUtEajBPSnVydWVMc0YK").unwrap_or("".to_string());
+    let pub_key = base64_to_string("dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCNUQyRTdGQUVFN0FDQTQKUldTa3JPZXVmeTVkbTBUL0JjSnNjLytQOHlyYkRnakJ2Q3dnYW51WTJIRVVCL1psWFNLT0pLSkgK").unwrap_or("".to_string());
     let key_verifier = PublicKey::decode(&pub_key)?;
 
     let signature_decoded = base64_to_string(release_signature).unwrap_or("".to_string());

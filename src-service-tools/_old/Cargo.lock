@@ -788,7 +788,7 @@ dependencies = [
 
 [[package]]
 name = "store-tools-installer"
-version = "0.9.858"
+version = "0.9.859"
 dependencies = [
  "downloader",
  "is_elevated",

@@ -3,25 +3,14 @@ use crate::{
         get_apps, get_commit_id, get_update_stats, install_apps, list_apps, run_update,
         uninstall_apps,
     },
-    auth,
+    auth::{self, decrypt, encrypt},
 };
 
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
-use ws::{CloseCode, Message, Sender, Error};
-
-#[cfg(not(debug_assertions))]
-use crate::auth::{
-    encrypt,
-    decrypt
-};
-
-#[cfg(not(debug_assertions))]
 use serde_json::to_string;
-
-#[cfg(debug_assertions)]
-use serde_json::to_string_pretty;
+use ws::{CloseCode, Message, Sender};
 
 mod get;
 mod install;
@@ -37,25 +26,17 @@ struct WsMessage {
 
 type AppList = Vec<String>;
 
-#[derive(Debug)]
-#[allow(dead_code)]
-enum Payload<'a> {
-    Debug(Result<&'a str, Error>),
-    Prod(Option<String>)
-}
-
 pub fn handle_ws(msg: Message, out: Sender) {
     let mut out = out;
 
-    let payload = Payload::Debug(msg.as_text());
+    let payload = msg.as_text();
 
-    #[cfg(not(debug_assertions))]
-    let payload = Payload::Prod(
-        match payload {
-            Payload::Debug(Ok(txt)) => decrypt(txt.to_string()),
-            _ => None,
-        }
-    );
+    if let Err(_) = payload {
+        send_invalid(r#""Invalid Payload""#, "".to_owned(), &mut out);
+        return;
+    }
+
+    let payload = payload.unwrap();
 
     if let Some(txt) = extract_value(&payload) {
         if let Ok(json) = from_str::<WsMessage>(&txt) {
@@ -147,11 +128,7 @@ pub fn handle_ws(msg: Message, out: Sender) {
             send_invalid(r#""Invalid JSON""#, txt.clone().to_owned(), &mut out);
         }
     } else {
-        send_invalid(
-            r#""Invalid Format""#,
-            format!("{:?}", &payload),
-            &mut out,
-        );
+        send_invalid(r#""Invalid Format""#, format!("{:?}", &payload), &mut out);
     }
 }
 
@@ -205,20 +182,10 @@ fn send_resp(
         auth: include!("./auth/hash").to_string(),
     };
 
-    #[cfg(debug_assertions)]
-    {
-        let resp = to_string_pretty(&err).unwrap();
+    let resp = to_string(&err).unwrap();
 
-        out.send(resp).unwrap_or(());
-    }
-
-    #[cfg(not(debug_assertions))]
-    {
-        let resp = to_string(&err).unwrap();
-
-        if let Some(x) = encrypt(resp) {
-            out.send(to_string(&x).unwrap()).unwrap_or(());
-        }
+    if let Some(x) = encrypt(resp) {
+        out.send(x).unwrap_or(());
     }
 
     if let Some(code) = code {
@@ -226,12 +193,6 @@ fn send_resp(
     }
 }
 
-fn extract_value(payload: &Payload) -> Option<String> {
-    match payload {
-        Payload::Prod(x) => x.clone(),
-        Payload::Debug(x) => match x {
-            Ok(x) => Some(x.to_string()),
-            _ => None
-        }
-    }
+fn extract_value(payload: &&str) -> Option<String> {
+    decrypt(payload.to_string())
 }
