@@ -1,4 +1,3 @@
-# AHQ Store v0.9.860
 This release is a major rewrite which changes the core foundation of AHQ Store (Backend)
 
 ## This update finalizes the following:

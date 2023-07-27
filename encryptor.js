@@ -1,5 +1,5 @@
 const { hashSync, genSaltSync } = require("bcrypt");
-const { writeFileSync } = require("fs");
+const { writeFileSync, readFileSync } = require("fs");
 
 const cryptr = new (require("cryptr"))(process.env.KEY);
 
@@ -14,3 +14,13 @@ const salt = genSaltSync(10);
 writeFileSync("./src-tauri/src/encrypt", `"${key}"`);
 writeFileSync("./src-service/src/auth/encrypt", `"${key}"`);
 writeFileSync("./src-service/src/auth/hash", `"${hashSync(key, salt)}"`);
+
+const data = String(readFileSync("./src-tauri/src/encrypt"));
+const d2 = String(readFileSync("./src-service/src/auth/encrypt"));
+
+if (data == d2) {
+  console.log("OK");
+} else {
+  console.log("NOT OK");
+  process.exit(1);
+}
