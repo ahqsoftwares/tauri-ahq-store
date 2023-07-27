@@ -50,7 +50,15 @@ pub fn subscribe() -> Subscription<InstallerWorker> {
 
                     download_framework(&mut out).await;
 
+                    out.send(InstallerWorker::Installed).await.unwrap();
+
+                    sleep(Duration::from_millis(100)).await;
+
+                    println!("Shutting down");
+
                     sleep(Duration::from_millis(2000)).await;
+
+                    std::process::exit(0);
                 } else {
                     out.send(InstallerWorker::Installed).await.unwrap();
                 }

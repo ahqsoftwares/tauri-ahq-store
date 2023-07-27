@@ -49,6 +49,7 @@ import "./index.css";
 import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
 import { getVersion } from "@tauri-apps/api/app";
+import { notification } from "@tauri-apps/api";
 
 initDeveloperConfiguration();
 
@@ -103,6 +104,13 @@ if (appWindow.label === "main") {
   const unlisten = appWindow.listen("needs_reinstall", () => {
     unlisten.then((f) => f());
     setInterval(() => render("Running PostInstall Script", App), 10);
+  });
+
+  appWindow.listen("error", ({ payload }) => {
+    notification.sendNotification({
+      title: "Error",
+      body: payload as any
+    });
   });
 
   /*Logic

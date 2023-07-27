@@ -60,6 +60,9 @@ impl<'a> WsConnection<'a> {
                     .drain(..)
                     .into_iter()
                     .map(|x| {
+                        unsafe {
+                            let _ = WINDOW.as_mut().unwrap().emit("error", &x);
+                        }
                         if let Ok(x) = from_str(&x) {
                             if let Some(x) = decrypt(x) {
                                 println!("{:#?}", &x);
@@ -75,6 +78,9 @@ impl<'a> WsConnection<'a> {
                             }
                         }
                         println!("Something went to false");
+                        unsafe {
+                            let _ = WINDOW.as_mut().unwrap().emit("error", &x);
+                        }
                         false
                     })
                     .map(|x| {

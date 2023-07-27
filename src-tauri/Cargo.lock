@@ -63,7 +63,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "0.9.859"
+version = "0.9.860"
 dependencies = [
  "base64 0.21.2",
  "bcrypt",
