@@ -1,11 +1,10 @@
-This release is a major rewrite which changes the core foundation of AHQ Store (Backend)
+This release is a patch update to the **AHQ Store**
 
-## This update finalizes the following:
-- A new Installer with simpler UI
-- AHQ Store Service Integration (currently it is slower than the earlier model)
-- Security between Service and App
-- Updater with UI
-- and many bug fixed as usual
+## Changes
+- Bug Fix
+- Make the Server Faster
+- Caching
+- Fix some apis
 
 ## To - Do:
 - Make **AHQ Store Service** Faster
