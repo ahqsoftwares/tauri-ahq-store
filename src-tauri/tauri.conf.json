@@ -31,11 +31,8 @@
           "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/*",
           "https://api.github.com/repos/ahqsoftwares/*",
 
-          "http://pnode1.danbot.host:3454/*",
-          "http://pnode1.danbot.host:3454/",
-
-          "http://localhost:2082/",
-          "http://localhost:2082/*"
+          "http://odin.forcehost.net:25643/*",
+          "http://odin.forcehost.net:25643/"
         ]
       },
       "path": {

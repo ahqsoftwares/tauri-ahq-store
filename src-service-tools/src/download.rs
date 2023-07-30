@@ -20,14 +20,16 @@ impl Reporter for SimpleReporter {
     }
 
     fn done(&self) {
-        println!("Downloading Finished Successfully!");
+        #[cfg(debug_assertions)]
+println!("Downloading Finished Successfully!");
     }
 
     fn progress(&self, c: u64) {
         unsafe {
             let perc = c * 100 / BYTES;
 
-            println!("Downloading: {}% of {} bytes", perc, BYTES);
+            #[cfg(debug_assertions)]
+println!("Downloading: {}% of {} bytes", perc, BYTES);
         }
     }
 
@@ -54,8 +56,10 @@ pub fn download(path: &str, url: &str) {
 
     for r in result {
         match r {
-            Err(e) => println!("Error: {:#?}", e),
-            Ok(s) => println!("Success: {}", &s),
+            Err(e) => #[cfg(debug_assertions)]
+println!("Error: {:#?}", e),
+            Ok(s) => #[cfg(debug_assertions)]
+println!("Success: {}", &s),
         };
     }
 }

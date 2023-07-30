@@ -23,7 +23,7 @@ function App(props: { info: string }) {
   const splashScreens = [
     "Made possible with open source!",
     "The work of AHQ Softwares",
-    "ahq-store.ml",
+    "ahq-store.web.app",
     `${version !== "" ? `v${version}` : ""}`,
   ];
 

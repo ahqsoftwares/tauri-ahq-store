@@ -65,15 +65,57 @@ export function install_app(app: string, status_update: (c: u64, t: u64) => void
   });
 }
 
-export function list_apps(): Promise<string[]> {
+export function list_apps(): Promise<{id: string, version: string}[]> {
   return new Promise((resolve) => {
     sendWsRequest(
       {
         module: "LISTAPPS",
       },
       (val) => {
-        if (val.method == "LIST") {
+        if (val.method == "LISTAPPS") {
           resolve(JSON.parse(val.payload));
+        }
+      }
+    );
+  });
+}
+
+interface Prefs {
+  launch_app: boolean;
+  install_apps: boolean;
+}
+
+export type { Prefs };
+
+export function get_access_perfs(): Promise<Prefs> {
+  return new Promise((resolve) => {
+    sendWsRequest(
+      {
+        module: "GET_PREFS",
+      },
+      (val) => {
+        if (val.method == "GET_PREFS") {
+          resolve(JSON.parse(val.payload));
+        }
+      }
+    );
+  });
+}
+
+export function un_install(apps: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    sendWsRequest(
+      {
+        module: "UNINSTALL",
+        data: JSON.stringify(apps),
+      },
+      (val) => {
+        if (val.method == "UNINSTALLAPP") {
+          if (JSON.parse(val.payload).length == 0) {
+            resolve();
+          } else {
+            reject();
+          }
         }
       }
     );

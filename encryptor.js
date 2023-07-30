@@ -13,7 +13,6 @@ const salt = genSaltSync(10);
 
 writeFileSync("./src-tauri/src/encrypt", `"${key}"`);
 writeFileSync("./src-service/src/auth/encrypt", `"${key}"`);
-writeFileSync("./src-service/src/auth/hash", `"${hashSync(key, salt)}"`);
 
 const data = String(readFileSync("./src-tauri/src/encrypt"));
 const d2 = String(readFileSync("./src-service/src/auth/encrypt"));

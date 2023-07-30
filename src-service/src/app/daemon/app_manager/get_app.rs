@@ -29,7 +29,8 @@ pub fn get_apps(apps: Vec<String>, client: Client, commit_id: String) -> Vec<App
             if let Ok(gh_app) = resp.json::<GithubApp>() {
                 if let Ok(x) = to_string(&gh_app) {
                     if let None = set_cache(app.clone(), x) {
-                        println!("WARN: Error adding into Cache");
+                        #[cfg(debug_assertions)]
+println!("WARN: Error adding into Cache");
                     }
                 }
 

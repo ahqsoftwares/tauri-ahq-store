@@ -269,7 +269,7 @@ export default function Init(props: InitProps) {
             description={`AHQ Store v${ver} (Build ${versionToBuild(ver)})`}
             Icon={"/logo192.png"}
             onClick={() => {
-              openUrl("https://ahq-store.ml");
+              openUrl("https://ahq-store.web.app");
             }}
             disabled={true}
             active={true}

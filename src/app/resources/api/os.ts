@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 let windowsVersion = "";
 let name = "";
+let development = false;
 
 export function init() {
   const windows95 =
@@ -13,6 +14,8 @@ export function init() {
   const windows10 =
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAABqElEQVRYhe3Yv2oUURSA8d/dDYYUBhZEAhbK7myT1crKzsbGxlhEbSx9BxsfwFoIPoCVNgZjQPAxtra3shAJ2ezOsciw7J9RF8fdjTAfDJeZuXPux5nD3OFQU7Ne0tpW/hBXhMxIhkzSFXIP09PJaRtLlTiKljNtDW2hLRUjN43sYDpFSX82RHXBw7jsQfruMO4JdyWZXCbJDG1LiGJu/C5QOYsJTmYi15Psoo2u8AmPhGfYF/5p4cwLvo/HuE1RG2SGtsaZWHHVlmXwBXqr1fg1jXUL/IlasCplgn/xMVge/2UGLxT1K67KhRcs20meCFsLR8h9AyPPNbysZJOczF6aF2zKDYpFF2HDj/E4rCB3zmA+/CwjbzXdWjhkeOf8b+aVpv1KevSZXvvC12AtWJVasCq1YFVqwaqU7cWvhTuSDjq4umKnKeYF99IBDsbnx7HpxDVNbUkPuxNtjOurF5zlfjrFl+L4PHXvODaFFkjeyH3V0BE6uIFLVQWX2yc4ipZB0SpJ2oyPLrZLnujbS1M/C+trv32MHacyzXGtZ3Kj2fZbTc26+QkUeVzllrl4UwAAAABJRU5ErkJggg==";
 
+  invoke("is_development")
+    .then((value: any) => development = value);
   invoke("get_windows")
     .then((version: any) => {
       name = version;
@@ -41,5 +44,7 @@ export function getWindowsName() {
 export function versionToBuild(version: string) {
   const [major, minor, patch] = version.split(".");
 
-  return Number(major) * 10000 + Number(minor) + Number(`0.${patch}`);
+  return String(
+    Number(major) * 10000 + Number(minor) + Number(`0.${patch}`) + (development ? "-next" : "")
+  );
 }

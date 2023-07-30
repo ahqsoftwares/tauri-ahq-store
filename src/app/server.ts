@@ -1,3 +1,3 @@
-const server = "http://pnode1.danbot.host:3454/";
+const server = "http://odin.forcehost.net:25643/";
 
 export default server;

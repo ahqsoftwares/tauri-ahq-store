@@ -21,7 +21,8 @@ pub fn get_ahqstore_service(depth: u8) -> String {
         .send();
 
     let handle_err = || {
-        println!("Error fetching the latest powershell release, Retrying in 10secs");
+        #[cfg(debug_assertions)]
+println!("Error fetching the latest powershell release, Retrying in 10secs");
         std::thread::sleep(std::time::Duration::from_secs(10));
         return get_ahqstore_service(depth + 1);
     };

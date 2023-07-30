@@ -1,6 +1,6 @@
 [package]
 name = "store-tools-installer"
-version = "0.9.861"
+version = "0.9.862"
 edition = "2021"
 authors = ["AHQ Store"]
 

@@ -6,20 +6,18 @@ import { MdModeEdit } from "react-icons/md";
 import { IoIosNotifications } from "react-icons/io";
 
 //API
-import { cacheData } from "../../resources/api/fetchApps";
+import { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import { updaterStatus } from "../../resources/api/updateInstallWorker";
 
 export default function App({
   appInfo,
   dark,
-  reload,
   toast,
   lastIndex,
 }: {
-  appInfo: cacheData;
+  appInfo: appData;
   dark: boolean;
-  reload: Function;
   toast: typeof Toast;
   lastIndex: boolean;
 }) {
@@ -32,16 +30,16 @@ export default function App({
 
   return (
     <div
-      className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] ${
+      className={`mx-2 rounded-md my-1 flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] ${
         dark ? "bg-gray-800 text-white" : "bg-gray-100 text-slate-800"
-      } ${lastIndex ? "rounded-b-md" : ""} mt-2 shadow-xl pl-2 cursor-default`}
+      } ${lastIndex ? "rounded-b-md" : ""} hover:shadow-xl pl-2 cursor-default`}
     >
       <img
         width={"64px"}
         height={"64px"}
-        src={appInfo.img}
+        src={appInfo.icon}
         alt={appInfo.title}
-        className={`mr-2 ${appInfo.img === pkg ? "p-2" : ""}`}
+        className={`mr-2`}
         draggable={false}
       ></img>
 

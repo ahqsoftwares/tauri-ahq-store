@@ -77,7 +77,8 @@ fn main() {
             }
 
             listener.listen("ready", move |_| {
-                println!("ready");
+                #[cfg(debug_assertions)]
+println!("ready");
 
                 *ready_clone.lock().unwrap() = true;
 
@@ -101,7 +102,8 @@ fn main() {
             if std::env::args().last().unwrap().as_str() != exec.clone().as_str() {
                 let args = args.last().unwrap_or(String::from(""));
 
-                println!("Started with {}", args);
+                #[cfg(debug_assertions)]
+println!("Started with {}", args);
 
                 if *ready.clone().lock().unwrap() {
                     window.emit("app", args.clone()).unwrap();
@@ -115,7 +117,8 @@ fn main() {
 
             let window = window.clone();
             tauri_plugin_deep_link::register("ahqstore", move |request| {
-                println!("{:?}", request);
+                #[cfg(debug_assertions)]
+println!("{:?}", request);
                 window.emit("app", request).unwrap_or(());
             })
             .unwrap();
@@ -131,17 +134,22 @@ fn main() {
                 ),
         )
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-            tauri::Manager::get_window(app, "main")
-                .unwrap()
-                .show()
+            let main = tauri::Manager::get_window(app, "main").unwrap();
+            
+            main.show()
+                .unwrap();
+            main.set_focus()
                 .unwrap();
         }))
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
-                println!("Received a left Click");
-                tauri::Manager::get_window(app, "main")
-                    .unwrap()
-                    .show()
+                #[cfg(debug_assertions)]
+println!("Received a left Click");
+                let main = tauri::Manager::get_window(app, "main").unwrap();
+            
+                main.show()
+                    .unwrap();
+                main.set_focus()
                     .unwrap();
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
@@ -159,7 +167,8 @@ fn main() {
             decrypt,
             open,
             set_progress,
-            is_an_admin
+            is_an_admin,
+            is_development
         ])
         .menu(if cfg!(target_os = "macos") {
             tauri::Menu::os_default(&context.package_info().name)
@@ -189,7 +198,8 @@ fn main() {
         WINDOW = Some(window.clone());
 
         ws::init(window, || {
-            println!("Reinstall AHQ Store Service Required...");
+            #[cfg(debug_assertions)]
+println!("Reinstall AHQ Store Service Required...");
 
             if catch_unwind(|| {
                 let mut i = 0;
@@ -218,7 +228,8 @@ fn main() {
                     &format!("{}\\astore", sys),
                     "astore_service_installer.exe",
                     |c, t| {
-                        println!("{}", c * 100 / t);
+                        #[cfg(debug_assertions)]
+println!("{}", c * 100 / t);
                     },
                 );
 
@@ -233,14 +244,22 @@ fn main() {
         });
     }
 
+    let main = window.clone();
+    let complement = tauri::Manager::get_window(&app, "complement").unwrap();
+
     app.run(move |_, event| match event {
         RunEvent::ExitRequested { api, .. } => {
             api.prevent_exit();
         }
-        RunEvent::WindowEvent { event, .. } => match event {
+        RunEvent::WindowEvent { event, label, .. } => match event {
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 api.prevent_close();
-                window.hide().unwrap();
+                if &label == "complement" {
+                    complement.hide().unwrap();
+                } else {
+                    complement.hide().unwrap();
+                    main.hide().unwrap();
+                }
             }
             _ => {}
         },
@@ -257,6 +276,11 @@ fn base64_to_string(base64_string: &str) -> Option<String> {
 }
 
 const UPDATER_PATH: &str = "%root%\\A_STORE_CACHE";
+
+#[tauri::command(async)]
+fn is_development() -> bool {
+    cfg!(debug_assertions)
+}
 
 #[tauri::command(async)]
 fn open(url: String) -> Option<()> {
@@ -278,7 +302,8 @@ fn check_update(
     let mut update_available = &version != &current_version;
 
     if update_available.clone() {
-        println!("Update Available!");
+        #[cfg(debug_assertions)]
+println!("Update Available!");
         let sys_dir = sys_handler();
 
         let path = UPDATER_PATH.replace("%root%", sys_dir.as_str());

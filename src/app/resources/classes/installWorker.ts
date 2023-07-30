@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
-import fetchApps, { cacheData } from "../api/fetchApps";
+import fetchApps, { appData } from "../api/fetchApps";
+import { list_apps, un_install } from "../core";
 
 export default class installWorker {
   appId?: string[];
@@ -97,10 +98,10 @@ export default class installWorker {
 
     const rawApps = this.appId && !appId ? this.appId : (appId as string[]);
 
-    apps = ((await fetchApps(rawApps)) as cacheData[]).map((value) => {
-      const { download_url, version, exe, title } = value;
+    apps = ((await fetchApps(rawApps)) as appData[]).map((value) => {
+      const { download, version, exe, title } = value;
       return {
-        download_url,
+        download_url: download,
         version,
         exe,
         name: title,
@@ -127,16 +128,13 @@ export default class installWorker {
     }
   }
 
-  async uninstall(appId: string) {
-    const app = await fetchApps(appId);
-
-    invoke("uninstall", {
-      appName: appId,
-      appFullName: (app as cacheData).title,
-    });
+  uninstall(appId: string) {
+    return un_install([appId]);
   }
 
   async exists(appId: string) {
-    return await invoke("check_app", { appName: appId });
+    const appList = await list_apps();
+
+    return appList.findIndex(({ id }) => id == appId) != -1;
   }
 }

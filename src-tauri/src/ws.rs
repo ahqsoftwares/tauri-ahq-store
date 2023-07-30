@@ -1,4 +1,3 @@
-use bcrypt::verify;
 use serde::ser::Serialize;
 use serde_json::{from_str, to_string};
 use std::{
@@ -12,7 +11,7 @@ use tungstenite::{connect, stream::MaybeTlsStream, WebSocket};
 use crate::{
     encryption::{encrypt, decrypt},
     get_system_dir,
-    util::structs::{PayloadReq, Req, ServerResp, ToSendResp},
+    util::structs::{PayloadReq, ServerResp, ToSendResp},
 };
 
 static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
@@ -65,7 +64,8 @@ impl<'a> WsConnection<'a> {
                         }
                         if let Ok(x) = from_str(&x) {
                             if let Some(x) = decrypt(x) {
-                                println!("{:#?}", &x);
+                                #[cfg(debug_assertions)]
+println!("{:#?}", &x);
                                 return x;
                             }
                         }
@@ -73,11 +73,12 @@ impl<'a> WsConnection<'a> {
                     })
                     .filter(|x| {
                         if let Ok(payload) = from_str::<ServerResp>(&x) {
-                            if let Ok(x) = verify(&include!("./encrypt"), &payload.auth) {
-                                return x;
+                            if &include!("./encrypt") == &payload.auth {
+                                return true;
                             }
                         }
-                        println!("Something went to false");
+                        #[cfg(debug_assertions)]
+println!("Something went to false");
                         unsafe {
                             let _ = WINDOW.as_mut().unwrap().emit("error", &x);
                         }
@@ -201,12 +202,7 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
             win.listen("ws_send", |ev| {
                 if let Some(x) = ev.payload() {
                     if let Ok(from_window) = from_str::<PayloadReq>(x) {
-                        let reqwest = Req {
-                            data: from_window.data,
-                            module: from_window.module,
-                            token: include!("./encrypt").into(),
-                        };
-                        CONNECTION.as_mut().unwrap().send_ws(reqwest);
+                        CONNECTION.as_mut().unwrap().send_ws(from_window);
                     }
                 }
             });

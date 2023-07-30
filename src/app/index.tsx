@@ -37,6 +37,7 @@ import fetchPrefs, {
 import { runner } from "./resources/core/handler";
 import { init } from "./resources/api/fetchApps";
 import { invoke } from "@tauri-apps/api/tauri";
+import { notification } from "@tauri-apps/api";
 
 interface AppProps {
   data: {
@@ -58,6 +59,7 @@ function Render(props: AppProps) {
     [sidebar, setSidebar] = useState("flex-row"),
     [load, setLoad] = useState(false),
     [autoUpdate, setUpdate] = useState(false),
+    [debug, setDebug] = useState(false),
     [apps, setApps] = useState<any>([]),
     [allAppsData, setData] = useState<{ map: { [key: string]: Object } }>({
       map: {},
@@ -91,12 +93,24 @@ function Render(props: AppProps) {
 
   useEffect(() => {
     (async () => {
-      const { autoUpdate, dark, font, sidebar } = await fetchPrefs();
+      const { autoUpdate, dark, font, sidebar, debug, accessPrefs } = await fetchPrefs();
+
+      console.log(accessPrefs);
+
+      if (debug) {
+        appWindow.listen("error", ({ payload }) => {
+          notification.sendNotification({
+            title: "Info / Error / Warn",
+            body: payload as any
+          });
+        });
+      }
 
       setD(dark);
       setFont(font);
       setUpdate(autoUpdate);
       setSidebar(sidebar);
+      setDebug(debug);
 
       runAutoUpdate(autoUpdate);
 
@@ -181,19 +195,19 @@ function Render(props: AppProps) {
 
   function setDark(dark: boolean) {
     setD(dark);
-    updateConfig({ dark, font, autoUpdate, sidebar });
+    updateConfig({ dark, font, autoUpdate, sidebar, debug });
   }
   function changeFont(newFont: string) {
     setFont(newFont);
-    updateConfig({ dark, font: newFont, autoUpdate, sidebar });
+    updateConfig({ dark, font: newFont, autoUpdate, sidebar, debug });
   }
   function setAutoUpdate(newStatus: boolean) {
     setUpdate(newStatus);
-    updateConfig({ dark, font, autoUpdate: newStatus, sidebar });
+    updateConfig({ dark, font, autoUpdate: newStatus, sidebar, debug });
   }
   function updateSidebar(newSidebar: string) {
     setSidebar(newSidebar);
-    updateConfig({ dark, sidebar: newSidebar, font, autoUpdate });
+    updateConfig({ dark, sidebar: newSidebar, font, autoUpdate, debug });
   }
 
   /*

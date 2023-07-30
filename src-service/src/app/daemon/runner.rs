@@ -11,6 +11,8 @@ use threadpool::ThreadPool;
 use super::{
     app_manager::{check_for_updates, get_apps, install_apps, list_apps, uninstall},
     get_commit,
+    preferences::{get_prefs, update_prefs},
+    Preferences,
 };
 
 #[derive(Clone)]
@@ -22,6 +24,8 @@ enum Order {
     RunUpdateCheck(String),
     ListApps(String),
     Commit(String),
+    GetPrefs(String),
+    PostPrefs(String, String),
     Stop(),
 }
 
@@ -147,7 +151,20 @@ pub fn run(tx: Sender<String>, rx: Receiver<String>, client: Client) {
                         let commit = commit_id.clone();
                         let status = update_status.clone();
 
-                        execute_order(tx, order, commit, status, client);
+                        let mut join = false;
+
+                        if let &Order::InstallApps(..) = &order {
+                            pool.join();
+                            join = true;
+                        }
+
+                        pool.execute(move || {
+                            execute_order(tx, order, commit, status, client);
+                        });
+
+                        if join {
+                            pool.join();
+                        }
                     }
                 }
             }
@@ -241,6 +258,26 @@ fn execute_order(
 
             terminate(&tx, &ref_id);
         }
+        Order::GetPrefs(ref_id) => {
+            tx.send(format!(
+                "GET_PREFS{}{}{}{}",
+                ID,
+                ref_id,
+                ID,
+                to_string(&get_prefs()).unwrap()
+            ))
+            .unwrap_or(());
+
+            terminate(&tx, &ref_id);
+        }
+        Order::PostPrefs(new_prefs, ref_id) => {
+            update_prefs(Preferences::Data(new_prefs.clone()));
+
+            tx.send(format!("POST_PREFS{}{}{}{}", ID, ref_id, ID, ""))
+                .unwrap_or(());
+
+            terminate(&tx, &ref_id);
+        }
         _ => {}
     }
 }
@@ -268,32 +305,38 @@ fn check_rx(rx: &Receiver<String>, queue: &mut Vec<Order>) {
             "APP" => {
                 let apps = from_str(payload.to_string().as_str()).unwrap_or(vec![]);
 
-                queue.push(Order::FetchApps(apps, ref_id.clone()));
+                queue.push(Order::FetchApps(apps, ref_id));
             }
             "INSTALL" => {
                 let apps = from_str(payload.to_string().as_str()).unwrap_or(vec![]);
 
-                queue.push(Order::InstallApps(apps, ref_id.clone()));
+                queue.push(Order::InstallApps(apps, ref_id));
             }
             "UNINSTALL" => {
                 let apps = from_str(payload.to_string().as_str()).unwrap_or(vec![]);
 
-                queue.push(Order::UninstallApps(apps, ref_id.clone()));
+                queue.push(Order::UninstallApps(apps, ref_id));
             }
             "UPDATE" => {
-                queue.push(Order::GetUpdateStats(ref_id.clone()));
+                queue.push(Order::GetUpdateStats(ref_id));
             }
             "CHECKUPDATE" => {
-                queue.push(Order::RunUpdateCheck(ref_id.clone()));
+                queue.push(Order::RunUpdateCheck(ref_id));
             }
             "LISTAPPS" => {
-                queue.push(Order::ListApps(ref_id.clone()));
+                queue.push(Order::ListApps(ref_id));
             }
             "COMMIT" => {
-                queue.push(Order::Commit(ref_id.clone()));
+                queue.push(Order::Commit(ref_id));
             }
             "STOP" => {
                 queue.push(Order::Stop());
+            }
+            "GET_PREFS" => {
+                queue.push(Order::GetPrefs(ref_id));
+            }
+            "POST_PREFS" => {
+                queue.push(Order::PostPrefs(payload.into(), ref_id));
             }
             _ => {}
         }

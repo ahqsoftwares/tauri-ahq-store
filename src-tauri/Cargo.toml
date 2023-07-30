@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "0.9.861"
+version = "0.9.862"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "ISC"
@@ -30,7 +30,6 @@ open = "4.1.0"
 tungstenite = "0.19.0"
 windows = { version = "0.39.0", features= ["Win32_System_Com", "Win32_Foundation", "Win32_UI_Shell"] }
 reqwest = { version = "*", features = ["blocking", "json"] }
-bcrypt = "0.14.0"
 window-vibrancy = "0.4.0"
 
 [features]

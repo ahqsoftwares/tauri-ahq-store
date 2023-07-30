@@ -20,8 +20,10 @@ pub fn download(path: &str, url: &str) {
 
     for r in result {
         match r {
-            Err(e) => println!("Error: {}", e.to_string()),
-            Ok(s) => println!("Success: {}", &s),
+            Err(e) => #[cfg(debug_assertions)]
+println!("Error: {}", e.to_string()),
+            Ok(s) => #[cfg(debug_assertions)]
+println!("Success: {}", &s),
         };
     }
 }

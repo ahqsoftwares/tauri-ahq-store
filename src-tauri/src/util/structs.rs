@@ -7,13 +7,6 @@ pub struct PayloadReq {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Req {
-    pub token: String,
-    pub module: String,
-    pub data: Option<String>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ServerResp {
     pub method: Option<String>,
     pub status: Option<String>,

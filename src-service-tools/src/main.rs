@@ -35,7 +35,8 @@ fn main() -> Result<(), eframe::Error> {
 
     env_logger::init();
 
-    println!(
+    #[cfg(debug_assertions)]
+println!(
         r#"
 ██╗░░░░░░█████╗░██╗░░░██╗███╗░░██╗░█████╗░██╗░░██╗██╗███╗░░██╗░██████╗░  ░██████╗░██╗░░░██╗██╗
 ██║░░░░░██╔══██╗██║░░░██║████╗░██║██╔══██╗██║░░██║██║████╗░██║██╔════╝░  ██╔════╝░██║░░░██║██║
@@ -187,7 +188,8 @@ impl eframe::App for ToolsInstallerWindow {
                         .wait()
                         .unwrap();
 
-                    println!("Installed, Starting service...");
+                    #[cfg(debug_assertions)]
+println!("Installed, Starting service...");
 
                     Command::new("sc.exe")
                         .creation_flags(0x08000000)
@@ -204,12 +206,14 @@ impl eframe::App for ToolsInstallerWindow {
                         fs::create_dir_all(&astore_framework_dir).unwrap_or(());
 
                         for url in framework_urls {
-                            println!("Downloading Framework Depedency: {}", &url);
+                            #[cfg(debug_assertions)]
+println!("Downloading Framework Depedency: {}", &url);
 
                             download(&astore_framework_dir, &url);
                         }
 
-                        println!("Running Post-Install script...");
+                        #[cfg(debug_assertions)]
+println!("Running Post-Install script...");
 
                         Command::new("powershell")
                             .arg("Expand-Archive")
@@ -236,7 +240,8 @@ impl eframe::App for ToolsInstallerWindow {
                         fs::remove_file(format!("{}\\js.zip", &astore_framework_dir)).unwrap_or(());
                         fs::remove_file(format!("{}\\node.zip", &astore_framework_dir)).unwrap_or(());
 
-                        println!("Installed Successfully!");
+                        #[cfg(debug_assertions)]
+println!("Installed Successfully!");
 
                         std::thread::sleep(Duration::from_secs(2));
 

@@ -32,34 +32,40 @@ function formatBytes(bytes: number, decimals = 2) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
+const defAppData = {
+  icon: "",
+  title: "",
+  description: "",
+  author: "",
+  displayName: "",
+  download: "",
+  exe: "",
+  id: "",
+  repo: {
+    author: "",
+    repo: "",
+  },
+  version: "",
+};
+
 export default function ShowModal(props: AppDataPropsModal) {
   const { shown, dark, change, installData } = props;
 
-  const [appData, setAppData] = useState<appData>({
-    icon: "",
-    title: "",
-    description: "",
-    author: "",
-    displayName: "",
-    download: "",
-    exe: "",
-    id: "",
-    repo: {
-      author: "",
-      repo: "",
-    },
-    version: "",
-  });
+  console.log(installData);
+
+  const [appData, setAppData] = useState<appData>(defAppData);
   const [working, setWorking] = useState(false);
   const button = useRef<HTMLButtonElement>("" as any);
-  const [installed, setInstalled] = useState(false);
+  const [installed, setInstalled] = useState<boolean | "hidden">(false);
   const [updating, setUpdating] = useState(true);
 
   useEffect(() => {
+    setAppData(defAppData);
+    setInstalled("hidden");
     (async () => {
       if ((installData || "") !== "") {
-        /*setInstalled(await isInstalled(installData));*/
         setAppData((await fetchApps(installData)) as any);
+        setInstalled(await isInstalled(installData));
 
         setUpdating(
           updaterStatus().apps?.includes(installData) === true ? true : false
@@ -143,7 +149,15 @@ export default function ShowModal(props: AppDataPropsModal) {
               </h2>
             </div>
 
-            {installed ? (
+            {installed == "hidden" ? (
+              <button
+                ref={button}
+                className="button-danger mb-4"
+                disabled={true}
+              >
+                Loading
+              </button>
+            ) : installed ? (
               <button
                 ref={button}
                 className="button-danger mb-4"

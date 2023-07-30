@@ -13,7 +13,8 @@ use download::download;
 use powershell::get_ahqstore_service;
 
 fn main() {
-    println!(r#"
+    #[cfg(debug_assertions)]
+println!(r#"
 ░█████╗░██╗░░██╗░██████╗░  ░██████╗████████╗░█████╗░██████╗░███████╗
 ██╔══██╗██║░░██║██╔═══██╗  ██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔════╝
 ███████║███████║██║██╗██║  ╚█████╗░░░░██║░░░██║░░██║██████╔╝█████╗░░
@@ -59,7 +60,8 @@ fn main() {
 
     let astore_dir = format!("{}\\ProgramData\\AHQ Store Applications", sys_dir);
 
-    println!("Getting AHQ Store Service release...");
+    #[cfg(debug_assertions)]
+println!("Getting AHQ Store Service release...");
 
     let ahqstore_service_url = get_ahqstore_service(0);
 
@@ -81,7 +83,8 @@ fn main() {
 
     drop(res);
 
-    println!(
+    #[cfg(debug_assertions)]
+println!(
         "Downloading AHQ Store Services... ({})",
         &ahqstore_service_url
     );
@@ -90,9 +93,11 @@ fn main() {
 
     download(&astore_dir, &ahqstore_service_url);
 
-    println!("Downloaded files");
+    #[cfg(debug_assertions)]
+println!("Downloaded files");
 
-    println!("Installing AHQ Store Services...");
+    #[cfg(debug_assertions)]
+println!("Installing AHQ Store Services...");
 
     let output = Command::new("sc.exe")
         .creation_flags(0x08000000)
@@ -111,8 +116,10 @@ fn main() {
         .unwrap();
 
     let out = String::from_utf8(output.stdout).unwrap_or("".to_owned());
-    println!("{}", out);
-    println!("Installed, Starting service...");
+    #[cfg(debug_assertions)]
+println!("{}", out);
+    #[cfg(debug_assertions)]
+println!("Installed, Starting service...");
 
     let output = Command::new("sc.exe")
         .creation_flags(0x08000000)
@@ -125,9 +132,11 @@ fn main() {
 
     let out = String::from_utf8(output.stdout).unwrap_or("".to_owned());
 
-    println!("{}", out);
+    #[cfg(debug_assertions)]
+println!("{}", out);
 
-    println!(r#"
+    #[cfg(debug_assertions)]
+println!(r#"
 ███████████████████████████████████████████████████████
 █▄─▄█▄─▀█▄─▄█─▄▄▄▄█─▄─▄─██▀▄─██▄─▄███▄─▄███▄─▄▄─█▄─▄▄▀█
 ██─███─█▄▀─██▄▄▄▄─███─████─▀─███─██▀██─██▀██─▄█▀██─██─█

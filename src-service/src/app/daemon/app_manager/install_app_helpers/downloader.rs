@@ -55,14 +55,16 @@ impl downloader::progress::Reporter for SimpleReporter {
     }
 
     fn set_message(&self, message: &str) {
-        println!("App: Message changed to: {}", message);
+        #[cfg(debug_assertions)]
+println!("App: Message changed to: {}", message);
     }
 
     fn done(&self) {
         let mut guard = self.private.lock().unwrap();
         *guard = None;
 
-        println!("App Download Status: [DONE]");
+        #[cfg(debug_assertions)]
+println!("App Download Status: [DONE]");
     }
 }
 
@@ -75,8 +77,10 @@ pub fn download(url: String, folder: String, file_name: String, logger: fn(u64, 
     fs::remove_file(file.clone()).unwrap_or(());
 
     match datas {
-        Err(daras) => println!("{}", daras.to_string()),
-        Ok(()) => println!("Created Dir for files"),
+        Err(daras) => #[cfg(debug_assertions)]
+println!("{}", daras.to_string()),
+        Ok(()) => #[cfg(debug_assertions)]
+println!("Created Dir for files"),
     };
 
     let mut downloader = Downloader::builder()
@@ -95,11 +99,13 @@ pub fn download(url: String, folder: String, file_name: String, logger: fn(u64, 
     for r in result {
         match r {
             Err(e) => {
-                println!("Error: {}", &e);
+                #[cfg(debug_assertions)]
+println!("Error: {}", &e);
                 status = 1;
             }
             Ok(s) => {
-                println!("Success: {}", &s);
+                #[cfg(debug_assertions)]
+println!("Success: {}", &s);
                 status = 0;
             }
         };

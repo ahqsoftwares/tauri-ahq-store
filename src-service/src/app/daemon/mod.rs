@@ -10,11 +10,13 @@ use ws::Sender as WsSender;
 
 mod get_commit;
 mod runner;
+mod structs;
 
 pub mod app_manager;
+pub mod preferences;
 pub use get_commit::get_commit;
+pub use structs::*;
 
-#[cfg(not(debug_assertions))]
 use crate::auth::encrypt;
 
 const ID: &str = "ā";
@@ -77,7 +79,7 @@ unsafe fn start_receiving() {
                     method: method.clone(),
                     payload: payload.clone(),
                     ref_id: ref_id.clone(),
-                    auth: include!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/auth/hash"))
+                    auth: include!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/auth/encrypt"))
                         .to_string(),
                 };
 
@@ -85,13 +87,9 @@ unsafe fn start_receiving() {
                     if let Some(sender) = &UNIVERSALSENDER {
                         let data = to_string(&data).unwrap_or(String::from("\"Error\""));
 
-                        #[cfg(debug_assertions)]
-                        sender.broadcast(data).unwrap_or(());
-
-                        #[cfg(not(debug_assertions))]
-                        {
-                            sender.broadcast(encrypt(data).unwrap()).unwrap_or(());
-                        }
+                        sender
+                            .broadcast(encrypt(data).unwrap_or("".into()))
+                            .unwrap_or(());
                     }
                 } else {
                     REQUESTS = iterated
@@ -101,9 +99,8 @@ unsafe fn start_receiving() {
                                 let data = to_string(&data).unwrap_or(String::from("\"Error\""));
 
                                 #[cfg(debug_assertions)]
-                                sender.send(data).unwrap_or(());
+                                sender.send(data.clone()).unwrap_or(());
 
-                                #[cfg(not(debug_assertions))]
                                 if let Some(x) = encrypt(data) {
                                     sender.send(x).unwrap_or(());
                                 }
@@ -164,6 +161,34 @@ pub fn stop() {
 pub fn list_apps(ref_id: String, sender: WsSender) -> bool {
     unsafe {
         match send(format!("{}{}LISTAPPS{}NONE", ref_id.clone(), ID, ID)) {
+            Err(_) => {
+                return false;
+            }
+            _ => {
+                REQUESTS.push((ref_id.clone(), sender));
+                return true;
+            }
+        }
+    }
+}
+
+pub fn preferences(ref_id: String, sender: WsSender) -> bool {
+    unsafe {
+        match send(format!("{}{}GET_PREFS{}NONE", ref_id.clone(), ID, ID)) {
+            Err(_) => {
+                return false;
+            }
+            _ => {
+                REQUESTS.push((ref_id.clone(), sender));
+                return true;
+            }
+        }
+    }
+}
+
+pub fn post_preferences(ref_id: String, prefs: String, sender: WsSender) -> bool {
+    unsafe {
+        match send(format!("{}{}POST_PREFS{}{}", ref_id.clone(), ID, ID, prefs)) {
             Err(_) => {
                 return false;
             }
