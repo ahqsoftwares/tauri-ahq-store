@@ -46,7 +46,7 @@ export default function SearchModal(props: AppDataPropsModal) {
               }}
               autoComplete={"off"}
               id="special-modal"
-            ></input>
+            />
           </div>
         </div>
       ) : (

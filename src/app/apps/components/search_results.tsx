@@ -6,6 +6,7 @@ interface SearchPropsToRender {
   set: Function;
   show: Function;
   dark: boolean;
+  isAdmin: boolean;
 }
 
 export default function Load(props: SearchPropsToRender) {

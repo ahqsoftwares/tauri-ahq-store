@@ -31,6 +31,7 @@ interface AppsProps {
   dark: boolean;
   auth: Auth;
   apps: Array<any>;
+  isAdmin: boolean;
 }
 
 function darkMode(classes: Array<string>, dark: boolean) {
@@ -38,7 +39,7 @@ function darkMode(classes: Array<string>, dark: boolean) {
 }
 
 export default function Apps(props: AppsProps) {
-  const { dark, apps } = props;
+  const { dark, apps, isAdmin } = props;
 
   const [shown, showModal] = useState(false),
     [search, searchText] = useState(""),
@@ -77,7 +78,7 @@ export default function Apps(props: AppsProps) {
 
   return (
     <div className={darkMode(["menu"], dark)}>
-      <Modal shown={shown} dark={dark} change={change} installData={data} />
+      <Modal isAdmin={isAdmin} shown={shown} dark={dark} change={change} installData={data} />
       <SearchModal
         shown={enter}
         dark={dark}
@@ -182,6 +183,7 @@ export default function Apps(props: AppsProps) {
                   set={setData}
                   show={change}
                   dark={dark}
+                  isAdmin={isAdmin}
                 />
               ) : (
                 <></>
@@ -237,6 +239,7 @@ export default function Apps(props: AppsProps) {
           set={setData}
           show={change}
           dark={dark}
+          isAdmin={isAdmin}
         />
       )}
     </div>

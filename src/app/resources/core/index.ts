@@ -102,6 +102,22 @@ export function get_access_perfs(): Promise<Prefs> {
   });
 }
 
+export function set_access_prefs(prefs: Prefs): Promise<void> {
+  return new Promise((resolve) => {
+    sendWsRequest(
+      {
+        module: "POST_PREFS",
+        data: JSON.stringify(prefs)
+      },
+      (val) => {
+        if (val.method == "POST_PREFS") {
+          resolve();
+        }
+      }
+    );
+  });
+}
+
 export function un_install(apps: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
     sendWsRequest(

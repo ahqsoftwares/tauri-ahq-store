@@ -78,13 +78,11 @@ export default function CheckBox(props: {
         </>
       ) : (
         <input
-          className={props.active ? "slider" : "slider slider-disabled"}
-          type={"range"}
-          min="0"
-          max="60"
-          value={props.active ? "55" : "5"}
+          className={`dui-toggle dui-toggle-lg dui-toggle-success my-auto`}
+          type="checkbox"
+          checked={props.active}
           readOnly
-        ></input>
+        />
       )}
 
       <div className="mr-3"></div>

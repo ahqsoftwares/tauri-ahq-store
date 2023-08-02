@@ -8,6 +8,9 @@ import {
 import { sendNotification } from "@tauri-apps/api/notification";
 
 import { Prefs, get_access_perfs } from "../core";
+import { invoke } from "@tauri-apps/api/tauri";
+import { notification } from "@tauri-apps/api";
+import { exit } from '@tauri-apps/api/process';
 
 interface appData {
   dark: boolean;
@@ -16,6 +19,7 @@ interface appData {
   sidebar: string;
   debug: boolean;
   accessPrefs?: Prefs;
+  isAdmin?: boolean;
 }
 
 export type { appData };
@@ -24,7 +28,17 @@ export default async function fetchPrefs(): Promise<appData> {
   createDir("", { dir: BaseDirectory.App }).catch((e) => e);
   createDir("database", { dir: BaseDirectory.App }).catch((e) => e);
 
+  const is_admin = await invoke<boolean>("is_an_admin");
   const prefs = await get_access_perfs();
+
+  if (!is_admin && !prefs.launch_app) {
+    notification.sendNotification({
+      title: "Denied",
+      body: "You are not allowed to launch the app!",
+    });
+
+    await exit(1);
+  }
 
   const mode =
   window.matchMedia &&
@@ -40,7 +54,8 @@ export default async function fetchPrefs(): Promise<appData> {
       autoUpdate: false,
       debug: false,
       ...data,
-      accessPrefs: prefs
+      accessPrefs: prefs,
+      isAdmin: is_admin,
     } as appData))
     .catch(async (e) => {
       console.log(e);
@@ -64,13 +79,15 @@ export default async function fetchPrefs(): Promise<appData> {
         font: "def",
         autoUpdate: false,
         debug: false,
-        accessPrefs: prefs
+        accessPrefs: prefs,
+        isAdmin: is_admin,
       } as appData;
     });
 }
 
 export function setConfig(data: appData) {
   delete data["accessPrefs"];
+  delete data["isAdmin"];
 
   writeFile("database/config.astore", JSON.stringify(data), {
     dir: BaseDirectory.App,

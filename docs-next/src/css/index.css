@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  @apply transition-all select-none;
+  -webkit-user-drag: none;
+}
+
+body {
+  @apply bg-gray-300 dark:bg-gray-700;
+}
+
+@layer utilities {
+  .flex-c {
+    @apply flex flex-col;
+  }
+
+  .flex-r {
+    @apply flex flex-row;
+  }
+
+  .main-cnt {
+    @apply w-[99vw] h-[98vh];
+    @apply min-h-[98vh] max-h-[98vh] min-w-[99vw] max-w-[99vw];
+    @apply px-2;
+  }
+}

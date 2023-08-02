@@ -3,7 +3,6 @@ import Nav from "../components/SpecialNav";
 
 //Pages
 import Home from "../components/home";
-import Apps from "../components/apps";
 import About from "../components/about";
 
 export default function MainPage({
@@ -21,9 +20,7 @@ export default function MainPage({
   }
 
   useEffect(() => {
-    if (path === "/apps") {
-      setPage("apps");
-    } else if (path === "/docs") {
+    if (path === "/docs") {
       setPage("docs");
     } else if (path === "/about") {
       setPage("about");
@@ -35,9 +32,6 @@ export default function MainPage({
     switch (page) {
       case "docs":
         setApp(<></>);
-        break;
-      case "apps":
-        setApp(<Apps />);
         break;
       case "about":
         setApp(<About dark={dark} />);

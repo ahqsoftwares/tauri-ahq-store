@@ -108,7 +108,7 @@ Backgrounds Super
   .button:hover {
     @apply bg-blue-900;
   }
-
+  
   .button-success {
     @apply bg-green-700 hover:bg-green-800;
   }

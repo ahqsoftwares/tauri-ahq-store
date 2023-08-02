@@ -38,6 +38,7 @@ import { runner } from "./resources/core/handler";
 import { init } from "./resources/api/fetchApps";
 import { invoke } from "@tauri-apps/api/tauri";
 import { notification } from "@tauri-apps/api";
+import { Prefs } from "./resources/core";
 
 interface AppProps {
   data: {
@@ -54,6 +55,7 @@ function Render(props: AppProps) {
       auth.currentUser?.displayName?.startsWith("(dev)")
     ),
     [admin, setIsAdmin] = useState(false),
+    [prefs, setAccessPrefs] = useState<Prefs>({ install_apps: false, launch_app: false }),
     [dark, setD] = useState(true),
     [font, setFont] = useState("def"),
     [sidebar, setSidebar] = useState("flex-row"),
@@ -89,13 +91,30 @@ function Render(props: AppProps) {
         */
   useEffect(() => {
     document.querySelector("body")?.classList.toggle("dark", dark);
+    document.querySelector("html")?.setAttribute("data-theme", dark ? "dark" : "light");
   }, [dark]);
 
   useEffect(() => {
     (async () => {
-      const { autoUpdate, dark, font, sidebar, debug, accessPrefs } = await fetchPrefs();
+      const defAccess = {
+        install_apps: true,
+        launch_app: true,
+      };
+      const fullPrefs = await fetchPrefs();
 
-      console.log(accessPrefs);
+      const { autoUpdate, dark, font, sidebar, debug, accessPrefs, isAdmin } = fullPrefs;
+
+      (window as any).prefs = {
+        ...fullPrefs,
+        accessPrefs: {
+          ...defAccess,
+          ...(fullPrefs.accessPrefs),
+        }
+      };
+
+      setAccessPrefs(accessPrefs || defAccess);
+      
+      setIsAdmin(isAdmin || false);
 
       if (debug) {
         appWindow.listen("error", ({ payload }) => {
@@ -117,9 +136,6 @@ function Render(props: AppProps) {
       //Fetch Maps
       init()
         .then(async (commit_id) => {
-          const admin = await invoke("is_an_admin").catch(() => false);
-          setIsAdmin(admin as boolean);
-
           if (
             commit_id !== "" ||
             commit_id !== undefined ||
@@ -273,6 +289,8 @@ function Render(props: AppProps) {
                 sidebar={sidebar}
                 setSidebar={updateSidebar}
                 admin={admin}
+                isAdmin={admin}
+                accessPrefs={prefs}
               />
             </div>
           </div>

@@ -25,6 +25,7 @@ import { BiMoon, BiSun } from "react-icons/bi";
 import { BsCodeSlash, BsFonts, BsWindowSidebar } from "react-icons/bs";
 import { FiDownload } from "react-icons/fi";
 import { FaUsersGear } from "react-icons/fa6";
+import StartOptions from "./components/startOptions";
 
 interface InitProps {
   dark: boolean;
@@ -66,12 +67,26 @@ export default function Init(props: InitProps) {
       zIndex: 1000,
     },
   };
+
+  const customStylesx2 = {
+    ...customStyles,
+    content: {
+      ...customStyles.content,
+      maxWidth: "50%",
+      minWidth: "50%",
+      maxHeight: "25%",
+      minHeight: "25%"
+    }
+  };
+
   Modal.setAppElement("body");
-  const [user, setUser] = useState(props.auth.currentUser as User);
-  const [show, setShow] = useState(false);
-  const [dev, setDev] = useState(
-    user?.displayName?.startsWith("(dev)") as boolean
-  );
+  
+  const [user, setUser] = useState(props.auth.currentUser as User),
+        [show, setShow] = useState(false),
+        [showOtherUserOptions, setOUO] = useState(false),
+        [dev, setDev] = useState(
+          user?.displayName?.startsWith("(dev)") as boolean
+        );
 
   const [ver, setVer] = useState("0.9.0");
 
@@ -154,6 +169,9 @@ export default function Init(props: InitProps) {
           </div>
         </div>
       </Modal>
+      <Modal isOpen={showOtherUserOptions} style={customStylesx2}>
+        <StartOptions setOUO={setOUO} dark={props.dark} />
+      </Modal>
 
       <div className={darkMode(["menu"], props.dark)}>
         <h1
@@ -231,9 +249,9 @@ export default function Init(props: InitProps) {
           <PopUp
             dark={props.dark}
             Icon={FaUsersGear}
-            title="Access Policy (todo!)"
-            description="Edit the policy for who can access AHQ Store"
-            onClick={() => {}}
+            title="Access Policy"
+            description="Edit the access policy for non-administrators"
+            onClick={() => setOUO((d) => !d)}
           />
         ) : (
           <></>

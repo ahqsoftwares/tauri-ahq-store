@@ -26,10 +26,10 @@ println!("Downloading Finished Successfully!");
 
     fn progress(&self, c: u64) {
         unsafe {
-            let perc = c * 100 / BYTES;
+            let _perc = c * 100 / BYTES;
 
             #[cfg(debug_assertions)]
-println!("Downloading: {}% of {} bytes", perc, BYTES);
+            println!("Downloading: {}% of {} bytes", _perc, BYTES);
         }
     }
 

@@ -16,10 +16,11 @@ interface SearchProps {
   show: Function;
   dark: boolean;
   special?: boolean;
+  isAdmin: boolean;
 }
 
 export default function Search(props: SearchProps) {
-  const { query, set, show, dark, special } = props;
+  const { query, set, show, dark, special, isAdmin } = props;
 
   const [matches, setMatches] = useState<any>([]);
   const [searched, setSearched] = useState<boolean>(false);
@@ -44,6 +45,7 @@ export default function Search(props: SearchProps) {
                 {...app}
                 set={set}
                 show={show}
+                isAdmin={isAdmin}
               />
               {String(index + 1) !== String(matches.length) ? (
                 <div

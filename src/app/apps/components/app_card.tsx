@@ -33,8 +33,6 @@ export default function AppCard(props: {
     (async () => {
       const dta = await fetchApps(props.id);
 
-      console.log(dta);
-
       setAppData(dta as appData);
     })();
   }, [props.id]);

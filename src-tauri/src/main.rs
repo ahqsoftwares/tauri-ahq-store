@@ -227,9 +227,9 @@ println!("Reinstall AHQ Store Service Required...");
                     &url,
                     &format!("{}\\astore", sys),
                     "astore_service_installer.exe",
-                    |c, t| {
+                    |_c, _t| {
                         #[cfg(debug_assertions)]
-println!("{}", c * 100 / t);
+                        println!("{}", _c * 100 / _t);
                     },
                 );
 

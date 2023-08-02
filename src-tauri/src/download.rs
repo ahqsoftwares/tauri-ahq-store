@@ -55,8 +55,7 @@ impl downloader::progress::Reporter for SimpleReporter {
     }
 
     fn set_message(&self, message: &str) {
-        #[cfg(debug_assertions)]
-println!("App: Message changed to: {}", message);
+        println!("App: Message changed to: {}", message);
     }
 
     fn done(&self) {
@@ -64,16 +63,16 @@ println!("App: Message changed to: {}", message);
         *guard = None;
 
         #[cfg(debug_assertions)]
-println!("App Download Status: [DONE]");
+        println!("App Download Status: [DONE]");
     }
 }
 
 pub fn download(file: &str, path: &str, name: &str, logger: fn(u64, u64) -> ()) -> u8 {
     let datas = create_dir_all(path);
     match datas {
-        Err(daras) => {
+        Err(_daras) => {
             #[cfg(debug_assertions)]
-            println!("{}", daras.to_string())
+            println!("{}", _daras.to_string())
         },
         Ok(()) => {
             #[cfg(debug_assertions)]
@@ -98,14 +97,14 @@ pub fn download(file: &str, path: &str, name: &str, logger: fn(u64, u64) -> ()) 
 
     for r in result {
         match r {
-            Err(e) => {
+            Err(_e) => {
                 #[cfg(debug_assertions)]
-println!("Error: {}", e.to_string());
+                println!("Error: {}", _e.to_string());
                 status = 1;
             }
-            Ok(s) => {
+            Ok(_s) => {
                 #[cfg(debug_assertions)]
-println!("Success: {}", &s);
+                println!("Success: {}", &_s);
                 status = 0;
             }
         };

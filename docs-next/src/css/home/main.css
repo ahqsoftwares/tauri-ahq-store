@@ -1,0 +1,12 @@
+@import "./home-intro.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.home-cnt {
+    @apply w-full;
+    @apply h-auto;
+    @apply flex flex-col;
+}
+
