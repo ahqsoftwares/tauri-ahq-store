@@ -78,11 +78,8 @@ jobs:
             try {
               data = JSON.parse(data);
 
-              console.log(data.upload_url);
-
               return data.upload_url;
             } catch (_) {
-              console.log(data.upload_url);
               return data.upload_url;
             }
 
@@ -219,11 +216,12 @@ jobs:
           name: ahqstore.exe
           path: "src-tauri/target/release/AHQ Store.exe"
 
-      - name: Build Service
+      - name: Pre-Setup the Setup
+        run: node loadFiles.js
+
+      - name: Build Setup
         run: cargo build --release
         working-directory: src-setup
-        env:
-          FILES: ${{ steps.tauri-app.outputs.artifactPaths }}
 
       - name: Upload Release Asset
         uses: ahqsoftwares-projects/upload-release-assets@v59
