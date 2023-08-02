@@ -29,7 +29,7 @@ pub fn get_urls(depth: u8, download_framework: bool) -> Vec<String> {
 
     let handle_err = || {
         #[cfg(debug_assertions)]
-println!("Error fetching the latest AHQStore release, Retrying in 10secs");
+        println!("Error fetching the latest AHQStore release, Retrying in 10secs");
         std::thread::sleep(std::time::Duration::from_secs(10));
         return get_urls(depth + 1, download_framework);
     };

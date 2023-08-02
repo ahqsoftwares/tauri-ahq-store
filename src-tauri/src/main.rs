@@ -78,7 +78,7 @@ fn main() {
 
             listener.listen("ready", move |_| {
                 #[cfg(debug_assertions)]
-println!("ready");
+                println!("ready");
 
                 *ready_clone.lock().unwrap() = true;
 
@@ -103,7 +103,7 @@ println!("ready");
                 let args = args.last().unwrap_or(String::from(""));
 
                 #[cfg(debug_assertions)]
-println!("Started with {}", args);
+                println!("Started with {}", args);
 
                 if *ready.clone().lock().unwrap() {
                     window.emit("app", args.clone()).unwrap();
@@ -118,7 +118,7 @@ println!("Started with {}", args);
             let window = window.clone();
             tauri_plugin_deep_link::register("ahqstore", move |request| {
                 #[cfg(debug_assertions)]
-println!("{:?}", request);
+                println!("{:?}", request);
                 window.emit("app", request).unwrap_or(());
             })
             .unwrap();
@@ -135,22 +135,18 @@ println!("{:?}", request);
         )
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             let main = tauri::Manager::get_window(app, "main").unwrap();
-            
-            main.show()
-                .unwrap();
-            main.set_focus()
-                .unwrap();
+
+            main.show().unwrap();
+            main.set_focus().unwrap();
         }))
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
                 #[cfg(debug_assertions)]
-println!("Received a left Click");
+                println!("Received a left Click");
                 let main = tauri::Manager::get_window(app, "main").unwrap();
-            
-                main.show()
-                    .unwrap();
-                main.set_focus()
-                    .unwrap();
+
+                main.show().unwrap();
+                main.set_focus().unwrap();
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
                 "quit" => std::process::exit(0),
@@ -199,7 +195,7 @@ println!("Received a left Click");
 
         ws::init(window, || {
             #[cfg(debug_assertions)]
-println!("Reinstall AHQ Store Service Required...");
+            println!("Reinstall AHQ Store Service Required...");
 
             if catch_unwind(|| {
                 let mut i = 0;
@@ -303,7 +299,7 @@ fn check_update(
 
     if update_available.clone() {
         #[cfg(debug_assertions)]
-println!("Update Available!");
+        println!("Update Available!");
         let sys_dir = sys_handler();
 
         let path = UPDATER_PATH.replace("%root%", sys_dir.as_str());

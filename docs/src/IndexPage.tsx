@@ -8,7 +8,7 @@ export default function App({ path }: { path: string }) {
 
   (document.querySelector("body") as HTMLBodyElement).classList.toggle(
     "dark",
-    dark
+    dark,
   );
 
   const Page = desktop ? DesktopIndex : MobileIndex;

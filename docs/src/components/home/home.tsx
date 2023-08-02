@@ -79,7 +79,7 @@ export default function Home(props: HomeProps) {
               document.getElementById("btn") as HTMLButtonElement
             ).innerHTML = `Thank you for downloading!`;
             (document.getElementById("btn") as HTMLButtonElement).classList.add(
-              "button-success"
+              "button-success",
             );
             setTimeout(() => {
               (

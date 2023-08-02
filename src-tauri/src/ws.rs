@@ -9,7 +9,7 @@ use std::{
 use tungstenite::{connect, stream::MaybeTlsStream, WebSocket};
 
 use crate::{
-    encryption::{encrypt, decrypt},
+    encryption::{decrypt, encrypt},
     get_system_dir,
     util::structs::{PayloadReq, ServerResp, ToSendResp},
 };
@@ -65,7 +65,7 @@ impl<'a> WsConnection<'a> {
                         if let Ok(x) = from_str(&x) {
                             if let Some(x) = decrypt(x) {
                                 #[cfg(debug_assertions)]
-println!("{:#?}", &x);
+                                println!("{:#?}", &x);
                                 return x;
                             }
                         }
@@ -78,7 +78,7 @@ println!("{:#?}", &x);
                             }
                         }
                         #[cfg(debug_assertions)]
-println!("Something went to false");
+                        println!("Something went to false");
                         unsafe {
                             let _ = WINDOW.as_mut().unwrap().emit("error", &x);
                         }

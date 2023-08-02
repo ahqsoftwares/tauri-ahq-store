@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^29.5.3",
-    "@types/node": "^20.4.2",
-    "@types/react": "^18.2.15",
+    "@types/node": "^20.4.5",
+    "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.7",
     "@types/ua-parser-js": "^0.7.36",
     "autoprefixer": "^10.4.14",
     "comlink": "^4.4.1",
-    "postcss": "^8.4.26",
+    "postcss": "^8.4.27",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react-swc": "^3.3.2",
-    "vite": "^4.4.4",
+    "vite": "^4.4.8",
     "vite-plugin-svgr": "^3.2.0"
   }
 }

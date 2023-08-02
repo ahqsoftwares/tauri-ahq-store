@@ -30,7 +30,7 @@ pub fn get_apps(apps: Vec<String>, client: Client, commit_id: String) -> Vec<App
                 if let Ok(x) = to_string(&gh_app) {
                     if let None = set_cache(app.clone(), x) {
                         #[cfg(debug_assertions)]
-println!("WARN: Error adding into Cache");
+                        println!("WARN: Error adding into Cache");
                     }
                 }
 

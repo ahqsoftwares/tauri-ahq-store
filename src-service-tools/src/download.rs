@@ -21,7 +21,7 @@ impl Reporter for SimpleReporter {
 
     fn done(&self) {
         #[cfg(debug_assertions)]
-println!("Downloading Finished Successfully!");
+        println!("Downloading Finished Successfully!");
     }
 
     fn progress(&self, c: u64) {

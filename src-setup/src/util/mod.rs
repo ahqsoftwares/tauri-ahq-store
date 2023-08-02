@@ -55,7 +55,7 @@ pub fn subscribe() -> Subscription<InstallerWorker> {
                     sleep(Duration::from_millis(100)).await;
 
                     #[cfg(debug_assertions)]
-println!("Shutting down");
+                    println!("Shutting down");
 
                     sleep(Duration::from_millis(2000)).await;
 

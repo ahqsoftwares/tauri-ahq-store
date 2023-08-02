@@ -1,4 +1,7 @@
-use std::{fs, time::{Duration, SystemTime, UNIX_EPOCH}};
+use std::{
+    fs,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 
 use iced::futures::{channel::mpsc::Sender, SinkExt};
 use lazy_static::lazy_static;
@@ -57,7 +60,10 @@ async fn fetch_framework_data() -> Vec<Asset> {
 }
 
 fn now() -> u64 {
-    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
 }
 
 pub async fn download_framework(out: &mut Sender<InstallerWorker>) {
@@ -91,11 +97,9 @@ pub async fn download_framework(out: &mut Sender<InstallerWorker>) {
                     if now - last_sent > 1 || perc == 100 {
                         last_sent = now;
 
-                        out.send(InstallerWorker::DownloadingFramework(
-                            perc,
-                        ))
-                        .await
-                        .unwrap();
+                        out.send(InstallerWorker::DownloadingFramework(perc))
+                            .await
+                            .unwrap();
                     }
 
                     file.extend(chunk.iter());

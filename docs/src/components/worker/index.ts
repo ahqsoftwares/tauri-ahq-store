@@ -9,7 +9,7 @@ const appWorker = Comlink.wrap(
                   }
          }
          
-         Comlink.expose(appWorker);`)
+         Comlink.expose(appWorker);`),
 ) as any;
 
 export async function fetchApps() {

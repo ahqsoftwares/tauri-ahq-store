@@ -73,11 +73,11 @@ pub fn download(file: &str, path: &str, name: &str, logger: fn(u64, u64) -> ()) 
         Err(_daras) => {
             #[cfg(debug_assertions)]
             println!("{}", _daras.to_string())
-        },
+        }
         Ok(()) => {
             #[cfg(debug_assertions)]
             println!("Created Dir for files")
-        },
+        }
     };
 
     let mut downloader = Downloader::builder()

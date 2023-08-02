@@ -29,9 +29,7 @@ pub fn decrypt(encrypted: Vec<u8>) -> Option<String> {
 
     let en_txt = to_string(&encrypted).unwrap();
 
-    if let Some(x) = get_decrypted(
-        en_txt.clone()
-    ) {
+    if let Some(x) = get_decrypted(en_txt.clone()) {
         return Some(x);
     }
 
@@ -44,10 +42,7 @@ pub fn decrypt(encrypted: Vec<u8>) -> Option<String> {
     } else {
         let string = string.unwrap();
 
-        set_decrypted(
-            en_txt,
-            string.clone()
-        );
+        set_decrypted(en_txt, string.clone());
 
         return Some(string);
     }

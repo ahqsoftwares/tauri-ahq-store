@@ -166,17 +166,17 @@ jobs:
         run: node encryptor.js
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
-      
+
       - name: Build Service
         run: cargo build --release
         working-directory: src-service
-  
+
       - name: Upload Executable (standalone)
         uses: actions/upload-artifact@v3
         with:
           name: service.exe
           path: ./src-service/target/release/ahqstore_service.exe
-  
+
       - name: Upload Release Asset
         id: upload-release-asset
         uses: ahqsoftwares-projects/upload-release-assets@v59

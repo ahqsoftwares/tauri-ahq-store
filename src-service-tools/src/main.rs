@@ -36,7 +36,7 @@ fn main() -> Result<(), eframe::Error> {
     env_logger::init();
 
     #[cfg(debug_assertions)]
-println!(
+    println!(
         r#"
 ██╗░░░░░░█████╗░██╗░░░██╗███╗░░██╗░█████╗░██╗░░██╗██╗███╗░░██╗░██████╗░  ░██████╗░██╗░░░██╗██╗
 ██║░░░░░██╔══██╗██║░░░██║████╗░██║██╔══██╗██║░░██║██║████╗░██║██╔════╝░  ██╔════╝░██║░░░██║██║
@@ -112,9 +112,11 @@ impl eframe::App for ToolsInstallerWindow {
                     ui.vertical_centered(|ui: &mut Ui| {
                         ui.checkbox(
                             &mut self.install_framework,
-                            RichText::new("Install the AHQ Store Framework (recommended, 130-200mb)")
-                                .size(25.0)
-                                .text_style(egui::TextStyle::Button),
+                            RichText::new(
+                                "Install the AHQ Store Framework (recommended, 130-200mb)",
+                            )
+                            .size(25.0)
+                            .text_style(egui::TextStyle::Button),
                         );
                     });
 
@@ -189,7 +191,7 @@ impl eframe::App for ToolsInstallerWindow {
                         .unwrap();
 
                     #[cfg(debug_assertions)]
-println!("Installed, Starting service...");
+                    println!("Installed, Starting service...");
 
                     Command::new("sc.exe")
                         .creation_flags(0x08000000)
@@ -207,13 +209,13 @@ println!("Installed, Starting service...");
 
                         for url in framework_urls {
                             #[cfg(debug_assertions)]
-println!("Downloading Framework Depedency: {}", &url);
+                            println!("Downloading Framework Depedency: {}", &url);
 
                             download(&astore_framework_dir, &url);
                         }
 
                         #[cfg(debug_assertions)]
-println!("Running Post-Install script...");
+                        println!("Running Post-Install script...");
 
                         Command::new("powershell")
                             .arg("Expand-Archive")
@@ -238,10 +240,11 @@ println!("Running Post-Install script...");
                             .unwrap();
 
                         fs::remove_file(format!("{}\\js.zip", &astore_framework_dir)).unwrap_or(());
-                        fs::remove_file(format!("{}\\node.zip", &astore_framework_dir)).unwrap_or(());
+                        fs::remove_file(format!("{}\\node.zip", &astore_framework_dir))
+                            .unwrap_or(());
 
                         #[cfg(debug_assertions)]
-println!("Installed Successfully!");
+                        println!("Installed Successfully!");
 
                         std::thread::sleep(Duration::from_secs(2));
 

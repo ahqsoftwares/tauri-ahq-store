@@ -7,8 +7,18 @@ function toRoot() {
 export default function Navigation() {
   return (
     <div className="nav">
-      <img src="/logo192.webp" alt="Icon" className="nav-item" onClick={() => toRoot()} />
-      <img src="/logo192.webp" alt="Icon" className="nav-item-m" onClick={() => toRoot()} />
+      <img
+        src="/logo192.webp"
+        alt="Icon"
+        className="nav-item"
+        onClick={() => toRoot()}
+      />
+      <img
+        src="/logo192.webp"
+        alt="Icon"
+        className="nav-item-m"
+        onClick={() => toRoot()}
+      />
       <div className="nav-item">
         <button onClick={() => toRoot()}>AHQ Store</button>
       </div>

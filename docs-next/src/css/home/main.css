@@ -5,8 +5,7 @@
 @tailwind utilities;
 
 .home-cnt {
-    @apply w-full;
-    @apply h-auto;
-    @apply flex flex-col;
+  @apply w-full;
+  @apply h-auto;
+  @apply flex flex-col;
 }
-

@@ -54,14 +54,14 @@ export default function Nav(props: prop) {
     document.querySelector("title") as HTMLTitleElement
   ).innerHTML = `${active[0].toUpperCase()}${active.replace(
     active[0],
-    ""
+    "",
   )} - AHQ Store`;
 
   return (
     <div
       className={`w-[80px] h-[97%] rounded-lg my-auto ml-2 flex flex-col items-center ${darkMode(
         ["nav", "bg-blue-super"],
-        mode
+        mode,
       )}`}
     >
       <button className={`n-item ${a}`} onClick={() => changePage("home")}>

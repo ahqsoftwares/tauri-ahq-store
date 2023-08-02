@@ -10,7 +10,7 @@ import App from "./IndexPage";
 import "./index.css";
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 root.render(<App path={document.location.pathname} />);

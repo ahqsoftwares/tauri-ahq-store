@@ -17,7 +17,7 @@ pub fn get_commit(depth: u8) -> String {
 
     let handle_err = || {
         #[cfg(debug_assertions)]
-println!("Error fetching the latest powershell release, Retrying in 10secs");
+        println!("Error fetching the latest powershell release, Retrying in 10secs");
         std::thread::sleep(std::time::Duration::from_secs(10));
         return get_commit(depth + 1);
     };
