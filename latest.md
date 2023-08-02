@@ -1,13 +1,9 @@
-This release is a patch update to the **AHQ Store**
+This release is a minor update to the **AHQ Store**
 
 ## Changes
-- Bug Fix
-- Make the Server Faster
-- Caching
-- Fix some apis
+- Bug Fixes
+- Add a system to block non-admins
+- Fix Installer (hopefully)
 
 ## To - Do:
 - Make **AHQ Store Service** Faster
-- A **Policy Editor**
-- Better **Encryption**
-- and many more bug fixes
