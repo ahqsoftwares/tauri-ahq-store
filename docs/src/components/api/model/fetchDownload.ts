@@ -10,7 +10,7 @@ export default async function getAppInstallerFile() {
   return {
     tagName: tag_name,
     download_url: assets.filter(({ name }: { name: string }) => {
-      return name.endsWith("_x86_64.exe");
+      return name.endsWith(".msi");
     })[0].browser_download_url,
   };
 }
