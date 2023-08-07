@@ -13,7 +13,7 @@ export function runManualUpdate() {
 
 export async function installApp(
   appId: string[],
-  callback: (event: string, data: any) => void
+  callback: (event: string, data: any) => void,
 ) {
   await new installWorker(callback).install(appId);
 }

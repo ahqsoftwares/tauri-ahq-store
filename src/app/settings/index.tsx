@@ -17,15 +17,19 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 //Components
 import CheckBox from "./components/checkbox";
-import FontSelector from "./components/font";
+import ListSelector from "./components/font";
 import SidebarSelector from "./components/sidebar";
 import PopUp from "./components/popup";
+import StartOptions from "./components/startOptions";
+import themes from "../resources/utilities/themes";
 
 import { BiMoon, BiSun } from "react-icons/bi";
 import { BsCodeSlash, BsFonts, BsWindowSidebar } from "react-icons/bs";
 import { FiDownload } from "react-icons/fi";
 import { FaUsersGear } from "react-icons/fa6";
-import StartOptions from "./components/startOptions";
+import { HiOutlineColorSwatch } from "react-icons/hi";
+
+import "./styles.css";
 
 interface InitProps {
   dark: boolean;
@@ -39,6 +43,8 @@ interface InitProps {
   sidebar: string;
   setSidebar: Function;
   admin: boolean;
+  theme: string;
+  setTheme: Function;
 }
 
 export default function Init(props: InitProps) {
@@ -75,18 +81,16 @@ export default function Init(props: InitProps) {
       maxWidth: "50%",
       minWidth: "50%",
       maxHeight: "25%",
-      minHeight: "25%"
-    }
+      minHeight: "25%",
+    },
   };
 
   Modal.setAppElement("body");
-  
+
   const [user, setUser] = useState(props.auth.currentUser as User),
-        [show, setShow] = useState(false),
-        [showOtherUserOptions, setOUO] = useState(false),
-        [dev, setDev] = useState(
-          user?.displayName?.startsWith("(dev)") as boolean
-        );
+    [show, setShow] = useState(false),
+    [showOtherUserOptions, setOUO] = useState(false),
+    [dev, setDev] = useState(user?.displayName?.startsWith("(dev)") as boolean);
 
   const [ver, setVer] = useState("0.9.0");
 
@@ -108,7 +112,7 @@ export default function Init(props: InitProps) {
         });
         toast?.edit(
           `Successfully ${!dev ? "enabled" : "disabled"} developer mode!`,
-          "success"
+          "success",
         );
         setUser(props.auth.currentUser as User);
         setDev(!dev);
@@ -128,7 +132,16 @@ export default function Init(props: InitProps) {
   }
 
   function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+    let newClasses: string[] = [];
+
+    classes.forEach((c) => {
+      newClasses.push(c);
+      if (dark) {
+        newClasses.push(c + "-dark");
+      }
+    });
+
+    return newClasses.join(" ");
   }
 
   function openUrl(url: string) {
@@ -192,9 +205,17 @@ export default function Init(props: InitProps) {
           active={props.dark}
         />
 
-        <FontSelector
+        <ListSelector
+          list={themes}
+          Icon={HiOutlineColorSwatch}
+          initial={props.theme}
+          onChange={(e) => {
+            props.setTheme(e.target.value);
+          }}
+        />
+
+        <ListSelector
           Icon={BsFonts}
-          dark={props.dark}
           initial={props.font}
           onChange={(e) => {
             props.setFont(e.target.value);
@@ -224,9 +245,7 @@ export default function Init(props: InitProps) {
           title="Auto Update Apps"
           description="Automatically update apps when I launch AHQ Store"
           Icon={FiDownload}
-          onClick={() => {
-            props.setAutoUpdate(!props.autoUpdate);
-          }}
+          onClick={() => props.setAutoUpdate(!props.autoUpdate)}
           active={props.autoUpdate}
         />
 

@@ -1,10 +1,11 @@
-This release is a minor update to the **AHQ Store**
+This release is a major UI update to the **AHQ Store**
 
 ## Changes
 
-- Bug Fixes
-- Add a system to block non-admins
-- Fix Installer (hopefully)
+- Introduces **14** different Themes
+- Dark / Light toggle switches between Light & Dark theme only
+- Changed a lot of button styles
+- Fixed a bug with install restriction
 
 ## To - Do:
 

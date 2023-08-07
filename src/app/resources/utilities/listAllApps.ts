@@ -8,7 +8,7 @@ interface Apps {
 export type { Apps };
 export default async function listAllApps(): Promise<Apps> {
   let apps: Apps = {};
-  
+
   const appList = await list_apps();
 
   for (let i = 0; i < appList.length; i++) {

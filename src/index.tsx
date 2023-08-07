@@ -50,8 +50,6 @@ import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
 import { getVersion } from "@tauri-apps/api/app";
 
-initDeveloperConfiguration();
-
 const config = {
   apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
   authDomain: "ahq-store.firebaseapp.com",
@@ -67,7 +65,7 @@ const app = initializeApp(config);
 const auth = getAuth(app);
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 let list = [
@@ -84,239 +82,245 @@ let list = [
   "CommandOrControl+U", //Inspect Page
 ];
 
-appWindow.onFocusChanged(({ payload: focused }) => {
-  if (focused) {
-    list.forEach((item) => {
-      register(item, () => {}).catch(() => {});
+/**
+ * Loads updater
+ * @param {string} state
+ * @param {React.Component} App
+ */
+function render(state: string, App: any) {
+  root.render(
+    <>
+      <App info={state} />
+    </>,
+  );
+}
+
+if (window.__TAURI_IPC__ == null) {
+  render("Not Ready", App);
+} else {
+  initDeveloperConfiguration();
+
+  /**Sub or main? */
+  if (appWindow.label === "main") {
+    appWindow.onFocusChanged(({ payload: focused }) => {
+      if (focused) {
+        list.forEach((item) => {
+          register(item, () => {}).catch(() => {});
+        });
+      } else if (appWindow.label === "main") {
+        unregisterAll().catch(() => {});
+      }
     });
-  } else if (appWindow.label === "main") {
-    unregisterAll().catch(() => {});
-  }
-});
 
-/**Sub or main? */
-if (appWindow.label === "main") {
-  appWindow.show();
-  loadAppVersion();
-  init();
+    appWindow.show();
+    loadAppVersion();
+    init();
 
-  const unlisten = appWindow.listen("needs_reinstall", () => {
-    unlisten.then((f) => f());
-    setInterval(() => render("Running PostInstall Script", App), 10);
-  });
+    const unlisten = appWindow.listen("needs_reinstall", () => {
+      unlisten.then((f) => f());
+      setInterval(() => render("Running PostInstall Script", App), 10);
+    });
 
-  /*Logic
-   */
-  (async () => {
-    let permissionGranted = await isPermissionGranted();
+    /*Logic
+     */
+    (async () => {
+      let permissionGranted = await isPermissionGranted();
 
-    appWindow.emit("ready", "");
+      appWindow.emit("ready", "");
 
-    if (!(await appWindow.isMaximized())) {
-      appWindow.maximize();
-    }
-
-    if (!permissionGranted) {
-      const permission = await requestPermission();
-      permissionGranted = permission === "granted";
-    }
-  })();
-
-  render("Checking for updates...", App);
-
-  (async () => {
-    try {
-      const { data } = (await fetch(
-        "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest",
-        {
-          method: "GET",
-          timeout: 30,
-          responseType: ResponseType.JSON,
-          headers: {
-            "User-Agent": "AHQSoftwares/AHQ-Store",
-          },
-        }
-      )) as any;
-      const currentVersion = await getVersion();
-
-      if (!data.assets) {
-        throw new Error("");
+      if (!(await appWindow.isMaximized())) {
+        appWindow.maximize();
       }
 
-      let { data: signature } = await fetch(
-        data.assets.filter((asset: any) =>
-          asset.name.endsWith(".msi.zip.sig")
-        )[0][`browser_download_url`],
-        {
-          responseType: ResponseType.Text,
-          method: "GET",
-          headers: {
-            "User-Agent": "ahq-store",
+      if (!permissionGranted) {
+        const permission = await requestPermission();
+        permissionGranted = permission === "granted";
+      }
+    })();
+
+    render("Checking for updates...", App);
+
+    (async () => {
+      try {
+        const { data } = (await fetch(
+          "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest",
+          {
+            method: "GET",
+            timeout: 30,
+            responseType: ResponseType.JSON,
+            headers: {
+              "User-Agent": "AHQSoftwares/AHQ-Store",
+            },
           },
+        )) as any;
+        const currentVersion = await getVersion();
+
+        if (!data.assets) {
+          throw new Error("");
         }
-      );
 
-      invoke("check_update", {
-        version: data["tag_name"],
-        currentVersion: currentVersion,
-        downloadUrl: data.assets.filter((asset: any) =>
-          asset.name.endsWith(".msi.zip")
-        )[0][`browser_download_url`],
-        signature,
-      })
-        .then(async (shouldUpdate: any) => {
-          const manifest = {
-            version: data["tag_name"],
-          };
+        let { data: signature } = await fetch(
+          data.assets.filter((asset: any) =>
+            asset.name.endsWith(".msi.zip.sig"),
+          )[0][`browser_download_url`],
+          {
+            responseType: ResponseType.Text,
+            method: "GET",
+            headers: {
+              "User-Agent": "ahq-store",
+            },
+          },
+        );
 
-          if (shouldUpdate) {
-            render(`Verison ${manifest?.version} Available...`, App);
-
-            setTimeout(async () => {
-              render(`Installing ${manifest?.version}`, App);
-              setTimeout(async () => {
-                await invoke("install_update");
-              }, 3000);
-            }, 5000);
-          } else {
-            Manage();
-          }
+        invoke("check_update", {
+          version: data["tag_name"],
+          currentVersion: currentVersion,
+          downloadUrl: data.assets.filter((asset: any) =>
+            asset.name.endsWith(".msi.zip"),
+          )[0][`browser_download_url`],
+          signature,
         })
-        .catch((e) => {
-          console.log(e);
-          Manage();
-        });
-    } catch (e) {
-      console.log(e);
-      Manage();
-    }
-  })();
+          .then(async (shouldUpdate: any) => {
+            const manifest = {
+              version: data["tag_name"],
+            };
 
-  window.addEventListener("offline", () => {
-    render("Offline, waiting for network", App);
-  });
+            if (shouldUpdate) {
+              render(`Verison ${manifest?.version} Available...`, App);
 
-  window.addEventListener("online", () => {
-    render("Online!", App);
-    setTimeout(() => {
-      Manage();
-    }, 3000);
-  });
-
-  async function Manage() {
-    render("Launching Store...", App);
-    setTimeout(() => {
-      if (!auth.currentUser) {
-        storeLoad(Login, {
-          create: createUserWithEmailAndPassword,
-          login: signInWithEmailAndPassword,
-          verify: sendEmailVerification,
-          resetEmail: sendPasswordResetEmail,
-          auth,
-          verifyCode: verifyPasswordResetCode,
-          reset: confirmPasswordReset,
-        });
-      } else {
-        storeLoad(Store, { auth });
+              setTimeout(async () => {
+                render(`Installing ${manifest?.version}`, App);
+                setTimeout(async () => {
+                  await invoke("install_update");
+                }, 3000);
+              }, 5000);
+            } else {
+              Manage();
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+            Manage();
+          });
+      } catch (e) {
+        console.log(e);
+        Manage();
       }
+    })();
 
-      if (auth.currentUser && !auth.currentUser?.emailVerified) {
-        sendEmailVerification(auth.currentUser).catch(() => {});
-        sendNotification({
-          title: "Email Verification",
-          body: "Email verification link send! Please verify",
-        });
-      }
+    window.addEventListener("offline", () => {
+      render("Offline, waiting for network", App);
+    });
 
-      auth.onAuthStateChanged((user) => {
-        if (user && !user.emailVerified) {
-          sendEmailVerification(user).catch(() => {});
+    window.addEventListener("online", () => {
+      render("Online!", App);
+      setTimeout(() => {
+        Manage();
+      }, 3000);
+    });
+
+    async function Manage() {
+      render("Launching Store...", App);
+      setTimeout(() => {
+        if (!auth.currentUser) {
+          storeLoad(Login, {
+            create: createUserWithEmailAndPassword,
+            login: signInWithEmailAndPassword,
+            verify: sendEmailVerification,
+            resetEmail: sendPasswordResetEmail,
+            auth,
+            verifyCode: verifyPasswordResetCode,
+            reset: confirmPasswordReset,
+          });
+        } else {
+          storeLoad(Store, { auth });
+        }
+
+        if (auth.currentUser && !auth.currentUser?.emailVerified) {
+          sendEmailVerification(auth.currentUser).catch(() => {});
           sendNotification({
             title: "Email Verification",
             body: "Email verification link send! Please verify",
           });
         }
-        user
-          ? storeLoad(Store, { auth })
-          : storeLoad(Login, {
-              create: createUserWithEmailAndPassword,
-              login: signInWithEmailAndPassword,
-              verify: sendEmailVerification,
-              reset: confirmPasswordReset,
-              resetEmail: sendPasswordResetEmail,
-              auth,
-              verifyCode: verifyPasswordResetCode,
+
+        auth.onAuthStateChanged((user) => {
+          if (user && !user.emailVerified) {
+            sendEmailVerification(user).catch(() => {});
+            sendNotification({
+              title: "Email Verification",
+              body: "Email verification link send! Please verify",
             });
-      });
-    }, 1000);
-  }
+          }
+          user
+            ? storeLoad(Store, { auth })
+            : storeLoad(Login, {
+                create: createUserWithEmailAndPassword,
+                login: signInWithEmailAndPassword,
+                verify: sendEmailVerification,
+                reset: confirmPasswordReset,
+                resetEmail: sendPasswordResetEmail,
+                auth,
+                verifyCode: verifyPasswordResetCode,
+              });
+        });
+      }, 1000);
+    }
 
-  /**
-   * Load a Store Component on the DOM
-   * @param Component
-   * @param prop
-   */
-  function storeLoad(Component: any, prop?: Object) {
-    root.render(
-      <>
-        <Component data={prop ? prop : {}} />
-      </>
-    );
-  }
+    /**
+     * Load a Store Component on the DOM
+     * @param Component
+     * @param prop
+     */
+    function storeLoad(Component: any, prop?: Object) {
+      root.render(
+        <>
+          <Component data={prop ? prop : {}} />
+        </>,
+      );
+    }
 
-  /**
-   * Loads updater
-   * @param {string} state
-   * @param {React.Component} App
-   */
-  function render(state: string, App: any) {
-    root.render(
-      <>
-        <App info={state} />
-      </>
-    );
-  }
+    reportWebVitals();
+  } else {
+    let dataHolder: string;
 
-  reportWebVitals();
-} else {
-  let dataHolder: string;
+    appWindow
+      .listen("app", ({ payload }: { payload: string }) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [_, __, path, data] = payload.split("/");
+        dataHolder = data;
 
-  appWindow
-    .listen("app", ({ payload }: { payload: string }) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [_, __, path, data] = payload.split("/");
-      dataHolder = data;
-
-      if (path === "app") {
-        if (!auth.currentUser) {
-          unload();
+        if (path === "app") {
+          if (!auth.currentUser) {
+            unload();
+          } else {
+            load();
+          }
+          appWindow.unminimize();
+          appWindow.show();
         } else {
-          load();
+          unregisterAll().catch(() => {});
+          appWindow.emit("activate", "");
         }
-        appWindow.unminimize();
-        appWindow.show();
+      })
+      .then(() => {
+        appWindow.emit("ready", "");
+      });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user && localStorage.getItem("password")) {
+        load();
       } else {
-        unregisterAll().catch(() => {});
-        appWindow.emit("activate", "");
+        unload();
       }
-    })
-    .then(() => {
-      appWindow.emit("ready", "");
     });
 
-  onAuthStateChanged(auth, (user) => {
-    if (user && localStorage.getItem("password")) {
-      load();
-    } else {
-      unload();
+    function load() {
+      root.render(<SecondApp appId={dataHolder} />);
     }
-  });
 
-  function load() {
-    root.render(<SecondApp appId={dataHolder} />);
-  }
-
-  function unload() {
-    root.render(<SecondLogin />);
+    function unload() {
+      root.render(<SecondLogin />);
+    }
   }
 }

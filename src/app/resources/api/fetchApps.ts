@@ -42,7 +42,7 @@ export async function init() {
 }
 
 export default async function fetchApps(
-  apps: string | string[]
+  apps: string | string[],
 ): Promise<appData | appData[]> {
   if (typeof apps === "string") {
     return (await resolveApps([apps]))[0];
@@ -67,7 +67,7 @@ export async function fetchSearchData() {
         {
           method: "GET",
           responseType: 1,
-        }
+        },
       )
     ).data;
     searchDataCache = data as SearchData[];
@@ -82,7 +82,7 @@ export async function fetchAuthor(id: string, partial = true) {
       {
         method: "GET",
         responseType: 1,
-      }
+      },
     )
   ).data as AuthorObject;
 
@@ -93,7 +93,7 @@ export async function fetchAuthor(id: string, partial = true) {
         {
           method: "GET",
           responseType: 1,
-        }
+        },
       )
     ).data as any;
 
@@ -114,7 +114,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
       promises.push(
         (async () => {
           return cache[appId];
-        })()
+        })(),
       );
     } else {
       promises.push(
@@ -131,7 +131,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
             ...app[0],
             AuthorObject: authorObj,
           };
-        })()
+        })(),
       );
     }
   });

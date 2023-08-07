@@ -39,6 +39,7 @@ import { init } from "./resources/api/fetchApps";
 import { invoke } from "@tauri-apps/api/tauri";
 import { notification } from "@tauri-apps/api";
 import { Prefs } from "./resources/core";
+import { defaultDark, defaultLight, isDarkTheme } from "./resources/utilities/themes";
 
 interface AppProps {
   data: {
@@ -52,11 +53,15 @@ function Render(props: AppProps) {
   const { auth } = props.data;
   let [page, changePage] = useState("home"),
     [dev, setDev] = useState(
-      auth.currentUser?.displayName?.startsWith("(dev)")
+      auth.currentUser?.displayName?.startsWith("(dev)"),
     ),
     [admin, setIsAdmin] = useState(false),
-    [prefs, setAccessPrefs] = useState<Prefs>({ install_apps: false, launch_app: false }),
+    [prefs, setAccessPrefs] = useState<Prefs>({
+      install_apps: false,
+      launch_app: false,
+    }),
     [dark, setD] = useState(true),
+    [theme, setTheme] = useState("synthwave"),
     [font, setFont] = useState("def"),
     [sidebar, setSidebar] = useState("flex-row"),
     [load, setLoad] = useState(false),
@@ -91,8 +96,8 @@ function Render(props: AppProps) {
         */
   useEffect(() => {
     document.querySelector("body")?.classList.toggle("dark", dark);
-    document.querySelector("html")?.setAttribute("data-theme", dark ? "dark" : "light");
-  }, [dark]);
+    document.querySelector("html")?.setAttribute("data-theme", theme);
+  }, [dark, theme]);
 
   useEffect(() => {
     (async () => {
@@ -102,29 +107,39 @@ function Render(props: AppProps) {
       };
       const fullPrefs = await fetchPrefs();
 
-      const { autoUpdate, dark, font, sidebar, debug, accessPrefs, isAdmin } = fullPrefs;
+      const {
+        autoUpdate,
+        dark,
+        font,
+        sidebar,
+        debug,
+        accessPrefs,
+        isAdmin,
+        theme,
+      } = fullPrefs;
 
       (window as any).prefs = {
         ...fullPrefs,
         accessPrefs: {
           ...defAccess,
-          ...(fullPrefs.accessPrefs),
-        }
+          ...fullPrefs.accessPrefs,
+        },
       };
 
       setAccessPrefs(accessPrefs || defAccess);
-      
+
       setIsAdmin(isAdmin || false);
 
       if (debug) {
         appWindow.listen("error", ({ payload }) => {
           notification.sendNotification({
             title: "Info / Error / Warn",
-            body: payload as any
+            body: payload as any,
           });
         });
       }
 
+      setTheme(theme);
       setD(dark);
       setFont(font);
       setUpdate(autoUpdate);
@@ -147,7 +162,7 @@ function Render(props: AppProps) {
                 method: "GET",
                 timeout: 30,
                 responseType: 1,
-              }
+              },
             );
 
             setData({
@@ -162,7 +177,7 @@ function Render(props: AppProps) {
                 method: "GET",
                 timeout: 30,
                 responseType: 1,
-              }
+              },
             );
 
             setApps(Home);
@@ -209,21 +224,34 @@ function Render(props: AppProps) {
     setConfig(data);
   }
 
-  function setDark(dark: boolean) {
-    setD(dark);
-    updateConfig({ dark, font, autoUpdate, sidebar, debug });
-  }
   function changeFont(newFont: string) {
     setFont(newFont);
-    updateConfig({ dark, font: newFont, autoUpdate, sidebar, debug });
+    updateConfig({ dark, font: newFont, autoUpdate, sidebar, debug, theme });
   }
   function setAutoUpdate(newStatus: boolean) {
     setUpdate(newStatus);
-    updateConfig({ dark, font, autoUpdate: newStatus, sidebar, debug });
+    updateConfig({ dark, font, autoUpdate: newStatus, sidebar, debug, theme });
   }
   function updateSidebar(newSidebar: string) {
     setSidebar(newSidebar);
-    updateConfig({ dark, sidebar: newSidebar, font, autoUpdate, debug });
+    updateConfig({ dark, sidebar: newSidebar, font, autoUpdate, debug, theme });
+  }
+  function updateTheme(newTheme: string) {
+    const dark = isDarkTheme(newTheme);
+
+    setTheme(newTheme);
+    setD(dark);
+
+    updateConfig({ dark, font, autoUpdate, sidebar, debug, theme: newTheme });
+  }
+  function setDark(dark: boolean) {
+    const theme = (() => {if (dark) {
+      return defaultDark();
+    } else {
+      return defaultLight();
+    }})();
+
+    updateTheme(theme);
   }
 
   /*
@@ -265,9 +293,7 @@ function Render(props: AppProps) {
             active={page}
             home={(page: string) => changePage(page)}
             dev={dev}
-            dark={[dark, setDark]}
             horizontal={sidebar.includes("flex-col")}
-            top={sidebar.endsWith("col")}
           />
           <div className={`w-screen h-screen`}>
             <div className="flex flex-col w-[100%] h-[100%] justify-center">
@@ -275,8 +301,10 @@ function Render(props: AppProps) {
                 baseApi={BaseAPI}
                 auth={auth}
                 setDev={setDev}
+                
                 dark={dark}
                 setDark={setDark}
+
                 font={font}
                 setFont={changeFont}
                 apps={apps}
@@ -291,6 +319,9 @@ function Render(props: AppProps) {
                 admin={admin}
                 isAdmin={admin}
                 accessPrefs={prefs}
+
+                theme={theme}
+                setTheme={updateTheme}
               />
             </div>
           </div>

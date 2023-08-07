@@ -21,7 +21,7 @@ interface DevProps {
 
 export default function Developers(props: DevProps) {
   const [publishedApps, setPublishedApps] = useState<appData[] | undefined>(
-    undefined
+    undefined,
   );
 
   const uid = props.auth?.currentUser?.uid;
@@ -33,7 +33,9 @@ export default function Developers(props: DevProps) {
   useEffect(() => {
     (async () => {
       try {
-        const { apps } = (await fetchAuthor(uid as string, false)).apps as {apps: string[]};
+        const { apps } = (await fetchAuthor(uid as string, false)).apps as {
+          apps: string[];
+        };
 
         console.log(apps);
 
@@ -49,7 +51,16 @@ export default function Developers(props: DevProps) {
   }, [uid]);
 
   function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+    let newClasses: string[] = [];
+
+    classes.forEach((c) => {
+      newClasses.push(c);
+      if (dark) {
+        newClasses.push(c + "-dark");
+      }
+    });
+
+    return newClasses.join(" ");
   }
   return (
     <div className={`${darkMode(["menu"], dark)}`}>
@@ -68,7 +79,9 @@ export default function Developers(props: DevProps) {
           ) : (
             <div className="flex flex-col">
               {publishedApps === undefined ? (
-                <h1 className={`mx-auto ${dark ? "text-white" : ""}`}>Fetching...</h1>
+                <h1 className={`mx-auto ${dark ? "text-white" : ""}`}>
+                  Fetching...
+                </h1>
               ) : (
                 publishedApps.map((value, index) => (
                   <App
@@ -90,7 +103,7 @@ export default function Developers(props: DevProps) {
         description="Submit a new app to the store"
         onClick={() => {
           invoke("open", {
-            url: "https://discord.gg/a485NGvc4c"
+            url: "https://discord.gg/a485NGvc4c",
           });
           Toast("Launched discord invite...", "success", 2);
         }}

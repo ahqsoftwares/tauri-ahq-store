@@ -14,20 +14,20 @@
 ::-webkit-scrollbar:horizontal {
   width: 1px;
 }
+
+.checkbox-special {
+  @apply flex-col;
+}
+
+.checkbox-special-child {
+  @apply min-h-[4rem] flex p-[auto];
+}
+
 /*
 Navigation
 */
 .nav {
-  transition: color 500ms linear;
-  background-color: white;
-}
-.nav-d {
-  transition: color 500ms linear;
-  background-color: gray;
-}
-
-.nav * {
-  @apply text-slate-700 !important;
+  @apply border-base-content shadow-2xl border-2 bg-transparent bg-opacity-70 !important;
 }
 
 .search-input-search-icon:focus {
@@ -38,38 +38,32 @@ Navigation
 Item pallete
 */
 .n-item {
-  @apply w-16 h-16 justify-center items-center relative flex text-white bg-transparent hover:bg-gray-800;
+  @apply w-16 h-16 justify-center items-center 
+  relative flex 
+  transition-all
+  text-base-content bg-transparent;
   border-radius: 20%;
   border-color: transparent;
   margin-top: 8px;
   margin-left: 0px;
   margin-right: 0px;
-  transition: all 200ms linear;
 }
 
-.n-item-h {
-  margin-top: 0px;
-  margin-left: 8px;
-  margin-right: 8px;
-}
-
-.nav .n-item {
-  @apply hover:bg-gray-100 !important;
-}
-
-.nav .n-item:active,
-.nav .active {
-  @apply bg-gray-100 shadow-2xl !important;
+.n-item:hover {
+  border-width: 9px;
+  border-style: solid;
+  border-radius: 30%;
+  @apply bg-base-200;
 }
 
 .n-item:active,
-.active {
-  @apply bg-gray-900 shadow-2xl;
+.nav .active {
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
   transition: padding 125ms linear;
   animation: clickAnimation 250ms linear;
+  @apply bg-base-300 text-base-content shadow-2xl;
 }
 
 .n-item-settings:active svg,
@@ -93,12 +87,6 @@ Item pallete
   }
 }
 
-.n-item:hover {
-  border-width: 9px;
-  border-style: solid;
-  border-radius: 30%;
-}
-
 @keyframes clickAnimation {
   from {
     padding: 0%;
@@ -115,26 +103,12 @@ Item pallete
 }
 
 /*
-Backgrounds Super
-*/
-.bg-blue-super {
-  @apply bg-gray-300;
-}
-.bg-blue-super-d {
-  @apply bg-gray-700;
-}
-
-/*
 */
 .menu {
-  @apply items-center flex w-[99%] h-[98vh] bg-gray-300 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
-  transition: all 500ms linear;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  scroll-behavior: smooth;
-}
-.menu-d {
-  @apply items-center flex w-[99%] h-[98vh] bg-gray-700 rounded-lg shadow-lg flex-col mx-auto my-auto mt-auto;
+  @apply items-center flex 
+  w-[99%] h-[98vh] 
+  bg-transparent border-base-content border-2
+  rounded-lg flex-col mx-auto my-auto mt-auto;
   transition: all 500ms linear;
   overflow-x: hidden;
   overflow-y: scroll;
@@ -145,59 +119,7 @@ Backgrounds Super
 App pallete
 */
 .apps {
-  background: rgb(255, 255, 255);
-}
-.apps-d {
-  @apply bg-gray-800;
-}
-
-/*
-Checkbox
-*/
-.checkbox {
-  @apply bg-white w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
-  transition: all 125ms linear;
-  cursor: pointer;
-}
-
-.checkbox-special {
-  @apply flex-col;
-}
-
-.checkbox-special-child {
-  @apply min-h-[4rem] flex p-[auto];
-}
-
-.checkbox:hover {
-  @apply bg-gray-200;
-}
-
-.checkbox h6 {
-  @apply text-black my-auto;
-  cursor: pointer;
-}
-.checkbox p {
-  @apply text-gray-600;
-}
-
-.checkbox-d p {
-  @apply text-gray-400;
-}
-
-.checkbox-d {
-  @apply bg-gray-800 w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
-  transition: all 500ms linear;
-  cursor: pointer;
-}
-
-.checkbox-d:hover {
-  @apply bg-gray-900;
-}
-
-.checkbox-d h6 {
-  @apply my-auto;
-  cursor: pointer;
-  color: var(--text);
+  @apply bg-inherit;
 }
 
 .slider {
@@ -213,10 +135,6 @@ Checkbox
   ); /* Set transparency (for mouse-over effects on hover) */
   -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
   transition: opacity 0.2s;
-  cursor: pointer;
-}
-.checkbox-d .slider {
-  @apply bg-gray-300;
   cursor: pointer;
 }
 
@@ -253,20 +171,11 @@ Checkbox
   cursor: pointer; /* Cursor on hover */
 }
 
-.checkbox-d:hover,
-.checkbox:hover {
-  --opacity: 1;
-}
-
 /*
 User Panel
 */
-.user-d {
-  @apply mt-4 bg-gray-800 w-[98%] rounded-lg shadow-lg p-[auto] h-[43rem] flex flex-col;
-  transition: all 500ms linear;
-}
 .user {
-  @apply mt-4 bg-gray-100 w-[98%] rounded-lg shadow-lg p-[auto] h-[43rem] flex flex-col;
+  @apply mt-4 bg-inherit text-base-content w-[98%] p-[auto] h-[43rem] flex flex-col;
   transition: all 500ms linear;
 }
 
@@ -304,7 +213,6 @@ User Panel
   @apply bg-gray-100 shadow-xl !important;
 }
 
-.user-d img,
 .user img {
   transition: all 250ms linear;
   @apply mx-auto mt-2;
@@ -327,16 +235,6 @@ User Panel
   font-size: 25px;
 }
 
-.user h1,
-.user h6 {
-  @apply text-gray-800;
-}
-
-.user-d h1,
-.user-d h6 {
-  @apply text-gray-400;
-}
-
 .img:hover .div {
   opacity: 0.7;
 }
@@ -352,32 +250,6 @@ User Panel
   @apply text-slate-400;
 }
 
-.select {
-  @apply px-2 py-[auto] w-[10.5rem] h-[30px] my-auto ml-auto rounded-xl bg-gray-300 text-slate-700;
-  cursor: pointer;
-  transition: all 250ms linear;
-}
-
-.select optgroup {
-  @apply text-black;
-}
-
-.select option {
-  @apply text-red-700;
-}
-
-.select-d {
-  @apply bg-black text-slate-100;
-}
-
-.select-d optgroup {
-  @apply text-white;
-}
-
-.select-d option {
-  @apply text-gray-300;
-}
-
 .img-dev {
   @apply mt-2 mx-auto rounded-md;
   width: 256px;
@@ -389,22 +261,25 @@ User Panel
   @apply rounded-lg;
 }
 
-.div-m {
-  margin: 0 !important;
-  height: 256px !important;
-  width: 256px !important;
-  min-height: 256px !important;
-  min-width: 256px !important;
-  max-width: 256px !important;
-  min-width: 256px !important;
-  border-radius: 0.375rem !important;
-}
-
+/* Navigation Bar
+*/
 .nav-h {
-  @apply absolute z-[10];
-  background-color: rgb(174, 174, 175);
+  @apply absolute bg-base-100 bg-opacity-100 z-[10] !important;
 }
 
-.nav-h-d {
-  @apply bg-black absolute z-[10] opacity-75;
+.nav-h .n-item-h {
+  transition: none 0s linear !important;
+}
+
+.n-item-h {
+  margin-top: 0px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.n-item-h:hover {
+  margin-top: 0px !important;
+  margin-left: 8px !important;
+  margin-right: 8px !important;
+  @apply bg-base-200 !important;
 }

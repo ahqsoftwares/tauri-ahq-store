@@ -92,10 +92,7 @@ Item pallete
 Backgrounds Super
 */
 .bg-blue-super {
-  @apply bg-gray-300;
-}
-.bg-blue-super-d {
-  @apply bg-gray-700;
+  @apply bg-base-200 bg-opacity-70;
 }
 
 @layer utilities {

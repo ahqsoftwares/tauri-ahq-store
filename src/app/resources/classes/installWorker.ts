@@ -8,7 +8,7 @@ export default class installWorker {
   appId?: string[];
   callback: (
     event: "installing" | "downloading" | "downloadstat",
-    data: any
+    data: any,
   ) => void;
 
   /**
@@ -19,9 +19,9 @@ export default class installWorker {
   constructor(
     callback: (
       event: "installing" | "downloading" | "downloadstat",
-      data: any
+      data: any,
     ) => void,
-    appId?: string[]
+    appId?: string[],
   ) {
     this.appId = appId;
     this.callback = callback;
@@ -43,7 +43,7 @@ export default class installWorker {
     const sysDir = await invoke("sys_handler");
 
     await this.clean(
-      `${sysDir}\\ProgramData\\AHQ Store Applications\\Installers\\${appData.id}.zip`
+      `${sysDir}\\ProgramData\\AHQ Store Applications\\Installers\\${appData.id}.zip`,
     );
 
     await this.uninstall(appData.id);
@@ -59,7 +59,7 @@ export default class installWorker {
           percent: Math.round((payload[0] / payload[1]) * 100),
           total: payload[1],
         });
-      }
+      },
     );
 
     await invoke("download", {
@@ -112,7 +112,7 @@ export default class installWorker {
 
     for (const app of allApps) {
       const index = allApps.findIndex(
-        (value) => value.download_url === app.download_url
+        (value) => value.download_url === app.download_url,
       );
       this.callback("downloading", {
         ...app,

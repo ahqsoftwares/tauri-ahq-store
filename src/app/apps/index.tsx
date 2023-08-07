@@ -34,10 +34,6 @@ interface AppsProps {
   isAdmin: boolean;
 }
 
-function darkMode(classes: Array<string>, dark: boolean) {
-  return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
-}
-
 export default function Apps(props: AppsProps) {
   const { dark, apps, isAdmin } = props;
 
@@ -49,9 +45,8 @@ export default function Apps(props: AppsProps) {
   function Fix() {
     const element = document.querySelector("#search-result") as any;
     if (element) {
-      element.style = `width: ${
-        document.querySelector("#get-width")?.clientWidth
-      }px;`;
+      element.style = `width: ${document.querySelector("#get-width")
+        ?.clientWidth}px;`;
     }
   }
 
@@ -77,8 +72,14 @@ export default function Apps(props: AppsProps) {
   }
 
   return (
-    <div className={darkMode(["menu"], dark)}>
-      <Modal isAdmin={isAdmin} shown={shown} dark={dark} change={change} installData={data} />
+    <div className="menu">
+      <Modal
+        isAdmin={isAdmin}
+        shown={shown}
+        dark={dark}
+        change={change}
+        installData={data}
+      />
       <SearchModal
         shown={enter}
         dark={dark}

@@ -22,7 +22,16 @@ import { getAppVersion } from "../resources/api/version";
 import getWindows from "../resources/api/os";
 
 function darkMode(classes: Array<string>, dark: boolean) {
-  return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+  let newClasses: string[] = [];
+
+  classes.forEach((c) => {
+    newClasses.push(c);
+    if (dark) {
+      newClasses.push(c + "-dark");
+    }
+  });
+
+  return newClasses.join(" ");
 }
 
 interface HomeProps {
@@ -34,7 +43,7 @@ interface HomeProps {
 
 export default function Home(props: HomeProps) {
   const [userIcon, setUserIcon] = useState<string>(
-    (getData("x-icon") as string) || ""
+    (getData("x-icon") as string) || "",
   );
 
   const { dark, setPage, auth } = props;
@@ -85,7 +94,7 @@ export default function Home(props: HomeProps) {
     <div
       className={`${darkMode(
         ["menu"],
-        props.dark
+        props.dark,
       )} flex flex-col justify-center`}
     >
       <div className="flex justify-center items-center mb-auto mt-3">

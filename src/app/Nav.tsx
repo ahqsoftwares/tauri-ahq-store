@@ -17,33 +17,27 @@ import { useEffect } from "react";
 interface prop {
   active: string;
   home: Function;
-  dark: [boolean, Function];
   dev: boolean | undefined;
   horizontal: boolean;
-  top: boolean;
 }
 
 export default function Nav(props: prop) {
-  function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
-  }
-  let { active, home: changePage, dark, dev } = props,
-    [mode] = dark;
+  let { active, home: changePage, dev, horizontal: P_H } = props;
 
   const horizontal = "n-item-h ";
 
   useEffect(() => {
-    if (props.horizontal) {
+    if (P_H) {
       drag(document.getElementById("sidebar"));
     }
-  }, [props.horizontal]);
+  }, [P_H]);
 
-  let a = props.horizontal ? horizontal : "",
-    b = props.horizontal ? horizontal : "",
-    c = props.horizontal ? horizontal : "",
-    d = props.horizontal ? horizontal : "",
-    e = props.horizontal ? horizontal : "",
-    f = props.horizontal ? horizontal : "";
+  let a = P_H ? horizontal : "",
+    b = P_H ? horizontal : "",
+    c = P_H ? horizontal : "",
+    d = P_H ? horizontal : "",
+    e = P_H ? horizontal : "",
+    f = P_H ? horizontal : "";
   switch (active) {
     case "home":
       a = "active";
@@ -69,22 +63,19 @@ export default function Nav(props: prop) {
     `${active.replace("user", "account")[0].toUpperCase()}${active
       .replace("user", "ccount")
       .replace(active[0], "")
-      .toLowerCase()} - AHQ Store`
+      .toLowerCase()} - AHQ Store`,
   );
 
   return (
     <div
-      className={`${props.horizontal ? "absolute w-[98vh]" : "w-[80px]"} ${
-        props.horizontal ? "h-[15vh] px-[1rem]" : "h-[98vh]"
-      } my-auto ${props.horizontal ? "mt-2" : "ml-2"} rounded-lg flex ${
-        props.horizontal ? "flex-row" : "flex-col"
-      } items-center ${darkMode(
-        ["nav", "bg-blue-super", ...(props.horizontal ? ["nav-h"] : [])],
-        mode
-      )}`}
+      className={`${P_H ? "absolute w-[98vh]" : "w-[80px]"} ${
+        P_H ? "h-[15vh] px-[1rem]" : "h-[98vh]"
+      } my-auto ${P_H ? "mt-2" : "ml-2"} rounded-lg flex ${
+        P_H ? "flex-row" : "flex-col"
+      } items-center nav bg-blue-super ${P_H ? "nav-h" : ""}`}
       id={"sidebar"}
     >
-      {props.horizontal ? (
+      {P_H ? (
         <span id="sidebarheader" className="text-white hover:cursor-move">
           <BsThreeDotsVertical size={"2.5em"} />
         </span>
@@ -107,7 +98,7 @@ export default function Nav(props: prop) {
         )}
       </button>
 
-      <div className={props.horizontal ? "mx-auto" : "mt-auto mb-auto"}></div>
+      <div className={P_H ? "mx-auto" : "mt-auto mb-auto"}></div>
 
       {dev ? (
         <button

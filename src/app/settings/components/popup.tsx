@@ -12,21 +12,15 @@ export default function PopUp(props: {
 }) {
   const { Icon, roundedImage } = props;
 
-  function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
-  }
-
   return (
     <div
-      className={`${darkMode(["checkbox"], props.dark)} mt-3`}
+      className={`checkbox mt-3`}
       onClick={props.onClick}
     >
       <div className="ml-3"></div>
 
       <div
-        className={`flex items-center justify-center ${
-          props.dark ? "text-slate-300" : "text-slate-700"
-        }`}
+        className={`flex items-center justify-center text-base-content`}
       >
         {typeof Icon !== "string" ? (
           <Icon

@@ -10,7 +10,7 @@ export function get_commit(): Promise<string> {
         if (val.method == "COMMIT") {
           resolve(val.payload);
         }
-      }
+      },
     );
   });
 }
@@ -28,17 +28,20 @@ export function get_apps(apps: string[]): Promise<any[]> {
             JSON.parse(val.payload).map((data: any) => ({
               ...data.app,
               id: data.id,
-            }))
+            })),
           );
         }
-      }
+      },
     );
   });
 }
 
 type u64 = number;
 
-export function install_app(app: string, status_update: (c: u64, t: u64) => void) {
+export function install_app(
+  app: string,
+  status_update: (c: u64, t: u64) => void,
+) {
   return new Promise((resolve) => {
     sendWsRequest(
       {
@@ -60,12 +63,12 @@ export function install_app(app: string, status_update: (c: u64, t: u64) => void
             resolve(val.payload);
           } catch (_) {}
         }
-      }
+      },
     );
   });
 }
 
-export function list_apps(): Promise<{id: string, version: string}[]> {
+export function list_apps(): Promise<{ id: string; version: string }[]> {
   return new Promise((resolve) => {
     sendWsRequest(
       {
@@ -75,7 +78,7 @@ export function list_apps(): Promise<{id: string, version: string}[]> {
         if (val.method == "LISTAPPS") {
           resolve(JSON.parse(val.payload));
         }
-      }
+      },
     );
   });
 }
@@ -97,7 +100,7 @@ export function get_access_perfs(): Promise<Prefs> {
         if (val.method == "GET_PREFS") {
           resolve(JSON.parse(val.payload));
         }
-      }
+      },
     );
   });
 }
@@ -107,13 +110,13 @@ export function set_access_prefs(prefs: Prefs): Promise<void> {
     sendWsRequest(
       {
         module: "POST_PREFS",
-        data: JSON.stringify(prefs)
+        data: JSON.stringify(prefs),
       },
       (val) => {
         if (val.method == "POST_PREFS") {
           resolve();
         }
-      }
+      },
     );
   });
 }
@@ -133,7 +136,7 @@ export function un_install(apps: string[]): Promise<void> {
             reject();
           }
         }
-      }
+      },
     );
   });
 }

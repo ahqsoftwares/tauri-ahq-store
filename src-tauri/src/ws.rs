@@ -59,9 +59,6 @@ impl<'a> WsConnection<'a> {
                     .drain(..)
                     .into_iter()
                     .map(|x| {
-                        unsafe {
-                            let _ = WINDOW.as_mut().unwrap().emit("error", &x);
-                        }
                         if let Ok(x) = from_str(&x) {
                             if let Some(x) = decrypt(x) {
                                 #[cfg(debug_assertions)]
@@ -86,17 +83,23 @@ impl<'a> WsConnection<'a> {
                     })
                     .map(|x| {
                         if let Ok(payload) = from_str::<ServerResp>(&x) {
-                            return to_string(&ToSendResp {
+                            let string = to_string(&ToSendResp {
                                 method: payload.method,
                                 payload: payload.payload,
                                 reason: payload.reason,
                                 ref_id: payload.ref_id.replace(include!("./encrypt"), "****"),
                                 status: payload.status,
                             })
-                            .unwrap();
+                            .unwrap_or_else(|_| "{}".into());
+
+                            unsafe {
+                                let _ = WINDOW.as_mut().unwrap().emit("error", &string);
+                            }
+
+                            return string;
                         }
 
-                        panic!("")
+                        "{}".into()
                     })
                     .collect(),
             )

@@ -9,24 +9,16 @@ export default function SidebarSelector(props: {
 }) {
   const { Icon, initial, onChange } = props;
 
-  function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
-  }
-
   return (
     <div
-      className={`${darkMode(["checkbox"], props.dark)} mt-3`}
+      className={`checkbox mt-3`}
       style={{
         cursor: "default",
       }}
     >
       <div className="ml-3"></div>
 
-      <div
-        className={`flex items-center justify-center ${
-          props.dark ? "text-slate-300" : "text-slate-700"
-        }`}
-      >
+      <div className={`flex items-center justify-center`}>
         {typeof Icon !== "string" ? (
           <Icon size="2.5em" />
         ) : (
@@ -47,20 +39,24 @@ export default function SidebarSelector(props: {
       <div className="mx-auto"></div>
 
       <select
-        className={`select ${
-          props.dark ? "select-d text-gray-300" : "text-red-700"
-        }`}
+        className="dui-select dui-select-bordered w-[15rem] max-w-xs my-auto"
         defaultValue={initial}
         onChange={onChange}
         style={{
           fontWeight: "bold",
         }}
       >
-        <optgroup label="General">
+        <optgroup label="Stable">
           <option value="flex-row">Left</option>
           <option value="flex-row-reverse">Right</option>
-          <option value="flex-col">Dock {"(UnStable)"}</option>
         </optgroup>
+        {initial == "flex-col" ? (
+          <optgroup label="Unstable">
+            <option value="flex-col">Dock {"(UnStable)"}</option>
+          </optgroup>
+        ) : (
+          <></>
+        )}
       </select>
 
       <div className="mr-3"></div>

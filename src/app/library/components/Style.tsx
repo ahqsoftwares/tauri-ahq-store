@@ -3,7 +3,16 @@ import { VscExtensions } from "react-icons/vsc";
 import { FiExternalLink } from "react-icons/fi";
 
 function darkMode(classes: Array<string>, dark: boolean) {
-  return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+  let newClasses: string[] = [];
+
+  classes.forEach((c) => {
+    newClasses.push(c);
+    if (dark) {
+      newClasses.push(c + "-dark");
+    }
+  });
+
+  return newClasses.join(" ");
 }
 
 export default function InstalledAppsMenu(props: {

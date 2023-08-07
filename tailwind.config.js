@@ -1,13 +1,29 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**"],
-  dark: "class",
+  dark: [],
   theme: {
     extend: {},
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: ["light", "dark"],
-    prefix: "dui-"
+    prefix: "dui-",
+    themes: [
+      "light",
+      "bumblebee",
+      "emerald",
+      "fantasy",
+      "wireframe",
+      "cmyk",
+      "autumn",
+
+      "synthwave",
+      "halloween",
+      "forest",
+      "luxury",
+      "dracula",
+      "business",
+      "night",
+    ]
   }
 };

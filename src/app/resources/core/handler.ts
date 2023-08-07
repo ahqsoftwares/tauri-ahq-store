@@ -40,11 +40,11 @@ appWindow.listen<string>("ws_resp", ({ payload }) => {
         invoke("set_progress", {
           state: 2,
           c: Number(c),
-          t: Number(t)
+          t: Number(t),
         });
       } else if (toObj.payload.startsWith("DOWNLOAD STATUS:")) {
         invoke("set_progress", {
-          state: 0
+          state: 0,
         });
       }
     }

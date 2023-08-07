@@ -10,9 +10,11 @@ import { sendNotification } from "@tauri-apps/api/notification";
 import { Prefs, get_access_perfs } from "../core";
 import { invoke } from "@tauri-apps/api/tauri";
 import { notification } from "@tauri-apps/api";
-import { exit } from '@tauri-apps/api/process';
+import { exit } from "@tauri-apps/api/process";
+import { isDarkTheme } from "./themes";
 
 interface appData {
+  theme: string;
   dark: boolean;
   font: string;
   autoUpdate: boolean;
@@ -41,32 +43,42 @@ export default async function fetchPrefs(): Promise<appData> {
   }
 
   const mode =
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches;
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  const defTheme = mode ? "synthwave" : "winter";
 
   return await readTextFile("database/config.astore", {
     dir: BaseDirectory.App,
   })
     .then((data) => JSON.parse(data) as appData | undefined)
-    .then((data) => ({
-      dark: mode,
-      font: "def",
-      autoUpdate: false,
-      debug: false,
-      ...data,
-      accessPrefs: prefs,
-      isAdmin: is_admin,
-    } as appData))
+    .then(
+      (data) =>
+        ({
+          theme: defTheme,
+          font: "def",
+          autoUpdate: false,
+          debug: false,
+
+          ...data,
+
+          dark: isDarkTheme(data?.theme || defTheme),
+          accessPrefs: prefs,
+          isAdmin: is_admin,
+        }) as appData,
+    )
     .catch(async (e) => {
       console.log(e);
       await createDir("database", { dir: BaseDirectory.App }).catch(
-        console.log
+        console.log,
       );
+
+      const dark = isDarkTheme(defTheme);
 
       await writeFile(
         "database/config.astore",
-        `{"dark": ${mode}, "font": "def", "autoUpdate": false}`,
-        { dir: BaseDirectory.App }
+        `{"dark": ${dark}, "theme": "${defTheme}", "font": "def", "autoUpdate": false}`,
+        { dir: BaseDirectory.App },
       ).catch(() => {
         sendNotification({
           title: "Error",
@@ -75,7 +87,8 @@ export default async function fetchPrefs(): Promise<appData> {
       });
 
       return {
-        dark: mode,
+        dark,
+        theme: defTheme,
         font: "def",
         autoUpdate: false,
         debug: false,

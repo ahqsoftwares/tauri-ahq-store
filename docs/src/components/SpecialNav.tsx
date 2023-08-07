@@ -16,7 +16,16 @@ interface prop {
 
 export default function Nav(props: prop) {
   function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+    let newClasses: string[] = [];
+
+    classes.forEach((c) => {
+      newClasses.push(c);
+      if (dark) {
+        newClasses.push(c + "-dark");
+      }
+    });
+
+    return newClasses.join(" ");
   }
   let { active, changePage, dark: mode } = props;
 

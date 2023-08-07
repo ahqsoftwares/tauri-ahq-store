@@ -11,13 +11,9 @@ General
 .apps-desc {
   font-size: 35px;
 }
-.menu .apps-text,
-.menu .apps-desc {
-  @apply text-gray-800;
-}
-.menu-d .apps-text,
-.menu-d .apps-desc {
-  @apply text-gray-300;
+
+.menu .apps-text, .menu .apps-desc {
+  @apply text-base-content;
 }
 
 #special-modal:focus {
@@ -67,11 +63,8 @@ Apps Layout
 Layers
 */
 .layer {
-  @apply flex flex-col h-[25rem] w-[98%] bg-gray-300 rounded-md mt-5;
+  @apply flex flex-col h-[25rem] w-[98%] bg-inherit rounded-md mt-5;
   overflow-x: scroll;
-}
-.menu-d .layer {
-  @apply bg-gray-700;
 }
 
 .layer .title {
@@ -79,14 +72,8 @@ Layers
   font-size: 1.25rem;
 }
 
-.menu-d .title {
-  @apply text-gray-200;
-}
-
 .layer .item {
   @apply flex flex-row h-[23rem] w-[97%];
-  /*overflow-y: hidden;
-	overflow-x: hidden;*/
 }
 
 /*
@@ -100,7 +87,7 @@ Cards
 }
 
 .menu .card {
-  @apply bg-gray-100;
+  @apply bg-base-200 hover:bg-base-300;
 }
 
 .card-img {
@@ -124,12 +111,8 @@ Cards
   padding-right: 0.2rem;
 }
 
-.menu-d .card-description {
-  @apply text-gray-300;
-}
-
 .menu .card-description {
-  @apply text-gray-800;
+  @apply text-base-content;
 }
 .card-footer {
   margin-top: auto;

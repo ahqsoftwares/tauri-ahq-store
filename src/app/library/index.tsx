@@ -65,7 +65,7 @@ export default function Library(props: LibraryProps) {
               .replace("updated", "Check for Updates")
               .replace("updating", "Updates Available")
               .replace("checking", "Checking...")
-          : ""
+          : "",
       );
       setApps(status.apps || []);
       setCurrent(status.updating || "");
@@ -81,16 +81,25 @@ export default function Library(props: LibraryProps) {
                 .replace("updated", "Check for Updates")
                 .replace("updating", "Updates Available")
                 .replace("checking", "Checking...")
-            : ""
+            : "",
         );
         setApps(status.totalApps || []);
         setCurrent(status.currentlyUpdating || "");
-      }
+      },
     );
   }, []);
 
   function darkMode(classes: Array<string>) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
+    let newClasses: string[] = [];
+
+    classes.forEach((c) => {
+      newClasses.push(c);
+      if (dark) {
+        newClasses.push(c + "-dark");
+      }
+    });
+
+    return newClasses.join(" ");
   }
 
   return (

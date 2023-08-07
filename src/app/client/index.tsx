@@ -94,10 +94,6 @@ async function fetchUser(uid: string) {
 export default function Init(props: UserProps) {
   Modal.setAppElement("#root");
 
-  function darkMode(classes: Array<string>, dark: boolean) {
-    return classes.map((c) => c + (dark ? "-d" : "")).join(" ");
-  }
-
   let { auth, dark } = props;
 
   let [backupUser, setBackup] = useState(""),
@@ -107,7 +103,7 @@ export default function Init(props: UserProps) {
     [showDelete, setDelete] = useState(false),
     [deletePwd, setPwd] = useState(""),
     [Pen, setPen] = useState(
-      dark ? <BsPen size="2em" /> : <BsPenFill size="2em" />
+      dark ? <BsPen size="2em" /> : <BsPenFill size="2em" />,
     ),
     [namePopup, setNamePopup] = useState(false),
     [passwordPopup, setpPopop] = useState(false),
@@ -156,7 +152,7 @@ export default function Init(props: UserProps) {
         setAlt(
           auth.currentUser?.photoURL
             ? "Click to edit picture"
-            : "Click to upload"
+            : "Click to upload",
         );
       }
     })();
@@ -217,7 +213,7 @@ export default function Init(props: UserProps) {
                         result: fs.result as string,
                       },
                       password,
-                      setPFD
+                      setPFD,
                     );
                   }
                 })
@@ -278,7 +274,7 @@ export default function Init(props: UserProps) {
           onSubmit={(event) => {
             event.preventDefault();
             const error = document.getElementById(
-              "errorhost"
+              "errorhost",
             ) as HTMLHeadingElement;
             const inputPassword = (
               document.getElementById("accpwdhost") as HTMLInputElement
@@ -305,7 +301,7 @@ export default function Init(props: UserProps) {
                       result: (profilePictureData as any).fs.result,
                     },
                     inputPassword,
-                    setPFD
+                    setPFD,
                   );
 
                   error.innerText = "";
@@ -347,8 +343,8 @@ export default function Init(props: UserProps) {
         />
       </Modal>
 
-      <div className={`${darkMode(["menu"], dark)} pb-2`}>
-        <div className={`${darkMode(["user"], dark)} pb-2`}>
+      <div className="menu pb-2">
+        <div className="user pb-2">
           {auth.currentUser?.emailVerified ? (
             <></>
           ) : (
@@ -376,12 +372,12 @@ export default function Init(props: UserProps) {
                   <span
                     onMouseLeave={() => {
                       setPen(
-                        dark ? <BsPen size="2em" /> : <BsPenFill size="2em" />
+                        dark ? <BsPen size="2em" /> : <BsPenFill size="2em" />,
                       );
                     }}
                     onMouseEnter={() => {
                       setPen(
-                        dark ? <BsPenFill size="2em" /> : <BsPen size="2em" />
+                        dark ? <BsPenFill size="2em" /> : <BsPen size="2em" />,
                       );
                     }}
                     style={{
@@ -413,7 +409,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
     <div className="flex flex-col">
       <div className="flex w-[100%] flex-row">
         <button
-          className="button mx-auto flex items-center text-center justify-center"
+          className="mx-auto flex items-center text-center justify-center dui-btn"
           onClick={() => {
             localStorage.removeItem("password");
             auth.signOut();
@@ -430,7 +426,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
         </button>
         <div className="mx-3"></div>
         <button
-          className="button-danger mx-auto flex items-center text-center justify-center"
+          className="mx-auto flex items-center text-center justify-center dui-btn dui-btn-error"
           onClick={() => deleteAcc(true)}
           style={{
             minWidth: "15rem",
@@ -454,7 +450,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
 
           sendPasswordResetEmail(
             auth as Auth,
-            auth.currentUser?.email as string
+            auth.currentUser?.email as string,
           )
             .then(() => {
               const email = auth.currentUser?.email as string;
@@ -476,7 +472,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
 
               toast?.edit(
                 `Password reset link sent to ${censoredEmail}`,
-                "success"
+                "success",
               );
               startUnmount();
             })
@@ -485,7 +481,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
               startUnmount();
             });
         }}
-        className="button button-success mx-auto flex items-center text-center justify-center"
+        className="dui-btn dui-btn-success mt-3 mx-auto flex items-center text-center justify-center"
         style={{
           minWidth: "100%",
           maxWidth: "100%",
@@ -494,7 +490,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
         }}
       >
         <VscKey size="2.5em" />
-        <p className="mx-2">Reset Password</p>
+        <p className="mx-2 text-info-success">Reset Password</p>
       </button>
     </div>
   );
@@ -529,7 +525,7 @@ function DeleteAccount(props: DeleteAccountProps) {
     setText(`⏲️;;true`);
     await reauthenticateWithCredential(
       auth.currentUser as User,
-      EmailAuthProvider.credential(auth.currentUser?.email as string, pass)
+      EmailAuthProvider.credential(auth.currentUser?.email as string, pass),
     )
       .then(() => {
         reverse("");
@@ -745,7 +741,7 @@ async function ChangeProfile(
   setUser: Function,
   fs: { result: string },
   pwd: string,
-  setPFD: any
+  setPFD: any,
 ) {
   try {
     setUser(Loading);
@@ -766,7 +762,7 @@ async function ChangeProfile(
         sendNotification("Failed to update profile picture!");
         setPFD({});
         fetchUser(auth?.currentUser?.uid as string).then((value) =>
-          setUser(value)
+          setUser(value),
         );
       } else {
         setAlt("Click to edit picture");

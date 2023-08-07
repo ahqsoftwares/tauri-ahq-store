@@ -1,6 +1,6 @@
 {
   "name": "ahq-store-tauri",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "private": true,
   "license": "Creative Commons",
   "dependencies": {

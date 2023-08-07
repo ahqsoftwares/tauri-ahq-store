@@ -37,9 +37,12 @@ export default class Updater {
     if (this.currentTimer) {
       this.stopCounter();
     }
-    this.currentTimer = setTimeout(() => {
-      this.runUpdates();
-    }, 10 * 60 * 60 * 1000);
+    this.currentTimer = setTimeout(
+      () => {
+        this.runUpdates();
+      },
+      10 * 60 * 60 * 1000,
+    );
   }
 
   stopCounter() {
@@ -53,7 +56,7 @@ export default class Updater {
         totalApps: this.updatingAppList,
         currentlyUpdating: this.updatingApp,
         status: this.updateStatus,
-      })
+      }),
     );
   }
 
@@ -97,7 +100,7 @@ export default class Updater {
     const apps: Apps = await listAllApps();
 
     const appsData = ((await fetchApps(Object.keys(apps))) as any[]).map(
-      (value) => value.version
+      (value) => value.version,
     );
 
     return Object.keys(apps).filter((_, index) => {
