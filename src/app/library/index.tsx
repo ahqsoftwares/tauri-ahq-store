@@ -33,13 +33,13 @@ export default function Library(props: LibraryProps) {
       width: "95%",
       height: "90%",
       transition: "all 500ms linear",
-      backgroundColor: props.dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
-      borderColor: props.dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
+      borderRadius: "20px",
+      borderWidth: "3px",
+      borderColor: "hsl(var(--bc) / 0.9)",
+      backgroundColor: "hsl(var(--b1) / 1)",
     },
     overlay: {
-      backgroundColor: !props.dark
-        ? "rgb(55, 65, 81, 0.5)"
-        : "rgb(107, 114, 128, 0.75)",
+      backgroundColor: "hsl(var(--b1) / 0.8)",
       zIndex: 1000,
     },
   };
@@ -115,15 +115,11 @@ export default function Library(props: LibraryProps) {
 
       <div className={`${darkMode(["menu"])}`}>
         <div
-          className={`mt-[1rem] min-w-[98%] rounded-lg shadow-xl ${
-            dark ? "bg-gray-800" : "bg-gray-100"
-          } flex flex-col`}
+          className={`mt-[1rem] min-w-[98%] pt-3 rounded-lg shadow-xl bg-base-200 flex flex-col`}
         >
           <div className="px-3 pt-1 flex flex-row text-center items-center justify-center mb-[1rem]">
             <h1
-              className={`${
-                dark ? "text-slate-200" : "text-slate-800"
-              } text-2xl`}
+              className="text-base-content text-2xl"
             >
               {status === "Check for Updates"
                 ? "You are up to date!"
@@ -136,9 +132,9 @@ export default function Library(props: LibraryProps) {
                   } available`}
             </h1>
             <button
-              className="button ml-auto"
-              disabled={status !== "Check for Updates" && status !== "none"}
-              style={{ maxWidth: "10rem", maxHeight: "30px" }}
+              className="dui-btn dui-btn-primary ml-auto my-auto"
+              disabled={false}
+              style={{ minWidth: "10rem", maxHeight: "30px", marginTop: "auto" }}
               onClick={() => {
                 if (status === "Check for Updates" || status === "none") {
                   setStatus("Checking...");

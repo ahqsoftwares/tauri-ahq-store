@@ -54,15 +54,15 @@ impl<'a> WsConnection<'a> {
 
     pub fn recv(&mut self) -> Option<Vec<String>> {
         if let Ok(mut pending) = self.pending.try_lock() {
-            Some(
-                pending
+            Some({
+                let mut data = pending
                     .drain(..)
                     .into_iter()
                     .map(|x| {
-                        if let Ok(x) = from_str(&x) {
-                            if let Some(x) = decrypt(x) {
+                        if let Ok(x) = from_str::<Vec<u8>>(&x) {
+                            if let Some(x) = decrypt(&x) {
                                 #[cfg(debug_assertions)]
-                                println!("{:#?}", &x);
+                                println!("{:?}", &x);
                                 return x;
                             }
                         }
@@ -101,8 +101,25 @@ impl<'a> WsConnection<'a> {
 
                         "{}".into()
                     })
-                    .collect(),
-            )
+                    .collect::<Vec<String>>();
+                
+                data.sort_by(|a, b| {
+                    use std::cmp::Ordering;
+
+                    let a_is_terminate = a.to_lowercase().contains("terminate");
+                    let b_is_terminate = b.to_lowercase().contains("terminate");
+
+                    if a_is_terminate && b_is_terminate {
+                        Ordering::Equal
+                    } else if a_is_terminate {
+                        Ordering::Greater
+                    } else {
+                        Ordering::Less
+                    }
+                });
+
+                data
+            })
         } else {
             None
         }
@@ -133,7 +150,7 @@ impl<'a> WsConnection<'a> {
                                 tx.send(txt.into()).unwrap_or(());
                             }
                         }
-                        std::thread::sleep(std::time::Duration::from_millis(20));
+                        std::thread::sleep(std::time::Duration::from_millis(1));
                     }
                 }
             });
@@ -155,7 +172,7 @@ impl<'a> WsConnection<'a> {
                     self.load_into(msg);
                 }
 
-                std::thread::sleep(std::time::Duration::from_millis(20));
+                std::thread::sleep(std::time::Duration::from_millis(1));
             }
         } else {
             reinstall_astore();
@@ -171,7 +188,7 @@ pub fn get_ws_port() -> Option<u64> {
 
     if let Ok(x) = read_to_string(file) {
         if let Ok(x) = from_str::<Vec<u8>>(&x) {
-            if let Some(x) = decrypt(x) {
+            if let Some(x) = decrypt(&x) {
                 if let Ok(x) = x.parse::<u64>() {
                     return Some(x);
                 }
@@ -224,7 +241,7 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
             if TERMINATED {
                 break;
             }
-            std::thread::sleep(std::time::Duration::from_millis(100));
+            std::thread::sleep(std::time::Duration::from_millis(1));
         }
 
         reinstall_astore();

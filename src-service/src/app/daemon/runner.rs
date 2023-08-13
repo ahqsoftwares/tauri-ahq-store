@@ -139,8 +139,12 @@ pub fn run(tx: Sender<String>, rx: Receiver<String>, client: Client) {
                         terminate(&tx, &&ref_id);
                     }
                     Order::Commit(ref_id) => {
+                        pool.join();
+
                         tx.send(format!("COMMIT{}{ref_id}{}{}", ID, ID, &commit_id))
                             .unwrap_or(());
+
+                        pool.join();
 
                         terminate(&tx, &&ref_id);
                     }

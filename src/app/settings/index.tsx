@@ -62,14 +62,12 @@ export default function Init(props: InitProps) {
       minHeight: "30%",
       transition: "all 500ms linear",
       borderRadius: "20px",
-      borderColor: props.dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
-      backgroundColor: props.dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
+      borderWidth: "3px",
+      borderColor: "hsl(var(--bc) / 0.9)",
+      backgroundColor: "hsl(var(--b1) / 1)",
     },
     overlay: {
-      backgroundColor: !props.dark
-        ? "rgb(55, 65, 81, 0.5)"
-        : "rgb(107, 114, 128, 0.75)",
-      opacity: "1",
+      backgroundColor: "hsl(var(--b1) / 0.8)",
       zIndex: 1000,
     },
   };

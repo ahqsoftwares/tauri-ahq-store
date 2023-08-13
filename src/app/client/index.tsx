@@ -120,13 +120,13 @@ export default function Init(props: UserProps) {
       width: "30rem",
       height: "40rem",
       transition: "all 500ms linear",
-      backgroundColor: props.dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
-      borderColor: props.dark ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)",
+      borderRadius: "20px",
+      borderWidth: "3px",
+      borderColor: "hsl(var(--bc) / 0.9)",
+      backgroundColor: "hsl(var(--b1) / 1)",
     },
     overlay: {
-      backgroundColor: !props.dark
-        ? "rgb(55, 65, 81, 0.5)"
-        : "rgb(107, 114, 128, 0.75)",
+      backgroundColor: "hsl(var(--b1) / 0.8)",
       zIndex: 1000,
     },
   };

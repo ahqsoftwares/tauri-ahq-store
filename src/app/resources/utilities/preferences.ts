@@ -69,7 +69,7 @@ export default async function fetchPrefs(): Promise<appData> {
     )
     .catch(async (e) => {
       console.log(e);
-      await createDir("database", { dir: BaseDirectory.App }).catch(
+      await createDir("database", { dir: BaseDirectory.App, recursive: true }).catch(
         console.log,
       );
 

@@ -34,7 +34,7 @@ export default function AppsList(props: Props) {
 
   return (
     <div className="flex flex-col w-[100%] h-[100%]">
-      <div className={`flex ${dark ? "text-slate-300" : "text-slate-800"}`}>
+      <div className={`flex text-base-content`}>
         <button
           onClick={() => change()}
           className={`rounded-md p-1 ${

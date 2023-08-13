@@ -62,6 +62,7 @@ appWindow.listen<string>("ws_resp", ({ payload }) => {
       if (JSON.stringify(a) == JSON.stringify(data)) {
         resolve(toObj);
         if (toObj?.method == "TERMINATE") {
+          resolve({});
           return false;
         }
       }

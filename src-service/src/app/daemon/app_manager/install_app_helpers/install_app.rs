@@ -39,7 +39,7 @@ pub fn install_app(
                 .as_millis();
 
             unsafe {
-                if now - LAST_SENT > 1500 {
+                if now - LAST_SENT > 1000 {
                     LAST_SENT = now;
                     let sep = "ā";
 
