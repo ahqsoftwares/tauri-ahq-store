@@ -1,12 +1,5 @@
-This release is an important foundational update to **AHQ Store**
+This release is an patch update to **AHQ Store**
 
 ## Changes
 
-- Foundatoinal Changes
-- Newer Website (Not Ready)
-- Change styles of those which weren't updated by the themes update
-
-## To - Do:
-
-- Make **AHQ Store Service** Faster
-- Fix **AHQ Store Service** bugs
+- Patch Update, fix AHQ Store white/black screen on logs

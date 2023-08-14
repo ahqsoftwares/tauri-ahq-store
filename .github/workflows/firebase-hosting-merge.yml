@@ -11,13 +11,27 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+      
       - name: Setup Nodejs
         uses: actions/setup-node@v3
         with:
           node-version: latest
-      - name: Install and build
-        run: cd docs && npm i && npm run build
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+      
+      - name: Install Packages
+        run: pnpm install
+        working-directory: docs
+
+      - name: Build 
+        run: pnpm build
+        working-directory: docs
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"

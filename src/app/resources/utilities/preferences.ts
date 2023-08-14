@@ -59,6 +59,7 @@ export default async function fetchPrefs(): Promise<appData> {
           font: "def",
           autoUpdate: false,
           debug: false,
+          sidebar: "flex-row",
 
           ...data,
 
@@ -77,7 +78,7 @@ export default async function fetchPrefs(): Promise<appData> {
 
       await writeFile(
         "database/config.astore",
-        `{"dark": ${dark}, "theme": "${defTheme}", "font": "def", "autoUpdate": false}`,
+        `{"dark": ${dark}, "theme": "${defTheme}", "font": "def", "autoUpdate": false, "sidebar": "flex-row"}`,
         { dir: BaseDirectory.App },
       ).catch(() => {
         sendNotification({
@@ -94,6 +95,7 @@ export default async function fetchPrefs(): Promise<appData> {
         debug: false,
         accessPrefs: prefs,
         isAdmin: is_admin,
+        sidebar: "flex-row"
       } as appData;
     });
 }
