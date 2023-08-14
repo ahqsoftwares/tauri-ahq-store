@@ -1,5 +1,5 @@
-This release is an patch update to **AHQ Store**
+This release is a Security Patch update to **AHQ Store**
 
 ## Changes
 
-- Patch Update, fix AHQ Store white/black screen on logs
+- Security Patch: Fix an issue with Access Permission Management

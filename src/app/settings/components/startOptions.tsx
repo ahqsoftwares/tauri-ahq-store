@@ -21,7 +21,9 @@ export default function StartOptions({ setOUO, dark }: Props) {
   });
   const [loading, setLoading] = useState(false);
 
-  async function updatePrefs() {
+  async function updatePrefs(settings: Prefs) {
+    console.log(settings);
+
     await delay(250);
 
     setLoading(true);
@@ -72,8 +74,15 @@ export default function StartOptions({ setOUO, dark }: Props) {
             const checked = e?.currentTarget?.checked;
 
             if (checked != null) {
-              setSettings((s) => ({ ...s, launch_app: !checked }));
-              updatePrefs();
+              setSettings((s) => { 
+                const data = {
+                 ...s, launch_app: !checked 
+                }
+
+                updatePrefs(data);
+
+                return data;
+              });
             }
           }}
         />
@@ -90,8 +99,15 @@ export default function StartOptions({ setOUO, dark }: Props) {
             const checked = e?.currentTarget?.checked;
 
             if (checked != null) {
-              setSettings((s) => ({ ...s, install_apps: !checked }));
-              updatePrefs();
+              setSettings((s) => { 
+                const data = {
+                 ...s, install_apps: !checked 
+                };
+
+                updatePrefs(data);
+
+                return data;
+              });
             }
           }}
         />
