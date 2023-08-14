@@ -59,7 +59,7 @@ let code = [
 ];
 
 data.forEach((folder) => {
-  if (folder != "index.ts") {
+  if (folder != "index.ts" && folder != "constants.ts") {
     const folderParsed = folder.toLowerCase();
 
     routes.push("/" + folderParsed);
