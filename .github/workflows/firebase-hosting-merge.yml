@@ -27,10 +27,14 @@ jobs:
       - name: Install Packages
         run: pnpm install
         working-directory: docs
+        env:
+          CI: false
 
       - name: Build 
         run: pnpm build
         working-directory: docs
+        env:
+          CI: false
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
