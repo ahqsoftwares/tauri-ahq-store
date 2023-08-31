@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "0.10.2"
+version = "0.11.0"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "ISC"
@@ -40,3 +40,10 @@ lazy_static = "1.4.0"
 [features]
 default = ["custom-protocol"]
 custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

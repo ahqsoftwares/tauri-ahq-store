@@ -106,25 +106,29 @@ export default function ShowModal(props: AppDataPropsModal) {
   return (
     <Modal isOpen={shown} contentLabel={"App Information"} style={modalStyles}>
       <div className="flex flex-col w-[100%] h-[100%]">
-        <div className={`flex ${dark ? "text-slate-300" : "text-slate-800"}`}>
-          <button
-            onClick={() => {
-              if (!working) {
-                change();
-              }
-            }}
-            className={`rounded-md p-1 ${
-              !working ? (dark ? "hover:bg-gray-600" : "hover:bg-white") : ""
-            }`}
-            style={{ transition: "all 250ms linear" }}
-          >
-            <BiArrowBack size="1.5em" />
-          </button>
-        </div>
-        <div className="flex w-[100%] h-[100%]">
+        <div className="flex w-[100%] h-[100%] app-data">
           <div
-            className={`w-[40%] flex flex-col items-center rounded-xl shadow-xl mt-2`}
+            className={`div w-[40%] p-2 flex flex-col items-center rounded-xl shadow-xl`}
           >
+            <button
+              onClick={() => {
+                if (!working) {
+                  change();
+                }
+              }}
+              className={`rounded-md p-1 dui-btn dui-btn-square mr-auto`}
+              style={{ transition: "all 250ms linear" }}
+            >
+              <BiArrowBack
+                 width="2em"
+                 height="2em"
+                 color={dark ? "white" : "black"}
+                 style={{
+                   minWidth: "2em",
+                   minHeight: "2em",
+                 }} 
+              />
+            </button>
             <img
               width={128}
               height={128}
@@ -196,7 +200,7 @@ export default function ShowModal(props: AppDataPropsModal) {
               ) : (
                 <button
                   ref={button}
-                  className="dui-btn dui-btn-success text-success-content w-[60%] mb-4"
+                  className={`dui-btn ${working ? "bg-transparent border-base-content text-base-content" : "dui-btn-success text-success-content"} w-[60%] mb-4`}
                   onClick={async () => {
                     if (!working) {
                       setWorking(true);
@@ -207,12 +211,13 @@ export default function ShowModal(props: AppDataPropsModal) {
                         if (c == 10000 && t == 0) {
                           button.current.innerHTML = "Installing...";
                         } else {
-                          button.current.innerHTML = `${Math.round(
+                          const perc = Math.round(
                             (c * 100) / t,
-                          )}% of ${formatBytes(t)}`;
+                          );
+
+                          button.current.innerHTML = `<div class="dui-radial-progress text-base-content" style="--value: ${perc}; --size: 2rem; font-size: 0.75rem;">${perc}%</div> (${formatBytes(t)})`;
                         }
                       }).then(async (data: any) => {
-                        console.log(data);
                         if (data != "[]") {
                           button.current.innerHTML = "Failed...";
                         } else {
@@ -238,7 +243,7 @@ export default function ShowModal(props: AppDataPropsModal) {
           <div
             className={`${
               dark ? "text-slate-200" : "text-slate-800"
-            } p-4 ml-2 w-[100%] rounded-xl shadow-xl flex flex-col`}
+            } div p-4 ml-2 w-[100%] rounded-xl shadow-xl flex flex-col`}
           >
             {/*"Images (soon)"*/}
             <div></div>

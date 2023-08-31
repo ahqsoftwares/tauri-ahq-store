@@ -263,6 +263,7 @@ fn main() {
     });
 }
 
+#[cfg(not(debug_assertions))]
 fn base64_to_string(base64_string: &str) -> Option<String> {
     let base64decoder = base64::engine::general_purpose::STANDARD;
     let decoded_string = base64decoder.decode(base64_string).unwrap_or(vec![]);
@@ -287,6 +288,22 @@ fn open(url: String) -> Option<()> {
 }
 
 #[tauri::command(async)]
+#[cfg(debug_assertions)]
+fn check_update(
+    version: String,
+    current_version: String,
+    download_url: String,
+    signature: String,
+) -> bool {
+    drop(version);
+    drop(current_version);
+    drop(download_url);
+    drop(signature);
+    return false;
+}
+
+#[tauri::command(async)]
+#[cfg(not(debug_assertions))]
 fn check_update(
     version: String,
     current_version: String,
@@ -297,9 +314,7 @@ fn check_update(
 
     let mut update_available = &version != &current_version;
 
-    if update_available.clone() {
-        #[cfg(debug_assertions)]
-        println!("Update Available!");
+    if update_available {
         let sys_dir = sys_handler();
 
         let path = UPDATER_PATH.replace("%root%", sys_dir.as_str());
@@ -326,6 +341,7 @@ fn check_update(
     update_available
 }
 
+#[cfg(not(debug_assertions))]
 fn verify_signature(data: Vec<u8>, release_signature: &str) -> Result<bool, Error> {
     let pub_key = base64_to_string("dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCNUQyRTdGQUVFN0FDQTQKUldTa3JPZXVmeTVkbTBUL0JjSnNjLytQOHlyYkRnakJ2Q3dnYW51WTJIRVVCL1psWFNLT0pLSkgK").unwrap_or("".to_string());
     let key_verifier = PublicKey::decode(&pub_key)?;

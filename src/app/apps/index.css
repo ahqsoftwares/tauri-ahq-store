@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.app-data .div {
+  @apply border-2 border-base-content;
+}
+
 /*
 General
 */

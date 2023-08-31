@@ -23,7 +23,7 @@ module.exports = {
       "luxury",
       "dracula",
       "business",
-      "night",
+      "night"
     ]
   }
 };

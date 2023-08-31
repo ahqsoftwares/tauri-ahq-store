@@ -83,7 +83,7 @@ export default function App({
       {!updating ? (
         <div className="ml-auto mr-3 my-auto" ref={data}>
           <button
-            className="flex min-w-[100%] p-4 min-h-[3rem] justify-center items-center text-center dui-btn dui-btn-danger text-red-700 hover:text-white hover:bg-red-700 rounded-xl transition-all"
+            className="flex min-w-[100%] p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-danger text-red-700 hover:text-white hover:bg-red-700 rounded-xl transition-all"
             onClick={() => {
               handleClick();
             }}

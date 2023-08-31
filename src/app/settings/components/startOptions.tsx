@@ -49,6 +49,7 @@ export default function StartOptions({ setOUO, dark }: Props) {
         <button
           className="dui-btn dui-btn-square"
           onClick={() => setTimeout(() => setOUO(false), 250)}
+          disabled={loading}
         >
           <IoMdArrowRoundBack
             width="2em"

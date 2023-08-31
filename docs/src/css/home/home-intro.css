@@ -61,8 +61,8 @@
 }
 
 .home-intro button {
-  @apply daisy-btn daisy-btn-success text-success-content
-    min-w-[10rem] h-[4rem] m-1 p-2 px-5
+  @apply daisy-btn daisy-btn-outline daisy-btn-info
+    w-[11rem] h-[4rem] p-2 px-3 mr-5
     flex items-center justify-center text-center
-    rounded-lg shadow-xl text-lg;
+    rounded-lg shadow-xl text-base;
 }
