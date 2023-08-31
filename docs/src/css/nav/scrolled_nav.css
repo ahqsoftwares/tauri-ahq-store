@@ -7,5 +7,5 @@
 
   @apply w-[97%] bg-opacity-40
     fixed top-3 left-0 right-0 rounded-md
-    shadow-2xl !important
+    shadow-2xl !important;
 }

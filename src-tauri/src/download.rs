@@ -54,8 +54,9 @@ impl downloader::progress::Reporter for SimpleReporter {
         }
     }
 
-    fn set_message(&self, message: &str) {
-        println!("App: Message changed to: {}", message);
+    fn set_message(&self, _message: &str) {
+        #[cfg(debug_assertions)]
+        println!("App: Message changed to: {}", _message);
     }
 
     fn done(&self) {

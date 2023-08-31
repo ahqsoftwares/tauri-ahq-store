@@ -118,9 +118,7 @@ export default function Library(props: LibraryProps) {
           className={`mt-[1rem] min-w-[98%] pt-3 rounded-lg shadow-xl bg-base-200 flex flex-col`}
         >
           <div className="px-3 pt-1 flex flex-row text-center items-center justify-center mb-[1rem]">
-            <h1
-              className="text-base-content text-2xl"
-            >
+            <h1 className="text-base-content text-2xl">
               {status === "Check for Updates"
                 ? "You are up to date!"
                 : status === "Checking..."
@@ -134,7 +132,11 @@ export default function Library(props: LibraryProps) {
             <button
               className="dui-btn dui-btn-primary ml-auto my-auto"
               disabled={false}
-              style={{ minWidth: "10rem", maxHeight: "30px", marginTop: "auto" }}
+              style={{
+                minWidth: "10rem",
+                maxHeight: "30px",
+                marginTop: "auto",
+              }}
               onClick={() => {
                 if (status === "Check for Updates" || status === "none") {
                   setStatus("Checking...");

@@ -57,8 +57,16 @@ export default function ListSelector(props: {
         {list ? (
           <>
             {list.map((item) => (
-              <option key={item} value={item} style={{ fontFamily: "Segoe UI" }} data-theme={item} className="text-lg text-base-content bg-base">
-                {item == "night" ? "Dark" : item[0].toUpperCase() + item.slice(1)}
+              <option
+                key={item}
+                value={item}
+                style={{ fontFamily: "Segoe UI" }}
+                data-theme={item}
+                className="text-lg text-base-content bg-base"
+              >
+                {item == "night"
+                  ? "Dark"
+                  : item[0].toUpperCase() + item.slice(1)}
               </option>
             ))}
           </>

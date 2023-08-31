@@ -117,6 +117,33 @@ jobs:
           asset_name: store-tools-installer.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
+  make-setup:
+    needs: create-release
+    name: Make Setup (exe)
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Setup
+        run: cargo build --release
+        working-directory: src-setup
+
+      - name: Upload Release Asset
+        uses: ahqsoftwares-projects/upload-release-assets@v59
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-setup/target/release/ahqstore_setup_x86_64.exe
+          asset_name: ahqstore_setup_x86_64.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
+
   publish-tauri:
     needs: create-release
     name: Build & Publish Tauri App & Service
@@ -215,20 +242,3 @@ jobs:
         with:
           name: ahqstore.exe
           path: "src-tauri/target/release/AHQ Store.exe"
-
-      - name: Pre-Setup the Setup
-        run: node loadFiles.js
-
-      - name: Build Setup
-        run: cargo build --release
-        working-directory: src-setup
-
-      - name: Upload Release Asset
-        uses: ahqsoftwares-projects/upload-release-assets@v59
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-setup/target/release/ahqstore_setup_x86_64.exe
-          asset_name: ahqstore_setup_x86_64.exe
-          asset_content_type: application/vnd.microsoft.portable-executable

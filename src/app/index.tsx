@@ -39,7 +39,11 @@ import { init } from "./resources/api/fetchApps";
 import { invoke } from "@tauri-apps/api/tauri";
 import { notification } from "@tauri-apps/api";
 import { Prefs } from "./resources/core";
-import { defaultDark, defaultLight, isDarkTheme } from "./resources/utilities/themes";
+import {
+  defaultDark,
+  defaultLight,
+  isDarkTheme,
+} from "./resources/utilities/themes";
 
 interface AppProps {
   data: {
@@ -245,11 +249,13 @@ function Render(props: AppProps) {
     updateConfig({ dark, font, autoUpdate, sidebar, debug, theme: newTheme });
   }
   function setDark(dark: boolean) {
-    const theme = (() => {if (dark) {
-      return defaultDark();
-    } else {
-      return defaultLight();
-    }})();
+    const theme = (() => {
+      if (dark) {
+        return defaultDark();
+      } else {
+        return defaultLight();
+      }
+    })();
 
     updateTheme(theme);
   }
@@ -287,7 +293,9 @@ function Render(props: AppProps) {
     <>
       {load === true ? (
         <header
-          className={`apps${dark ? "-d" : ""} ${sidebar} ${sidebar.includes("flex-row-reverse") ? "pr-2" : ""} flex transition-all`}
+          className={`apps${dark ? "-d" : ""} ${sidebar} ${
+            sidebar.includes("flex-row-reverse") ? "pr-2" : ""
+          } flex transition-all`}
         >
           <Nav
             active={page}
@@ -301,10 +309,8 @@ function Render(props: AppProps) {
                 baseApi={BaseAPI}
                 auth={auth}
                 setDev={setDev}
-                
                 dark={dark}
                 setDark={setDark}
-
                 font={font}
                 setFont={changeFont}
                 apps={apps}
@@ -319,7 +325,6 @@ function Render(props: AppProps) {
                 admin={admin}
                 isAdmin={admin}
                 accessPrefs={prefs}
-
                 theme={theme}
                 setTheme={updateTheme}
               />

@@ -35,18 +35,15 @@ export default function AppsList(props: Props) {
   return (
     <div className="flex flex-col w-[100%] h-[100%]">
       <div className={`flex text-base-content`}>
-        <button
-          className="dui-btn dui-btn-square"
-          onClick={() => change()}
-        >
-          <BiArrowBack 
+        <button className="dui-btn dui-btn-square" onClick={() => change()}>
+          <BiArrowBack
             width="2em"
             height="2em"
             color={dark ? "white" : "black"}
             style={{
               minWidth: "2em",
               minHeight: "2em",
-            }} 
+            }}
           />
         </button>
       </div>

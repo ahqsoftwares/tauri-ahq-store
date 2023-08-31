@@ -75,10 +75,11 @@ export default function StartOptions({ setOUO, dark }: Props) {
             const checked = e?.currentTarget?.checked;
 
             if (checked != null) {
-              setSettings((s) => { 
+              setSettings((s) => {
                 const data = {
-                 ...s, launch_app: !checked 
-                }
+                  ...s,
+                  launch_app: !checked,
+                };
 
                 updatePrefs(data);
 
@@ -100,9 +101,10 @@ export default function StartOptions({ setOUO, dark }: Props) {
             const checked = e?.currentTarget?.checked;
 
             if (checked != null) {
-              setSettings((s) => { 
+              setSettings((s) => {
                 const data = {
-                 ...s, install_apps: !checked 
+                  ...s,
+                  install_apps: !checked,
                 };
 
                 updatePrefs(data);

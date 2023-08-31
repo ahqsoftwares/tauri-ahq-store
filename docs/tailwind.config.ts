@@ -1005,6 +1005,6 @@ export default {
   daisyui: {
     themes: ["light", "synthwave"],
     prefix: "daisy-",
-    logs: false
-  }
+    logs: false,
+  },
 } satisfies Config;

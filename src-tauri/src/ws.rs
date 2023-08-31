@@ -102,7 +102,7 @@ impl<'a> WsConnection<'a> {
                         "{}".into()
                     })
                     .collect::<Vec<String>>();
-                
+
                 data.sort_by(|a, b| {
                     use std::cmp::Ordering;
 
@@ -145,7 +145,7 @@ impl<'a> WsConnection<'a> {
             spawn(move || {
                 if let Some(ws) = WS.as_mut() {
                     loop {
-                        if let Ok(msg) = ws.read_message() {
+                        if let Ok(msg) = ws.read() {
                             if let Ok(txt) = msg.to_text() {
                                 tx.send(txt.into()).unwrap_or(());
                             }
@@ -162,8 +162,7 @@ impl<'a> WsConnection<'a> {
 
                     if let Some(ws) = WS.as_mut() {
                         for msg in send {
-                            ws.write_message(tungstenite::Message::Text(msg))
-                                .unwrap_or(());
+                            ws.send(tungstenite::Message::Text(msg)).unwrap_or(());
                         }
                     }
                 }

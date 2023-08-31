@@ -70,9 +70,10 @@ export default async function fetchPrefs(): Promise<appData> {
     )
     .catch(async (e) => {
       console.log(e);
-      await createDir("database", { dir: BaseDirectory.App, recursive: true }).catch(
-        console.log,
-      );
+      await createDir("database", {
+        dir: BaseDirectory.App,
+        recursive: true,
+      }).catch(console.log);
 
       const dark = isDarkTheme(defTheme);
 
@@ -95,7 +96,7 @@ export default async function fetchPrefs(): Promise<appData> {
         debug: false,
         accessPrefs: prefs,
         isAdmin: is_admin,
-        sidebar: "flex-row"
+        sidebar: "flex-row",
       } as appData;
     });
 }

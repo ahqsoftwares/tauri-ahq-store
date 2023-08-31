@@ -3,7 +3,7 @@ mod cache;
 use lazy_static::lazy_static;
 
 use chacha20poly1305::{
-    aead::{KeyInit, generic_array::GenericArray, Aead},
+    aead::{generic_array::GenericArray, Aead, KeyInit},
     ChaCha20Poly1305,
 };
 
@@ -16,7 +16,6 @@ lazy_static! {
         let key = GenericArray::from_slice(include!("./encrypt").as_bytes());
         ChaCha20Poly1305::new(&key)
     };
-
     static ref CRYPTER2: ChaCha20Poly1305 = {
         let key = GenericArray::from_slice(include!("./encrypt_2").as_bytes());
         ChaCha20Poly1305::new(&key)
@@ -41,7 +40,7 @@ pub fn encrypt2(data: String) -> Option<String> {
     let nonce = GenericArray::from_slice(b"SSSSSSSSSSSS");
 
     if let Ok(dat) = CRYPTER2.encrypt(nonce, data.as_bytes()) {
-        return to_string(&dat).ok()
+        return to_string(&dat).ok();
     }
     None
 }
@@ -67,7 +66,7 @@ pub fn decrypt2(data: String) -> Option<String> {
 
     if let Ok(x) = from_str::<Vec<u8>>(&data) {
         if let Ok(dat) = CRYPTER2.decrypt(nonce, x.as_slice()) {
-            return String::from_utf8(dat).ok()
+            return String::from_utf8(dat).ok();
         }
     }
     None

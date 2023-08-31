@@ -3,22 +3,28 @@ import "../../css/home/main.css";
 import { getDownloadUrl } from "../constants";
 
 export default function Home() {
-  return <>
-    <HomePage />
-  </>;
+  return (
+    <>
+      <HomePage />
+    </>
+  );
 }
 
 function HomePage() {
   const [[msi, exe], setData] = useState(["", ""]);
 
   useEffect(() => {
-    getDownloadUrl().then((data) => {
-      return data.sort((a, b) => {
-        if (a.name.includes(".msi")) return -1;
-        if (b.name.includes(".exe")) return 1;
-        return 0;
-      }).map(({ browser_download_url: url }) => url) as [string, string];
-    }).then(setData);
+    getDownloadUrl()
+      .then((data) => {
+        return data
+          .sort((a, b) => {
+            if (a.name.includes(".msi")) return -1;
+            if (b.name.includes(".exe")) return 1;
+            return 0;
+          })
+          .map(({ browser_download_url: url }) => url) as [string, string];
+      })
+      .then(setData);
   }, []);
 
   return (
@@ -41,9 +47,19 @@ function HomePage() {
             <span>Just download the AHQ Store to enjoy the same benefits!</span>
           </h4>
 
-          <div className="daisy-join daisy-join-vertical lg:daisy-join-horizontal mt-3">
-            <button onClick={() => window.location.href = exe} disabled={exe == ""}>Download Setup</button>
-            <button onClick={() => window.location.href = msi} disabled={msi == ""}>Download MSI</button>
+          <div className="daisy-join daisy-join-vertical md:daisy-join-horizontal mt-3">
+            <button
+              onClick={() => (window.location.href = exe)}
+              disabled={exe == ""}
+            >
+              Download Setup
+            </button>
+            <button
+              onClick={() => (window.location.href = msi)}
+              disabled={msi == ""}
+            >
+              Download MSI
+            </button>
           </div>
         </div>
         <div>

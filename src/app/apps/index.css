@@ -16,7 +16,8 @@ General
   font-size: 35px;
 }
 
-.menu .apps-text, .menu .apps-desc {
+.menu .apps-text,
+.menu .apps-desc {
   @apply text-base-content;
 }
 

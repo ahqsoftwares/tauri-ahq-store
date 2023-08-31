@@ -13,15 +13,10 @@ export default function PopUp(props: {
   const { Icon, roundedImage } = props;
 
   return (
-    <div
-      className={`checkbox mt-3`}
-      onClick={props.onClick}
-    >
+    <div className={`checkbox mt-3`} onClick={props.onClick}>
       <div className="ml-3"></div>
 
-      <div
-        className={`flex items-center justify-center text-base-content`}
-      >
+      <div className={`flex items-center justify-center text-base-content`}>
         {typeof Icon !== "string" ? (
           <Icon
             size="2.5em"

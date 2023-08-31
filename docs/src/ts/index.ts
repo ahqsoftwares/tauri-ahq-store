@@ -13,7 +13,9 @@ async function calculateScroll() {
 }
 
 function daisyUI(dark: boolean) {
-  document.querySelector("html")?.setAttribute("data-theme", dark ? "synthwave" : "light");
+  document
+    .querySelector("html")
+    ?.setAttribute("data-theme", dark ? "synthwave" : "light");
 }
 
 calculateScroll();
@@ -24,9 +26,7 @@ document.addEventListener("scroll", () => {
 
 const toMatch = "(prefers-color-scheme: dark)";
 
-daisyUI(
-  window.matchMedia(toMatch).matches
-);
+daisyUI(window.matchMedia(toMatch).matches);
 
 window.matchMedia(toMatch).addEventListener("change", (media) => {
   daisyUI(media.matches);

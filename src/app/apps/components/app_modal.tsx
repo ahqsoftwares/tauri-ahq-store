@@ -120,13 +120,13 @@ export default function ShowModal(props: AppDataPropsModal) {
               style={{ transition: "all 250ms linear" }}
             >
               <BiArrowBack
-                 width="2em"
-                 height="2em"
-                 color={dark ? "white" : "black"}
-                 style={{
-                   minWidth: "2em",
-                   minHeight: "2em",
-                 }} 
+                width="2em"
+                height="2em"
+                color={dark ? "white" : "black"}
+                style={{
+                  minWidth: "2em",
+                  minHeight: "2em",
+                }}
               />
             </button>
             <img
@@ -200,7 +200,11 @@ export default function ShowModal(props: AppDataPropsModal) {
               ) : (
                 <button
                   ref={button}
-                  className={`dui-btn ${working ? "bg-transparent border-base-content text-base-content" : "dui-btn-success text-success-content"} w-[60%] mb-4`}
+                  className={`dui-btn ${
+                    working
+                      ? "bg-transparent border-base-content text-base-content"
+                      : "dui-btn-success text-success-content"
+                  } w-[60%] mb-4`}
                   onClick={async () => {
                     if (!working) {
                       setWorking(true);
@@ -211,11 +215,11 @@ export default function ShowModal(props: AppDataPropsModal) {
                         if (c == 10000 && t == 0) {
                           button.current.innerHTML = "Installing...";
                         } else {
-                          const perc = Math.round(
-                            (c * 100) / t,
-                          );
+                          const perc = Math.round((c * 100) / t);
 
-                          button.current.innerHTML = `<div class="dui-radial-progress text-base-content" style="--value: ${perc}; --size: 2rem; font-size: 0.75rem;">${perc}%</div> (${formatBytes(t)})`;
+                          button.current.innerHTML = `<div class="dui-radial-progress text-base-content" style="--value: ${perc}; --size: 2rem; font-size: 0.75rem;">${perc}%</div> (${formatBytes(
+                            t,
+                          )})`;
                         }
                       }).then(async (data: any) => {
                         if (data != "[]") {

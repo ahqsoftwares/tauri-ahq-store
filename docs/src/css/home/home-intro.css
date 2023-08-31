@@ -62,7 +62,9 @@
 
 .home-intro button {
   @apply daisy-btn daisy-btn-outline daisy-btn-info
-    w-[11rem] h-[4rem] p-2 px-3 mr-5
+    w-[11rem] h-[4rem] 
+    p-2 px-3 mb-3 
+    md:mb-0 md:mr-5
     flex items-center justify-center text-center
     rounded-lg shadow-xl text-base;
 }

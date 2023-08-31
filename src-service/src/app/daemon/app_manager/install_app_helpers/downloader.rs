@@ -54,9 +54,9 @@ impl downloader::progress::Reporter for SimpleReporter {
         }
     }
 
-    fn set_message(&self, message: &str) {
+    fn set_message(&self, _message: &str) {
         #[cfg(debug_assertions)]
-        println!("App: Message changed to: {}", message);
+        println!("App: Message changed to: {}", _message);
     }
 
     fn done(&self) {
@@ -77,9 +77,9 @@ pub fn download(url: String, folder: String, file_name: String, logger: fn(u64, 
     fs::remove_file(file.clone()).unwrap_or(());
 
     match datas {
-        Err(daras) => {
+        Err(_daras) => {
             #[cfg(debug_assertions)]
-            println!("{}", daras.to_string())
+            println!("{}", _daras.to_string())
         }
         Ok(()) => {
             #[cfg(debug_assertions)]
@@ -102,14 +102,14 @@ pub fn download(url: String, folder: String, file_name: String, logger: fn(u64, 
 
     for r in result {
         match r {
-            Err(e) => {
+            Err(_e) => {
                 #[cfg(debug_assertions)]
-                println!("Error: {}", &e);
+                println!("Error: {}", &_e);
                 status = 1;
             }
-            Ok(s) => {
+            Ok(_s) => {
                 #[cfg(debug_assertions)]
-                println!("Success: {}", &s);
+                println!("Success: {}", &_s);
                 status = 0;
             }
         };

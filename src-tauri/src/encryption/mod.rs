@@ -5,14 +5,14 @@ use cache::*;
 use lazy_static::lazy_static;
 
 use chacha20poly1305::{
-    aead::{KeyInit, generic_array::GenericArray, Aead},
+    aead::{generic_array::GenericArray, Aead, KeyInit},
     ChaCha20Poly1305,
 };
 
 lazy_static! {
     static ref CRYPTER: ChaCha20Poly1305 = {
         let key = GenericArray::from_slice(
-            include!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/encrypt")).as_bytes()
+            include!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/encrypt")).as_bytes(),
         );
         ChaCha20Poly1305::new(&key)
     };
