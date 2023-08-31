@@ -59,7 +59,7 @@ version = "1.0.0-rc"
 dependencies = [
  "env_logger",
  "iced",
- "iced_core",
+ "iced_core 0.10.0",
  "image",
  "is_elevated",
  "lazy_static",
@@ -1267,7 +1267,7 @@ version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "efbddf356d01e9d41cd394a9d04d62bfd89650a30f12fda5839cabb8c4591c88"
 dependencies = [
- "iced_core",
+ "iced_core 0.9.0",
  "iced_futures",
  "iced_glow",
  "iced_graphics",
@@ -1287,6 +1287,19 @@ dependencies = [
  "bitflags 1.3.2",
  "instant",
  "palette",
+]
+
+[[package]]
+name = "iced_core"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "64d0bc4fbf018576d08d93f838e6058cc6f10bbc05e04ae249a2a44dffb4ebc8"
+dependencies = [
+ "bitflags 1.3.2",
+ "instant",
+ "log",
+ "thiserror",
+ "twox-hash",
 ]
 
 [[package]]
@@ -1342,7 +1355,7 @@ version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d012eb06da490fe46a695b39721c20da9643f35cf2ecb9d30618fdeb96170616"
 dependencies = [
- "iced_core",
+ "iced_core 0.9.0",
  "iced_futures",
  "iced_style",
  "num-traits",
@@ -1357,7 +1370,7 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0e37333dc2991201140302cd0d4cea051bd37ca3671d5008ec85df86d232ff30"
 dependencies = [
- "iced_core",
+ "iced_core 0.9.0",
  "once_cell",
  "palette",
 ]
