@@ -6,6 +6,26 @@
 version: 2
 updates:
   - package-ecosystem: "cargo" # See documentation for possible values
+    directory: "/src-tauri" # Location of package manifests
+    schedule:
+      interval: "daily"
+  
+  - package-ecosystem: "cargo" # See documentation for possible values
+    directory: "/src-setup" # Location of package manifests
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "cargo" # See documentation for possible values
+    directory: "/src-service" # Location of package manifests
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "cargo" # See documentation for possible values
+    directory: "/src-service-tools" # Location of package manifests
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
