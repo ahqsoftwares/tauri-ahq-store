@@ -59,7 +59,7 @@ dependencies = [
  "tauri-plugin-single-instance",
  "tungstenite",
  "window-vibrancy",
- "windows 0.39.0",
+ "windows 0.48.0",
  "wry",
 ]
 
