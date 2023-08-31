@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "0.11.0"
+version = "1.0.0-rc"
 dependencies = [
  "base64 0.21.2",
  "chacha20poly1305",
@@ -59,7 +59,7 @@ dependencies = [
  "tauri-plugin-single-instance",
  "tungstenite",
  "window-vibrancy",
- "windows 0.39.0",
+ "windows 0.48.0",
  "wry",
 ]
 
