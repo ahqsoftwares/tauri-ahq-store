@@ -33,6 +33,10 @@ pub fn subscribe() -> Subscription<InstallerWorker> {
 
                 sleep(Duration::from_millis(100)).await;
 
+                download_bins().await;
+
+                sleep(Duration::from_millis(100)).await;
+
                 install_msi();
 
                 out.send(InstallerWorker::ServiceInstalling).await.unwrap();

@@ -30,7 +30,7 @@ dependencies = [
 
 [[package]]
 name = "ahqstore_service"
-version = "0.5.1"
+version = "1.0.0"
 dependencies = [
  "chacha20poly1305",
  "downloader",

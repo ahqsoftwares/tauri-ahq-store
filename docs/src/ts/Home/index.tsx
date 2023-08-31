@@ -42,7 +42,7 @@ function HomePage() {
           </h4>
 
           <div className="daisy-join daisy-join-vertical lg:daisy-join-horizontal mt-3">
-            <button onClick={() => window.location.href = exe} disabled>Download Setup</button>
+            <button onClick={() => window.location.href = exe} disabled={exe == ""}>Download Setup</button>
             <button onClick={() => window.location.href = msi} disabled={msi == ""}>Download MSI</button>
           </div>
         </div>

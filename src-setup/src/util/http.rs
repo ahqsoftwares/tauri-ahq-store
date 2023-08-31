@@ -17,7 +17,7 @@ use crate::shell;
 use super::{system_drive, InstallerWorker, FRAMEWORK};
 
 #[derive(Debug, Deserialize)]
-struct Release {
+pub struct Release {
     pub assets: Vec<Asset>,
 }
 
@@ -150,8 +150,8 @@ pub async fn download_framework(out: &mut Sender<InstallerWorker>) {
         None,
     );
 
-    fs::remove_file(&format!("\"{}\\node.zip\"", &dir)).unwrap();
-    fs::remove_file(&format!("\"{}\\js.zip\"", &dir)).unwrap();
+    let _ = fs::remove_file(&format!("\"{}\\node.zip\"", &dir));
+    let _ = fs::remove_file(&format!("\"{}\\js.zip\"", &dir));
 
     out.send(InstallerWorker::Installed).await.unwrap();
 
