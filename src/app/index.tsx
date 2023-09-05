@@ -2,7 +2,7 @@
 Native API
 */
 import { useEffect, useState } from "react";
-import { fetch } from "@tauri-apps/api/http";
+import fetch from "./resources/core/http";
 import { appWindow } from "@tauri-apps/api/window";
 
 import { runAutoUpdate } from "./resources/api/updateInstallWorker";
@@ -28,7 +28,7 @@ import User from "./client/index";
 import Library from "./library";
 import Settings from "./settings/index";
 
-import BaseAPI from "./server";
+import BaseAPI, { newServer } from "./server";
 
 import fetchPrefs, {
   appData,
@@ -36,7 +36,6 @@ import fetchPrefs, {
 } from "./resources/utilities/preferences";
 import { runner } from "./resources/core/handler";
 import { init } from "./resources/api/fetchApps";
-import { invoke } from "@tauri-apps/api/tauri";
 import { notification } from "@tauri-apps/api";
 import { Prefs } from "./resources/core";
 import {
@@ -160,8 +159,8 @@ function Render(props: AppProps) {
             commit_id !== undefined ||
             commit_id !== null
           ) {
-            const { data: Mapped } = await fetch(
-              `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/mapped.json`,
+            const { data: Mapped } = await fetch<any>(
+              `${newServer}/apps/map`,
               {
                 method: "GET",
                 timeout: 30,
@@ -175,8 +174,8 @@ function Render(props: AppProps) {
               },
             });
 
-            const { data: Home } = await fetch(
-              `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/home.json`,
+            const { data: Home } = await fetch<any>(
+              `${newServer}/apps/home`,
               {
                 method: "GET",
                 timeout: 30,

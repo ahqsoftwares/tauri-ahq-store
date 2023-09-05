@@ -299,6 +299,7 @@ function Login(props: log) {
             let data = await invoke("encrypt", {
               payload: pwd,
             });
+            localStorage.setItem("email", email);
             localStorage.setItem("password", JSON.stringify(data));
           } catch (_) {}
           login(auth, email, pwd)
@@ -389,6 +390,8 @@ function Init(props: any) {
     autoUpdate: false,
     font: "bhn",
     sidebar: "flex-row",
+    debug: false,
+    theme: "dark"
   });
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { fetch } from "@tauri-apps/api/http";
 import { get_apps, get_commit } from "../core";
+import { newServer } from "../../server";
 
 let commit_id = "";
 
@@ -63,7 +64,7 @@ export async function fetchSearchData() {
   } else {
     let data = (
       await fetch(
-        `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/search.json`,
+        `${newServer}/apps/search`,
         {
           method: "GET",
           responseType: 1,
@@ -78,7 +79,7 @@ export async function fetchSearchData() {
 export async function fetchAuthor(id: string, partial = true) {
   let author = (
     await fetch(
-      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/dev_${id}.json`,
+      `${newServer}/users/${id}`,
       {
         method: "GET",
         responseType: 1,
