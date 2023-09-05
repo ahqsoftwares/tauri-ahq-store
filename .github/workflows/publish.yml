@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - pr_in
 
 jobs:
   create-release:
@@ -29,18 +30,24 @@ jobs:
       - name: Create Release
         id: create-release
         uses: actions/github-script@v6
+        env:
+          BRANCH: ${{ github.head_ref }}
         with:
           script: |
             const fs = require("fs");
             const version = require('./package.json').version;
 
+            const alpha = process.env.BRANCH == "pr_in";
+            const alphaId = Date.now();
+
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: version,
-              name: `AHQ Store v${version}`,
+              tag_name: alpha ? version : `alpha-${alphaId}`,
+              name: alpha ? `AHQ Store Alpha v${version}-next-${alphaId}` : `AHQ Store v${version}`,
               body: String(fs.readFileSync("./latest.md")),
-              draft: true
+              draft: true,
+              prerelease: alpha
             });
             return data
 
