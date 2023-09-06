@@ -9,10 +9,6 @@ import AppList from "./components/AppsList";
 //tauri and updater
 import { appWindow } from "@tauri-apps/api/window";
 import { fetch } from "@tauri-apps/api/http";
-import {
-  updaterStatus,
-  runManualUpdate,
-} from "../resources/api/updateInstallWorker";
 import server from "../server";
 
 interface LibraryProps {
@@ -57,7 +53,11 @@ export default function Library(props: LibraryProps) {
     [current, setCurrent] = useState<string>("");
 
   useEffect(() => {
-    const status = updaterStatus();
+    const status = {
+      status: "updated",
+      apps: [],
+      updating: ""
+    };
     setTimeout(() => {
       setStatus(
         status.status
@@ -139,10 +139,6 @@ export default function Library(props: LibraryProps) {
               }}
               onClick={() => {
                 if (status === "Check for Updates" || status === "none") {
-                  setStatus("Checking...");
-                  setTimeout(() => {
-                    runManualUpdate();
-                  }, 1500);
                 }
               }}
             >

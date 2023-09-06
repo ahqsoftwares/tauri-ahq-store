@@ -1,4 +1,4 @@
-import { fetch } from "@tauri-apps/api/http";
+import fetch from "../core/http";
 import { get_apps, get_commit } from "../core";
 import { newServer } from "../../server";
 
