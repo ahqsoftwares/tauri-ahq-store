@@ -8,7 +8,6 @@ import { IoIosNotifications } from "react-icons/io";
 //API
 import { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
-import { updaterStatus } from "../../resources/api/updateInstallWorker";
 
 export default function App({
   appInfo,
@@ -21,7 +20,7 @@ export default function App({
   toast: typeof Toast;
   lastIndex: boolean;
 }) {
-  const updating = updaterStatus().apps?.includes(appInfo.id as string);
+  const updating = false;
   const data = useRef<HTMLDivElement>("" as any);
 
   async function handleClick() {

@@ -6,12 +6,8 @@ import Modal from "react-modal";
 import fetchApps, { appData } from "../../resources/api/fetchApps";
 
 //AHQ Store Installer
-import {
-  isInstalled,
-  updaterStatus,
-} from "../../resources/api/updateInstallWorker";
-import installWorker from "../../resources/classes/installWorker";
 import { install_app } from "../../resources/core";
+import { isInstalled, unInstall } from "../../resources/api/updateInstallWorker";
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -71,7 +67,7 @@ export default function ShowModal(props: AppDataPropsModal) {
         setInstalled(await isInstalled(installData));
 
         setUpdating(
-          updaterStatus().apps?.includes(installData) === true ? true : false,
+          false
         );
       }
     })();
@@ -184,7 +180,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                       setWorking(true);
                       button.current.innerHTML = "Uninstalling...";
 
-                      await new installWorker((_) => {}).uninstall(installData);
+                      await unInstall(installData);
 
                       button.current.innerHTML = "Uninstalled!";
 
