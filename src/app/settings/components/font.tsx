@@ -1,12 +1,9 @@
-import { ChangeEventHandler } from "react";
-import { IconType } from "react-icons/lib";
+/**
+ * Types
+ */
+import type { IListSelector } from "../../resources/types/settings";
 
-export default function ListSelector(props: {
-  Icon: IconType;
-  initial: string;
-  onChange: ChangeEventHandler<HTMLSelectElement>;
-  list?: string[];
-}) {
+export default function ListSelector(props: IListSelector) {
   const { Icon, initial, onChange, list } = props;
 
   return (

@@ -1,39 +1,13 @@
 import { fetch } from "@tauri-apps/api/http";
 import { get_apps, get_commit } from "../core";
 
+/**
+ * Types
+ */
+import type { IAppDataApi, IAuthorObject, ICache, ISearchData } from "../types/api";
+
 let commit_id = "";
-
-interface AuthorObject {
-  displayName: string;
-  email: string;
-  apps:
-    | []
-    | {
-        apps: string[];
-        ignored: string[];
-      };
-}
-
-interface appData {
-  author: string;
-  AuthorObject?: AuthorObject;
-  description: string;
-  download: string;
-  exe: string;
-  icon: string;
-  repo: {
-    author: string;
-    repo: string;
-  };
-  title: string;
-  displayName: string;
-  version: string;
-  id: string;
-}
-
-let cache: {
-  [key: string]: appData;
-} = {};
+let cache: ICache = {};
 
 export async function init() {
   commit_id = await get_commit();
@@ -43,7 +17,7 @@ export async function init() {
 
 export default async function fetchApps(
   apps: string | string[],
-): Promise<appData | appData[]> {
+): Promise<IAppDataApi | IAppDataApi[]> {
   if (typeof apps === "string") {
     return (await resolveApps([apps]))[0];
   } else {
@@ -51,12 +25,8 @@ export default async function fetchApps(
   }
 }
 
-let searchDataCache: SearchData[] = [];
+let searchDataCache: ISearchData[] = [];
 
-interface SearchData {
-  name: string;
-  id: string;
-}
 export async function fetchSearchData() {
   if (searchDataCache.length >= 1) {
     return searchDataCache;
@@ -70,8 +40,8 @@ export async function fetchSearchData() {
         },
       )
     ).data;
-    searchDataCache = data as SearchData[];
-    return data as SearchData[];
+    searchDataCache = data as ISearchData[];
+    return data as ISearchData[];
   }
 }
 
@@ -84,7 +54,7 @@ export async function fetchAuthor(id: string, partial = true) {
         responseType: 1,
       },
     )
-  ).data as AuthorObject;
+  ).data as IAuthorObject;
 
   if (!partial) {
     const apps = (
@@ -106,8 +76,8 @@ export async function fetchAuthor(id: string, partial = true) {
   return author;
 }
 
-async function resolveApps(apps: string[]): Promise<appData[]> {
-  let promises: Promise<appData>[] = [];
+async function resolveApps(apps: string[]): Promise<IAppDataApi[]> {
+  let promises: Promise<IAppDataApi>[] = [];
 
   apps.forEach((appId) => {
     if (cache[appId]) {
@@ -138,5 +108,3 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
 
   return await Promise.all(promises);
 }
-
-export type { appData };

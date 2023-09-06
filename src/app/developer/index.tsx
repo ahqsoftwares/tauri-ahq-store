@@ -9,10 +9,15 @@ import { Auth } from "firebase/auth";
 
 //Components
 import Option from "./components/Options";
-import fetchApps, { appData, fetchAuthor } from "../resources/api/fetchApps";
+import fetchApps, { fetchAuthor } from "../resources/api/fetchApps";
 import App from "./components/App";
 import Toast from "../resources/api/toast";
 import { invoke } from "@tauri-apps/api/tauri";
+
+/**
+ * Types
+ */
+import type { IAppDataApi } from "../resources/types/api";
 
 interface DevProps {
   auth: Auth;
@@ -20,7 +25,7 @@ interface DevProps {
 }
 
 export default function Developers(props: DevProps) {
-  const [publishedApps, setPublishedApps] = useState<appData[] | undefined>(
+  const [publishedApps, setPublishedApps] = useState<IAppDataApi[] | undefined>(
     undefined,
   );
 
@@ -41,7 +46,7 @@ export default function Developers(props: DevProps) {
 
         fetchApps(apps).then((apps) => {
           console.log(apps);
-          setPublishedApps(apps as appData[]);
+          setPublishedApps(apps as IAppDataApi[]);
         });
       } catch (e) {
         console.log(e);

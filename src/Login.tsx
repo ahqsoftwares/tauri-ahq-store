@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { getCurrent } from "@tauri-apps/api/window";
-import fetchPrefs, { appData } from "./app/resources/utilities/preferences";
+import fetchPrefs from "./app/resources/utilities/preferences";
 import { invoke } from "@tauri-apps/api/tauri";
+
+/**
+ * Types
+ */
+import type { IAppDataNoExtension } from "./app/resources/types/utilities";
 
 /**
  * Forgot Password Component
@@ -384,7 +389,7 @@ function Init(props: any) {
   const { create, login, verify, reset, auth, verifyCode, resetEmail } =
     props.data;
   let [type, setType] = useState("login");
-  const [prefs, setP] = useState<appData>({
+  const [prefs, setP] = useState<IAppDataNoExtension>({
     dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
     autoUpdate: false,
     font: "bhn",

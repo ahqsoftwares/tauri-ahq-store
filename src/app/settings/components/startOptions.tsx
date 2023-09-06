@@ -2,26 +2,26 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { IoMdArrowRoundBack } from "react-icons/io";
 import {
-  Prefs,
   get_access_perfs,
   set_access_prefs,
 } from "../../resources/core";
 
-interface Props {
-  setOUO: Dispatch<SetStateAction<boolean>>;
-  dark: boolean;
-}
+/**
+ * Types
+ */
+import type { IPrefs } from "../../resources/types/app";
+import type { IProps } from "../../resources/types/settings";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export default function StartOptions({ setOUO, dark }: Props) {
-  const [settings, setSettings] = useState<Prefs>({
+export default function StartOptions({ setOUO, dark }: IProps) {
+  const [settings, setSettings] = useState<IPrefs>({
     launch_app: true,
     install_apps: true,
   });
   const [loading, setLoading] = useState(false);
 
-  async function updatePrefs(settings: Prefs) {
+  async function updatePrefs(settings: IPrefs) {
     console.log(settings);
 
     await delay(250);

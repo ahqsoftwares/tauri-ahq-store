@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
-import fetchApps, { appData } from "../api/fetchApps";
+import fetchApps from "../api/fetchApps";
 import { list_apps, un_install } from "../core";
+
+/**
+ * Types
+ */
+import { InstallWorkerCallback, IDownloadAppData, IInstallAppData } from "../types/classes";
+import { IAppDataApi } from "../types/api";
 
 export default class installWorker {
   appId?: string[];
-  callback: (
-    event: "installing" | "downloading" | "downloadstat",
-    data: any,
-  ) => void;
+  callback: InstallWorkerCallback
 
   /**
    * Starts the downloader
-   * @param {(event: string, data: any) => void} callback
+   * @param {InstallWorkerCallback} callback
    * @param {boolean} appId
    */
   constructor(
-    callback: (
-      event: "installing" | "downloading" | "downloadstat",
-      data: any,
-    ) => void,
+    callback: InstallWorkerCallback,
     appId?: string[],
   ) {
     this.appId = appId;
@@ -33,13 +33,7 @@ export default class installWorker {
     }).catch(console.log);
   }
 
-  async download(appData: {
-    id: string;
-    version: string;
-    download_url: string;
-    exe: string;
-    name: string;
-  }) {
+  async download(appData: IDownloadAppData) {
     const sysDir = await invoke("sys_handler");
 
     await this.clean(
@@ -54,7 +48,7 @@ export default class installWorker {
 
     const unlistenWindow = await appWindow.listen(
       "download-status",
-      ({ payload }: { payload: any }) => {
+      ({ payload }: { payload: any[] }) => {
         this.callback("downloadstat", {
           percent: Math.round((payload[0] / payload[1]) * 100),
           total: payload[1],
@@ -89,16 +83,11 @@ export default class installWorker {
   }
 
   async install(appId?: string[]) {
-    let apps: {
-      download_url: string;
-      version: string;
-      exe: string;
-      name: string;
-    }[] = [];
+    let apps: IInstallAppData[] = [];
 
     const rawApps = this.appId && !appId ? this.appId : (appId as string[]);
 
-    apps = ((await fetchApps(rawApps)) as appData[]).map((value) => {
+    apps = ((await fetchApps(rawApps)) as IAppDataApi[]).map((value) => {
       const { download, version, exe, title } = value;
       return {
         download_url: download,

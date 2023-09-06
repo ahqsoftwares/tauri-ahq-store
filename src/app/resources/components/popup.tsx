@@ -1,13 +1,12 @@
 import Modal from "react-modal";
 
-interface PasswordProps {
-  dark: boolean;
-  shown: boolean;
-  children: any;
-}
+/**
+ * types
+ */
+import type { IPasswordProps } from "../types/components";
 
-export default function PopUp(props: PasswordProps) {
-  const { dark, shown } = props;
+export default function PopUp(props: IPasswordProps) {
+  const { shown } = props;
 
   const modalStyles = {
     content: {

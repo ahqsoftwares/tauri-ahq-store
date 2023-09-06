@@ -1,17 +1,18 @@
 import { sendNotification } from "@tauri-apps/api/notification";
 import { appWindow } from "@tauri-apps/api/window";
 import fetchApps from "../api/fetchApps";
-import listAllApps, { Apps } from "../utilities/listAllApps";
+import listAllApps from "../utilities/listAllApps";
 import installWorker from "./installWorker";
 
-//Interfaces
-type updateStatus = "none" | "checking" | "updating" | "updated";
-
-export type { updateStatus };
+/**
+ * Types
+ */
+import type { IApps } from "../types/utilities";
+import { UpdateStatus } from "../types/classes";
 
 export default class Updater {
   autoUpdate?: boolean;
-  updateStatus: updateStatus;
+  updateStatus: UpdateStatus;
   updatingApp?: string;
   updatingAppList?: string[];
   currentTimer?: number;
@@ -97,7 +98,7 @@ export default class Updater {
   }
 
   async checkForUpdates() {
-    const apps: Apps = await listAllApps();
+    const apps: IApps = await listAllApps();
 
     const appsData = ((await fetchApps(Object.keys(apps))) as any[]).map(
       (value) => value.version,

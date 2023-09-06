@@ -1,20 +1,19 @@
 import { BaseDirectory, createDir, readTextFile } from "@tauri-apps/api/fs";
 import { setData } from "./database";
 
-interface betaPrefs {
-  enableSearchOnEnter: boolean;
-}
-
-export type { betaPrefs };
+/**
+ * Types
+ */
+import type { IBetaPrefs } from "../types/utilities";
 
 export default async function initDeveloperConfiguration() {
   await createDir("", { dir: BaseDirectory.App }).catch(console.log);
   await createDir("database", { dir: BaseDirectory.App }).catch(console.log);
 
-  let prefs: betaPrefs = await readTextFile("database/config.developer", {
+  let prefs: IBetaPrefs = await readTextFile("database/config.developer", {
     dir: BaseDirectory.App,
   })
-    .then((data) => JSON.parse(data) as betaPrefs)
+    .then((data) => JSON.parse(data) as IBetaPrefs)
     .catch(async (e) => {
       console.log(e);
       return {

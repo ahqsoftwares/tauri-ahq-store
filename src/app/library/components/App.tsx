@@ -6,12 +6,16 @@ import { BsTrash } from "react-icons/bs";
 import { IoIosNotifications } from "react-icons/io";
 
 //API
-import { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import {
   unInstall,
   updaterStatus,
 } from "../../resources/api/updateInstallWorker";
+
+/**
+ * Types
+ */
+import type { IAppDataApi } from "../../resources/types/api";
 
 export default function App({
   appInfo,
@@ -19,7 +23,7 @@ export default function App({
   reload,
   toast,
 }: {
-  appInfo: appData;
+  appInfo: IAppDataApi;
   dark: boolean;
   reload: Function;
   toast: typeof Toast;

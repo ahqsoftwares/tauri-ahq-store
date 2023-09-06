@@ -3,10 +3,15 @@ import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { GiPartyPopper } from "react-icons/gi";
 import { IoIosNotifications } from "react-icons/io";
-import fetchApps, { appData } from "../../resources/api/fetchApps";
+import fetchApps from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import listAllApps from "../../resources/utilities/listAllApps";
 import App from "./App";
+
+/**
+ * types
+ */
+import type { IAppDataApi } from "../../resources/types/api";
 
 interface Props {
   dark: boolean;
@@ -16,7 +21,7 @@ interface Props {
 export default function AppsList(props: Props) {
   const { dark, change } = props;
 
-  const [apps, setApps] = useState<appData[]>([]);
+  const [apps, setApps] = useState<IAppDataApi[]>([]);
   const [rawApps, setRawApps] = useState(0);
 
   async function parseAppsData() {
@@ -25,7 +30,7 @@ export default function AppsList(props: Props) {
       setRawApps(1);
     }
     const resolvedApps = await fetchApps(Object.keys(apps));
-    setApps(resolvedApps as appData[]);
+    setApps(resolvedApps as IAppDataApi[]);
   }
 
   useEffect(() => {

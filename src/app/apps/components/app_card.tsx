@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { VscExtensions } from "react-icons/vsc";
-
-import { appData } from "../../resources/api/fetchApps";
-
 import fetchApps from "../../resources/api/fetchApps";
 import packageImg from "../../resources/package.png";
+
+/**
+ * Types
+ */
+import type { IAppDataApi } from "../../resources/types/api";
 
 export default function AppCard(props: {
   id: string;
   onClick: Function;
   dark: boolean;
 }) {
-  const [appData, setAppData] = useState<appData>({
+  const [appData, setAppData] = useState<IAppDataApi>({
     author: "",
     description: "",
     displayName: "The component is loading...",
@@ -33,7 +35,7 @@ export default function AppCard(props: {
     (async () => {
       const dta = await fetchApps(props.id);
 
-      setAppData(dta as appData);
+      setAppData(dta as IAppDataApi);
     })();
   }, [props.id]);
 

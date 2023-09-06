@@ -1,7 +1,10 @@
+/**
+ * Types
+ */
+import type { IApps } from "../types/utilities";
+
 class ramDatabase {
-  data: {
-    [key: string]: string;
-  } = {};
+  data: IApps = {};
 
   constructor() {
     this.data = {};

@@ -1,19 +1,11 @@
-import { MouseEventHandler } from "react";
 import { FiExternalLink } from "react-icons/fi";
-import { IconType } from "react-icons/lib";
 
-export default function CheckBox(props: {
-  dark: boolean;
-  url: boolean;
-  disabled?: boolean;
-  title: string;
-  description: string;
-  Icon: IconType | string;
-  active: boolean;
-  onClick: MouseEventHandler<HTMLDivElement>;
-  noCheckbox?: boolean;
-  roundedImage?: boolean;
-}) {
+/**
+ * types
+ */
+import type { ICheckBox } from "../../resources/types/settings";
+
+export default function CheckBox(props: ICheckBox) {
   const { Icon, noCheckbox, roundedImage, url } = props;
 
   return (

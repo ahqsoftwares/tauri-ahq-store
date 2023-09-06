@@ -1,13 +1,12 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import { list_apps } from "../core";
 
-interface Apps {
-  [key: string]: string;
-}
+/**
+ * Types
+ */
+import type { IApps } from "../types/utilities";
 
-export type { Apps };
-export default async function listAllApps(): Promise<Apps> {
-  let apps: Apps = {};
+export default async function listAllApps(): Promise<IApps> {
+  let apps: IApps = {};
 
   const appList = await list_apps();
 

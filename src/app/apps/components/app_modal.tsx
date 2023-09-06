@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 //Worker
 import { BiArrowBack } from "react-icons/bi";
 import Modal from "react-modal";
-import fetchApps, { appData } from "../../resources/api/fetchApps";
+import fetchApps from "../../resources/api/fetchApps";
 
 //AHQ Store Installer
 import {
@@ -12,6 +12,11 @@ import {
 } from "../../resources/api/updateInstallWorker";
 import installWorker from "../../resources/classes/installWorker";
 import { install_app } from "../../resources/core";
+
+/**
+ * Types
+ */
+import { IAppDataApi } from "../../resources/types/api";
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -56,7 +61,7 @@ export default function ShowModal(props: AppDataPropsModal) {
     accessPrefs: { install_apps },
   } = (window as any).prefs as { accessPrefs: { install_apps: boolean } };
 
-  const [appData, setAppData] = useState<appData>(defAppData);
+  const [appData, setAppData] = useState<IAppDataApi>(defAppData);
   const [working, setWorking] = useState(false);
   const button = useRef<HTMLButtonElement>("" as any);
   const [installed, setInstalled] = useState<boolean | "hidden">(false);

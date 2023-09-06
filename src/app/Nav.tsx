@@ -14,14 +14,12 @@ import { getCurrent } from "@tauri-apps/api/window";
 import drag from "./drag";
 import { useEffect } from "react";
 
-interface prop {
-  active: string;
-  home: Function;
-  dev: boolean | undefined;
-  horizontal: boolean;
-}
+/**
+ * Types
+ */
+import type { IProp } from "./resources/types/app";
 
-export default function Nav(props: prop) {
+export default function Nav(props: IProp) {
   let { active, home: changePage, dev, horizontal: P_H } = props;
 
   const horizontal = "n-item-h ";

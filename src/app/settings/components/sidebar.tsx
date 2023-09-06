@@ -1,12 +1,9 @@
-import { ChangeEventHandler } from "react";
-import { IconType } from "react-icons/lib";
+/**
+ * Types
+ */
+import type { ISidebarSelector } from "../../resources/types/settings";
 
-export default function SidebarSelector(props: {
-  Icon: IconType;
-  dark: boolean;
-  initial: string;
-  onChange: ChangeEventHandler<HTMLSelectElement>;
-}) {
+export default function SidebarSelector(props: ISidebarSelector) {
   const { Icon, initial, onChange } = props;
 
   return (

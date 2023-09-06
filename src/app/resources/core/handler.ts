@@ -1,8 +1,13 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 
-let send: { data: Object; resolve: (value: any) => void }[] = [];
-let toResolve: { data: Object; resolve: (value: any) => void }[] = [];
+/**
+ * types
+ */
+import type { ISend, IToResolve } from "../types/core";
+
+let send: ISend[] = [];
+let toResolve: IToResolve[] = [];
 
 export function sendWsRequest(data: Object, result: (value: any) => void) {
   queueAndWait(data, result);

@@ -1,4 +1,6 @@
-export default function drag(dragElement) {
+export default function drag(dragElement: HTMLElement | null) {
+  if (!dragElement) return;
+
   dragElement.style.left = "50px";
   dragElement.style.top = "50px";
 
@@ -19,7 +21,7 @@ export default function drag(dragElement) {
     document.removeEventListener("mousemove", dragElementListener);
   });
 
-  function dragElementListener(e) {
+  function dragElementListener(e: MouseEvent) {
     var posX = e.clientX - dragStartX;
     var posY = e.clientY - dragStartY;
 
@@ -34,6 +36,8 @@ export default function drag(dragElement) {
     } else if (posY > containerHeight - elementHeight - 20) {
       posY = containerHeight - elementHeight - 20;
     }
+
+    if (!dragElement) return;
 
     dragElement.style.left = posX + "px";
     dragElement.style.top = posY + "px";

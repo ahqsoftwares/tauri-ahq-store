@@ -1,6 +1,6 @@
 //React
 import { useEffect, useState } from "react";
-import { Auth, User, updateProfile } from "firebase/auth";
+import { User, updateProfile } from "firebase/auth";
 
 //packages
 import Modal from "react-modal";
@@ -31,23 +31,12 @@ import { HiOutlineColorSwatch } from "react-icons/hi";
 
 import "./styles.css";
 
-interface InitProps {
-  dark: boolean;
-  setDark: Function;
-  auth: Auth;
-  setDev: Function;
-  font: string;
-  setFont: Function;
-  autoUpdate: boolean;
-  setAutoUpdate: Function;
-  sidebar: string;
-  setSidebar: Function;
-  admin: boolean;
-  theme: string;
-  setTheme: Function;
-}
+/**
+ * Types
+ */
+import type { IInitProps } from "../resources/types/settings";
 
-export default function Init(props: InitProps) {
+export default function Init(props: IInitProps) {
   const customStyles = {
     content: {
       top: "50%",

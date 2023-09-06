@@ -1,5 +1,11 @@
 import { sendWsRequest } from "./handler";
 
+/**
+ * Types
+ */
+import type { IPrefs } from "../types/app"
+import type { u64 } from "../types/core";
+
 export function get_commit(): Promise<string> {
   return new Promise((resolve) => {
     sendWsRequest(
@@ -35,8 +41,6 @@ export function get_apps(apps: string[]): Promise<any[]> {
     );
   });
 }
-
-type u64 = number;
 
 export function install_app(
   app: string,
@@ -83,14 +87,7 @@ export function list_apps(): Promise<{ id: string; version: string }[]> {
   });
 }
 
-interface Prefs {
-  launch_app: boolean;
-  install_apps: boolean;
-}
-
-export type { Prefs };
-
-export function get_access_perfs(): Promise<Prefs> {
+export function get_access_perfs(): Promise<IPrefs> {
   return new Promise((resolve) => {
     sendWsRequest(
       {
@@ -105,7 +102,7 @@ export function get_access_perfs(): Promise<Prefs> {
   });
 }
 
-export function set_access_prefs(prefs: Prefs): Promise<void> {
+export function set_access_prefs(prefs: IPrefs): Promise<void> {
   return new Promise((resolve) => {
     sendWsRequest(
       {

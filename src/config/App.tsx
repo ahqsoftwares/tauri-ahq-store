@@ -1,11 +1,16 @@
 import { getVersion } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
-import fetchPrefs, { appData } from "../app/resources/utilities/preferences";
+import fetchPrefs from "../app/resources/utilities/preferences";
 import logo from "./index.png";
+
+/**
+ * Types
+ */
+import type { IAppDataNoExtension } from "../app/resources/types/utilities";
 
 function App(props: { info: string }) {
   const [version, setVersion] = useState("");
-  const [perfs, setP] = useState<appData>({
+  const [perfs, setP] = useState<IAppDataNoExtension>({
     dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
     autoUpdate: false,
     font: "bhn",

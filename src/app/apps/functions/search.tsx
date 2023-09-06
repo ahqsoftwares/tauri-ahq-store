@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 
 import SearchModule from "fuse.js";
-import fetchApps, {
-  appData,
-  fetchSearchData,
-} from "../../resources/api/fetchApps";
+import fetchApps, { fetchSearchData } from "../../resources/api/fetchApps";
 import SearchResult from "../components/search_results";
 import AppCard from "../components/app_card";
 
 import { getData, setData } from "../../resources/utilities/database";
+
+/**
+ * Types
+ */
+import { IAppDataApi } from '../../resources/types/api';
 
 interface SearchProps {
   query: string;
@@ -36,7 +38,7 @@ export default function Search(props: SearchProps) {
   if (!special) {
     return (
       <>
-        {matches.map((app: appData, index: number) => {
+        {matches.map((app: IAppDataApi, index: number) => {
           return (
             <>
               <SearchResult
@@ -81,7 +83,7 @@ export default function Search(props: SearchProps) {
           matches.length == 0 ? "special-app-grid" : ""
         }`}
       >
-        {matches.map((app: appData) => {
+        {matches.map((app: IAppDataApi) => {
           return (
             <AppCard
               id={app.id}

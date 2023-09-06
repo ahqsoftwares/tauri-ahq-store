@@ -1,15 +1,11 @@
-import { MouseEventHandler } from "react";
 import { FiExternalLink } from "react-icons/fi";
-import { IconType } from "react-icons/lib";
 
-export default function PopUp(props: {
-  dark: boolean;
-  title: string;
-  description: string;
-  Icon: IconType | string;
-  onClick: MouseEventHandler<HTMLDivElement>;
-  roundedImage?: boolean;
-}) {
+/**
+ * Types
+ */
+import type { IPopUp } from "../../resources/types/settings";
+
+export default function PopUp(props: IPopUp) {
   const { Icon, roundedImage } = props;
 
   return (

@@ -30,28 +30,24 @@ import Settings from "./settings/index";
 
 import BaseAPI from "./server";
 
-import fetchPrefs, {
-  appData,
-  setConfig,
-} from "./resources/utilities/preferences";
+import fetchPrefs, { setConfig } from "./resources/utilities/preferences";
 import { runner } from "./resources/core/handler";
 import { init } from "./resources/api/fetchApps";
 import { invoke } from "@tauri-apps/api/tauri";
 import { notification } from "@tauri-apps/api";
-import { Prefs } from "./resources/core";
 import {
   defaultDark,
   defaultLight,
   isDarkTheme,
 } from "./resources/utilities/themes";
 
-interface AppProps {
-  data: {
-    auth: Auth;
-  };
-}
+/**
+ * Types
+ */
+import type { IAppProps, IPrefs } from "./resources/types/app"
+import type { IAppData } from "./resources/types/utilities";
 
-function Render(props: AppProps) {
+function Render(props: IAppProps) {
   runner();
 
   const { auth } = props.data;
@@ -60,7 +56,7 @@ function Render(props: AppProps) {
       auth.currentUser?.displayName?.startsWith("(dev)"),
     ),
     [admin, setIsAdmin] = useState(false),
-    [prefs, setAccessPrefs] = useState<Prefs>({
+    [prefs, setAccessPrefs] = useState<IPrefs>({
       install_apps: false,
       launch_app: false,
     }),
@@ -122,7 +118,7 @@ function Render(props: AppProps) {
         theme,
       } = fullPrefs;
 
-      (window as any).prefs = {
+      window.prefs = {
         ...fullPrefs,
         accessPrefs: {
           ...defAccess,
@@ -138,7 +134,7 @@ function Render(props: AppProps) {
         appWindow.listen("error", ({ payload }) => {
           notification.sendNotification({
             title: "Info / Error / Warn",
-            body: payload as any,
+            body: payload as string,
           });
         });
       }
@@ -224,7 +220,7 @@ function Render(props: AppProps) {
     }
   }, [font]);
 
-  function updateConfig(data: appData) {
+  function updateConfig(data: IAppData) {
     setConfig(data);
   }
 

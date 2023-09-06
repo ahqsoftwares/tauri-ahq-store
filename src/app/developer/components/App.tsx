@@ -6,9 +6,13 @@ import { MdModeEdit } from "react-icons/md";
 import { IoIosNotifications } from "react-icons/io";
 
 //API
-import { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import { updaterStatus } from "../../resources/api/updateInstallWorker";
+
+/**
+ * Types
+ */
+import type { IAppDataApi } from "../../resources/types/api";
 
 export default function App({
   appInfo,
@@ -16,7 +20,7 @@ export default function App({
   toast,
   lastIndex,
 }: {
-  appInfo: appData;
+  appInfo: IAppDataApi;
   dark: boolean;
   toast: typeof Toast;
   lastIndex: boolean;
