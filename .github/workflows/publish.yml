@@ -31,7 +31,7 @@ jobs:
         id: create-release
         uses: actions/github-script@v6
         env:
-          BRANCH: ${{ github.head_ref }}
+          BRANCH: ${{ github.ref_name }}
         with:
           script: |
             const fs = require("fs");
@@ -43,7 +43,7 @@ jobs:
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: alpha ? version : `alpha-${alphaId}`,
+              tag_name: !alpha ? version : `alpha-${alphaId}`,
               name: alpha ? `AHQ Store Alpha v${version}-next-${alphaId}` : `AHQ Store v${version}`,
               body: String(fs.readFileSync("./latest.md")),
               draft: true,
