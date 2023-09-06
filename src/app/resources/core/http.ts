@@ -3,8 +3,9 @@ import { FetchOptions, ResponseType, fetch as tauriFetch } from "@tauri-apps/api
 
 export default async function fetch<T = any>(url: string, config: FetchOptions | undefined) {
     const email = localStorage.getItem("email") as string;
+
     const pwd = await invoke("decrypt", {
-        encrypted: JSON.parse(localStorage.getItem("pwd") || "[]"),
+        encrypted: JSON.parse(localStorage.getItem("password") || "[]") as number[],
     }).catch(() => "a");
 
     console.log(url);
@@ -15,7 +16,7 @@ export default async function fetch<T = any>(url: string, config: FetchOptions |
         method: config?.method || "GET",
         timeout: 100,
         headers: {
-            "User-Agent": "AHQ Store / Tauri / App / Main",
+            "User-Agent": navigator.userAgent,
             uid: email,
             pwd,
             ...(config?.headers || {})

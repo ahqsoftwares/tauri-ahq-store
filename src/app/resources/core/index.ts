@@ -1,4 +1,6 @@
+import { newServer } from "../../server";
 import { sendWsRequest } from "./handler";
+import fetch from "./http";
 
 export function get_commit(): Promise<string> {
   return new Promise((resolve) => {
@@ -16,24 +18,19 @@ export function get_commit(): Promise<string> {
 }
 
 export function get_apps(apps: string[]): Promise<any[]> {
-  return new Promise((resolve) => {
-    sendWsRequest(
-      {
-        module: "APPS",
-        data: JSON.stringify(apps),
-      },
-      (val) => {
-        if (val.method == "APP") {
-          resolve(
-            JSON.parse(val.payload).map((data: any) => ({
-              ...data.app,
-              id: data.id,
-            })),
-          );
-        }
-      },
-    );
-  });
+  let promises = apps.map(
+    (id) => (
+      (async() => {
+        const { data: App } = await fetch(`${newServer}/apps/id/${id}`, {
+          method: "GET",
+        });
+
+        return App;
+      })()
+    )
+  );
+
+  return Promise.all(promises);
 }
 
 type u64 = number;

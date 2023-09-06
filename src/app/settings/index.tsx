@@ -25,7 +25,7 @@ import themes from "../resources/utilities/themes";
 
 import { BiMoon, BiSun } from "react-icons/bi";
 import { BsCodeSlash, BsFonts, BsWindowSidebar } from "react-icons/bs";
-import { FiDownload } from "react-icons/fi";
+import { HiWrenchScrewdriver } from "react-icons/hi2";
 import { FaUsersGear } from "react-icons/fa6";
 import { HiOutlineColorSwatch } from "react-icons/hi";
 
@@ -237,15 +237,17 @@ export default function Init(props: InitProps) {
           Advanced
         </h1>
 
-        <CheckBox
-          dark={props.dark}
-          url={false}
-          title="Auto Update Apps"
-          description="Automatically update apps when I launch AHQ Store"
-          Icon={FiDownload}
-          onClick={() => props.setAutoUpdate(!props.autoUpdate)}
-          active={props.autoUpdate}
-        />
+        {props.admin ?
+          <CheckBox
+            dark={props.dark}
+            url={false}
+            title="Alpha Builds"
+            description="Use Alpha Builds of AHQ Store"
+            Icon={HiWrenchScrewdriver}
+            onClick={() => {}}
+            active={false}
+          />
+          : <></>}
 
         <CheckBox
           dark={props.dark}
