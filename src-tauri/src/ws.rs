@@ -60,7 +60,7 @@ impl<'a> WsConnection<'a> {
                     .into_iter()
                     .map(|x| {
                         if let Ok(x) = from_str::<Vec<u8>>(&x) {
-                            if let Some(x) = decrypt(&x) {
+                            if let Some(x) = decrypt(x) {
                                 #[cfg(debug_assertions)]
                                 println!("{:?}", &x);
                                 return x;
@@ -187,7 +187,7 @@ pub fn get_ws_port() -> Option<u64> {
 
     if let Ok(x) = read_to_string(file) {
         if let Ok(x) = from_str::<Vec<u8>>(&x) {
-            if let Some(x) = decrypt(&x) {
+            if let Some(x) = decrypt(x) {
                 if let Ok(x) = x.parse::<u64>() {
                     return Some(x);
                 }

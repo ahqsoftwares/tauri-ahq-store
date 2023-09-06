@@ -38,20 +38,21 @@ pub fn encrypt(payload: String) -> Option<Vec<u8>> {
 }
 
 #[tauri::command(async)]
-pub fn decrypt(encrypted: &[u8]) -> Option<String> {
+pub fn decrypt(encrypted: Vec<u8>) -> Option<String> {
     let nonce = GenericArray::from_slice(b"SSSSSSSSSSSS");
 
-    let en_txt = to_string(&encrypted).unwrap();
+    let en_txt = to_string(&encrypted).ok()?;
 
     if let Some(x) = get_decrypted(en_txt.clone()) {
         return Some(x);
     }
 
-    let decrypted = CRYPTER.decrypt(nonce, encrypted).ok()?;
+    let decrypted = CRYPTER.decrypt(nonce, &*encrypted).ok()?;
 
     let string = String::from_utf8(decrypted);
 
-    if &string.is_err() == &true {
+    if let Err(x) = string {
+        println!("{:#?}", x);
         return None;
     } else {
         let string = string.unwrap();

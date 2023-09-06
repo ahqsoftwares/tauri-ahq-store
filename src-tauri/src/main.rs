@@ -8,10 +8,18 @@ pub mod util;
 mod ws;
 
 //utilities
-use base64::{self, Engine};
-use encryption::{decrypt, encrypt};
+#[cfg(not(debug_assertions))]
 use minisign_verify::{Error, PublicKey, Signature};
+#[cfg(not(debug_assertions))]
+use base64::{
+    self,
+    Engine
+};
 
+//modules
+use encryption::{decrypt, encrypt};
+
+//crates
 use window_vibrancy::apply_mica;
 use windows::Win32::{
     System::Com::{CoCreateInstance, CLSCTX_SERVER},
