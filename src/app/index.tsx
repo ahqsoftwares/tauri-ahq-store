@@ -4,8 +4,6 @@ Native API
 import { useEffect, useState } from "react";
 import fetch from "./resources/core/http";
 import { appWindow } from "@tauri-apps/api/window";
-
-import { runAutoUpdate } from "./resources/api/updateInstallWorker";
 /*
 Firebase
 */
@@ -148,8 +146,6 @@ function Render(props: AppProps) {
       setUpdate(autoUpdate);
       setSidebar(sidebar);
       setDebug(debug);
-
-      runAutoUpdate(autoUpdate);
 
       //Fetch Maps
       init()

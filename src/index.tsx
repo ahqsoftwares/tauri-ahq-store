@@ -244,13 +244,21 @@ if (window.__TAURI_IPC__ == null) {
           });
         }
 
-        auth.onAuthStateChanged((user) => {
+        auth.onAuthStateChanged(async(user) => {
           if (user && !user.emailVerified) {
             sendEmailVerification(user).catch(() => {});
             sendNotification({
               title: "Email Verification",
               body: "Email verification link send! Please verify",
             });
+          }
+
+          const pwd = await invoke("decrypt", {
+            encrypted: JSON.parse(localStorage.getItem("password") || "[]") as number[],
+          }).catch(() => "a");
+
+          if (!(localStorage.getItem("email") && pwd != "a")) {
+            auth.signOut();
           }
           user
             ? storeLoad(Store, { auth })

@@ -299,6 +299,7 @@ function Login(props: log) {
             let data = await invoke("encrypt", {
               payload: pwd,
             });
+            
             localStorage.setItem("email", email);
             localStorage.setItem("password", JSON.stringify(data));
           } catch (_) {}
