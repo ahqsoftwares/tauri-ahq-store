@@ -63,13 +63,10 @@ export async function fetchSearchData() {
     return searchDataCache;
   } else {
     let data = (
-      await fetch(
-        `${newServer}/apps/search`,
-        {
-          method: "GET",
-          responseType: 1,
-        },
-      )
+      await fetch(`${newServer}/apps/search`, {
+        method: "GET",
+        responseType: 1,
+      })
     ).data;
     searchDataCache = data as SearchData[];
     return data as SearchData[];
@@ -78,13 +75,10 @@ export async function fetchSearchData() {
 
 export async function fetchAuthor(id: string, partial = true) {
   let author = (
-    await fetch(
-      `${newServer}/users/${id}`,
-      {
-        method: "GET",
-        responseType: 1,
-      },
-    )
+    await fetch(`${newServer}/users/${id}`, {
+      method: "GET",
+      responseType: 1,
+    })
   ).data as AuthorObject;
 
   if (!partial) {
