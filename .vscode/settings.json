@@ -10,5 +10,8 @@
   "githubPullRequests.ignoredPullRequestBranches": ["master"],
   "editor.hover.above": true,
   "editor.hover.enabled": true,
-  "editor.hover.sticky": true
+  "editor.hover.sticky": true,
+  "codemetrics.basics.EnabledForJSX": true,
+  "codemetrics.luaconfiguration.FunctionDeclaration": 0,
+  "codemetrics.luaconfiguration.RepeatStatement": 3
 }
