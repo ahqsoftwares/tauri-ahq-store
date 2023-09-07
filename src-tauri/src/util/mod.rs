@@ -46,7 +46,7 @@ pub fn is_an_admin() -> bool {
         .map_or_else(
             || false,
             |x| get_localgroup(&x).unwrap_or(false)
-        );
+        )
 }
 
 fn get_whoami() -> Option<String> {
@@ -60,7 +60,7 @@ fn get_whoami() -> Option<String> {
 
     if let Ok(child) = command {
         if let Ok(status) = child.wait_with_output() {
-            let output = String::from_utf8_loosy(status.stdout);
+            let output = String::from_utf8_lossy(&status.stdout);
             let new_whoami = output.split("\\").collect::<Vec<&str>>()[1]
                 .trim()
                 .to_string();
