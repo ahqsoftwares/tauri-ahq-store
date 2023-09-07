@@ -237,7 +237,7 @@ export default function Init(props: InitProps) {
           Advanced
         </h1>
 
-        {props.admin ?
+        {props.admin ? (
           <CheckBox
             dark={props.dark}
             url={false}
@@ -247,7 +247,9 @@ export default function Init(props: InitProps) {
             onClick={() => {}}
             active={false}
           />
-          : <></>}
+        ) : (
+          <></>
+        )}
 
         <CheckBox
           dark={props.dark}
