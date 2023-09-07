@@ -201,13 +201,14 @@ export default function Apps(props: AppsProps) {
               <></>
             )}
 
-            {apps.map((filess: any) => {
+            {apps.map((filess: [string, string[]]) => {
               try {
                 const [alt, data] = filess;
-                const apps: any = data;
+                
+                const apps = data;
                 return (
-                  <Layer alt={alt as string} key={keyGen()}>
-                    {apps.map((data: string) => {
+                  <Layer alt={alt} key={keyGen()}>
+                    {apps.map((data) => {
                       try {
                         return (
                           <Card
