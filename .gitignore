@@ -31,3 +31,7 @@ yarn-error.log*
 # Secret (env)
 /myapp.key
 /function_to_encrypt.js
+
+# Added by cargo
+
+/target
