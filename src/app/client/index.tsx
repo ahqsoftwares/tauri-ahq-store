@@ -3,7 +3,7 @@
 /*
 React && Native
 */
-import { useEffect, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { sendNotification } from "@tauri-apps/api/notification";
 import { Body, fetch } from "@tauri-apps/api/http";
 import Modal from "react-modal";
@@ -252,86 +252,94 @@ export default function Init(props: UserProps) {
       </Modal>
 
       <PopUp dark={props.dark} shown={passwordPopup}>
-        <div className="w-[100%] flex flex-col justify-end text-end items-end">
-          <button
-            className={`block font-extrabold text-2xl ${
-              dark ? "text-white" : "text-black"
-            } hover:text-red-800`}
-            style={{ transition: "all 250ms linear" }}
-            onClick={() => {
-              (
+        <>
+          <div className="w-[100%] flex flex-col justify-end text-end items-end">
+            <button
+              className={`block font-extrabold text-2xl ${
+                dark ? "text-white" : "text-black"
+              } hover:text-red-800`}
+              style={{ transition: "all 250ms linear" }}
+              onClick={() => {
+                (
+                  document.getElementById("accpwdhost") as HTMLInputElement
+                ).value = "";
+                fetchUser(auth?.currentUser?.uid as string).then(setUser);
+                setpPopop(false);
+              }}
+            >
+              X
+            </button>
+          </div>
+          <form
+            className="w-[100%] h-[100%] flex flex-col text-center items-center justify-center"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const error = document.getElementById(
+                "errorhost",
+              ) as HTMLHeadingElement;
+              const inputPassword = (
                 document.getElementById("accpwdhost") as HTMLInputElement
-              ).value = "";
-              fetchUser(auth?.currentUser?.uid as string).then(setUser);
-              setpPopop(false);
+              ).value;
+
+              verifyUserPassword(
+                auth?.currentUser?.uid as string,
+                inputPassword,
+              )
+                .then(async (ok) => {
+                  if (ok) {
+                    const data: string | false = await invoke<string>(
+                      "encrypt",
+                      {
+                        payload: inputPassword,
+                      },
+                    ).catch(() => false);
+
+                    if (data !== false) {
+                      localStorage.setItem("password", JSON.stringify(data));
+                    }
+
+                    setpPopop(false);
+
+                    ChangeProfile(
+                      auth,
+                      setAlt,
+                      setUser,
+                      {
+                        result: (profilePictureData as any).fs.result,
+                      },
+                      inputPassword,
+                      setPFD,
+                    );
+
+                    error.innerText = "";
+                    (
+                      document.getElementById("accpwdhost") as HTMLInputElement
+                    ).value = "";
+                  } else {
+                    error.innerText = "Wrong Password!";
+                  }
+                })
+                .catch((e) => {
+                  console.warn(e);
+                  error.innerText = "Please try again later";
+                });
             }}
           >
-            X
-          </button>
-        </div>
-        <form
-          className="w-[100%] h-[100%] flex flex-col text-center items-center justify-center"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const error = document.getElementById(
-              "errorhost",
-            ) as HTMLHeadingElement;
-            const inputPassword = (
-              document.getElementById("accpwdhost") as HTMLInputElement
-            ).value;
+            {/*eslint-disable-next-line jsx-a11y/heading-has-content*/}
+            <h1
+              id="errorhost"
+              className="text-red-700 text-3xl text-bolder pb-2"
+            ></h1>
+            <input
+              id="accpwdhost"
+              className="style-input style-input-d"
+              type="password"
+              placeholder="Enter Your Account Password"
+            ></input>
 
-            verifyUserPassword(auth?.currentUser?.uid as string, inputPassword)
-              .then(async (ok) => {
-                if (ok) {
-                  const data: string | false = await invoke<string>("encrypt", {
-                    payload: inputPassword,
-                  }).catch(() => false);
-
-                  if (data !== false) {
-                    localStorage.setItem("password", JSON.stringify(data));
-                  }
-
-                  setpPopop(false);
-
-                  ChangeProfile(
-                    auth,
-                    setAlt,
-                    setUser,
-                    {
-                      result: (profilePictureData as any).fs.result,
-                    },
-                    inputPassword,
-                    setPFD,
-                  );
-
-                  error.innerText = "";
-                  (
-                    document.getElementById("accpwdhost") as HTMLInputElement
-                  ).value = "";
-                } else {
-                  error.innerText = "Wrong Password!";
-                }
-              })
-              .catch((e) => {
-                console.warn(e);
-                error.innerText = "Please try again later";
-              });
-          }}
-        >
-          {/*eslint-disable-next-line jsx-a11y/heading-has-content*/}
-          <h1
-            id="errorhost"
-            className="text-red-700 text-3xl text-bolder pb-2"
-          ></h1>
-          <input
-            id="accpwdhost"
-            className="style-input style-input-d"
-            type="password"
-            placeholder="Enter Your Account Password"
-          ></input>
-
-          <button className="button">Submit</button>
-        </form>
+            <button className="button">Submit</button>
+          </form>
+        </>
       </PopUp>
 
       <Modal isOpen={namePopup} contentLabel="Change Name" style={customStyles}>
@@ -510,7 +518,7 @@ function DeleteAccount(props: DeleteAccountProps) {
   const { cancel, pass, set, auth, dark } = props;
   const { pwd: sP } = set;
 
-  const user: any = auth.currentUser;
+  const user = auth.currentUser as User;
   let [text, setText] = useState("Delete My Account;-danger;false"),
     [step, setStep] = useState(0),
     [err, setErr] = useState("");
@@ -520,7 +528,7 @@ function DeleteAccount(props: DeleteAccountProps) {
     setText("Delete My Account;-danger;false");
   }
 
-  async function ManageDelete(event: any) {
+  const ManageDelete: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     setText(`⏲️;;true`);
     await reauthenticateWithCredential(
@@ -550,12 +558,12 @@ function DeleteAccount(props: DeleteAccountProps) {
             break;
         }
       });
-  }
+  };
 
-  async function ConfirmDelete(e: any) {
+  const ConfirmDelete: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     await auth.currentUser?.delete();
-  }
+  };
 
   return (
     <div className="flex flex-col" style={{ transition: "all 250ms linear" }}>
@@ -592,7 +600,7 @@ function DeleteAccount(props: DeleteAccountProps) {
                 disabled
                 type="email"
                 placeholder="Enter Your Email"
-                value={user.email}
+                value={String(user.email)}
                 required
               ></input>
 
@@ -741,7 +749,7 @@ async function ChangeProfile(
   setUser: Function,
   fs: { result: string },
   pwd: string,
-  setPFD: any,
+  setPFD: ({}) => void,
 ) {
   try {
     setUser(Loading);
