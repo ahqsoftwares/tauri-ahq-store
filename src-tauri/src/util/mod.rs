@@ -42,10 +42,11 @@ pub fn get_service_url() -> String {
 
 #[tauri::command(async)]
 pub fn is_an_admin() -> bool {
-    if let Some(x) = get_whoami() {
-        return get_localgroup(&x);
-    }
-    false
+    get_whoami()
+        .map_or_else(
+            || false,
+            |x| get_localgroup(&x).unwrap_or(false)
+        );
 }
 
 fn get_whoami() -> Option<String> {
@@ -59,44 +60,46 @@ fn get_whoami() -> Option<String> {
 
     if let Ok(child) = command {
         if let Ok(status) = child.wait_with_output() {
-            if let Ok(output) = String::from_utf8(status.stdout) {
-                let new_whoami = output.split("\\").collect::<Vec<&str>>()[1]
-                    .trim()
-                    .to_string();
+            let output = String::from_utf8_loosy(status.stdout);
+            let new_whoami = output.split("\\").collect::<Vec<&str>>()[1]
+                .trim()
+                .to_string();
 
-                whoami = Some(new_whoami);
-            }
+            whoami = Some(new_whoami);
         }
     }
 
     whoami
 }
 
-fn get_localgroup(user: &String) -> bool {
+fn get_localgroup(user: &String) -> Option<bool> {
     let command = Command::new("powershell")
-        .args(["net", "localgroup", "administrators"])
+        .arg("$AdminGroupName = (Get-WmiObject -Class Win32_Group -Filter 'LocalAccount = True AND SID = \"S-1-5-32-544\"').Name;")
+        .arg("net localgroup $AdminGroupName")
         .creation_flags(0x08000000)
         .stdout(Stdio::piped())
-        .spawn();
+        .spawn()
+        .ok()?
+        .wait_with_output()
+        .ok()?
+        .stdout;
 
-    if let Ok(child) = command {
-        if let Ok(status) = child.wait_with_output() {
-            if let Ok(output) = String::from_utf8(status.stdout) {
-                let output = output.split("-------------------------------------------------------------------------------")
-                        .collect::<Vec<&str>>()[1]
-                        .trim()
-                        .replace("The command completed successfully.", "")
-                        .trim()
-                        .split("\n")
-                        .collect::<Vec<&str>>()
-                        .into_iter()
-                        .map(|x| x.trim().to_lowercase())
-                        .filter(|x| x == user)
-                        .collect::<Vec<String>>();
+    let command = String::from_utf8_lossy(&command);
 
-                return output.len() >= 1;
-            }
-        }
-    }
-    false
+    let users = command.split("-------------------------------------------------------------------------------")
+        .collect::<Vec<&str>>()[1]
+        .trim()
+        .replace("The command completed successfully.", "")
+        .replace("Der Befehl wurde erfolgreich ausgef�hrt.", "")
+        .trim()
+        .split("\n")
+        .collect::<Vec<&str>>()
+        .into_iter()
+        .map(|x| x.trim().to_lowercase())
+        .filter(|x| x == user)
+        .collect::<Vec<String>>();
+
+    println!("{:?}", &users);
+
+    Some(users.len() > 0 && users.len() <= 1)
 }
