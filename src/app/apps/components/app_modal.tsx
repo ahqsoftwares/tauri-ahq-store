@@ -7,13 +7,16 @@ import fetchApps, { appData } from "../../resources/api/fetchApps";
 
 //AHQ Store Installer
 import { install_app } from "../../resources/core";
-import { isInstalled, unInstall } from "../../resources/api/updateInstallWorker";
+import {
+  isInstalled,
+  unInstall,
+} from "../../resources/api/updateInstallWorker";
 
 interface AppDataPropsModal {
   shown: boolean;
   change: Function;
   dark: Boolean;
-  installData: any;
+  installData: string;
   isAdmin: boolean;
 }
 
@@ -66,9 +69,7 @@ export default function ShowModal(props: AppDataPropsModal) {
         setAppData((await fetchApps(installData)) as any);
         setInstalled(await isInstalled(installData));
 
-        setUpdating(
-          false
-        );
+        setUpdating(false);
       }
     })();
   }, [installData]);
@@ -207,7 +208,7 @@ export default function ShowModal(props: AppDataPropsModal) {
 
                       button.current.innerHTML = "Starting Download...";
 
-                      await install_app(installData, (c, t) => {
+                      await install_app<string>(installData, (c, t) => {
                         if (c == 10000 && t == 0) {
                           button.current.innerHTML = "Installing...";
                         } else {
@@ -217,7 +218,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                             t,
                           )})`;
                         }
-                      }).then(async (data: any) => {
+                      }).then(async (data: string) => {
                         if (data != "[]") {
                           button.current.innerHTML = "Failed...";
                         } else {
