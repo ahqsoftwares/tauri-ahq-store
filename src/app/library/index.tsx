@@ -56,7 +56,7 @@ export default function Library(props: LibraryProps) {
     const status = {
       status: "updated",
       apps: [],
-      updating: ""
+      updating: "",
     };
     setTimeout(() => {
       setStatus(
