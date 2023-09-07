@@ -3,7 +3,6 @@ React Native
 */
 import { useState, useEffect } from "react";
 import { FiSearch as FcSearch } from "react-icons/fi";
-import { Auth } from "firebase/auth";
 
 /*
 Functions
@@ -23,18 +22,9 @@ StyleSheets
 */
 import "./index.css";
 import { getData } from "../resources/utilities/database";
+import { IAppsPropsIndex } from "../resources/types/apps";
 
-/*
-Interfaces
-*/
-interface AppsProps {
-  dark: boolean;
-  auth: Auth;
-  apps: Array<any>;
-  isAdmin: boolean;
-}
-
-export default function Apps(props: AppsProps) {
+export default function Apps(props: IAppsPropsIndex) {
   const { dark, apps, isAdmin } = props;
 
   const [shown, showModal] = useState(false),
@@ -201,10 +191,10 @@ export default function Apps(props: AppsProps) {
               <></>
             )}
 
-            {apps.map((filess: any) => {
+            {(apps as any).map((filess: any) => {
               try {
                 const [alt, data] = filess;
-                const apps: any = data;
+                const apps = data;
                 return (
                   <Layer alt={alt as string} key={keyGen()}>
                     {apps.map((data: string) => {

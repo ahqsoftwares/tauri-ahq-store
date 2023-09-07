@@ -11,14 +11,10 @@ import App from "./App";
 /**
  * types
  */
-import type { IAppDataApi } from "../../resources/types/api";
+import type { IAppDataApi } from "../../resources/types/resources/api";
+import type { IPropsList } from "../../resources/types/library/components";
 
-interface Props {
-  dark: boolean;
-  change: Function;
-}
-
-export default function AppsList(props: Props) {
+export default function AppsList(props: IPropsList) {
   const { dark, change } = props;
 
   const [apps, setApps] = useState<IAppDataApi[]>([]);

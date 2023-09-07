@@ -7,8 +7,8 @@ import { list_apps, un_install } from "../core";
 /**
  * Types
  */
-import { InstallWorkerCallback, IDownloadAppData, IInstallAppData } from "../types/classes";
-import { IAppDataApi } from "../types/api";
+import { InstallWorkerCallback, IDownloadAppData, IInstallAppData } from "../types/resources/classes";
+import { IAppDataApi } from "../types/resources/api";
 
 export default class installWorker {
   appId?: string[];

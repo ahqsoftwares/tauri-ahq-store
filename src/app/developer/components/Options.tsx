@@ -1,6 +1,9 @@
-import { MouseEventHandler } from "react";
-import { IconType } from "react-icons";
 import { IoIosArrowForward } from "react-icons/io";
+
+/**
+ * Types
+ */
+import type { ISettingOptions } from "../../resources/types/developer/options";
 
 function darkMode(classes: Array<string>, dark: boolean) {
   let newClasses: string[] = [];
@@ -15,15 +18,7 @@ function darkMode(classes: Array<string>, dark: boolean) {
   return newClasses.join(" ");
 }
 
-export default function SettingOption(props: {
-  dark: boolean;
-  ShowCaseIcon: IconType;
-  PopUp?: IconType;
-  title: string;
-  description: string;
-  onClick: MouseEventHandler<HTMLDivElement>;
-  Extra?: JSX.Element;
-}) {
+export default function SettingOption(props: ISettingOptions) {
   const { dark, title, description, ShowCaseIcon, onClick, PopUp, Extra } =
     props;
 

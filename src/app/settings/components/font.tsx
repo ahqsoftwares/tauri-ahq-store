@@ -1,7 +1,7 @@
 /**
  * Types
  */
-import type { IListSelector } from "../../resources/types/settings";
+import type { IListSelector } from "../../resources/types/resources/settings";
 
 export default function ListSelector(props: IListSelector) {
   const { Icon, initial, onChange, list } = props;

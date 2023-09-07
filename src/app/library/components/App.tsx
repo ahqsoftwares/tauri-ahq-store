@@ -15,7 +15,7 @@ import {
 /**
  * Types
  */
-import type { IAppDataApi } from "../../resources/types/api";
+import type { IAppDataApi } from "../../resources/types/resources/api";
 
 export default function App({
   appInfo,
@@ -29,7 +29,7 @@ export default function App({
   toast: typeof Toast;
 }) {
   const updating = updaterStatus().apps?.includes(appInfo.id as string);
-  const data = useRef<HTMLDivElement>("" as any);
+  const data = useRef<HTMLDivElement>("");
 
   async function handleClick() {
     const Toast = toast("Please wait...", "warn", "never");

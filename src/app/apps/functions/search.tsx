@@ -10,18 +10,10 @@ import { getData, setData } from "../../resources/utilities/database";
 /**
  * Types
  */
-import { IAppDataApi } from '../../resources/types/api';
+import { IAppDataApi } from '../../resources/types/resources/api';
+import { ISearchProps } from "../../resources/types/apps/search";
 
-interface SearchProps {
-  query: string;
-  set: Function;
-  show: Function;
-  dark: boolean;
-  special?: boolean;
-  isAdmin: boolean;
-}
-
-export default function Search(props: SearchProps) {
+export default function Search(props: ISearchProps) {
   const { query, set, show, dark, special, isAdmin } = props;
 
   const [matches, setMatches] = useState<any>([]);

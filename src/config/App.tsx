@@ -6,7 +6,7 @@ import logo from "./index.png";
 /**
  * Types
  */
-import type { IAppDataNoExtension } from "../app/resources/types/utilities";
+import type { IAppDataNoExtension } from "../app/resources/types/resources/utilities";
 
 function App(props: { info: string }) {
   const [version, setVersion] = useState("");

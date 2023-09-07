@@ -3,7 +3,7 @@ import { FiExternalLink } from "react-icons/fi";
 /**
  * types
  */
-import type { ICheckBox } from "../../resources/types/settings";
+import type { ICheckBox } from "../../resources/types/resources/settings";
 
 export default function CheckBox(props: ICheckBox) {
   const { Icon, noCheckbox, roundedImage, url } = props;

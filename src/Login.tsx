@@ -6,7 +6,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 /**
  * Types
  */
-import type { IAppDataNoExtension } from "./app/resources/types/utilities";
+import type { IAppDataNoExtension } from "./app/resources/types/resources/utilities";
 
 /**
  * Forgot Password Component

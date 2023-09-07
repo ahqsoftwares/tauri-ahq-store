@@ -4,7 +4,7 @@ import { get_apps, get_commit } from "../core";
 /**
  * Types
  */
-import type { IAppDataApi, IAuthorObject, ICache, ISearchData } from "../types/api";
+import type { IAppDataApi, IAuthorObject, ICache, ISearchData } from "../types/resources/api";
 
 let commit_id = "";
 let cache: ICache = {};

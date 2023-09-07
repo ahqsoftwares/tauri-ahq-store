@@ -5,8 +5,6 @@ import { FiExternalLink } from "react-icons/fi";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { RiApps2Line } from "react-icons/ri";
 
-import { Auth } from "firebase/auth";
-
 //Components
 import Option from "./components/Options";
 import fetchApps, { fetchAuthor } from "../resources/api/fetchApps";
@@ -17,14 +15,10 @@ import { invoke } from "@tauri-apps/api/tauri";
 /**
  * Types
  */
-import type { IAppDataApi } from "../resources/types/api";
+import type { IAppDataApi } from "../resources/types/resources/api";
+import type { IDevProps } from "../resources/types/developer";
 
-interface DevProps {
-  auth: Auth;
-  dark: boolean;
-}
-
-export default function Developers(props: DevProps) {
+export default function Developers(props: IDevProps) {
   const [publishedApps, setPublishedApps] = useState<IAppDataApi[] | undefined>(
     undefined,
   );

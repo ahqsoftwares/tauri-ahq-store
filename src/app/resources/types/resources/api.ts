@@ -10,19 +10,19 @@ export interface IAuthorObject {
 
 export interface IAppDataApi {
     author: string;
-  AuthorObject?: IAuthorObject;
-  description: string;
-  download: string;
-  exe: string;
-  icon: string;
-  repo: {
-    author: string;
-    repo: string;
-  };
-  title: string;
-  displayName: string;
-  version: string;
-  id: string;
+    AuthorObject?: IAuthorObject;
+    description: string;
+    download: string;
+    exe: string;
+    icon: string;
+    repo: {
+        author: string;
+        repo: string;
+    };
+    title: string;
+    displayName: string;
+    version: string;
+    id: string;
 }
 
 export interface ICache {

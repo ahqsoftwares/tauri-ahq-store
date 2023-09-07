@@ -15,11 +15,12 @@ import {
 } from "../resources/api/updateInstallWorker";
 import server from "../server";
 
-interface LibraryProps {
-  dark: boolean;
-}
+/**
+ * Types
+ */
+import type { IDefault } from "../resources/types/resources/settings";
 
-export default function Library(props: LibraryProps) {
+export default function Library(props: IDefault) {
   const { dark } = props;
 
   const customStyles = {

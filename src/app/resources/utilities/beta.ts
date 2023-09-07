@@ -4,7 +4,7 @@ import { setData } from "./database";
 /**
  * Types
  */
-import type { IBetaPrefs } from "../types/utilities";
+import type { IBetaPrefs } from "../types/resources/utilities";
 
 export default async function initDeveloperConfiguration() {
   await createDir("", { dir: BaseDirectory.App }).catch(console.log);

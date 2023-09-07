@@ -3,7 +3,7 @@ import Modal from "react-modal";
 /**
  * types
  */
-import type { IPasswordProps } from "../types/components";
+import type { IPasswordProps } from "../types/resources/components";
 
 export default function PopUp(props: IPasswordProps) {
   const { shown } = props;

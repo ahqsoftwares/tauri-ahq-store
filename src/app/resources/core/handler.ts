@@ -4,7 +4,7 @@ import { appWindow } from "@tauri-apps/api/window";
 /**
  * types
  */
-import type { ISend, IToResolve } from "../types/core";
+import type { ISend, IToResolve } from "../types/resources/core";
 
 let send: ISend[] = [];
 let toResolve: IToResolve[] = [];

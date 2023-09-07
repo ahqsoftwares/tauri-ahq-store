@@ -1,7 +1,7 @@
 /**
  * Types
  */
-import type { ISidebarSelector } from "../../resources/types/settings";
+import type { ISidebarSelector } from "../../resources/types/resources/settings";
 
 export default function SidebarSelector(props: ISidebarSelector) {
   const { Icon, initial, onChange } = props;

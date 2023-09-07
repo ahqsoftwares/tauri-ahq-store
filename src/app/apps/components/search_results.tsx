@@ -1,15 +1,6 @@
-interface SearchPropsToRender {
-  icon: string;
-  displayName: string;
-  description: string;
-  id: string;
-  set: Function;
-  show: Function;
-  dark: boolean;
-  isAdmin: boolean;
-}
+import type { ISearchPropsToRender } from "../../resources/types/apps/search_result";
 
-export default function Load(props: SearchPropsToRender) {
+export default function Load(props: ISearchPropsToRender) {
   const { icon, displayName, description, show, set, id, dark } = props;
 
   return (

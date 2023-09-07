@@ -3,7 +3,7 @@ import { FiExternalLink } from "react-icons/fi";
 /**
  * Types
  */
-import type { IPopUp } from "../../resources/types/settings";
+import type { IPopUp } from "../../resources/types/resources/settings";
 
 export default function PopUp(props: IPopUp) {
   const { Icon, roundedImage } = props;

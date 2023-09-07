@@ -2,7 +2,7 @@ import { Auth } from "firebase/auth";
 import { ChangeEventHandler, Dispatch, MouseEventHandler, SetStateAction } from "react";
 import { IconType } from "react-icons/lib";
 
-interface IDefault {
+export interface IDefault {
     dark: boolean;
 }
 

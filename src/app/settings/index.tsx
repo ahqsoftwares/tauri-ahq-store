@@ -34,7 +34,7 @@ import "./styles.css";
 /**
  * Types
  */
-import type { IInitProps } from "../resources/types/settings";
+import type { IInitProps } from "../resources/types/resources/settings";
 
 export default function Init(props: IInitProps) {
   const customStyles = {

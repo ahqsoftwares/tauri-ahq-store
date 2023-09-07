@@ -6,13 +6,10 @@ import packageImg from "../../resources/package.png";
 /**
  * Types
  */
-import type { IAppDataApi } from "../../resources/types/api";
+import type { IAppDataApi } from "../../resources/types/resources/api";
+import type { IAppCard } from "../../resources/types/apps/app_modal";
 
-export default function AppCard(props: {
-  id: string;
-  onClick: Function;
-  dark: boolean;
-}) {
+export default function AppCard(props: IAppCard) {
   const [appData, setAppData] = useState<IAppDataApi>({
     author: "",
     description: "",

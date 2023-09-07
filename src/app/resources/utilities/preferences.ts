@@ -16,7 +16,7 @@ import { isDarkTheme } from "./themes";
 /**
  * Types
  */
-import type { IAppData } from "../types/utilities";
+import type { IAppData } from "../types/resources/utilities";
 
 export default async function fetchPrefs(): Promise<IAppData> {
   createDir("", { dir: BaseDirectory.App }).catch((e) => e);

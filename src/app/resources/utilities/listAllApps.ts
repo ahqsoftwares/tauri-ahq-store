@@ -3,7 +3,7 @@ import { list_apps } from "../core";
 /**
  * Types
  */
-import type { IApps } from "../types/utilities";
+import type { IApps } from "../types/resources/utilities";
 
 export default async function listAllApps(): Promise<IApps> {
   let apps: IApps = {};

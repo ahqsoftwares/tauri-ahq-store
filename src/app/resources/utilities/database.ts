@@ -1,7 +1,7 @@
 /**
  * Types
  */
-import type { IApps } from "../types/utilities";
+import type { IApps } from "../types/resources/utilities";
 
 class ramDatabase {
   data: IApps = {};

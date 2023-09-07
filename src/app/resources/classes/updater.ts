@@ -7,8 +7,8 @@ import installWorker from "./installWorker";
 /**
  * Types
  */
-import type { IApps } from "../types/utilities";
-import { UpdateStatus } from "../types/classes";
+import type { IApps } from "../types/resources/utilities";
+import { UpdateStatus } from "../types/resources/classes";
 
 export default class Updater {
   autoUpdate?: boolean;

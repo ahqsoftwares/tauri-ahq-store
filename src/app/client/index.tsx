@@ -3,7 +3,7 @@
 /*
 React && Native
 */
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { sendNotification } from "@tauri-apps/api/notification";
 import { Body, fetch } from "@tauri-apps/api/http";
 import Modal from "react-modal";
@@ -38,13 +38,10 @@ import { readBinaryFile } from "@tauri-apps/api/fs";
 import { VscKey } from "react-icons/vsc";
 import { invoke } from "@tauri-apps/api/tauri";
 
-/*
-Interfaces
-*/
-interface UserProps {
-  auth: Auth;
-  dark: boolean;
-}
+/**
+ * Types
+ */
+import type { IProfilePictureData, IAccountNameProps, IUserProps, IDeleteAccountProps, IActions } from "../resources/types/client";
 
 async function verifyUserPassword(uid: string, password: string) {
   return await fetch(`${base}verify`, {
@@ -56,7 +53,7 @@ async function verifyUserPassword(uid: string, password: string) {
     },
     timeout: 6,
   })
-    .then(({ ok, status, data }) => {
+    .then(({ ok, status }) => {
       if (ok) {
         return true;
       } else if (status >= 500) {
@@ -91,7 +88,7 @@ async function fetchUser(uid: string) {
     });
 }
 
-export default function Init(props: UserProps) {
+export default function Init(props: IUserProps) {
   Modal.setAppElement("#root");
 
   let { auth, dark } = props;
@@ -298,7 +295,7 @@ export default function Init(props: UserProps) {
                     setAlt,
                     setUser,
                     {
-                      result: (profilePictureData as any).fs.result,
+                      result: (profilePictureData as IProfilePictureData).fs.result,
                     },
                     inputPassword,
                     setPFD,
@@ -403,7 +400,7 @@ export default function Init(props: UserProps) {
   );
 }
 
-function Actions(props: { auth: Auth; deleteAcc: Function }) {
+function Actions(props: IActions) {
   const { auth, deleteAcc } = props;
   return (
     <div className="flex flex-col">
@@ -496,17 +493,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
   );
 }
 
-interface DeleteAccountProps {
-  auth: Auth;
-  cancel: Function;
-  pass: string;
-  dark: boolean;
-  set: {
-    pwd: Function;
-  };
-}
-
-function DeleteAccount(props: DeleteAccountProps) {
+function DeleteAccount(props: IDeleteAccountProps) {
   const { cancel, pass, set, auth, dark } = props;
   const { pwd: sP } = set;
 
@@ -656,13 +643,7 @@ function DeleteAccount(props: DeleteAccountProps) {
   );
 }
 
-interface AccountNameProps {
-  close: Function;
-  user: User;
-  updateName: Function;
-  dark: boolean;
-}
-function ChangeAccountName(props: AccountNameProps) {
+function ChangeAccountName(props: IAccountNameProps) {
   const { close, dark, user, updateName } = props;
   const name = user.displayName as string;
   const dev = name?.startsWith("(dev)");
@@ -737,11 +718,11 @@ function ChangeAccountName(props: AccountNameProps) {
 
 async function ChangeProfile(
   auth: Auth,
-  setAlt: Function,
-  setUser: Function,
+  setAlt: React.Dispatch<React.SetStateAction<string>>,
+  setUser: React.Dispatch<React.SetStateAction<string>>,
   fs: { result: string },
   pwd: string,
-  setPFD: any,
+  setPFD: React.Dispatch<React.SetStateAction<{}>>,
 ) {
   try {
     setUser(Loading);
@@ -750,7 +731,7 @@ async function ChangeProfile(
     fetch(`${base}`, {
       method: "POST",
       headers: {
-        "x-uid": auth.currentUser?.uid as any,
+        "x-uid": auth.currentUser?.uid,
         "x-password": pwd,
       },
       body: Body.json({ data: fs.result }),

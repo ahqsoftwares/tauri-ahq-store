@@ -1,5 +1,5 @@
 //React
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RiApps2Line } from "react-icons/ri";
 import { BsGear } from "react-icons/bs";
 import { AiFillExperiment } from "react-icons/ai";
@@ -17,9 +17,13 @@ import base from "../server";
 import { didGreet, greeted } from "../resources/utilities/greet";
 import { fetch } from "@tauri-apps/api/http";
 import { getData, setData } from "../resources/utilities/database";
-import { Auth } from "firebase/auth";
 import { getAppVersion } from "../resources/api/version";
 import getWindows from "../resources/api/os";
+
+/**
+ * Types
+ */
+import type { IHomePropsIndex } from "../resources/types/home";
 
 function darkMode(classes: Array<string>, dark: boolean) {
   let newClasses: string[] = [];
@@ -34,27 +38,20 @@ function darkMode(classes: Array<string>, dark: boolean) {
   return newClasses.join(" ");
 }
 
-interface HomeProps {
-  dark: boolean;
-  setPage: React.Dispatch<React.SetStateAction<string>>;
-  auth: Auth;
-  dev: boolean;
-}
-
-export default function Home(props: HomeProps) {
+export default function Home(props: IHomePropsIndex) {
   const [userIcon, setUserIcon] = useState<string>(
     (getData("x-icon") as string) || "",
   );
 
   const { dark, setPage, auth } = props;
 
-  fetch(`${base}`, {
+  fetch<string>(`${base}`, {
     headers: {
       uid: auth.currentUser?.uid as string,
     },
     method: "GET",
   })
-    .then(({ data }: any) => {
+    .then(({ data }) => {
       if (!data.includes("<!DOCTYPE html>")) {
         setData("x-icon", data);
         setUserIcon(data);
@@ -65,7 +62,7 @@ export default function Home(props: HomeProps) {
   const [greet, setGreet] = useState(didGreet());
   const version = getAppVersion();
   const [first] = useState(!didGreet());
-  const textBox = useRef<HTMLHeadingElement>("" as any);
+  const textBox = useRef<HTMLHeadingElement>("");
 
   useEffect(() => {
     if (!greet) {

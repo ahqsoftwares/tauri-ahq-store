@@ -10,7 +10,7 @@ import {
  * Types
  */
 import type { IPrefs } from "../../resources/types/app";
-import type { IProps } from "../../resources/types/settings";
+import type { IProps } from "../../resources/types/resources/settings";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

@@ -1,12 +1,12 @@
-import type { IPrefs } from "./app";
+import type { IPrefs } from "../app";
+import type { IDefault } from "./settings";
 
 interface IAppDataExtension {
     theme: string;
     debug: boolean;
 }
 
-interface IAPPDataExtension2 {
-    dark: boolean;
+interface IAPPDataExtension2 extends IDefault {
     font: string;
     autoUpdate: boolean;
     sidebar: string;

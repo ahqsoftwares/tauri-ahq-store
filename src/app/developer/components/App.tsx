@@ -1,32 +1,25 @@
 import { useRef } from "react";
-import pkg from "../../resources/package.png";
 
 //Icons
 import { MdModeEdit } from "react-icons/md";
 import { IoIosNotifications } from "react-icons/io";
 
 //API
-import Toast from "../../resources/api/toast";
 import { updaterStatus } from "../../resources/api/updateInstallWorker";
 
 /**
  * Types
  */
-import type { IAppDataApi } from "../../resources/types/api";
+import type { IAppInfo } from "../../resources/types/developer/app";
 
 export default function App({
   appInfo,
   dark,
   toast,
   lastIndex,
-}: {
-  appInfo: IAppDataApi;
-  dark: boolean;
-  toast: typeof Toast;
-  lastIndex: boolean;
-}) {
+}: IAppInfo) {
   const updating = updaterStatus().apps?.includes(appInfo.id as string);
-  const data = useRef<HTMLDivElement>("" as any);
+  const data = useRef<HTMLDivElement>("");
 
   async function handleClick() {
     toast("Coming soon", "warn", 1);

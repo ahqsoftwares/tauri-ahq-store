@@ -6,10 +6,6 @@ import { fetch } from "@tauri-apps/api/http";
 import { appWindow } from "@tauri-apps/api/window";
 
 import { runAutoUpdate } from "./resources/api/updateInstallWorker";
-/*
-Firebase
-*/
-import { Auth } from "firebase/auth";
 
 /*
 CSS
@@ -45,7 +41,7 @@ import {
  * Types
  */
 import type { IAppProps, IPrefs } from "./resources/types/app"
-import type { IAppData } from "./resources/types/utilities";
+import type { IAppData } from "./resources/types/resources/utilities";
 
 function Render(props: IAppProps) {
   runner();

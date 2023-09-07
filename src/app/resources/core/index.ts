@@ -4,7 +4,7 @@ import { sendWsRequest } from "./handler";
  * Types
  */
 import type { IPrefs } from "../types/app"
-import type { u64 } from "../types/core";
+import type { u64 } from "../types/resources/core";
 
 export function get_commit(): Promise<string> {
   return new Promise((resolve) => {

@@ -1,15 +1,12 @@
 //Worker
 import { BiArrowBack } from "react-icons/bi";
 
-interface AppDataPropsModal {
-  shown: boolean;
-  change: Function;
-  dark: Boolean;
-  search: string;
-  searchText: (text: string) => void;
-}
+/**
+ * Types
+ */
+import type { IAppDataPropsSearchModal } from "../../resources/types/apps/search_modal";
 
-export default function SearchModal(props: AppDataPropsModal) {
+export default function SearchModal(props: IAppDataPropsSearchModal) {
   const { shown, dark, change, searchText, search } = props;
   return (
     <>

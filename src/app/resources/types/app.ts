@@ -1,4 +1,5 @@
 import { Auth } from "firebase/auth";
+import type { IDefault } from "./resources/settings";
 
 declare global {
   interface Window {
@@ -12,9 +13,8 @@ export interface IAppProps {
     };
   }
 
-export interface appData {
+export interface appData extends IDefault {
   theme: string;
-  dark: boolean;
   font: string;
   autoUpdate: boolean;
   sidebar: string;

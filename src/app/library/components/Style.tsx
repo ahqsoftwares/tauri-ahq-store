@@ -1,6 +1,10 @@
-import { MouseEventHandler } from "react";
 import { VscExtensions } from "react-icons/vsc";
 import { FiExternalLink } from "react-icons/fi";
+
+/**
+ * Types
+ */
+import type { IInstalledApps } from "../../resources/types/library/components";
 
 function darkMode(classes: Array<string>, dark: boolean) {
   let newClasses: string[] = [];
@@ -15,10 +19,7 @@ function darkMode(classes: Array<string>, dark: boolean) {
   return newClasses.join(" ");
 }
 
-export default function InstalledAppsMenu(props: {
-  dark: boolean;
-  onClick: MouseEventHandler<HTMLDivElement>;
-}) {
+export default function InstalledAppsMenu(props: IInstalledApps) {
   const { dark, onClick } = props;
 
   return (

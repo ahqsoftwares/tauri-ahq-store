@@ -1,16 +1,9 @@
-import { IconType } from "react-icons";
+/**
+ * Types
+ */
+import type { IButtonProps } from "../../resources/types/home/buttons";
 
-interface ButtonProps {
-  dark: boolean;
-  Icon: IconType | string;
-  title: String;
-  description: String;
-  no50?: boolean;
-  onClick: Function;
-  calibrate?: string;
-}
-
-export default function Button(props: ButtonProps) {
+export default function Button(props: IButtonProps) {
   const { dark, Icon, title, description, onClick, no50, calibrate } = props;
 
   return (

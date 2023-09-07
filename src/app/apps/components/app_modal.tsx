@@ -16,15 +16,8 @@ import { install_app } from "../../resources/core";
 /**
  * Types
  */
-import { IAppDataApi } from "../../resources/types/api";
-
-interface AppDataPropsModal {
-  shown: boolean;
-  change: Function;
-  dark: Boolean;
-  installData: any;
-  isAdmin: boolean;
-}
+import type { IAppDataApi } from "../../resources/types/resources/api";
+import type { IAppDataPropsModal } from "../../resources/types/apps/app_modal";
 
 function formatBytes(bytes: number, decimals = 2) {
   if (!+bytes) return "0 Bytes";
@@ -54,7 +47,7 @@ const defAppData = {
   version: "",
 };
 
-export default function ShowModal(props: AppDataPropsModal) {
+export default function ShowModal(props: IAppDataPropsModal) {
   const { shown, dark, change, installData, isAdmin } = props;
 
   const {
@@ -63,7 +56,7 @@ export default function ShowModal(props: AppDataPropsModal) {
 
   const [appData, setAppData] = useState<IAppDataApi>(defAppData);
   const [working, setWorking] = useState(false);
-  const button = useRef<HTMLButtonElement>("" as any);
+  const button = useRef<HTMLButtonElement>("");
   const [installed, setInstalled] = useState<boolean | "hidden">(false);
   const [updating, setUpdating] = useState(true);
 
@@ -72,7 +65,11 @@ export default function ShowModal(props: AppDataPropsModal) {
     setInstalled("hidden");
     (async () => {
       if ((installData || "") !== "") {
-        setAppData((await fetchApps(installData)) as any);
+        const appData = await fetchApps(installData);
+        if (typeof appData == "string") {
+          setAppData(appData);
+        }
+        
         setInstalled(await isInstalled(installData));
 
         setUpdating(
