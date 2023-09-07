@@ -18,16 +18,14 @@ export function get_commit(): Promise<string> {
 }
 
 export function get_apps(apps: string[]): Promise<any[]> {
-  let promises = apps.map(
-    (id) => (
-      (async() => {
-        const { data: App } = await fetch(`${newServer}/apps/id/${id}`, {
-          method: "GET",
-        });
+  let promises = apps.map((id) =>
+    (async () => {
+      const { data: App } = await fetch(`${newServer}/apps/id/${id}`, {
+        method: "GET",
+      });
 
-        return App;
-      })()
-    )
+      return App;
+    })(),
   );
 
   return Promise.all(promises);
@@ -35,10 +33,10 @@ export function get_apps(apps: string[]): Promise<any[]> {
 
 type u64 = number;
 
-export function install_app(
+export function install_app<T = unknown>(
   app: string,
   status_update: (c: u64, t: u64) => void,
-) {
+): Promise<T> {
   return new Promise((resolve) => {
     sendWsRequest(
       {
