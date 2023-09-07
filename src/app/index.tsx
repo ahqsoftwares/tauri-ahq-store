@@ -72,7 +72,7 @@ function Render(props: AppProps) {
     [allAppsData, setData] = useState<{ map: { [key: string]: Object } }>({
       map: {},
     }),
-    App: any = () => <></>;
+    app: JSX.Element = <></>;
 
   useEffect(() => {
     appWindow.listen("app", ({ payload }: { payload: string }) => {
@@ -119,7 +119,7 @@ function Render(props: AppProps) {
         theme,
       } = fullPrefs;
 
-      (window as any).prefs = {
+      window.prefs = {
         ...fullPrefs,
         accessPrefs: {
           ...defAccess,
@@ -155,14 +155,11 @@ function Render(props: AppProps) {
             commit_id !== undefined ||
             commit_id !== null
           ) {
-            const { data: Mapped } = await fetch<any>(
-              `${newServer}/apps/map`,
-              {
-                method: "GET",
-                timeout: 30,
-                responseType: 1,
-              },
-            );
+            const { data: Mapped } = await fetch<any>(`${newServer}/apps/map`, {
+              method: "GET",
+              timeout: 30,
+              responseType: 1,
+            });
 
             setData({
               map: Mapped as {
@@ -170,14 +167,11 @@ function Render(props: AppProps) {
               },
             });
 
-            const { data: Home } = await fetch<any>(
-              `${newServer}/apps/home`,
-              {
-                method: "GET",
-                timeout: 30,
-                responseType: 1,
-              },
-            );
+            const { data: Home } = await fetch<any>(`${newServer}/apps/home`, {
+              method: "GET",
+              timeout: 30,
+              responseType: 1,
+            });
 
             setApps(Home);
           }
@@ -261,22 +255,54 @@ function Render(props: AppProps) {
 
   switch (page) {
     case "apps":
-      App = Apps;
+      app = <Apps
+        auth={auth}
+        dark={dark}
+        apps={apps}
+        isAdmin={admin}
+      />;
       break;
     case "settings":
-      App = Settings;
+      app = <Settings
+      auth={auth}
+      setDev={setDev}
+      dark={dark}
+      setDark={setDark}
+      font={font}
+      setFont={changeFont}
+      autoUpdate={autoUpdate}
+      setAutoUpdate={setAutoUpdate}
+      sidebar={sidebar}
+      setSidebar={updateSidebar}
+      admin={admin}
+      setTheme={updateTheme}
+      theme={theme}
+      />;
       break;
     case "user":
-      App = User;
+      app = <User
+        auth={auth}
+        dark={dark}
+      />;
       break;
     case "home":
-      App = Home;
+      app = <Home
+        auth={auth}
+        dark={dark}
+        dev={dev || false}
+        setPage={changePage}
+      />;
       break;
     case "developer":
-      App = Developer;
+      app = <Developer
+          auth={auth}
+          dark={dark}
+        />;
       break;
     case "library":
-      App = Library;
+      app = <Library
+        dark={dark}
+      />;
       break;
   }
 
@@ -300,29 +326,7 @@ function Render(props: AppProps) {
           />
           <div className={`w-screen h-screen`}>
             <div className="flex flex-col w-[100%] h-[100%] justify-center">
-              <App
-                baseApi={BaseAPI}
-                auth={auth}
-                setDev={setDev}
-                dark={dark}
-                setDark={setDark}
-                font={font}
-                setFont={changeFont}
-                apps={apps}
-                setApps={setApps}
-                allAppsData={allAppsData}
-                autoUpdate={autoUpdate}
-                setAutoUpdate={setAutoUpdate}
-                setPage={changePage}
-                dev={dev}
-                sidebar={sidebar}
-                setSidebar={updateSidebar}
-                admin={admin}
-                isAdmin={admin}
-                accessPrefs={prefs}
-                theme={theme}
-                setTheme={updateTheme}
-              />
+              {app}
             </div>
           </div>
         </header>
