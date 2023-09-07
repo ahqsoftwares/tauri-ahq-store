@@ -1,14 +1,24 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 
-let send: { data: Object; resolve: (value: any) => void }[] = [];
-let toResolve: { data: Object; resolve: (value: any) => void }[] = [];
+type Object = {
+  [key: string | number | symbol]: any;
+};
 
-export function sendWsRequest(data: Object, result: (value: any) => void) {
+type WsResp = {
+  method: string;
+  payload: string;
+  ref_id: string;
+};
+
+let send: { data: Object; resolve: (value: Object) => void }[] = [];
+let toResolve: { data: Object; resolve: (value: Object) => void }[] = [];
+
+export function sendWsRequest(data: Object, result: (value: Object) => void) {
   queueAndWait(data, result);
 }
 
-function queueAndWait(data: Object, result: (value: any) => void) {
+function queueAndWait(data: Object, result: (value: Object) => void) {
   send.push({
     data,
     resolve: (value) => {
@@ -31,7 +41,7 @@ appWindow.listen<string>("ws_resp", ({ payload }) => {
   const toObj: string[] = JSON.parse(payload);
 
   toObj.forEach((str) => {
-    const toObj: any = JSON.parse(str);
+    const toObj: WsResp = JSON.parse(str);
 
     if (toObj.method == "INSTALLAPP") {
       if (Number(toObj.payload.split("of")[0]) > 0) {
