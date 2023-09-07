@@ -133,12 +133,12 @@ async function getMatches(query: string): Promise<Array<string>> {
 }
 
 async function getDataFromMatches(matches: Array<string>) {
-  let answer: any = [];
+  let answer: appData[] = [];
 
   let data = matches.map((id: string) => fetchApps(id));
 
   await Promise.all(data).then((results) => {
-    answer = results;
+    answer = results as appData[];
 
     if (results.length > 5) {
       answer.length = 5;
