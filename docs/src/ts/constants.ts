@@ -9,9 +9,9 @@ const getDownloadUrl = async () => {
     .then((res) => res.json())
     .then((data) => data.assets)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .then((assets: any[]) =>
+    .then((assets: { name: string }[]) =>
       assets.filter(
-        ({ name }: any) =>
+        ({ name }) =>
           name.endsWith(".msi") || name == "ahqstore_setup_x86_64.exe",
       ),
     );
