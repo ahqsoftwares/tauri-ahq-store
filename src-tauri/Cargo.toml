@@ -20,7 +20,7 @@ tauri = { version = "=1.4.1", features = ["dialog-all", "fs-create-dir", "fs-rea
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri-plugin-deep-link = { git = "https://github.com/FabianLars/tauri-plugin-deep-link" }
 wry = "*"
-window-vibrancy = "0.4.0"
+window-vibrancy = "0.4.1"
 
 downloader = "0.2.6"
 os-version = "0.2.0"
