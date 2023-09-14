@@ -2,112 +2,38 @@ use std::sync::{Arc, Mutex};
 
 use windows_service::{
     define_windows_service,
+    service::*,
     service_control_handler::{self, ServiceControlHandlerResult, ServiceStatusHandle},
-    service_dispatcher,
-    Result as SResult, 
-    service::*
+    service_dispatcher, Result as SResult,
 };
 
-use actix::{Actor, StreamHandler};
-use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
-use actix_web_actors::ws::{
-    start, CloseCode, CloseReason, Message, ProtocolError, WebsocketContext,
-};
+use utils::{delete_log, get_available_port, write_log, write_service};
+use ws_handler::launch;
 
-#[cfg(not(debug_assertions))]
-static MAX_WS: u64 = 1;
-#[cfg(debug_assertions)]
-static MAX_WS: u64 = 1;
-static mut CURRENT_WS: u64 = 0;
-
-mod ws_handler;
 mod authentication;
+mod encryption;
+mod utils;
+mod ws_handler;
 
-struct MyWs;
+pub mod handlers;
 
-impl Actor for MyWs {
-    type Context = WebsocketContext<Self>;
-}
-
-fn close(ctx: &mut <MyWs as Actor>::Context, code: CloseCode) {
-    ctx.close(Some(CloseReason {
-        code,
-        description: None,
-    }));
-    unsafe {
-        if CURRENT_WS > 0 {
-            CURRENT_WS -= 1;
-        }
-    }
-}
-
-impl StreamHandler<Result<Message, ProtocolError>> for MyWs {
-    fn handle(&mut self, msg: Result<Message, ProtocolError>, ctx: &mut Self::Context) {
-        match msg {
-            Ok(Message::Ping(msg)) => ctx.pong(&msg),
-            Ok(Message::Text(text)) => ctx.text(text),
-            Ok(Message::Binary(_)) => {
-                close(ctx, CloseCode::Unsupported);
-            }
-            Ok(Message::Close(_)) => {
-                close(ctx, CloseCode::Normal);
-            }
-            _ => ctx.text("\"UNKNOWN ACTION\""),
-        }
-    }
-}
-
-async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
-    unsafe {
-        if CURRENT_WS + 1 > MAX_WS {
-            return Ok(HttpResponse::Unauthorized().body("CURRENT_WS_OVERFLOW"));
-        }
-
-        CURRENT_WS += 1;
-    }
-
-    let _ = req.headers()
-        .get("Authorization")
-        .map_or_else(|| "", |x| x.to_str().map_or_else(|_| "", |x| x));
-
-    #[cfg(not(debug_assertions))]
-    let is_ahqstore_running = authentication::is_process_running(
-        &format!(
-            "{}\\Program Files\\AHQ Store\\AHQ Store.exe",
-            authentication::get_main_drive()
-        )
-    );
-    #[cfg(debug_assertions)]
-    let is_ahqstore_running = true;
-
-    if !is_ahqstore_running {
-        return Ok(HttpResponse::Forbidden().body("AHQ Store is not running"));
-    }
-
-    let resp = start(MyWs {}, &req, stream);
-
-    resp
-}
-
-define_windows_service!(ffi_service_main, ahq_main);
-
+define_windows_service!(ffi_service_main, service_runner);
 
 fn main() -> SResult<()> {
-    // Register generated `ffi_service_main` with the system and start the service, blocking
-    // this thread until the service is stopped.
     service_dispatcher::start("AHQ Store Service", ffi_service_main)?;
     Ok(())
 }
 
-
-fn ahq_main<T>(_: T) {
-        let handler: Arc<Mutex<Option<ServiceStatusHandle>>> = Arc::new(Mutex::new(None));
+fn service_runner<T>(_: T) {
+    let handler: Arc<Mutex<Option<ServiceStatusHandle>>> = Arc::new(Mutex::new(None));
 
     let status_handle = handler.clone();
 
     let event_handler = move |control_event| -> ServiceControlHandlerResult {
         match control_event {
             ServiceControl::Stop => {
+                delete_log();
+
                 // Handle stop event and return control back to the system.
                 status_handle
                     .lock()
@@ -135,7 +61,8 @@ fn ahq_main<T>(_: T) {
     let handle_clone = handler.clone();
 
     // Register system service event handler
-    let status_handle = service_control_handler::register("AHQ Store", event_handler).expect("This should work");
+    let status_handle = service_control_handler::register("AHQ Store Service", event_handler)
+        .expect("This should work");
 
     match handle_clone.lock() {
         Ok(mut handle) => {
@@ -157,14 +84,21 @@ fn ahq_main<T>(_: T) {
         .unwrap();
 
     tokio::runtime::Builder::new_current_thread()
+        .worker_threads(12)
         .enable_all()
         .build()
         .unwrap()
         .block_on(async {
-            HttpServer::new(|| App::new().route("/", web::get().to(index)))
-            .bind(("127.0.0.1", 8080))?
-            .run()
-            .await
-        })
-        .unwrap();
+            write_log("WIN NT: Selecting PORT");
+
+            let port = get_available_port().unwrap();
+
+            write_service(port.to_string());
+            write_log("WIN NT: STARTING");
+
+            #[cfg(debug_assertions)]
+            write_log(port);
+
+            launch(port).await;
+        });
 }

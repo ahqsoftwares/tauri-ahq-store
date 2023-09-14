@@ -2,6 +2,7 @@
 name = "ahqstore_setup_x86_64"
 version = "1.0.0"
 edition = "2021"
+license = "CC BY-NC 3.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -1,34 +1,35 @@
-use std::time::{UNIX_EPOCH, SystemTime};
+use sysinfo::{Pid, ProcessExt, System, SystemExt};
 
-use sysinfo::{System, SystemExt, ProcessExt};
+use crate::utils::*;
 
 #[cfg_attr(debug_assertions, allow(dead_code))]
-pub fn is_process_running<T>(exe: T) -> bool
-    where
-        T: Into<String>
-{
-    let exe: String = exe.into();
+pub fn authenticate_process(pid: usize) -> bool {
+    #[cfg(not(debug_assertions))]
+    let exe = String::from_utf8_lossy(
+        format!(
+            "{}\\Program Files\\AHQ Store\\AHQ Store.exe",
+            get_main_drive()
+        )
+        .as_bytes(),
+    );
 
-    let system = System::new_all();
+    #[cfg(debug_assertions)]
+    let exe = String::from_utf8_lossy(br#"E:\rust\tokio-client\target\debug\tokio-client.exe"#);
 
-    let processes = system.processes();
+    let mut system = System::new_all();
+    system.refresh_all();
 
-    for (_, process) in processes {
-        let exe_path = process.exe().as_os_str().to_str().map_or_else(|| "", |x| x);
+    let process = system.process(Pid::from(pid));
 
-        let start_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() - process.start_time();
+    if let Some(process) = process {
+        let exe_path = process.exe().as_os_str().to_string_lossy();
 
-        if exe_path == &exe && start_time < 120 {
-            println!("{} secs before now", start_time);
-            println!("{} Matched", &exe_path);
+        let running_for_secs = now() - process.start_time();
+
+        if exe_path == exe && running_for_secs < 2 {
             return true;
         }
     }
 
     false
-}
-
-#[cfg_attr(debug_assertions, allow(dead_code))]
-pub fn get_main_drive() -> String {
-    std::env::var("SystemDrive").unwrap_or("C:".into()).to_string()
 }
