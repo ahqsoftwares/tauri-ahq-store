@@ -22,16 +22,14 @@ export default defineConfig({
       },
       sidebar: [
         {
-          label: "Guides",
-          items: [
-            {
-              label: "Example Guide",
-              link: "/guides/v1/",
-            },
-          ],
+          label: "User Guides",
+          autogenerate: {
+            directory: "guides",
+          },
         },
         {
-          label: "Reference",
+          label: "Developer Reference",
+          collapsed: true,
           autogenerate: {
             directory: "reference",
           },
