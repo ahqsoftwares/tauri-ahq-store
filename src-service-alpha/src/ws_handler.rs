@@ -3,7 +3,7 @@ use std::time::Duration;
 use tokio::{io::AsyncWriteExt, net::TcpListener, spawn, task::JoinHandle};
 
 use futures_util::{SinkExt, StreamExt};
-use tokio_tungstenite::{accept_async, tungstenite::Message};
+use tokio_tungstenite::accept_async;
 
 use crate::{
     authentication::authenticate_process,
@@ -94,8 +94,14 @@ pub async fn launch(port: u16) {
                                         let x = x.to_text().unwrap().to_string();
                                         unsafe {
                                             if VERIFIED {
-                                                let _ =
-                                                    ws.send(Message::Text("Hi".to_string())).await;
+                                                handlers::handle_msg(x, || {
+                                                    VERIFIED = false;
+                                                    if CURRENT_WS > 0 {
+                                                        CURRENT_WS -= 1;
+                                                    }
+                                                    LAST_CONTACTED = 0;
+                                                    remove_ws();
+                                                });
                                             } else {
                                                 if let Some(x) = AuthPing::from(x) {
                                                     if authenticate_process(x.process) {
