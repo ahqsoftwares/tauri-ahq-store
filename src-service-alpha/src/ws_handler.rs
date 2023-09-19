@@ -75,6 +75,7 @@ pub async fn launch(port: u16) {
                     let handle = spawn(async move {
                         let stop = |ws: &'static mut ServiceWs| unsafe {
                             async {
+                                let _ = ws.flush().await;
                                 let _ = ws.close().await;
 
                                 VERIFIED = false;
@@ -141,6 +142,7 @@ pub async fn launch(port: u16) {
                                 if !VERIFIED && (now() - CONNECTED) > 5 {
                                     write_log("WS STOPPER: Killing WS due to inactivity");
                                     if let Some(ws) = get_ws() {
+                                        let _ = ws.flush().await;
                                         let _ = ws.close().await;
                                     }
                                     if let Some(handle) = &HANDLE {
