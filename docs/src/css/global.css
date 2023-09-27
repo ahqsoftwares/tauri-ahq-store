@@ -20,3 +20,10 @@
         tw-normal-case tw-text-xl
         tw-p-4 tw-px-5 !important;
 }
+
+.download-btn {
+  @apply tw-dui-btn tw-border-none
+   tw-bg-purple-700 hover:tw-bg-purple-800 
+   tw-text-white tw-w-full
+   !important;
+}
