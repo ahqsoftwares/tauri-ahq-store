@@ -53,10 +53,18 @@ pub enum Reason {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub enum ErrorType {
+    GetAppFailed(AppId),
+    AppInstallError(AppId),
+    PrefsError,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub enum Response {
+    Error(ErrorType),
+
     Disconnect(Reason),
 
-    GetAppFailed(AppId),
     AppData(AppId, AHQStoreApplication),
 
     DownloadStarted(AppId),
@@ -67,7 +75,6 @@ pub enum Response {
 
     Prefs(Prefs),
     PrefsSet,
-    PrefsError,
 }
 
 impl Response {
