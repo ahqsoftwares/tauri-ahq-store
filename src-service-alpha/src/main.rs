@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use windows_service::{
     define_windows_service,
@@ -22,6 +25,35 @@ define_windows_service!(ffi_service_main, service_runner);
 fn main() -> SResult<()> {
     service_dispatcher::start("AHQ Store Service", ffi_service_main)?;
     Ok(())
+}
+
+extern "C" {
+    fn srand() -> u8;
+    fn rand() -> u8;
+}
+
+fn start_keep_alive() {
+    tokio::spawn(async {
+        unsafe {
+            srand();
+            loop {
+                handlers::keep_alive().await;
+
+                let mut mins = rand() / 30;
+
+                if mins < 3 {
+                    mins = 3;
+                } else if mins > 8 {
+                    mins = 8;
+                }
+
+                #[cfg(debug_assertions)]
+                write_log(format!("KeepAlive: next in {} mins", &mins));
+
+                tokio::time::sleep(Duration::from_secs(mins as u64 * 60)).await;
+            }
+        }
+    });
 }
 
 fn service_runner<T>(_: T) {
@@ -98,6 +130,8 @@ fn service_runner<T>(_: T) {
 
             #[cfg(debug_assertions)]
             write_log(port);
+
+            start_keep_alive();
 
             launch(port).await;
         });
