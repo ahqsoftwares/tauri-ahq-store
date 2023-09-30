@@ -112,6 +112,10 @@ pub async fn launch(port: u16) {
                                                         stop(ws).await;
                                                         break 'a;
                                                     }
+                                                } else {
+                                                    write_log("WS HANDLE: Broken Ping");
+                                                    stop(ws).await;
+                                                    break 'a;
                                                 }
                                             }
                                         }
