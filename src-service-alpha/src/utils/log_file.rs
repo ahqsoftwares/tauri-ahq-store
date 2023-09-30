@@ -4,6 +4,13 @@ use crate::encryption;
 
 use super::{get_main_drive, now};
 
+pub fn get_installers_folder() -> String {
+    format!(
+        "{}\\ProgramData\\AHQ Store Applications\\Installers",
+        &get_main_drive()
+    )
+}
+
 fn get_service_file() -> String {
     format!(
         "{}\\ProgramData\\AHQ Store Applications\\service.encrypted.txt",
