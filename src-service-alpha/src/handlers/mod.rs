@@ -10,6 +10,8 @@ use self::service::*;
 
 mod service;
 
+pub use self::service::keep_alive;
+
 pub fn handle_msg(data: String, stop: fn()) {
     spawn(async move {
         if let Some(ws) = get_ws() {
@@ -21,7 +23,9 @@ pub fn handle_msg(data: String, stop: fn()) {
                             let _ = ws.send(x).await;
                         }
                     }
-                    Command::InstallApp(_) => {}
+                    Command::InstallApp(app_id) => {
+                        download_app(app_id).await;
+                    }
                     Command::UninstallApp(_) => {}
 
                     Command::GetPrefs => {}
