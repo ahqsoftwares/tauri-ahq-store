@@ -1,6 +1,6 @@
 $commitMessage = Read-Host "Enter a commit message"
 
-$files = Get-ChildItem -Recurse -File
+$files = Get-ChildItem src-tauri/src -Recurse -File
 
 foreach ($file in $files) {
     git add $file.FullName
