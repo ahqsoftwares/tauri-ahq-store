@@ -7,57 +7,57 @@ struct SimpleReporter;
 static mut BYTES: u64 = 1;
 
 impl SimpleReporter {
-    fn create() -> std::sync::Arc<Self> {
-        std::sync::Arc::new(Self)
-    }
+  fn create() -> std::sync::Arc<Self> {
+    std::sync::Arc::new(Self)
+  }
 }
 
 impl Reporter for SimpleReporter {
-    fn setup(&self, max_progress: Option<u64>, _: &str) {
-        unsafe {
-            BYTES = max_progress.unwrap_or(1);
-        }
+  fn setup(&self, max_progress: Option<u64>, _: &str) {
+    unsafe {
+      BYTES = max_progress.unwrap_or(1);
     }
+  }
 
-    fn done(&self) {
-        #[cfg(debug_assertions)]
-        println!("Downloading Finished Successfully!");
+  fn done(&self) {
+    #[cfg(debug_assertions)]
+    println!("Downloading Finished Successfully!");
+  }
+
+  fn progress(&self, c: u64) {
+    unsafe {
+      let _perc = c * 100 / BYTES;
+
+      #[cfg(debug_assertions)]
+      println!("Downloading: {}% of {} bytes", _perc, BYTES);
     }
+  }
 
-    fn progress(&self, c: u64) {
-        unsafe {
-            let _perc = c * 100 / BYTES;
-
-            #[cfg(debug_assertions)]
-            println!("Downloading: {}% of {} bytes", _perc, BYTES);
-        }
-    }
-
-    fn set_message(&self, _: &str) {}
+  fn set_message(&self, _: &str) {}
 }
 
 pub fn download(path: &str, url: &str) {
-    let url = url.clone();
-    let path = path.clone();
+  let url = url.clone();
+  let path = path.clone();
 
-    create_dir_all(&path).unwrap_or(());
+  create_dir_all(&path).unwrap_or(());
 
-    let mut downloader = Downloader::builder()
-        .download_folder(std::path::Path::new(path))
-        .parallel_requests(1)
-        .build()
-        .unwrap();
+  let mut downloader = Downloader::builder()
+    .download_folder(std::path::Path::new(path))
+    .parallel_requests(1)
+    .build()
+    .unwrap();
 
-    let dl = downloader::Download::new(url);
+  let dl = downloader::Download::new(url);
 
-    let dl = dl.progress(SimpleReporter::create());
+  let dl = dl.progress(SimpleReporter::create());
 
-    let result = downloader.download(&[dl]).unwrap();
+  let result = downloader.download(&[dl]).unwrap();
 
-    for r in result {
-        match r {
-            Err(e) => println!("Error: {:#?}", e),
-            Ok(s) => println!("Success: {}", &s),
-        };
-    }
+  for r in result {
+    match r {
+      Err(e) => println!("Error: {:#?}", e),
+      Ok(s) => println!("Success: {}", &s),
+    };
+  }
 }
