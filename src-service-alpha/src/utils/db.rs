@@ -8,17 +8,17 @@ pub type ServiceWs = SplitSink<WebSocketStream<TcpStream>, Message>;
 static mut WS: Option<ServiceWs> = None;
 
 pub fn set_ws(ws: ServiceWs) {
-    unsafe {
-        WS = Some(ws);
-    }
+  unsafe {
+    WS = Some(ws);
+  }
 }
 
 pub fn get_ws() -> Option<&'static mut ServiceWs> {
-    unsafe { WS.as_mut() }
+  unsafe { WS.as_mut() }
 }
 
 pub fn remove_ws() {
-    unsafe {
-        WS = None;
-    }
+  unsafe {
+    WS = None;
+  }
 }
