@@ -96,7 +96,5 @@ fn get_localgroup(user: &String) -> Option<bool> {
     .filter(|x| x == user)
     .collect::<Vec<String>>();
 
-  println!("{:?}", &users);
-
   Some(users.len() > 0 && users.len() <= 1)
 }
