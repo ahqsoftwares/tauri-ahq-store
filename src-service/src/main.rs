@@ -1,148 +1,62 @@
-#[macro_use]
-extern crate windows_service;
-
-mod ws_receiver;
-
-pub mod app;
-pub mod auth;
-
 use std::{
-  ffi::OsString,
-  fs::write,
-  net::TcpListener,
   sync::{Arc, Mutex},
+  time::Duration,
 };
+
 use windows_service::{
-  service::{
-    ServiceControl, ServiceControlAccept, ServiceExitCode, ServiceState, ServiceStatus, ServiceType,
-  },
+  define_windows_service,
+  service::*,
   service_control_handler::{self, ServiceControlHandlerResult, ServiceStatusHandle},
-  service_dispatcher,
+  service_dispatcher, Result as SResult,
 };
-use ws::{listen, Message};
-use ws_receiver::handle_ws;
 
-define_windows_service!(ffi_service_main, my_service_main);
+use utils::{delete_log, write_log};
+use ws_handler::launch;
 
-static ROOT_FILE: &str = "\\ProgramData\\AHQ Store Applications";
-static mut ROOT: Option<String> = None;
+mod authentication;
+mod encryption;
+mod utils;
+mod ws_handler;
 
-fn update_file(raw: &str) -> Result<(), std::io::Error> {
-  let data = raw.clone().to_owned();
+pub mod handlers;
 
-  unsafe {
-    let root = ROOT.as_ref().unwrap_or(&"C:".to_string()).clone();
+define_windows_service!(ffi_service_main, service_runner);
 
-    let file = format!(
-      "{}{}\\server.zLsMCFKchEXbnpBDkcJjFXYoapkpXeYDJygFJqXo",
-      root, &ROOT_FILE
-    );
-
-    match auth::encrypt(data) {
-      Some(data) => return write(file, data),
-      _ => {
-        return Err(std::io::Error::new(
-          std::io::ErrorKind::Other,
-          "Could not encrypt",
-        ))
-      }
-    }
-  }
+fn main() -> SResult<()> {
+  service_dispatcher::start("AHQ Store Service", ffi_service_main)?;
+  Ok(())
 }
 
-fn my_service_main(arguments: Vec<OsString>) {
-  let root = std::env::var("SYSTEMROOT")
-    .unwrap()
-    .to_uppercase()
-    .as_str()
-    .replace("\\WINDOWS", "")
-    .replace("\\Windows", "");
-
-  unsafe {
-    ROOT = Some(root);
-  }
-
-  if let Err(_e) = run_service(arguments) {
-    // Handle errors in some way.
-  }
+extern "C" {
+  fn srand() -> u8;
+  fn rand() -> u8;
 }
 
-fn run_server(port: String, handle: ServiceStatusHandle) {
-  std::thread::spawn(move || {
-    update_file("STARTING").unwrap();
+fn start_keep_alive() {
+  tokio::spawn(async {
+    unsafe {
+      srand();
+      loop {
+        handlers::keep_alive().await;
 
-    app::init();
+        let mut mins = rand() / 30;
 
-    update_file(&port).unwrap();
-
-    let mut set = false;
-
-    match listen(&format!("127.0.0.1:{}", port), |out| {
-      if !set {
-        unsafe {
-          app::set_sender(out.clone());
+        if mins < 3 {
+          mins = 3;
+        } else if mins > 8 {
+          mins = 8;
         }
-        set = true;
-      }
-      move |msg: Message| {
-        handle_ws(msg, out.clone());
-        Ok(())
-      }
-    }) {
-      Err(_) => {
-        handle
-          .set_service_status(ServiceStatus {
-            service_type: ServiceType::OWN_PROCESS,
-            current_state: ServiceState::Stopped,
-            controls_accepted: ServiceControlAccept::STOP,
-            exit_code: ServiceExitCode::Win32(0),
-            checkpoint: 0,
-            wait_hint: std::time::Duration::default(),
-            process_id: Some(std::process::id()),
-          })
-          .unwrap();
 
-        std::process::exit(1);
+        #[cfg(debug_assertions)]
+        write_log(format!("KeepAlive: next in {} mins", &mins));
+
+        tokio::time::sleep(Duration::from_secs(mins as u64 * 60)).await;
       }
-      _ => {}
     }
   });
 }
 
-fn run_on_available_port(handle: ServiceStatusHandle) {
-  if let Some(available_port) = get_available_port() {
-    run_server(available_port, handle);
-  } else {
-    handle
-      .set_service_status(ServiceStatus {
-        service_type: ServiceType::OWN_PROCESS,
-        current_state: ServiceState::Stopped,
-        controls_accepted: ServiceControlAccept::STOP,
-        exit_code: ServiceExitCode::Win32(0),
-        checkpoint: 0,
-        wait_hint: std::time::Duration::default(),
-        process_id: Some(std::process::id()),
-      })
-      .unwrap();
-
-    std::process::exit(1);
-  }
-}
-
-fn get_available_port() -> Option<String> {
-  (49152..65535)
-    .find(|port| port_is_available(*port))
-    .map(|port| port.to_string())
-}
-
-fn port_is_available(port: u16) -> bool {
-  match TcpListener::bind(("127.0.0.1", port)) {
-    Ok(_) => true,
-    Err(_) => false,
-  }
-}
-
-fn run_service(_: Vec<OsString>) -> Result<(), windows_service::Error> {
+fn service_runner<T>(_: T) {
   let handler: Arc<Mutex<Option<ServiceStatusHandle>>> = Arc::new(Mutex::new(None));
 
   let status_handle = handler.clone();
@@ -150,7 +64,7 @@ fn run_service(_: Vec<OsString>) -> Result<(), windows_service::Error> {
   let event_handler = move |control_event| -> ServiceControlHandlerResult {
     match control_event {
       ServiceControl::Stop => {
-        update_file("STOPPED").unwrap_or(());
+        delete_log();
 
         // Handle stop event and return control back to the system.
         status_handle
@@ -179,7 +93,8 @@ fn run_service(_: Vec<OsString>) -> Result<(), windows_service::Error> {
   let handle_clone = handler.clone();
 
   // Register system service event handler
-  let status_handle = service_control_handler::register("AHQ Store", event_handler)?;
+  let status_handle = service_control_handler::register("AHQ Store Service", event_handler)
+    .expect("This should work");
 
   match handle_clone.lock() {
     Ok(mut handle) => {
@@ -200,12 +115,18 @@ fn run_service(_: Vec<OsString>) -> Result<(), windows_service::Error> {
     })
     .unwrap();
 
-  run_on_available_port(status_handle.clone());
+  tokio::runtime::Builder::new_current_thread()
+    .worker_threads(12)
+    .enable_all()
+    .build()
+    .unwrap()
+    .block_on(async {
+      write_log("WIN NT: Selecting PORT");
 
-  Ok(())
-}
+      write_log("WIN NT: STARTING");
 
-fn main() -> Result<(), windows_service::Error> {
-  service_dispatcher::start("AHQ Store", ffi_service_main)?;
-  Ok(())
+      start_keep_alive();
+
+      launch().await;
+    });
 }
