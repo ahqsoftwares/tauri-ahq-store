@@ -5,6 +5,7 @@ use tokio_tungstenite::tungstenite::Message;
 pub type AppId = String;
 pub type Str = String;
 pub type AppData = (String, String);
+pub type RefId = u64;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Prefs {}
@@ -31,17 +32,17 @@ pub struct AHQStoreApplication {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Command {
-  GetApp(AppId),
-  InstallApp(AppId),
-  UninstallApp(AppId),
+  GetApp(RefId, AppId),
+  InstallApp(RefId, AppId),
+  UninstallApp(RefId, AppId),
 
-  ListApps,
+  ListApps(RefId),
 
-  RunUpdate,
-  UpdateStatus,
+  RunUpdate(RefId),
+  UpdateStatus(RefId),
 
-  GetPrefs,
-  SetPrefs(Prefs),
+  GetPrefs(RefId),
+  SetPrefs(RefId, Prefs),
 }
 
 impl Command {
@@ -52,17 +53,17 @@ impl Command {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Reason {
-  UnknownData,
+  UnknownData(RefId),
 
   Unauthenticated,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ErrorType {
-  GetAppFailed(AppId),
-  AppInstallError(AppId),
-  AppUninstallError(AppId),
-  PrefsError,
+  GetAppFailed(RefId, AppId),
+  AppInstallError(RefId, AppId),
+  AppUninstallError(RefId, AppId),
+  PrefsError(RefId),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -73,21 +74,23 @@ pub enum Response {
 
   Disconnect(Reason),
 
-  AppData(AppId, AHQStoreApplication),
+  AppData(RefId, AppId, AHQStoreApplication),
 
-  ListApps(Vec<AppData>),
+  ListApps(RefId, Vec<AppData>),
 
-  DownloadStarted(AppId),
-  DownloadProgress(AppId, u8),
-  DownloadComplete(AppId),
-  Installing(AppId),
-  Installed(AppId),
+  DownloadStarted(RefId, AppId),
+  DownloadProgress(RefId, AppId, u8),
+  DownloadComplete(RefId, AppId),
+  Installing(RefId, AppId),
+  Installed(RefId, AppId),
 
-  UninstallStarting(AppId),
-  Uninstalled(AppId),
+  UninstallStarting(RefId, AppId),
+  Uninstalled(RefId, AppId),
 
-  Prefs(Prefs),
-  PrefsSet,
+  Prefs(RefId, Prefs),
+  PrefsSet(RefId),
+
+  TerminateBlock(RefId, Str)
 }
 
 impl Response {
