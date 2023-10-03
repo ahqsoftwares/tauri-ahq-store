@@ -2,7 +2,6 @@
   "files.watcherExclude": {
     "**/node_modules": true
   },
-  "files.maxMemoryForLargeFilesMB": 1024,
   "files.exclude": {
     "**/node_modules": true
   },
@@ -13,5 +12,9 @@
   "editor.hover.sticky": true,
   "codemetrics.basics.EnabledForJSX": true,
   "codemetrics.luaconfiguration.FunctionDeclaration": 0,
-  "codemetrics.luaconfiguration.RepeatStatement": 3
+  "codemetrics.luaconfiguration.RepeatStatement": 3,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "editor.formatOnType": true,
+  "editor.tabSize": 2
 }
