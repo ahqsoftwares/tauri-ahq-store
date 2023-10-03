@@ -1,17 +1,19 @@
 use serde::ser::Serialize;
 use serde_json::{from_str, to_string};
 use std::{
-  fs::read_to_string,
+  fs,
   net::TcpStream,
   sync::{Arc, Mutex},
   thread::spawn,
 };
-use tungstenite::{connect, stream::MaybeTlsStream, WebSocket};
+use tungstenite::{connect, stream::MaybeTlsStream, WebSocket, Message};
+
+use ahqstore_types::Response;
 
 use crate::{
   encryption::{decrypt, encrypt},
   get_system_dir,
-  util::structs::{PayloadReq, ServerResp, ToSendResp},
+  util::structs::{PayloadReq, ToSendResp},
 };
 
 static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
@@ -68,35 +70,23 @@ impl<'a> WsConnection<'a> {
             }
             x
           })
-          .filter(|x| {
-            if let Ok(payload) = from_str::<ServerResp>(&x) {
-              if &include!("./encrypt") == &payload.auth {
-                return true;
-              }
-            }
-            #[cfg(debug_assertions)]
-            println!("Something went to false");
-            unsafe {
-              let _ = WINDOW.as_mut().unwrap().emit("error", &x);
-            }
-            false
-          })
           .map(|x| {
-            if let Ok(payload) = from_str::<ServerResp>(&x) {
-              let string = to_string(&ToSendResp {
-                method: payload.method,
-                payload: payload.payload,
-                reason: payload.reason,
-                ref_id: payload.ref_id.replace(include!("./encrypt"), "****"),
-                status: payload.status,
-              })
-              .unwrap_or_else(|_| "{}".into());
+            if let Ok(payload) = from_str::<Response>(&x) {
+              println!("{:?}", &payload);
+              // let string = to_string(&ToSendResp {
+              //   method: payload.method,
+              //   payload: payload.payload,
+              //   reason: payload.reason,
+              //   ref_id: payload.ref_id.replace(include!("./encrypt"), "****"),
+              //   status: payload.status,
+              // })
+              // .unwrap_or_else(|_| "{}".into());
 
-              unsafe {
-                let _ = WINDOW.as_mut().unwrap().emit("error", &string);
-              }
+              // unsafe {
+              //   let _ = WINDOW.as_mut().unwrap().emit("error", &string);
+              // }
 
-              return string;
+              // return string;
             }
 
             "{}".into()
@@ -147,8 +137,11 @@ impl<'a> WsConnection<'a> {
           loop {
             if let Ok(msg) = ws.read() {
               if let Ok(txt) = msg.to_text() {
-                tx.send(txt.into()).unwrap_or(());
+                let _ = tx.send(txt.into());
               }
+            } else {
+              let _ = tx.send("DISCONNECT".into());
+              break;
             }
             std::thread::sleep(std::time::Duration::from_millis(1));
           }
@@ -156,22 +149,30 @@ impl<'a> WsConnection<'a> {
       });
 
       //Handle Read + Write at high speed
-      loop {
-        if let Ok(ref mut x) = self.to_send.try_lock() {
-          let send = x.drain(..).collect::<Vec<String>>();
+      
+      if let Some(ws) = WS.as_mut() {
+        let _ = ws.send(
+          Message::Text(
+            format!("{{ \"process\": {} }}", std::process::id())
+          )
+        );
+        loop {
+          if let Ok(ref mut x) = self.to_send.try_lock() {
+            let send = x.drain(..).collect::<Vec<String>>();
 
-          if let Some(ws) = WS.as_mut() {
+            let _ = ws.send(Message::text("KA"));
             for msg in send {
               ws.send(tungstenite::Message::Text(msg)).unwrap_or(());
             }
           }
-        }
 
-        if let Ok(msg) = rx.try_recv() {
-          self.load_into(msg);
-        }
+          if let Ok(msg) = rx.try_recv() {
+            println!("{}", &msg);
+            self.load_into(msg);
+          }
 
-        std::thread::sleep(std::time::Duration::from_millis(1));
+          std::thread::sleep(std::time::Duration::from_millis(20));
+        }
       }
     } else {
       reinstall_astore();
@@ -181,16 +182,14 @@ impl<'a> WsConnection<'a> {
 
 pub fn get_ws_port() -> Option<u64> {
   let file = format!(
-    "{}\\ProgramData\\AHQ Store Applications\\server.zLsMCFKchEXbnpBDkcJjFXYoapkpXeYDJygFJqXo",
+    "{}\\ProgramData\\AHQ Store Applications\\service.encrypted.txt",
     get_system_dir()
   );
 
-  if let Ok(x) = read_to_string(file) {
-    if let Ok(x) = from_str::<Vec<u8>>(&x) {
-      if let Some(x) = decrypt(x) {
-        if let Ok(x) = x.parse::<u64>() {
-          return Some(x);
-        }
+  if let Ok(x) = fs::read(file) {
+    if let Some(x) = decrypt(x) {
+      if let Ok(x) = x.parse::<u64>() {
+        return Some(x);
       }
     }
   }
