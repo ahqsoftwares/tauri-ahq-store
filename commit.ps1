@@ -6,6 +6,7 @@ foreach ($file in $files) {
     git add $file.FullName
 
     $relativePath = $file.FullName.Substring($rootDirectory.Length + 1)
-    $cmtMessage = $commitMessage + '\n' + "Add $relativePath"
+    $cmtMessage = $commitMessage + "
+    Add $relativePath"
     git commit -m $cmtMessage
 }
