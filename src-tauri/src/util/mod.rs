@@ -4,23 +4,28 @@ use std::{
 };
 
 use reqwest::{
-  blocking::ClientBuilder,
+  blocking::{Client, ClientBuilder},
   header::{HeaderMap, HeaderValue},
 };
 use serde_json::Value;
+use lazy_static::lazy_static;
 
 pub mod structs;
 
+lazy_static! {
+  static ref CLIENT: Client = {
+    let mut map = HeaderMap::new();
+    map.insert(
+      "User-Agent",
+      HeaderValue::from_str("AHQ Store/Service Installer").unwrap(),
+    );
+
+    ClientBuilder::new().default_headers(map).build().unwrap()
+  };
+}
+
 pub fn get_service_url() -> String {
-  let mut map = HeaderMap::new();
-  map.insert(
-    "User-Agent",
-    HeaderValue::from_str("AHQ Store/Service Installer").unwrap(),
-  );
-
-  let client = ClientBuilder::new().default_headers(map).build().unwrap();
-
-  let get = client
+  let get = CLIENT
     .get("https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest")
     .send()
     .unwrap()

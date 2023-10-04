@@ -237,15 +237,16 @@ export default function Init(props: InitProps) {
           Advanced
         </h1>
 
-        {props.admin ? (
+        {versionToBuild(ver).includes("-next") ? (
           <CheckBox
             dark={props.dark}
             url={false}
-            title="Alpha Builds"
-            description="Use Alpha Builds of AHQ Store"
+            title="Alpha Build"
+            description="You are currently in a alpha build"
             Icon={HiWrenchScrewdriver}
-            onClick={() => {}}
+            onClick={() => { }}
             active={false}
+            noCheckbox={true}
           />
         ) : (
           <></>

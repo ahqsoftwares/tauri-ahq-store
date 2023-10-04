@@ -2,18 +2,17 @@ import { newServer } from "../../server";
 import { sendWsRequest } from "./handler";
 import fetch from "./http";
 
-export function get_commit(): Promise<string> {
-  return new Promise((resolve) => {
-    sendWsRequest(
-      {
-        module: "COMMIT",
-      },
-      (val) => {
-        if (val.method == "COMMIT") {
-          resolve(val.payload);
-        }
-      },
-    );
+export function get_home<T>() {
+  console.log("1");
+  return fetch<T>(`${newServer}/apps/home`, {
+    method: "GET"
+  });
+}
+
+export function get_map<T>() {
+  console.log("2");
+  return fetch<T>(`${newServer}/apps/map`, {
+    method: "GET"
   });
 }
 
@@ -85,19 +84,23 @@ interface Prefs {
 
 export type { Prefs };
 
-export function get_access_perfs(): Promise<Prefs> {
-  return new Promise((resolve) => {
-    sendWsRequest(
-      {
-        module: "GET_PREFS",
-      },
-      (val) => {
-        if (val.method == "GET_PREFS") {
-          resolve(JSON.parse(val.payload));
-        }
-      },
-    );
-  });
+export async function get_access_perfs(): Promise<Prefs> {
+  return {
+    install_apps: true,
+    launch_app: true
+  };
+  // return new Promise((resolve) => {
+  //   sendWsRequest(
+  //     {
+  //       module: "GET_PREFS",
+  //     },
+  //     (val) => {
+  //       if (val.method == "GET_PREFS") {
+  //         resolve(JSON.parse(val.payload));
+  //       }
+  //     },
+  //   );
+  // });
 }
 
 export function set_access_prefs(prefs: Prefs): Promise<void> {

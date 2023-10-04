@@ -33,9 +33,8 @@ import fetchPrefs, {
   setConfig,
 } from "./resources/utilities/preferences";
 import { runner } from "./resources/core/handler";
-import { init } from "./resources/api/fetchApps";
 import { notification } from "@tauri-apps/api";
-import { Prefs } from "./resources/core";
+import { Prefs, get_home, get_map } from "./resources/core";
 import {
   defaultDark,
   defaultLight,
@@ -148,38 +147,26 @@ function Render(props: AppProps) {
       setDebug(debug);
 
       //Fetch Maps
-      init()
-        .then(async (commit_id) => {
-          if (
-            commit_id !== "" ||
-            commit_id !== undefined ||
-            commit_id !== null
-          ) {
-            const { data: Mapped } = await fetch<any>(`${newServer}/apps/map`, {
-              method: "GET",
-              timeout: 30,
-              responseType: 1,
-            });
+      try {
+        console.log("Fetching Maps");
+        const { data: map } = await get_map<{ [key: string]: Object }>();
 
-            setData({
-              map: Mapped as {
-                [key: string]: Object;
-              },
-            });
+        console.log(map);
 
-            const { data: Home } = await fetch<any>(`${newServer}/apps/home`, {
-              method: "GET",
-              timeout: 30,
-              responseType: 1,
-            });
-
-            setApps(Home);
-          }
-          setLoad(true);
-        })
-        .catch(() => {
-          window.location.reload();
+        setData({
+          map,
         });
+
+        const { data: home } = await get_home<any>();
+
+        console.log(home);
+
+        setApps(home);
+        setLoad(true);
+      } catch (_) {
+        console.log(_);
+        window.location.reload();
+      }
     })();
   }, []);
 
@@ -255,54 +242,40 @@ function Render(props: AppProps) {
 
   switch (page) {
     case "apps":
-      app = <Apps
-        auth={auth}
-        dark={dark}
-        apps={apps}
-        isAdmin={admin}
-      />;
+      app = <Apps auth={auth} dark={dark} apps={apps} isAdmin={admin} />;
       break;
     case "settings":
-      app = <Settings
-      auth={auth}
-      setDev={setDev}
-      dark={dark}
-      setDark={setDark}
-      font={font}
-      setFont={changeFont}
-      autoUpdate={autoUpdate}
-      setAutoUpdate={setAutoUpdate}
-      sidebar={sidebar}
-      setSidebar={updateSidebar}
-      admin={admin}
-      setTheme={updateTheme}
-      theme={theme}
-      />;
+      app = (
+        <Settings
+          auth={auth}
+          setDev={setDev}
+          dark={dark}
+          setDark={setDark}
+          font={font}
+          setFont={changeFont}
+          autoUpdate={autoUpdate}
+          setAutoUpdate={setAutoUpdate}
+          sidebar={sidebar}
+          setSidebar={updateSidebar}
+          admin={admin}
+          setTheme={updateTheme}
+          theme={theme}
+        />
+      );
       break;
     case "user":
-      app = <User
-        auth={auth}
-        dark={dark}
-      />;
+      app = <User auth={auth} dark={dark} />;
       break;
     case "home":
-      app = <Home
-        auth={auth}
-        dark={dark}
-        dev={dev || false}
-        setPage={changePage}
-      />;
+      app = (
+        <Home auth={auth} dark={dark} dev={dev || false} setPage={changePage} />
+      );
       break;
     case "developer":
-      app = <Developer
-          auth={auth}
-          dark={dark}
-        />;
+      app = <Developer auth={auth} dark={dark} />;
       break;
     case "library":
-      app = <Library
-        dark={dark}
-      />;
+      app = <Library dark={dark} />;
       break;
   }
 

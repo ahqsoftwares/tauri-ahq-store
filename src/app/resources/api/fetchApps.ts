@@ -1,5 +1,5 @@
 import fetch from "../core/http";
-import { get_apps, get_commit } from "../core";
+import { get_apps } from "../core";
 import { newServer } from "../../server";
 
 let commit_id = "";
@@ -36,19 +36,16 @@ let cache: {
   [key: string]: appData;
 } = {};
 
-export async function init() {
-  commit_id = await get_commit();
-
-  return commit_id;
-}
-
 export default async function fetchApps(
   apps: string | string[],
 ): Promise<appData | appData[]> {
+  console.log(apps);
   if (typeof apps === "string") {
     return (await resolveApps([apps]))[0];
-  } else {
+  } else if (Array.isArray(apps)) {
     return await resolveApps([...apps]);
+  } else {
+    return [];
   }
 }
 
@@ -119,11 +116,13 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
 
           cache[appId] = {
             ...app[0],
+            id: appId,
             AuthorObject: authorObj,
           };
 
           return {
             ...app[0],
+            id: appId,
             AuthorObject: authorObj,
           };
         })(),
@@ -135,3 +134,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
 }
 
 export type { appData };
+export type { AuthorObject };
+
+type ApplicationData = appData;
+export type { ApplicationData };

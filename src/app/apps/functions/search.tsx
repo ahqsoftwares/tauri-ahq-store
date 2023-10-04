@@ -22,13 +22,16 @@ interface SearchProps {
 export default function Search(props: SearchProps) {
   const { query, set, show, dark, special, isAdmin } = props;
 
-  const [matches, setMatches] = useState<any>([]);
+  const [matches, setMatches] = useState<appData[]>([]);
   const [searched, setSearched] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
       const results = await getDataFromMatches(await getMatches(query));
-      setMatches(results);
+
+      console.log(results);
+
+      setMatches(results as appData[]);
       setSearched(true);
     })();
   }, [query]);
@@ -36,7 +39,8 @@ export default function Search(props: SearchProps) {
   if (!special) {
     return (
       <>
-        {matches.map((app: appData, index: number) => {
+        {matches.map((app, index) => {
+          console.log(app);
           return (
             <>
               <SearchResult
@@ -81,7 +85,8 @@ export default function Search(props: SearchProps) {
           matches.length == 0 ? "special-app-grid" : ""
         }`}
       >
-        {matches.map((app: appData) => {
+        {matches.map((app) => {
+          console.log(app)
           return (
             <AppCard
               id={app.id}
@@ -133,19 +138,7 @@ async function getMatches(query: string): Promise<Array<string>> {
 }
 
 async function getDataFromMatches(matches: Array<string>) {
-  let answer: appData[] = [];
-
-  let data = matches.map((id: string) => fetchApps(id));
-
-  await Promise.all(data).then((results) => {
-    answer = results as appData[];
-
-    if (results.length > 5) {
-      answer.length = 5;
-    }
-  });
-
-  return answer;
+  return fetchApps(matches);
 }
 
 export { getMatches, getDataFromMatches };

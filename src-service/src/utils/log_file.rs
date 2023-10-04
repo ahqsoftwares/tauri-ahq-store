@@ -54,6 +54,8 @@ pub fn delete_log() -> Option<()> {
   let file_path = get_log_file();
   let old_file_path = get_old_log_file();
 
+  write_service("STOPPED");
+
   fs::copy(&file_path, &old_file_path).ok();
 
   fs::remove_file(file_path).ok()

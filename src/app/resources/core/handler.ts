@@ -1,6 +1,8 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 
+type u64 = Number;
+
 type Object = {
   [key: string | number | symbol]: any;
 };
@@ -11,19 +13,29 @@ type WsResp = {
   ref_id: string;
 };
 
-let send: { data: Object; resolve: (value: Object) => void }[] = [];
-let toResolve: { data: Object; resolve: (value: Object) => void }[] = [];
+let send: { data: Object; ref_id: u64; resolve: (value: Object) => void }[] =
+  [];
+let toResolve: {
+  data: Object;
+  ref_id: u64;
+  resolve: (value: Object) => void;
+}[] = [];
 
 export function sendWsRequest(data: Object, result: (value: Object) => void) {
   queueAndWait(data, result);
 }
 
+let ref_counter = 0;
+
 function queueAndWait(data: Object, result: (value: Object) => void) {
+  ref_counter++;
+
   send.push({
-    data,
-    resolve: (value) => {
-      result(value);
+    data: {
+      ...data,
     },
+    resolve: result,
+    ref_id: ref_counter,
   });
 }
 

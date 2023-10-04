@@ -1,4 +1,3 @@
-use serde::ser::Serialize;
 use serde_json::{from_str, to_string};
 use std::{
   fs,
@@ -11,9 +10,9 @@ use tungstenite::{connect, stream::MaybeTlsStream, WebSocket, Message};
 use ahqstore_types::Response;
 
 use crate::{
-  encryption::{decrypt, encrypt},
+  encryption::decrypt,
   get_system_dir,
-  util::structs::{PayloadReq, ToSendResp},
+  util::structs::PayloadReq,
 };
 
 static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
@@ -43,13 +42,10 @@ impl<'a> WsConnection<'a> {
     }
   }
 
-  pub fn send_ws<T: Serialize + std::fmt::Debug>(&mut self, value: T) {
-    if let Ok(ref mut x) = self.to_send.try_lock() {
-      let data = to_string(&value).unwrap();
-      if let Some(data) = encrypt(data) {
-        let data = to_string(&data).unwrap();
-
-        x.push(data);
+  pub fn send_ws(&mut self, value: PayloadReq) {
+    if let Ok(ref mut _a) = self.to_send.try_lock() {
+      match value.module.as_str() {
+        _ => {}
       }
     }
   }
