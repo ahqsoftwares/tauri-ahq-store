@@ -7,8 +7,10 @@ use reqwest::{Client, ClientBuilder, StatusCode};
 use crate::utils::{
   get_installer_file, get_ws,
   structs::{AHQStoreApplication, RefId, AppId, ErrorType, Response},
-  write_log,
 };
+
+#[cfg(not(debug_assertions))]
+use crate::utils::write_log;
 
 static URL: &str = "https://ahqstore-server.onrender.com";
 

@@ -8,12 +8,13 @@ use crate::utils::*;
 pub fn authenticate_process(pid: usize) -> bool {
   #[cfg(not(debug_assertions))]
   {
+    let path = format!(
+      "{}\\Program Files\\AHQ Store\\AHQ Store.exe",
+      get_main_drive()
+    );
+    let path = path.as_bytes();
     let exe = String::from_utf8_lossy(
-      format!(
-        "{}\\Program Files\\AHQ Store\\AHQ Store.exe",
-        get_main_drive()
-      )
-      .as_bytes(),
+      path
     );
 
     let mut system = System::new_all();
