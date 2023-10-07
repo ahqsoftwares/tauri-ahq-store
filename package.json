@@ -1,8 +1,8 @@
 {
   "name": "ahq-store-tauri",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "license": "CC BY-NC 3.0",
+  "license": "Creative Commons Attribution Non Commercial 3.0",
   "dependencies": {
     "@tauri-apps/api": "^1.5.0",
     "autoprefixer": "^10.4.16",

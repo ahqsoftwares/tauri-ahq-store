@@ -1,8 +1,8 @@
 [package]
 name = "ahqstore_service"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
-license = "CC BY-NC 3.0"
+license = "Creative Commons Attribution Non Commercial 3.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
