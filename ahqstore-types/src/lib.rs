@@ -1,5 +1,11 @@
 use serde::{Deserialize, Serialize};
-use serde_json::to_string_pretty;
+use serde_json::{
+  to_string_pretty,
+  to_string,
+  from_str
+};
+use std::fs::read;
+
 use tokio_tungstenite::tungstenite::Message;
 
 pub type AppId = String;
@@ -8,7 +14,24 @@ pub type AppData = (String, String);
 pub type RefId = u64;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Prefs {}
+pub struct Prefs {
+  launch_app: bool,
+  install_apps: bool
+}
+
+impl Prefs {
+  pub fn get(path: &str) -> Option<Vec<u8>> {
+    read(&path).ok()
+  }
+
+  pub fn str_to(s: &str) -> Option<Self> {
+    from_str(s).ok()
+  }
+  
+  pub fn convert(&self) -> Option<String> {
+    to_string(self).ok()
+  }
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AppRepo {

@@ -78,7 +78,7 @@
       "identifier": "com.ahqsoftwares.store",
       "longDescription": "AHQ Store\nA New Store for downloading apps!",
       "resources": [],
-      "shortDescription": "A store to download apps",
+      "shortDescription": "AHQ Store",
       "targets": ["msi", "updater"],
       "windows": {
         "certificateThumbprint": null,
