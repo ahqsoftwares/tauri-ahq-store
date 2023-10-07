@@ -9,7 +9,7 @@ use crate::utils::{
   structs::{AHQStoreApplication, RefId, AppId, ErrorType, Response},
 };
 
-#[cfg(not(debug_assertions))]
+#[cfg(debug_assertions)]
 use crate::utils::write_log;
 
 static URL: &str = "https://ahqstore-server.onrender.com";
