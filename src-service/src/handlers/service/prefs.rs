@@ -1,7 +1,7 @@
 use ahqstore_types::Prefs;
 use crate::utils::get_main_drive;
 
-static _: &str = "{root}\\ProgramData\\AHQ Store Applications\\perfs.encryped";
+static _PREFS: &str = "{root}\\ProgramData\\AHQ Store Applications\\perfs.encryped";
 
 pub fn get() {
   /*let path = PATH.replace("{}", &get_main_drive());
