@@ -1,4 +1,19 @@
-# ALPHA BUILD
-This build is a semi-working build where some aspects of the app are introduced like alpha toggle, home page button fixes etc.
+Welcome to the Big Box Update! The update to AHQ Store does a lot of changes.
 
-**NOTE:** Alpha Builds won't have a detailed Description and can switch to stable if that's newer than alpha.
+## Changes 📈
+- New AHQ Store Service which is highly faster 🚀
+- Refinements 🔧
+- Fix a security vulnerability 🛡️
+- We're moving to the AHQ Store Server which requires authentication 🧑‍💻
+
+## Present issues 🪲
+- Prefs has been removed until **v1.5.0** 📝
+- Updater currently doesn't work (to be fixed by **v1.5.0**) ⚡
+
+## Pull Requests ⚡
+* Update publish.yml by @ahqsoftwares in https://github.com/ahqsoftwares/tauri-ahq-store/pull/67
+* Combined PRs by @github-actions in https://github.com/ahqsoftwares/tauri-ahq-store/pull/81
+* Combined PRs by @github-actions in https://github.com/ahqsoftwares/tauri-ahq-store/pull/103
+* PR Fix by @ahqsoftwares in https://github.com/ahqsoftwares/tauri-ahq-store/pull/108
+
+**Full Changelog**: 📝 https://github.com/ahqsoftwares/tauri-ahq-store/compare/1.1.0...1.3.0
