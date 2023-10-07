@@ -199,7 +199,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                   ref={button}
                   className={`dui-btn ${
                     working
-                      ? "bg-transparent border-base-content text-base-content"
+                      ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
                       : "dui-btn-success text-success-content"
                   } w-[60%] mb-4`}
                   onClick={async () => {
@@ -208,7 +208,7 @@ export default function ShowModal(props: AppDataPropsModal) {
 
                       button.current.innerHTML = "Starting Download...";
 
-                      await install_app<string>(installData, (c, t) => {
+                      await install_app(installData, ({c,t}) => {
                         if (c == 10000 && t == 0) {
                           button.current.innerHTML = "Installing...";
                         } else {
@@ -218,8 +218,8 @@ export default function ShowModal(props: AppDataPropsModal) {
                             t,
                           )})`;
                         }
-                      }).then(async (data: string) => {
-                        if (data != "[]") {
+                      }).then(async (success) => {
+                        if (!success) {
                           button.current.innerHTML = "Failed...";
                         } else {
                           button.current.innerHTML = "Installed!";

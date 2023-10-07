@@ -80,7 +80,6 @@ pub enum Response {
 
   DownloadStarted(RefId, AppId),
   DownloadProgress(RefId, AppId, u8),
-  DownloadComplete(RefId, AppId),
   Installing(RefId, AppId),
   Installed(RefId, AppId),
 
@@ -90,7 +89,7 @@ pub enum Response {
   Prefs(RefId, Prefs),
   PrefsSet(RefId),
 
-  TerminateBlock(RefId, Str)
+  TerminateBlock(RefId)
 }
 
 impl Response {

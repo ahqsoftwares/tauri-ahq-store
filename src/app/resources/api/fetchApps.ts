@@ -1,5 +1,5 @@
 import fetch from "../core/http";
-import { get_apps } from "../core";
+import { get_app } from "../core";
 import { newServer } from "../../server";
 
 let commit_id = "";
@@ -8,11 +8,11 @@ interface AuthorObject {
   displayName: string;
   email: string;
   apps:
-    | []
-    | {
-        apps: string[];
-        ignored: string[];
-      };
+  | []
+  | {
+    apps: string[];
+    ignored: string[];
+  };
 }
 
 interface appData {
@@ -39,7 +39,6 @@ let cache: {
 export default async function fetchApps(
   apps: string | string[],
 ): Promise<appData | appData[]> {
-  console.log(apps);
   if (typeof apps === "string") {
     return (await resolveApps([apps]))[0];
   } else if (Array.isArray(apps)) {
@@ -111,20 +110,18 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
     } else {
       promises.push(
         (async () => {
-          const app = await get_apps([appId]);
-          const authorObj = await fetchAuthor(app[0].author);
+          const app = await get_app(appId);
+          const authorObj = await fetchAuthor(app.author);
 
-          cache[appId] = {
-            ...app[0],
+          const appData = {
+            ...app,
             id: appId,
             AuthorObject: authorObj,
           };
 
-          return {
-            ...app[0],
-            id: appId,
-            AuthorObject: authorObj,
-          };
+          cache[appId] = appData;
+
+          return appData;
         })(),
       );
     }

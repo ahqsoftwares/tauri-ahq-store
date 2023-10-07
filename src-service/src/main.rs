@@ -10,7 +10,7 @@ use windows_service::{
   service_dispatcher, Result as SResult,
 };
 
-use utils::{delete_log, write_log};
+use utils::{delete_log, write_log, write_service};
 use ws_handler::launch;
 
 mod authentication;
@@ -64,7 +64,7 @@ fn service_runner<T>(_: T) {
   let event_handler = move |control_event| -> ServiceControlHandlerResult {
     match control_event {
       ServiceControl::Stop => {
-        delete_log();
+        write_service(-1);
 
         // Handle stop event and return control back to the system.
         status_handle
@@ -121,6 +121,8 @@ fn service_runner<T>(_: T) {
     .build()
     .unwrap()
     .block_on(async {
+      delete_log();
+      
       write_log("WIN NT: Selecting PORT");
 
       write_log("WIN NT: STARTING");

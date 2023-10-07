@@ -109,9 +109,7 @@ export default function Home(props: HomeProps) {
           AHQ Store
         </h1>
         <span
-          className={`block mt-auto ${
-            props.dark ? "text-red-600" : "text-black"
-          } ml-2`}
+          className={`block mt-auto ${props.dark ? "text-base-content" : "text-black"} ml-2`}
           style={{ fontSize: "40px", fontWeight: "10px" }}
         >
           v{version}

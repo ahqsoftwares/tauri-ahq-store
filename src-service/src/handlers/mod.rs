@@ -21,6 +21,8 @@ pub fn handle_msg(data: String, stop: fn()) {
             let app_data = get_app(ref_id, app_id).await;
             let x = Response::as_msg(app_data);
             let _ = ws.send(x).await;
+            
+            send_term(ref_id).await;
           }
           Command::InstallApp(ref_id, app_id) => {
             if let Some(x) = download_app(&app_id).await {
@@ -30,6 +32,7 @@ pub fn handle_msg(data: String, stop: fn()) {
               install_app(app_id.clone(), x);
               let _ = ws.send(Response::as_msg(Response::Installed(ref_id, app_id))).await;
             }
+            send_term(ref_id).await;
           }
           Command::UninstallApp(ref_id, app_id) => {
             let msg = Response::as_msg(Response::UninstallStarting(ref_id, app_id.clone()));
@@ -51,19 +54,29 @@ pub fn handle_msg(data: String, stop: fn()) {
                 let _ = ws.send(msg).await;
               }
             }
+            send_term(ref_id).await;
           }
 
           Command::ListApps(ref_id) => {
             if let Some(x) = list_apps() {
               let _ = ws.send(Response::as_msg(Response::ListApps(ref_id, x))).await;
             }
+            send_term(ref_id).await;
           }
 
-          Command::GetPrefs(_) => {}
-          Command::SetPrefs(_, _) => {}
+          Command::GetPrefs(ref_id) => {
+            send_term(ref_id).await;
+          }
+          Command::SetPrefs(ref_id, _) => {
+            send_term(ref_id).await;
+          }
 
-          Command::RunUpdate(_) => {}
-          Command::UpdateStatus(_) => {}
+          Command::RunUpdate(ref_id) => {
+            send_term(ref_id).await;
+          }
+          Command::UpdateStatus(ref_id) => {
+            send_term(ref_id).await;
+          }
         }
         let _ = ws.flush().await;
       } else {
@@ -78,4 +91,12 @@ pub fn handle_msg(data: String, stop: fn()) {
       stop();
     }
   });
+}
+
+async fn send_term(ref_id: u64) {
+  if let Some(ws) = get_ws() {
+    let x = Response::as_msg(Response::TerminateBlock(ref_id));
+
+    let _ = ws.send(x).await;
+  }
 }

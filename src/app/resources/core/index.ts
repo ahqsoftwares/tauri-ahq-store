@@ -1,61 +1,62 @@
 import { newServer } from "../../server";
-import { sendWsRequest } from "./handler";
+import { ApplicationData } from "../api/fetchApps";
+import { WebSocketMessage, sendWsRequest } from "./handler";
 import fetch from "./http";
+import { Downloaded, ListedApps } from "./structs";
 
 export function get_home<T>() {
-  console.log("1");
   return fetch<T>(`${newServer}/apps/home`, {
     method: "GET"
   });
 }
 
 export function get_map<T>() {
-  console.log("2");
   return fetch<T>(`${newServer}/apps/map`, {
     method: "GET"
   });
 }
 
-export function get_apps(apps: string[]): Promise<any[]> {
-  let promises = apps.map((id) =>
-    (async () => {
-      const { data: App } = await fetch(`${newServer}/apps/id/${id}`, {
-        method: "GET",
-      });
-
-      return App;
-    })(),
-  );
-
-  return Promise.all(promises);
+export function get_app(app: string): Promise<ApplicationData> {
+  return new Promise((resolve) => {
+    sendWsRequest(
+      WebSocketMessage.GetApp(app),
+      (val) => {
+        if (val.method == "AppData") {
+          resolve(val.data as ApplicationData);
+        }
+      },
+    );
+  });
 }
 
 type u64 = number;
 
-export function install_app<T = unknown>(
+export function install_app(
   app: string,
-  status_update: (c: u64, t: u64) => void,
-): Promise<T> {
+  status_update: (data: Downloaded) => void,
+): Promise<boolean> {
   return new Promise((resolve) => {
     sendWsRequest(
-      {
-        module: "INSTALL",
-        data: JSON.stringify([app]),
-      },
+      WebSocketMessage.InstallApp(app),
       (val) => {
-        if (val.method == "INSTALLAPP") {
-          if (Number(val.payload.split("of")[0]) > 0) {
-            const [c, t] = val.payload.split("of");
-            status_update(Number(c), Number(t));
-          } else if (val.payload.startsWith("DOWNLOAD STATUS:")) {
-            status_update(10000, 0);
-          } else {
-            resolve(val.payload);
-          }
-        } else if (val.method == "TERMINATE") {
-          try {
-            resolve(val.payload);
-          } catch (_) {}
+        switch (val.method) {
+          case "DownloadProgress":
+            status_update(val.data as Downloaded);
+            break;
+          case "Installing":
+            status_update({
+              c: 10000,
+              t: 0
+            });
+            break;
+          case "Installed":
+            resolve(true);
+            break;
+          case "Error":
+            resolve(false);
+            break;
+          default:
+            break;
         }
       },
     );
@@ -65,12 +66,16 @@ export function install_app<T = unknown>(
 export function list_apps(): Promise<{ id: string; version: string }[]> {
   return new Promise((resolve) => {
     sendWsRequest(
-      {
-        module: "LISTAPPS",
-      },
+      WebSocketMessage.ListApps(),
       (val) => {
-        if (val.method == "LISTAPPS") {
-          resolve(JSON.parse(val.payload));
+        if (val.method == "ListApps") {
+          console.log(val);
+          resolve(
+            (val.data as ListedApps).map(([id, version]) => ({
+              id,
+              version
+            }))
+          )
         }
       },
     );
@@ -103,36 +108,31 @@ export async function get_access_perfs(): Promise<Prefs> {
   // });
 }
 
-export function set_access_prefs(prefs: Prefs): Promise<void> {
-  return new Promise((resolve) => {
-    sendWsRequest(
-      {
-        module: "POST_PREFS",
-        data: JSON.stringify(prefs),
-      },
-      (val) => {
-        if (val.method == "POST_PREFS") {
-          resolve();
-        }
-      },
-    );
-  });
+export async function set_access_prefs(prefs: Prefs): Promise<void> {
+  // return new Promise((resolve) => {
+  //   sendWsRequest(
+  //     {
+  //       module: "POST_PREFS",
+  //       data: JSON.stringify(prefs),
+  //     },
+  //     (val) => {
+  //       if (val.method == "POST_PREFS") {
+  //         resolve();
+  //       }
+  //     },
+  //   );
+  // });
 }
 
-export function un_install(apps: string[]): Promise<void> {
+export function un_install(app: string): Promise<void> {
   return new Promise((resolve, reject) => {
     sendWsRequest(
-      {
-        module: "UNINSTALL",
-        data: JSON.stringify(apps),
-      },
+      WebSocketMessage.UninstallApp(app),
       (val) => {
-        if (val.method == "UNINSTALLAPP") {
-          if (JSON.parse(val.payload).length == 0) {
-            resolve();
-          } else {
-            reject();
-          }
+        if (val.method == "Uninstalled") {
+          resolve();
+        } else if (val.method == "Error") {
+          reject();
         }
       },
     );

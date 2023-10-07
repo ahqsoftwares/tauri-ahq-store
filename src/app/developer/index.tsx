@@ -37,10 +37,7 @@ export default function Developers(props: DevProps) {
           apps: string[];
         };
 
-        console.log(apps);
-
         fetchApps(apps).then((apps) => {
-          console.log(apps);
           setPublishedApps(apps as appData[]);
         });
       } catch (e) {

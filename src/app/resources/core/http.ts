@@ -15,8 +15,6 @@ export default async function fetch<T = any>(
     encrypted: JSON.parse(localStorage.getItem("password") || "[]") as number[],
   }).catch(() => "a");
 
-  console.log(url);
-
   return await tauriFetch<T>(url, {
     responseType: ResponseType.JSON,
     ...(config || {}),

@@ -10,8 +10,6 @@ interface LoadProps extends ApplicationData {
 export default function Load(props: LoadProps) {
   const { icon, displayName, description, show, set, id, dark } = props;
 
-  console.log(props);
-
   return (
     <div
       className="flex w-[100%] h-[3rem] shoadow-2xl rounded-xl pl-3"

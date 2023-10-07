@@ -29,8 +29,6 @@ export default function Search(props: SearchProps) {
     (async () => {
       const results = await getDataFromMatches(await getMatches(query));
 
-      console.log(results);
-
       setMatches(results as appData[]);
       setSearched(true);
     })();
@@ -40,7 +38,6 @@ export default function Search(props: SearchProps) {
     return (
       <>
         {matches.map((app, index) => {
-          console.log(app);
           return (
             <>
               <SearchResult
@@ -86,7 +83,6 @@ export default function Search(props: SearchProps) {
         }`}
       >
         {matches.map((app) => {
-          console.log(app)
           return (
             <AppCard
               id={app.id}

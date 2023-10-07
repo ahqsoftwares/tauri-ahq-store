@@ -313,7 +313,6 @@ function Login(props: log) {
                 .replace(")", "")
                 .replace("(", "")
                 .replaceAll(".", "");
-              //console.log(msg);
               function reverse(err: string) {
                 setE(err);
                 setPwd("");

@@ -7,12 +7,11 @@ use std::{
 };
 use tungstenite::{connect, stream::MaybeTlsStream, WebSocket, Message};
 
-use ahqstore_types::Response;
+use ahqstore_types::{Response, Command};
 
 use crate::{
   encryption::decrypt,
-  get_system_dir,
-  util::structs::PayloadReq,
+  get_system_dir
 };
 
 static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
@@ -42,67 +41,20 @@ impl<'a> WsConnection<'a> {
     }
   }
 
-  pub fn send_ws(&mut self, value: PayloadReq) {
-    if let Ok(ref mut _a) = self.to_send.try_lock() {
-      match value.module.as_str() {
-        _ => {}
-      }
+  pub fn send_ws(&mut self, value: &str) {
+    println!("{}", &value);
+    if let Ok(ref mut send) = self.to_send.try_lock() {
+      send.push(value.into());
     }
   }
 
   pub fn recv(&mut self) -> Option<Vec<String>> {
     if let Ok(mut pending) = self.pending.try_lock() {
       Some({
-        let mut data = pending
+        let data = pending
           .drain(..)
           .into_iter()
-          .map(|x| {
-            if let Ok(x) = from_str::<Vec<u8>>(&x) {
-              if let Some(x) = decrypt(x) {
-                #[cfg(debug_assertions)]
-                println!("{:?}", &x);
-                return x;
-              }
-            }
-            x
-          })
-          .map(|x| {
-            if let Ok(payload) = from_str::<Response>(&x) {
-              println!("{:?}", &payload);
-              // let string = to_string(&ToSendResp {
-              //   method: payload.method,
-              //   payload: payload.payload,
-              //   reason: payload.reason,
-              //   ref_id: payload.ref_id.replace(include!("./encrypt"), "****"),
-              //   status: payload.status,
-              // })
-              // .unwrap_or_else(|_| "{}".into());
-
-              // unsafe {
-              //   let _ = WINDOW.as_mut().unwrap().emit("error", &string);
-              // }
-
-              // return string;
-            }
-
-            "{}".into()
-          })
-          .collect::<Vec<String>>();
-
-        data.sort_by(|a, b| {
-          use std::cmp::Ordering;
-
-          let a_is_terminate = a.to_lowercase().contains("terminate");
-          let b_is_terminate = b.to_lowercase().contains("terminate");
-
-          if a_is_terminate && b_is_terminate {
-            Ordering::Equal
-          } else if a_is_terminate {
-            Ordering::Greater
-          } else {
-            Ordering::Less
-          }
-        });
+          .collect();
 
         data
       })
@@ -185,6 +137,7 @@ pub fn get_ws_port() -> Option<u64> {
   if let Ok(x) = fs::read(file) {
     if let Some(x) = decrypt(x) {
       if let Ok(x) = x.parse::<u64>() {
+        println!("{}", x);
         return Some(x);
       }
     }
@@ -194,6 +147,9 @@ pub fn get_ws_port() -> Option<u64> {
 }
 
 pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
+  let data = to_string(&Command::ListApps(0)).unwrap();
+  println!("{data}");
+
   spawn(move || {
     WINDOW = Some(window);
 
@@ -215,8 +171,8 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
     if let Some(win) = WINDOW.as_mut() {
       win.listen("ws_send", |ev| {
         if let Some(x) = ev.payload() {
-          if let Ok(from_window) = from_str::<PayloadReq>(x) {
-            CONNECTION.as_mut().unwrap().send_ws(from_window);
+          if let Ok(x) = from_str::<String>(x) {
+            CONNECTION.as_mut().unwrap().send_ws(&x);
           }
         }
       });
@@ -229,7 +185,7 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
       if let Some(resp) = CONNECTION.as_mut().unwrap().recv() {
         if let Some(win) = WINDOW.as_mut() {
           win
-            .emit("ws_resp", to_string(&resp).unwrap_or(String::from("[]")))
+            .emit("ws_resp", &resp)
             .unwrap_or(());
         }
       }

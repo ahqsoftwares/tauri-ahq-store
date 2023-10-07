@@ -764,7 +764,6 @@ async function ChangeProfile(
       body: Body.json({ data: fs.result }),
       timeout: 20,
     }).then((data) => {
-      console.log(data);
       const { ok } = data;
       if (!ok) {
         sendNotification("Failed to update profile picture!");

@@ -148,18 +148,13 @@ function Render(props: AppProps) {
 
       //Fetch Maps
       try {
-        console.log("Fetching Maps");
         const { data: map } = await get_map<{ [key: string]: Object }>();
-
-        console.log(map);
 
         setData({
           map,
         });
 
         const { data: home } = await get_home<any>();
-
-        console.log(home);
 
         setApps(home);
         setLoad(true);
