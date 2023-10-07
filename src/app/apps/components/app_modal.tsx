@@ -6,18 +6,17 @@ import Modal from "react-modal";
 import fetchApps, { appData } from "../../resources/api/fetchApps";
 
 //AHQ Store Installer
+import { install_app } from "../../resources/core";
 import {
   isInstalled,
-  updaterStatus,
+  unInstall,
 } from "../../resources/api/updateInstallWorker";
-import installWorker from "../../resources/classes/installWorker";
-import { install_app } from "../../resources/core";
 
 interface AppDataPropsModal {
   shown: boolean;
   change: Function;
   dark: Boolean;
-  installData: any;
+  installData: string;
   isAdmin: boolean;
 }
 
@@ -70,9 +69,7 @@ export default function ShowModal(props: AppDataPropsModal) {
         setAppData((await fetchApps(installData)) as any);
         setInstalled(await isInstalled(installData));
 
-        setUpdating(
-          updaterStatus().apps?.includes(installData) === true ? true : false,
-        );
+        setUpdating(false);
       }
     })();
   }, [installData]);
@@ -184,7 +181,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                       setWorking(true);
                       button.current.innerHTML = "Uninstalling...";
 
-                      await new installWorker((_) => {}).uninstall(installData);
+                      await unInstall(installData);
 
                       button.current.innerHTML = "Uninstalled!";
 
@@ -202,7 +199,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                   ref={button}
                   className={`dui-btn ${
                     working
-                      ? "bg-transparent border-base-content text-base-content"
+                      ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
                       : "dui-btn-success text-success-content"
                   } w-[60%] mb-4`}
                   onClick={async () => {
@@ -211,7 +208,7 @@ export default function ShowModal(props: AppDataPropsModal) {
 
                       button.current.innerHTML = "Starting Download...";
 
-                      await install_app(installData, (c, t) => {
+                      await install_app(installData, ({c,t}) => {
                         if (c == 10000 && t == 0) {
                           button.current.innerHTML = "Installing...";
                         } else {
@@ -221,8 +218,8 @@ export default function ShowModal(props: AppDataPropsModal) {
                             t,
                           )})`;
                         }
-                      }).then(async (data: any) => {
-                        if (data != "[]") {
+                      }).then(async (success) => {
+                        if (!success) {
                           button.current.innerHTML = "Failed...";
                         } else {
                           button.current.innerHTML = "Installed!";

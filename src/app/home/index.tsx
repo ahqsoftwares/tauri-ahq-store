@@ -48,13 +48,13 @@ export default function Home(props: HomeProps) {
 
   const { dark, setPage, auth } = props;
 
-  fetch(`${base}`, {
+  fetch<string>(`${base}`, {
     headers: {
       uid: auth.currentUser?.uid as string,
     },
     method: "GET",
   })
-    .then(({ data }: any) => {
+    .then(({ data }) => {
       if (!data.includes("<!DOCTYPE html>")) {
         setData("x-icon", data);
         setUserIcon(data);
@@ -73,19 +73,19 @@ export default function Home(props: HomeProps) {
       setTimeout(() => {
         setGreet(true);
         const greetText = "What would you like to do today!";
-        for (let i = 0; i < greetText.length; i++) {
-          const h1 = textBox.current as HTMLHeadElement;
+        greetText.split("").forEach((d, i) => {
+          const h1 = textBox.current;
           try {
             if (i === 0) {
               h1.innerHTML = "";
             }
             setTimeout(() => {
               try {
-                h1.innerHTML += greetText[i];
+                h1.innerHTML += d;
               } catch (_) {}
             }, 50 * i);
           } catch (_) {}
-        }
+        });
       }, 1750);
     }
   }, [greet]);
@@ -109,9 +109,7 @@ export default function Home(props: HomeProps) {
           AHQ Store
         </h1>
         <span
-          className={`block mt-auto ${
-            props.dark ? "text-red-600" : "text-black"
-          } ml-2`}
+          className={`block mt-auto ${props.dark ? "text-base-content" : "text-black"} ml-2`}
           style={{ fontSize: "40px", fontWeight: "10px" }}
         >
           v{version}

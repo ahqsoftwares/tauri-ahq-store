@@ -17,11 +17,11 @@ const key = keyRaw.substring(0, 32);
 const key2 = process.env.KEY.substring(0, 32);
 
 writeFileSync("./src-tauri/src/encrypt", `"${key}"`);
-writeFileSync("./src-service/src/auth/encrypt", `"${key}"`);
-writeFileSync("./src-service/src/auth/encrypt_2", `"${key2}"`);
+writeFileSync("./src-service/src/encryption/encrypt", `"${key}"`);
+writeFileSync("./src-service/src/encryption/encrypt_2", `"${key2}"`);
 
 const data = String(readFileSync("./src-tauri/src/encrypt"));
-const d2 = String(readFileSync("./src-service/src/auth/encrypt"));
+const d2 = String(readFileSync("./src-service/src/encryption/encrypt"));
 
 console.log(`Key Length: ${key.length}`);
 

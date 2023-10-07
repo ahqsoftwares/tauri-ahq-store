@@ -22,8 +22,6 @@ export default function StartOptions({ setOUO, dark }: Props) {
   const [loading, setLoading] = useState(false);
 
   async function updatePrefs(settings: Prefs) {
-    console.log(settings);
-
     await delay(250);
 
     setLoading(true);

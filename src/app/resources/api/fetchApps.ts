@@ -1,5 +1,6 @@
-import { fetch } from "@tauri-apps/api/http";
-import { get_apps, get_commit } from "../core";
+import fetch from "../core/http";
+import { get_app } from "../core";
+import { newServer } from "../../server";
 
 let commit_id = "";
 
@@ -7,11 +8,11 @@ interface AuthorObject {
   displayName: string;
   email: string;
   apps:
-    | []
-    | {
-        apps: string[];
-        ignored: string[];
-      };
+  | []
+  | {
+    apps: string[];
+    ignored: string[];
+  };
 }
 
 interface appData {
@@ -35,19 +36,15 @@ let cache: {
   [key: string]: appData;
 } = {};
 
-export async function init() {
-  commit_id = await get_commit();
-
-  return commit_id;
-}
-
 export default async function fetchApps(
   apps: string | string[],
 ): Promise<appData | appData[]> {
   if (typeof apps === "string") {
     return (await resolveApps([apps]))[0];
-  } else {
+  } else if (Array.isArray(apps)) {
     return await resolveApps([...apps]);
+  } else {
+    return [];
   }
 }
 
@@ -62,13 +59,10 @@ export async function fetchSearchData() {
     return searchDataCache;
   } else {
     let data = (
-      await fetch(
-        `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/search.json`,
-        {
-          method: "GET",
-          responseType: 1,
-        },
-      )
+      await fetch(`${newServer}/apps/search`, {
+        method: "GET",
+        responseType: 1,
+      })
     ).data;
     searchDataCache = data as SearchData[];
     return data as SearchData[];
@@ -77,13 +71,10 @@ export async function fetchSearchData() {
 
 export async function fetchAuthor(id: string, partial = true) {
   let author = (
-    await fetch(
-      `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/dev_${id}.json`,
-      {
-        method: "GET",
-        responseType: 1,
-      },
-    )
+    await fetch(`${newServer}/users/${id}`, {
+      method: "GET",
+      responseType: 1,
+    })
   ).data as AuthorObject;
 
   if (!partial) {
@@ -119,18 +110,18 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
     } else {
       promises.push(
         (async () => {
-          const app = await get_apps([appId]);
-          const authorObj = await fetchAuthor(app[0].author);
+          const app = await get_app(appId);
+          const authorObj = await fetchAuthor(app.author);
 
-          cache[appId] = {
-            ...app[0],
+          const appData = {
+            ...app,
+            id: appId,
             AuthorObject: authorObj,
           };
 
-          return {
-            ...app[0],
-            AuthorObject: authorObj,
-          };
+          cache[appId] = appData;
+
+          return appData;
         })(),
       );
     }
@@ -140,3 +131,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
 }
 
 export type { appData };
+export type { AuthorObject };
+
+type ApplicationData = appData;
+export type { ApplicationData };

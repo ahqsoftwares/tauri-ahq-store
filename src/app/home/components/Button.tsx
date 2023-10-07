@@ -15,11 +15,7 @@ export default function Button(props: ButtonProps) {
 
   return (
     <div
-      className={`h-[5.5rem] w-[20.5rem] m-[1rem] ${
-        dark
-          ? "bg-gray-800 hover:bg-gray-900 text-slate-200"
-          : "bg-gray-100 hover:bg-gray-200 text-slate-700"
-      } rounded-xl hover:shadow-xl flex p-3`}
+      className={`h-[5.5rem] w-[20.5rem] m-[1rem] bg-base-200 hover:bg-base-300 text-base-content rounded-xl hover:shadow-xl flex p-3`}
       style={{
         cursor: "pointer",
         transition: "all 125ms linear",

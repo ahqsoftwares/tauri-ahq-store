@@ -1,15 +1,13 @@
-interface SearchPropsToRender {
-  icon: string;
-  displayName: string;
-  description: string;
-  id: string;
-  set: Function;
+import { ApplicationData } from "../../resources/api/fetchApps";
+
+interface LoadProps extends ApplicationData {
   show: Function;
+  set: Function;
   dark: boolean;
   isAdmin: boolean;
 }
 
-export default function Load(props: SearchPropsToRender) {
+export default function Load(props: LoadProps) {
   const { icon, displayName, description, show, set, id, dark } = props;
 
   return (

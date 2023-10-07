@@ -1,35 +1,11 @@
-import installWorker from "../classes/installWorker";
-import Updater from "../classes/updater";
-
-const updater = new Updater();
-
-export function runAutoUpdate(status: boolean) {
-  updater.start(status);
-}
-
-export function runManualUpdate() {
-  updater.runUpdates();
-}
-
-export async function installApp(
-  appId: string[],
-  callback: (event: string, data: any) => void,
-) {
-  await new installWorker(callback).install(appId);
-}
+import { un_install, list_apps } from "../core";
 
 export async function unInstall(appId: string) {
-  await new installWorker(() => {}).uninstall(appId);
+  await un_install(appId);
 }
 
 export async function isInstalled(appId: string): Promise<boolean> {
-  return (await new installWorker(() => {}).exists(appId)) as boolean;
-}
+  const appList = await list_apps();
 
-export function updaterStatus() {
-  return {
-    status: updater.updateStatus,
-    apps: updater.updatingAppList,
-    updating: updater.updatingApp,
-  };
+  return appList.findIndex(({ id }) => id == appId) != -1;
 }

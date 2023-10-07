@@ -3,7 +3,7 @@ import Modal from "react-modal";
 interface PasswordProps {
   dark: boolean;
   shown: boolean;
-  children: any;
+  children: JSX.Element;
 }
 
 export default function PopUp(props: PasswordProps) {

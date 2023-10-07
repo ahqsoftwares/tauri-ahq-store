@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEventHandler } from "react";
 import { getCurrent } from "@tauri-apps/api/window";
 import fetchPrefs, { appData } from "./app/resources/utilities/preferences";
 import { invoke } from "@tauri-apps/api/tauri";
@@ -14,7 +14,7 @@ function ForgotPwd(props: any) {
     [step, setStep] = useState(1),
     [errors, setE] = useState("");
 
-  function submit(event: any) {
+  const submit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     switch (step) {
       case 1:
@@ -42,7 +42,7 @@ function ForgotPwd(props: any) {
         setE("Page Not Found!");
         setStep(0);
     }
-  }
+  };
 
   return (
     <>
@@ -299,6 +299,8 @@ function Login(props: log) {
             let data = await invoke("encrypt", {
               payload: pwd,
             });
+
+            localStorage.setItem("email", email);
             localStorage.setItem("password", JSON.stringify(data));
           } catch (_) {}
           login(auth, email, pwd)
@@ -311,7 +313,6 @@ function Login(props: log) {
                 .replace(")", "")
                 .replace("(", "")
                 .replaceAll(".", "");
-              //console.log(msg);
               function reverse(err: string) {
                 setE(err);
                 setPwd("");
@@ -389,6 +390,8 @@ function Init(props: any) {
     autoUpdate: false,
     font: "bhn",
     sidebar: "flex-row",
+    debug: false,
+    theme: "dark",
   });
 
   useEffect(() => {

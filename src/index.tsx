@@ -50,6 +50,8 @@ import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
 import { getVersion } from "@tauri-apps/api/app";
 
+type GitHubAsset = { name: string; browser_download_url: string };
+
 const config = {
   apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
   authDomain: "ahq-store.firebaseapp.com",
@@ -87,7 +89,7 @@ let list = [
  * @param {string} state
  * @param {React.Component} App
  */
-function render(state: string, App: any) {
+function render(state: string, App: (props: { info: string }) => JSX.Element) {
   root.render(
     <>
       <App info={state} />
@@ -160,7 +162,7 @@ if (window.__TAURI_IPC__ == null) {
         }
 
         let { data: signature } = await fetch(
-          data.assets.filter((asset: any) =>
+          data.assets.filter((asset: GitHubAsset) =>
             asset.name.endsWith(".msi.zip.sig"),
           )[0][`browser_download_url`],
           {
@@ -172,15 +174,15 @@ if (window.__TAURI_IPC__ == null) {
           },
         );
 
-        invoke("check_update", {
+        invoke<boolean>("check_update", {
           version: data["tag_name"],
           currentVersion: currentVersion,
-          downloadUrl: data.assets.filter((asset: any) =>
+          downloadUrl: data.assets.filter((asset: GitHubAsset) =>
             asset.name.endsWith(".msi.zip"),
           )[0][`browser_download_url`],
           signature,
         })
-          .then(async (shouldUpdate: any) => {
+          .then(async (shouldUpdate) => {
             const manifest = {
               version: data["tag_name"],
             };
@@ -244,13 +246,23 @@ if (window.__TAURI_IPC__ == null) {
           });
         }
 
-        auth.onAuthStateChanged((user) => {
+        auth.onAuthStateChanged(async (user) => {
           if (user && !user.emailVerified) {
             sendEmailVerification(user).catch(() => {});
             sendNotification({
               title: "Email Verification",
               body: "Email verification link send! Please verify",
             });
+          }
+
+          const pwd = await invoke("decrypt", {
+            encrypted: JSON.parse(
+              localStorage.getItem("password") || "[]",
+            ) as number[],
+          }).catch(() => "a");
+
+          if (!(localStorage.getItem("email") && pwd != "a")) {
+            auth.signOut();
           }
           user
             ? storeLoad(Store, { auth })
@@ -272,7 +284,10 @@ if (window.__TAURI_IPC__ == null) {
      * @param Component
      * @param prop
      */
-    function storeLoad(Component: any, prop?: Object) {
+    function storeLoad(
+      Component: (props: { data: any }) => JSX.Element,
+      prop?: Object,
+    ) {
       root.render(
         <>
           <Component data={prop ? prop : {}} />

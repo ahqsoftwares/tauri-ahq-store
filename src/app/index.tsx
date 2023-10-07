@@ -2,10 +2,8 @@
 Native API
 */
 import { useEffect, useState } from "react";
-import { fetch } from "@tauri-apps/api/http";
+import fetch from "./resources/core/http";
 import { appWindow } from "@tauri-apps/api/window";
-
-import { runAutoUpdate } from "./resources/api/updateInstallWorker";
 /*
 Firebase
 */
@@ -28,17 +26,15 @@ import User from "./client/index";
 import Library from "./library";
 import Settings from "./settings/index";
 
-import BaseAPI from "./server";
+import BaseAPI, { newServer } from "./server";
 
 import fetchPrefs, {
   appData,
   setConfig,
 } from "./resources/utilities/preferences";
 import { runner } from "./resources/core/handler";
-import { init } from "./resources/api/fetchApps";
-import { invoke } from "@tauri-apps/api/tauri";
 import { notification } from "@tauri-apps/api";
-import { Prefs } from "./resources/core";
+import { Prefs, get_home, get_map } from "./resources/core";
 import {
   defaultDark,
   defaultLight,
@@ -75,7 +71,7 @@ function Render(props: AppProps) {
     [allAppsData, setData] = useState<{ map: { [key: string]: Object } }>({
       map: {},
     }),
-    App: any = () => <></>;
+    app: JSX.Element = <></>;
 
   useEffect(() => {
     appWindow.listen("app", ({ payload }: { payload: string }) => {
@@ -122,7 +118,7 @@ function Render(props: AppProps) {
         theme,
       } = fullPrefs;
 
-      (window as any).prefs = {
+      window.prefs = {
         ...fullPrefs,
         accessPrefs: {
           ...defAccess,
@@ -150,47 +146,22 @@ function Render(props: AppProps) {
       setSidebar(sidebar);
       setDebug(debug);
 
-      runAutoUpdate(autoUpdate);
-
       //Fetch Maps
-      init()
-        .then(async (commit_id) => {
-          if (
-            commit_id !== "" ||
-            commit_id !== undefined ||
-            commit_id !== null
-          ) {
-            const { data: Mapped } = await fetch(
-              `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/mapped.json`,
-              {
-                method: "GET",
-                timeout: 30,
-                responseType: 1,
-              },
-            );
+      try {
+        const { data: map } = await get_map<{ [key: string]: Object }>();
 
-            setData({
-              map: Mapped as {
-                [key: string]: Object;
-              },
-            });
-
-            const { data: Home } = await fetch(
-              `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/home.json`,
-              {
-                method: "GET",
-                timeout: 30,
-                responseType: 1,
-              },
-            );
-
-            setApps(Home);
-          }
-          setLoad(true);
-        })
-        .catch(() => {
-          window.location.reload();
+        setData({
+          map,
         });
+
+        const { data: home } = await get_home<any>();
+
+        setApps(home);
+        setLoad(true);
+      } catch (_) {
+        console.log(_);
+        window.location.reload();
+      }
     })();
   }, []);
 
@@ -266,22 +237,40 @@ function Render(props: AppProps) {
 
   switch (page) {
     case "apps":
-      App = Apps;
+      app = <Apps auth={auth} dark={dark} apps={apps} isAdmin={admin} />;
       break;
     case "settings":
-      App = Settings;
+      app = (
+        <Settings
+          auth={auth}
+          setDev={setDev}
+          dark={dark}
+          setDark={setDark}
+          font={font}
+          setFont={changeFont}
+          autoUpdate={autoUpdate}
+          setAutoUpdate={setAutoUpdate}
+          sidebar={sidebar}
+          setSidebar={updateSidebar}
+          admin={admin}
+          setTheme={updateTheme}
+          theme={theme}
+        />
+      );
       break;
     case "user":
-      App = User;
+      app = <User auth={auth} dark={dark} />;
       break;
     case "home":
-      App = Home;
+      app = (
+        <Home auth={auth} dark={dark} dev={dev || false} setPage={changePage} />
+      );
       break;
     case "developer":
-      App = Developer;
+      app = <Developer auth={auth} dark={dark} />;
       break;
     case "library":
-      App = Library;
+      app = <Library dark={dark} />;
       break;
   }
 
@@ -305,29 +294,7 @@ function Render(props: AppProps) {
           />
           <div className={`w-screen h-screen`}>
             <div className="flex flex-col w-[100%] h-[100%] justify-center">
-              <App
-                baseApi={BaseAPI}
-                auth={auth}
-                setDev={setDev}
-                dark={dark}
-                setDark={setDark}
-                font={font}
-                setFont={changeFont}
-                apps={apps}
-                setApps={setApps}
-                allAppsData={allAppsData}
-                autoUpdate={autoUpdate}
-                setAutoUpdate={setAutoUpdate}
-                setPage={changePage}
-                dev={dev}
-                sidebar={sidebar}
-                setSidebar={updateSidebar}
-                admin={admin}
-                isAdmin={admin}
-                accessPrefs={prefs}
-                theme={theme}
-                setTheme={updateTheme}
-              />
+              {app}
             </div>
           </div>
         </header>

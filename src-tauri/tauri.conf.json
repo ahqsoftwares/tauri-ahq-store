@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
     "beforeBuildCommand": "",
-    "beforeDevCommand": "pnpm start",
+    "beforeDevCommand": "",
     "devPath": "http://localhost:3000",
     "distDir": "../build"
   },
@@ -27,12 +27,14 @@
         "scope": [
           "https://github.com/ahqsoftwares/ahq-store-data/*",
           "https://github.com/ahqsoftwares/tauri-ahq-store/releases/*",
-          "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/",
-          "https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/*",
           "https://api.github.com/repos/ahqsoftwares/*",
+          "https://rawcdn.githack.com/*",
 
           "http://odin.forcehost.net:25643/*",
-          "http://odin.forcehost.net:25643/"
+          "http://odin.forcehost.net:25643/",
+          
+          "https://ahqstore-server.onrender.com/",
+          "https://ahqstore-server.onrender.com/*"
         ]
       },
       "path": {
@@ -76,7 +78,7 @@
       "identifier": "com.ahqsoftwares.store",
       "longDescription": "AHQ Store\nA New Store for downloading apps!",
       "resources": [],
-      "shortDescription": "A store to download apps",
+      "shortDescription": "AHQ Store",
       "targets": ["msi", "updater"],
       "windows": {
         "certificateThumbprint": null,
