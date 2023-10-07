@@ -41,7 +41,7 @@ dependencies = [
 name = "ahq-store-app"
 version = "1.1.0"
 dependencies = [
- "ahqstore-types",
+ "ahqstore-types"
  "base64 0.21.4",
  "chacha20poly1305",
  "downloader",
