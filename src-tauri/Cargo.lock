@@ -4649,6 +4649,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "win7-notifications"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "20c5fd95156abb13f78eb920df88d0dab9a4243b301789f96555942d08b31e5b"
+dependencies = [
+ "once_cell",
+ "windows-sys",
+]
+
+[[package]]
 name = "winapi"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"

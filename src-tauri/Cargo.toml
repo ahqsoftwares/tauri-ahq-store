@@ -33,7 +33,7 @@ open = "5.0.0"
 windows = { version = "=0.39.0", features= ["Win32_System_Com", "Win32_Foundation", "Win32_UI_Shell"] }
 
 reqwest = { version = "*", features = ["blocking", "json"] }
-tungstenite = "0.20.0"
+tungstenite = "0.20.1"
 chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 lazy_static = "1.4.0"
 
