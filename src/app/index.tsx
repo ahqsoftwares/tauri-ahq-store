@@ -159,6 +159,7 @@ function Render(props: AppProps) {
         setApps(home);
         setLoad(true);
       } catch (_) {
+        auth.signOut();
         console.log(_);
         window.location.reload();
       }

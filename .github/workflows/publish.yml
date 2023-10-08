@@ -243,7 +243,6 @@ jobs:
         with:
           args: --verbose
           releaseId: ${{ needs.create-release.outputs.release_id }}
-          includeDebug: true
           includeRelease: true
 
       - name: Upload Executable (standalone)
