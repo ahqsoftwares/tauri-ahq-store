@@ -1,6 +1,4 @@
-use std::
-  time::{SystemTime, UNIX_EPOCH}
-;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 mod db;
 mod log_file;

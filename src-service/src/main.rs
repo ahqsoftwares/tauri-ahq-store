@@ -122,7 +122,7 @@ fn service_runner<T>(_: T) {
     .unwrap()
     .block_on(async {
       delete_log();
-      
+
       write_log("WIN NT: Selecting PORT");
 
       write_log("WIN NT: STARTING");
