@@ -6,7 +6,7 @@ use reqwest::{Client, ClientBuilder, StatusCode};
 
 use crate::utils::{
   get_installer_file, get_ws,
-  structs::{AHQStoreApplication, RefId, AppId, ErrorType, Response},
+  structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response},
 };
 
 #[cfg(debug_assertions)]
@@ -81,7 +81,8 @@ pub async fn download_app(app_id: &str) -> Option<AHQStoreApplication> {
               if last != perc {
                 last = perc;
 
-                let msg = Response::as_msg(Response::DownloadProgress(ref_id, id.clone(), perc as u8));
+                let msg =
+                  Response::as_msg(Response::DownloadProgress(ref_id, id.clone(), perc as u8));
 
                 ws.send(msg).await.ok()?;
               }
@@ -93,7 +94,10 @@ pub async fn download_app(app_id: &str) -> Option<AHQStoreApplication> {
       }
       .await
       {
-        let x = Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, id.clone())));
+        let x = Response::as_msg(Response::Error(ErrorType::AppInstallError(
+          ref_id,
+          id.clone(),
+        )));
         let _ = ws.send(x).await;
         return None;
       }

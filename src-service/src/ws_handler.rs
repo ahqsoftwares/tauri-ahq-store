@@ -8,7 +8,7 @@ use tokio_tungstenite::accept_async;
 
 use crate::{
   authentication::authenticate_process,
-  utils::{write_service, get_ws, now, remove_ws, set_ws, structs::AuthPing, write_log, ServiceWs},
+  utils::{get_ws, now, remove_ws, set_ws, structs::AuthPing, write_log, write_service, ServiceWs},
 };
 
 use crate::handlers;
