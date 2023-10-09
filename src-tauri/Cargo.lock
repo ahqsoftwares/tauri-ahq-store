@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "1.3.1"
+version = "1.3.2"
 dependencies = [
  "ahqstore-types",
  "base64 0.21.4",
@@ -66,7 +66,7 @@ dependencies = [
 
 [[package]]
 name = "ahqstore-types"
-version = "1.3.1"
+version = "1.3.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -3865,7 +3865,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-single-instance"
 version = "0.0.0"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#faab5f6ceecfeb11029a12bd8a5410046050fa7a"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#07650ca94b70b309a48d499a99ad1ad6519ce17a"
 dependencies = [
  "log",
  "serde",
