@@ -14,7 +14,7 @@ image = "0.24.6"
 is_elevated = "0.1.2"
 lazy_static = "1.4.0"
 reqwest = { version = "0.11.20", features = ["blocking", "json"] }
-serde = { version = "1.0.173", features = ["derive"] }
+serde = { version = "1.0.189", features = ["derive"] }
 tokio = { version = "1.29.1", default-features = false, features = ["time"] }
 
 [build-dependencies]
