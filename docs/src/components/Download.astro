@@ -1,11 +1,39 @@
-<style>
-  @tailwind components;
-  @tailwind utilities;
+---
+import { Icon, LinkCard, CardGrid } from "@astrojs/starlight/components";
 
-  #download-list {
-    @apply tw-flex;
-  }
-</style>
-<div id="download-list">
-  
-</div>
+const data: { name: string; browser_download_url: string }[] = await fetch(
+  "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest"
+)
+  .then((data) => data.json())
+  .then((data) => data.assets)
+  .then((data) =>
+    data.filter(
+      ({ name }: { name: string }) =>
+        name.endsWith("en-US.msi") || name.includes("setup")
+    )
+  );
+---
+
+<h2 style="display: flex;">
+  <Icon name="rocket" color="green" size="2rem" />
+  <span style="margin-left: 12px;">Windows</span>
+</h2>
+<CardGrid>
+  <LinkCard
+    title="🚀 Download Setup"
+    description="Download the AHQ Store setup that auto installs all the toolings (recommended)"
+    href={data.find(({ name }) => name.includes("setup"))?.browser_download_url}
+  />
+
+  <LinkCard
+    title="💿 Download MSI"
+    description="Install AHQ Store via offline MSI (requires online post-installation)"
+    href={data.find(({ name }) => name.includes(".msi"))?.browser_download_url}
+  />
+</CardGrid>
+
+<h2 style="display: flex;">
+  <Icon name="information" color="brown" size="2rem" />
+  <span style="margin-left: 12px;">Linux</span>
+</h2>
+<h5>Support for linux is coming soon, it is expected by v3.0.0</h5>

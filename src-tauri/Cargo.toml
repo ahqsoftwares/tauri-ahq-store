@@ -38,6 +38,7 @@ chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 lazy_static = "1.4.0"
 
 ahqstore-types = { path = "../ahqstore-types" }
+discord-rich-presence = "0.2.3"
 
 [features]
 default = ["custom-protocol"]

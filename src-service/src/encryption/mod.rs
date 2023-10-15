@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 mod cache;
 
 use lazy_static::lazy_static;
@@ -22,20 +20,6 @@ lazy_static! {
     let key = GenericArray::from_slice(include!("encrypt_2").as_bytes());
     ChaCha20Poly1305::new(&key)
   };
-}
-
-pub fn encrypt(data: String) -> Option<String> {
-  let nonce = GenericArray::from_slice(b"SSSSSSSSSSSS");
-
-  if let Some(x) = get_encrypted(data.clone()) {
-    return Some(x);
-  } else if let Ok(dat) = CRYPTER.encrypt(nonce, data.as_bytes()) {
-    if let Ok(dat) = to_string(&dat) {
-      set_encrypted(data, dat.clone());
-      return Some(dat);
-    }
-  }
-  None
 }
 
 pub fn encrypt_vec(data: String) -> Option<Vec<u8>> {
@@ -69,13 +53,11 @@ pub fn decrypt(data: String) -> Option<String> {
   None
 }
 
-pub fn decrypt2(data: String) -> Option<String> {
+pub fn decrypt2(data: Vec<u8>) -> Option<String> {
   let nonce = GenericArray::from_slice(b"SSSSSSSSSSSS");
 
-  if let Ok(x) = from_str::<Vec<u8>>(&data) {
-    if let Ok(dat) = CRYPTER2.decrypt(nonce, x.as_slice()) {
-      return String::from_utf8(dat).ok();
-    }
+  if let Ok(dat) = CRYPTER2.decrypt(nonce, data.as_slice()) {
+    return String::from_utf8(dat).ok();
   }
   None
 }

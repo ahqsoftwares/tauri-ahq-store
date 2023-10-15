@@ -1,12 +1,34 @@
 ---
-title: Getting Started
+title: Downloading AHQ Store
 ---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
 Let's get started with AHQ Store. The Following Guide will show how to install AHQ Store
 
 # Download
+
 Click the following button to Download the latest version of AHQ Store
 
-<button class="download-btn" onclick="window.location.pathname='/download'">Download</button>
+<button class="download-btn" onclick="window.location.pathname='/download'">
+  Download
+</button>
 
-# MSI v/s Setup
-MSI stands for "Microsoft Installer" and is basically the installer that corporates generally choose.
+### Windows Installer Flavours
+
+<Tabs>
+  <TabItem label="Setup">
+    - Recommended for all users
+    - Sets up everything
+    - Always installs the latest version
+    - Online Installer
+    - Better GUI
+  </TabItem>
+
+  <TabItem label="MSI">
+    - Only use if setup is not working
+    - Only installs the main AHQ Store
+    - Offline Installer
+    - Basic GUI
+  </TabItem>
+</Tabs>

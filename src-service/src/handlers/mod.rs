@@ -74,9 +74,25 @@ pub fn handle_msg(data: String, stop: fn()) {
           }
 
           Command::GetPrefs(ref_id) => {
+            if let Some(prefs) = get_prefs() {
+              let _ = ws
+                .send(Response::as_msg(Response::Prefs(ref_id, prefs)))
+                .await;
+            } else {
+              let _ = ws.send(Response::as_msg(Response::Error(ErrorType::PrefsError(
+                ref_id,
+              ))));
+            }
             send_term(ref_id).await;
           }
-          Command::SetPrefs(ref_id, _) => {
+          Command::SetPrefs(ref_id, prefs) => {
+            if let Some(_) = set_prefs(prefs) {
+              let _ = ws.send(Response::as_msg(Response::PrefsSet(ref_id))).await;
+            } else {
+              let _ = ws.send(Response::as_msg(Response::Error(ErrorType::PrefsError(
+                ref_id,
+              ))));
+            }
             send_term(ref_id).await;
           }
 

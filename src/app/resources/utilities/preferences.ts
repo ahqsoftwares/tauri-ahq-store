@@ -80,7 +80,7 @@ export default async function fetchPrefs(): Promise<appData> {
       await writeFile(
         "database/config.astore",
         `{"dark": ${dark}, "theme": "${defTheme}", "font": "def", "autoUpdate": false, "sidebar": "flex-row"}`,
-        { dir: BaseDirectory.App },
+        { dir: BaseDirectory.App, append: false },
       ).catch(() => {
         sendNotification({
           title: "Error",
@@ -107,6 +107,7 @@ export function setConfig(data: appData) {
 
   writeFile("database/config.astore", JSON.stringify(data), {
     dir: BaseDirectory.App,
+    append: false,
   }).catch(() => {
     sendNotification({ title: "Error", body: "Could not save settings!" });
   });

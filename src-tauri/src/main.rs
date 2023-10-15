@@ -5,6 +5,8 @@ pub mod encryption;
 pub mod extract;
 pub mod util;
 
+mod rpc;
+
 mod ws;
 
 //utilities
@@ -75,6 +77,12 @@ fn main() {
       let queue_clone = queue.clone();
       let window_clone = window.clone();
       let window_clone_2 = tauri::Manager::get_window(app, "main").unwrap();
+
+      {
+        let window = window_clone_2.clone();
+
+        rpc::init_presence(window);
+      }
 
       unsafe {
         fs::remove_dir_all(format!("{}\\astore", sys_handler())).unwrap_or(());

@@ -34,14 +34,20 @@ function queueAndWait(data: string, result: (value: ServerResponse) => void) {
   });
 }
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(() => resolve(null), ms));
+
 export function runner() {
-  setInterval(() => {
-    send.forEach((req) => {
+  setInterval(async () => {
+    for (let i = 0; i < send.length; i++) {
+      const req = send[i];
+
+      await delay(50);
+
       toResolve.push(req);
       appWindow.emit("ws_send", req.data);
-    });
+    }
     send = [];
-  }, 100);
+  }, 1000);
 }
 
 appWindow.listen<string>("ws_resp", ({ payload }) => {

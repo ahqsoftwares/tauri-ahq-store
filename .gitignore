@@ -5,8 +5,6 @@
 /node_modules
 /.pnp
 
-# Old Github Data
-/.ahq
 .pnp.js
 
 # testing
@@ -31,6 +29,7 @@ yarn-error.log*
 # Secret (env)
 /myapp.key
 /function_to_encrypt.js
+/auth_algo
 
 # Added by cargo
 

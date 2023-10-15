@@ -1,18 +1,27 @@
-//use crate::utils::get_main_drive;
-//use ahqstore_types::Prefs;
+use std::fs;
 
-static _PREFS: &str = "{root}\\ProgramData\\AHQ Store Applications\\perfs.encryped";
+use crate::{
+  encryption::{decrypt2, encrypt2},
+  utils::get_main_drive,
+};
+use ahqstore_types::Prefs;
 
-pub fn _get() {
-  /*let path = PATH.replace("{}", &get_main_drive());
+use lazy_static::lazy_static;
 
-  Prefs::str_to(Prefs::get(&vector).ok()?).ok()*/
-  todo!();
+lazy_static! {
+  static ref PREFS: String = format!(
+    "{}\\ProgramData\\AHQ Store Applications\\perfs.encryped",
+    get_main_drive()
+  );
 }
 
-pub fn _set(_: &str) {
-  /*let path = PATH.replace("{}", &get_main_drive());
+pub fn get_prefs() -> Option<Prefs> {
+  Prefs::str_to(&decrypt2(Prefs::get(&PREFS)?)?)
+}
 
-  let data = (Prefs::str_to(values).ok()?).convert().ok()?;*/
-  todo!();
+pub fn set_prefs(values: Prefs) -> Option<()> {
+  let data = values.convert()?;
+  let encrypted = encrypt2(data)?;
+
+  fs::write(PREFS.as_str(), encrypted).ok()
 }
