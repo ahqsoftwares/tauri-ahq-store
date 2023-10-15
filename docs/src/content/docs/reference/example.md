@@ -1,5 +1,6 @@
 ---
 title: Developers
+lastUpdated: true
 description: A reference page in my new Starlight docs site.
 ---
 
