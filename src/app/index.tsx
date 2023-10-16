@@ -40,6 +40,7 @@ import {
   defaultLight,
   isDarkTheme,
 } from "./resources/utilities/themes";
+import Package from "./package";
 
 interface AppProps {
   data: {
@@ -272,6 +273,9 @@ function Render(props: AppProps) {
       break;
     case "library":
       app = <Library dark={dark} />;
+      break;
+    case "Dependencies":
+      app = <Package />
       break;
   }
 

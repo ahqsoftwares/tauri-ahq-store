@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 import { Downloaded, ServerResponse, interpret } from "./structs";
+import { Prefs } from ".";
 
 let ref_counter = 0;
 
@@ -9,6 +10,8 @@ const WebSocketMessage = {
   InstallApp: (app_id: string) => `{"InstallApp":[{*ref_id},"${app_id}"]}`,
   UninstallApp: (app_id: string) => `{"UninstallApp":[{*ref_id},"${app_id}"]}`,
   ListApps: () => `{"ListApps":{*ref_id}}`,
+  GetPrefs: () => `{"GetPrefs":{*ref_id}}`,
+  SetPrefs: (prefs: Prefs) => `{"SetPrefs":[{*ref_id},"${JSON.stringify(prefs).replace(/"/g, '\\"')}")}"]}`,
 };
 
 type u64 = Number;
