@@ -13,7 +13,7 @@ use util::*;
 use iced::{
   alignment::Horizontal,
   theme::{Custom, Palette},
-  widget::{self, checkbox, image::Handle, progress_bar, text, vertical_space},
+  widget::{self, image::Handle, progress_bar, text, vertical_space},
   window::{icon::from_file_data, PlatformSpecific, Position},
   Application, Command, Element, Length, Result, Settings, Subscription, Theme,
 };
@@ -55,8 +55,8 @@ pub fn main() -> Result {
 
   Installer::run(options)
 }
+
 struct Installer {
-  install_framework: bool,
   installing: bool,
   step: String,
   progress: f32,
@@ -65,7 +65,6 @@ struct Installer {
 #[derive(Debug, Clone, Copy)]
 pub enum Message {
   StartInstall,
-  SetInstallFramework(bool),
   Worker(InstallerWorker),
 }
 
@@ -90,7 +89,6 @@ impl Application for Installer {
   fn new(_: Self::Flags) -> (Self, iced::Command<Self::Message>) {
     (
       Self {
-        install_framework: true,
         installing: false,
         step: String::new(),
         progress: 0.0,
@@ -110,19 +108,10 @@ impl Application for Installer {
         .width(100)
         .height(100),
       vertical_space(5),
-      widget::Text::new("AHQ Store").size(50),
+      widget::Text::new(format!("AHQ Store v{}", env!("CARGO_PKG_VERSION"))).size(40),
     ]
     .padding(5)
     .align_items(iced::Alignment::Center);
-
-    if !self.installing {
-      column = column.push(vertical_space(Length::Fill));
-      column = column.push(checkbox(
-        "Install the AHQ Store Framework (recommended; 130-200mb)",
-        self.install_framework,
-        Message::SetInstallFramework,
-      ));
-    }
 
     column = column.push(vertical_space(Length::Fill));
 
@@ -169,23 +158,13 @@ impl Application for Installer {
 
         mk_dir();
 
-        start_install(self.install_framework);
-      }
-      Message::SetInstallFramework(value) => {
-        self.install_framework = value;
+        start_install();
       }
       Message::Worker(InstallerWorker::MsiInstalling) => {
         self.step = "Installing App".into();
       }
       Message::Worker(InstallerWorker::ServiceInstalling) => {
         self.step = "Installing App Service".into();
-      }
-      Message::Worker(InstallerWorker::InstallingFramework) => {
-        self.step = "Installing Framework".into();
-      }
-      Message::Worker(InstallerWorker::DownloadingFramework(progress)) => {
-        self.step = "Downloading Framework".into();
-        self.progress = progress as f32;
       }
       Message::Worker(InstallerWorker::Installed) => {
         self.step = "Installed".into();

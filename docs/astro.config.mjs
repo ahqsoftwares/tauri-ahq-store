@@ -10,12 +10,23 @@ export default defineConfig({
       favicon: "./src/assets/logo.png",
       title: "AHQ Store",
       customCss: ["./src/css/global.css"],
+      locales: {
+        "en-US": {
+          label: "English",
+          lang: "en",
+        },
+      },
       logo: {
         src: "./src/assets/logo.png",
         replacesTitle: true,
       },
       social: {
-        github: "https://github.com/withastro/starlight",
+        github: "https://github.com/ahqstore",
+        email: "mailto:ahqsecret@gmail.com",
+        "x.com": "https://x.com/ahqsoftwares",
+        reddit: "https://www.reddit.com/r/AHQ_Softwares",
+        twitter: "https://twitter.com/ahqsoftwares",
+        instagram: "https://www.instagram.com/theofficialahqsoftwares",
       },
       sidebar: [
         {
@@ -25,14 +36,21 @@ export default defineConfig({
           },
         },
         {
-          label: "API",
+          label: "Developers",
           badge: {
-            text: "Experimental",
-            variant: "caution",
+            variant: "danger",
           },
           autogenerate: {
             directory: "reference",
           },
+          collapsed: true,
+        },
+        {
+          label: "Framework",
+          autogenerate: {
+            directory: "framework",
+          },
+          collapsed: true,
         },
       ],
     }),
