@@ -2,11 +2,6 @@
   "hosting": {
     "public": "docs/dist",
     "ignore": [],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
+    "rewrites": []
   }
 }
