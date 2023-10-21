@@ -106,13 +106,13 @@ export default function Nav(props: prop) {
         )}
       </button>
 
-      <button className={`n-item ${g}`} onClick={() => changePage("Dependencies")}>
+      {/* <button className={`n-item ${g}`} onClick={() => changePage("Dependencies")}>
         {g === "active" ? (
           <BiSolidPackage size={"2.5em"} />
         ) : (
           <BiPackage size={"2.5em"} />
         )}
-      </button>
+      </button> */}
 
       <div className={P_H ? "mx-auto" : "mt-auto mb-auto"}></div>
 
