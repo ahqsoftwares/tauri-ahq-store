@@ -253,6 +253,7 @@ jobs:
 
   undraft-release:
     needs: [create-release, publish-tauri, make-postinstaller, make-setup]
+    name: Publish Release
     runs-on: ubuntu-latest
 
     steps:
@@ -264,15 +265,16 @@ jobs:
         with:
           script: |
             github.rest.repos.updateRelease({
-              "ahqsoftwares",
-              "tauri-ahq-store",
-              process.env.R_ID,
+              owner: "ahqsoftwares",
+              repo: "tauri-ahq-store",
+              release_id: process.env.R_ID,
               draft: false
             });
 
   build_and_deploy:
     needs: [undraft-release]
-    runs-on: ubuntu-latest
+    name: Build Docs Site
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
