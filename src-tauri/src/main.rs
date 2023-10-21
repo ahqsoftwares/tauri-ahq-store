@@ -443,7 +443,7 @@ fn install_update() {
     let name = file.unwrap().file_name();
     let file_name = name.to_str().unwrap_or("");
 
-    if file_name.clone().ends_with(".msi") {
+    if file_name.ends_with(".msi") {
       app_executable = format!("\"{}\\{}\"", path.clone(), file_name);
     }
   }

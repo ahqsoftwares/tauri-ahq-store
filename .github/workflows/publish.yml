@@ -274,7 +274,7 @@ jobs:
   build_and_deploy:
     needs: [undraft-release]
     name: Build Docs Site
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -291,6 +291,12 @@ jobs:
 
       - name: Install Packages
         run: pnpm install
+        working-directory: docs
+        env:
+          CI: false
+
+      - name: PreBuild
+        run: pnpm prebuild
         working-directory: docs
         env:
           CI: false
