@@ -1,3 +1,3 @@
 ---
-title: Getting Started with framework
+title: Getting Started
 ---

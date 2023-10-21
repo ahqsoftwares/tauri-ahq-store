@@ -27,6 +27,9 @@ export default defineConfig({
         reddit: "https://www.reddit.com/r/AHQ_Softwares",
         twitter: "https://twitter.com/ahqsoftwares",
         instagram: "https://www.instagram.com/theofficialahqsoftwares",
+        mastodon: "https://mastodon.world/@ahqstore",
+        discord: "https://discord.gg/sxgr5dh2fz",
+        youtube: "https://www.youtube.com/channel/UC5G8xgHA-bKftjcnPzt-BFw",
       },
       sidebar: [
         {

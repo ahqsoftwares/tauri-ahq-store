@@ -37,7 +37,7 @@ jobs:
             const fs = require("fs");
             const version = require('./package.json').version;
 
-            const alpha = process.env.BRANCH == "pr_in";
+            const alpha = process.env.BRANCH != "master";
             const alphaId = Date.now();
 
             const { data } = await github.rest.repos.createRelease({
@@ -250,3 +250,61 @@ jobs:
         with:
           name: ahqstore.exe
           path: "src-tauri/target/release/AHQ Store.exe"
+
+  undraft-release:
+    needs: [create-release, publish-tauri, make-postinstaller, make-setup]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Undraft Release
+        id: get-u-url
+        uses: actions/github-script@v6
+        env:
+          BRANCH: ${{ github.ref_name }}
+          R_ID: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            github.rest.repos.updateRelease({
+              "ahqsoftwares",
+              "tauri-ahq-store",
+              process.env.R_ID,
+              draft: false
+            });
+
+
+  build_and_deploy:
+    needs: [undraft-release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+              
+      - name: Setup Nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+        
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+              
+      - name: Install Packages
+        run: pnpm install
+        working-directory: docs
+        env:
+          CI: false
+        
+      - name: Build 
+        run: pnpm build
+        working-directory: docs
+        env:
+          CI: false
+        
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_AHQ_STORE }}"
+          channelId: live
+          projectId: ahq-store
+        

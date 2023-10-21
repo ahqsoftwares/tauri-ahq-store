@@ -1,6 +1,6 @@
 [package]
 name = "ahqstore_service"
-version = "1.3.2"
+version = "1.3.3"
 edition = "2021"
 license = "Creative Commons Attribution Non Commercial 3.0"
 
