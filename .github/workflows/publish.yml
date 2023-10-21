@@ -23,19 +23,8 @@ jobs:
         with:
           version: latest
 
-      - name: Install Packages
-        run: pnpm install
-        working-directory: docs
-        env:
-          CI: false
-
-      - name: Prebuild
-        run: cd docs; pnpm prebuild; cd ..
-        env:
-          CI: false
-
       - name: Build
-        run: cd docs; pnpm build; cd ..
+        run: pnpm install; cd docs; pnpm install; pnpm prebuild; pnpm build; cd ..
         env:
           CI: false
 
@@ -329,19 +318,8 @@ jobs:
         with:
           version: latest
 
-      - name: Install Packages
-        run: pnpm install
-        working-directory: docs
-        env:
-          CI: false
-
-      - name: Prebuild
-        run: cd docs; pnpm prebuild; cd ..
-        env:
-          CI: false
-
       - name: Build
-        run: cd docs; pnpm build; cd ..
+        run: pnpm install; cd docs; pnpm install; pnpm prebuild; pnpm build; cd ..
         env:
           CI: false
 
