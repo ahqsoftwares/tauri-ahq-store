@@ -1,6 +1,6 @@
 [package]
-name = "src-service-tools"
-version = "1.3.3"
+name = "store-tools-installer"
+version = "1.3.4"
 edition = "2021"
 
 [dependencies]
