@@ -78,6 +78,59 @@ fn main() {
       let window_clone = window.clone();
       let window_clone_2 = tauri::Manager::get_window(app, "main").unwrap();
 
+      unsafe {
+        fs::remove_dir_all(format!("{}\\astore", sys_handler())).unwrap_or(());
+        let window = tauri::Manager::get_window(app, "main").unwrap();
+    
+        WINDOW = Some(window.clone());
+    
+        ws::init(window, || {
+          #[cfg(debug_assertions)]
+          println!("Reinstall AHQ Store Service Required...");
+    
+          if catch_unwind(|| {
+            let mut i = 0;
+    
+            loop {
+              WINDOW
+                .as_mut()
+                .unwrap()
+                .emit("needs_reinstall", "None")
+                .unwrap();
+              thread::sleep(Duration::from_secs(1));
+              i += 1;
+    
+              if i >= 10 {
+                break;
+              }
+            }
+    
+            let url = get_service_url();
+    
+            let sys = sys_handler();
+    
+            fs::create_dir_all(format!("{}\\astore", sys)).unwrap();
+            download::download(
+              &url,
+              &format!("{}\\astore", sys),
+              "astore_service_installer.exe",
+              |_c, _t| {
+                #[cfg(debug_assertions)]
+                println!("{}", _c * 100 / _t);
+              },
+            );
+    
+            extract::run_admin(format!("{}\\astore\\astore_service_installer.exe", sys));
+          })
+          .is_err()
+          {
+            std::process::exit(1);
+          } else {
+            std::process::exit(0);
+          }
+        });
+      }
+
       {
         let window = window_clone_2.clone();
 
