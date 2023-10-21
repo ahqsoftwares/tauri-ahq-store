@@ -7,7 +7,7 @@ use std::{
 };
 use tungstenite::{connect, stream::MaybeTlsStream, WebSocket, Message};
 
-use ahqstore_types::{Response, Command};
+use ahqstore_types::Command;
 
 use crate::{
   encryption::decrypt,

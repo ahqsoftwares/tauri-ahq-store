@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
 import { Downloaded, ServerResponse, interpret } from "./structs";
+import { Prefs } from ".";
 
 let ref_counter = 0;
 
@@ -9,6 +10,8 @@ const WebSocketMessage = {
   InstallApp: (app_id: string) => `{"InstallApp":[{*ref_id},"${app_id}"]}`,
   UninstallApp: (app_id: string) => `{"UninstallApp":[{*ref_id},"${app_id}"]}`,
   ListApps: () => `{"ListApps":{*ref_id}}`,
+  GetPrefs: () => `{"GetPrefs":{*ref_id}}`,
+  SetPrefs: (prefs: Prefs) => `{"SetPrefs":[{*ref_id},"${JSON.stringify(prefs).replace(/"/g, '\\"')}")}"]}`,
 };
 
 type u64 = Number;
@@ -34,14 +37,20 @@ function queueAndWait(data: string, result: (value: ServerResponse) => void) {
   });
 }
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(() => resolve(null), ms));
+
 export function runner() {
-  setInterval(() => {
-    send.forEach((req) => {
+  setInterval(async () => {
+    for (let i = 0; i < send.length; i++) {
+      const req = send[i];
+
+      await delay(50);
+
       toResolve.push(req);
       appWindow.emit("ws_send", req.data);
-    });
+    }
     send = [];
-  }, 100);
+  }, 1000);
 }
 
 appWindow.listen<string>("ws_resp", ({ payload }) => {

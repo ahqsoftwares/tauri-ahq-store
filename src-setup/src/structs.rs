@@ -10,7 +10,7 @@ impl StyleSheet for Windows11Style {
 
   fn appearance(&self, _: &Self::Style) -> iced::widget::container::Appearance {
     Appearance {
-      border_radius: 50.0.into(),
+      border_radius: 5.0.into(),
       background: Some(Background::Color(Color::BLACK)),
       ..Default::default()
     }

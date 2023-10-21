@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use std::{
   fs::{self, create_dir_all},
   os::windows::process::CommandExt,
@@ -14,7 +15,6 @@ use crate::shell;
 
 pub static ROOT: &str = "{root}\\ProgramData\\AHQ Store Applications";
 
-pub static FRAMEWORK: &str = "{root}\\ProgramData\\AHQ Store Applications\\Framework";
 pub static PROGRAMS: &str = "{root}\\ProgramData\\AHQ Store Applications\\Programs";
 pub static UPDATERS: &str = "{root}\\ProgramData\\AHQ Store Applications\\Updaters";
 pub static INSTALLERS: &str = "{root}\\ProgramData\\AHQ Store Applications\\Installers";
@@ -51,7 +51,6 @@ pub fn mk_dir() {
   let sys = system_drive();
 
   let _ = (
-    create_dir_all(&FRAMEWORK.replace("{root}", &sys)),
     create_dir_all(&PROGRAMS.replace("{root}", &sys)),
     create_dir_all(&UPDATERS.replace("{root}", &sys)),
     create_dir_all(&INSTALLERS.replace("{root}", &sys)),
@@ -97,7 +96,17 @@ pub fn install_service() {
     .unwrap();
 }
 
-use crate::util::http::{Asset, Release};
+#[derive(Serialize, Deserialize)]
+struct Asset {
+  pub name: String,
+  pub browser_download_url: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Release {
+  pub assets: Vec<Asset>,
+}
+
 pub async fn download_bins() -> () {
   let url: String =
     "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest".into();

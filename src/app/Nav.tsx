@@ -8,6 +8,10 @@ import {
 } from "react-icons/ai";
 import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
 import { IoLibraryOutline, IoLibrarySharp } from "react-icons/io5";
+import {
+  BiPackage,
+  BiSolidPackage
+} from "react-icons/bi";
 
 import { getCurrent } from "@tauri-apps/api/window";
 
@@ -37,7 +41,8 @@ export default function Nav(props: prop) {
     c = P_H ? horizontal : "",
     d = P_H ? horizontal : "",
     e = P_H ? horizontal : "",
-    f = P_H ? horizontal : "";
+    f = P_H ? horizontal : "",
+    g = P_H ? horizontal : "";
   switch (active) {
     case "home":
       a = "active";
@@ -53,6 +58,9 @@ export default function Nav(props: prop) {
       break;
     case "library":
       f = "active";
+      break;
+    case "Dependencies":
+      g = "active";
       break;
     default:
       d = "active";
@@ -97,6 +105,14 @@ export default function Nav(props: prop) {
           <RiApps2Line size={"2.5em"} />
         )}
       </button>
+
+      {/* <button className={`n-item ${g}`} onClick={() => changePage("Dependencies")}>
+        {g === "active" ? (
+          <BiSolidPackage size={"2.5em"} />
+        ) : (
+          <BiPackage size={"2.5em"} />
+        )}
+      </button> */}
 
       <div className={P_H ? "mx-auto" : "mt-auto mb-auto"}></div>
 
