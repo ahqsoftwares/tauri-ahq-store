@@ -253,6 +253,7 @@ jobs:
 
   undraft-release:
     needs: [create-release, publish-tauri, make-postinstaller, make-setup]
+    name: Convert release to undrafted
     runs-on: ubuntu-latest
 
     steps:
@@ -266,12 +267,13 @@ jobs:
             github.rest.repos.updateRelease({
               "ahqsoftwares",
               "tauri-ahq-store",
-              process.env.R_ID,
+              release_id: process.env.R_ID,
               draft: false
             });
 
   build_and_deploy:
     needs: [undraft-release]
+    name: Build Docs Site
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
