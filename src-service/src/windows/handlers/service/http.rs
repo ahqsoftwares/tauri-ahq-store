@@ -4,13 +4,13 @@ use futures_util::SinkExt;
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};
 
-use crate::utils::{
+use crate::windows::utils::{
   get_installer_file, get_ws,
   structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response},
 };
 
 #[cfg(debug_assertions)]
-use crate::utils::write_log;
+use crate::windows::utils::write_log;
 
 static URL: &str = "https://ahqstore-server.onrender.com";
 
@@ -79,8 +79,11 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
               let perc = (current * 100) / total;
 
               if last != perc {
-                let msg =
-                  Response::as_msg(Response::DownloadProgress(ref_id, id.clone(), [current, total]));
+                let msg = Response::as_msg(Response::DownloadProgress(
+                  ref_id,
+                  id.clone(),
+                  [current, total],
+                ));
 
                 ws.send(msg).await.ok()?;
                 last = perc;

@@ -6,12 +6,12 @@ use tokio::{io::AsyncWriteExt, net::TcpListener, spawn, task::JoinHandle};
 use futures_util::{SinkExt, StreamExt};
 use tokio_tungstenite::accept_async;
 
-use crate::{
+use crate::windows::{
   authentication::authenticate_process,
   utils::{get_ws, now, remove_ws, set_ws, structs::AuthPing, write_log, write_service, ServiceWs},
 };
 
-use crate::handlers;
+use crate::windows::handlers;
 
 static MAX_WS: u64 = 1;
 

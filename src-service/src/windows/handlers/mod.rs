@@ -1,7 +1,7 @@
 use futures_util::SinkExt;
 use tokio::spawn;
 
-use crate::utils::{
+use crate::windows::utils::{
   get_ws,
   structs::{Command, ErrorType, Reason, Response},
 };

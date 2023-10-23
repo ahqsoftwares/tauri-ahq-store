@@ -7,7 +7,7 @@ use std::{fs, os::windows::process::CommandExt, process::Command};
 pub use http::*;
 pub use prefs::*;
 
-use crate::utils::{
+use crate::windows::utils::{
   get_installer_file, get_program_folder, get_programs, get_target_lnk,
   structs::{AHQStoreApplication, AppData},
 };
