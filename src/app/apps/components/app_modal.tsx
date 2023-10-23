@@ -215,7 +215,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                         } else {
                           const perc = Math.round((c * 100) / t);
 
-                          button.current.innerHTML = `<div class="dui-radial-progress text-base-content" style="--value: ${perc}; --size: 2rem; font-size: 0.75rem;">${perc}%</div> (${formatBytes(
+                          button.current.innerHTML = `<div class="dui-radial-progress text-base-content" style="--value: ${perc}; --size: 2rem; font-size: 0.75rem;">${perc}</div> (${formatBytes(
                             t,
                           )})`;
                         }
