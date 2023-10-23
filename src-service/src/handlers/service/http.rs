@@ -45,7 +45,7 @@ pub async fn keep_alive() -> bool {
   false
 }
 
-pub async fn download_app(app_id: &str) -> Option<AHQStoreApplication> {
+pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplication> {
   let app_id: AppId = app_id.into();
   let ws = get_ws().unwrap();
 
@@ -54,7 +54,7 @@ pub async fn download_app(app_id: &str) -> Option<AHQStoreApplication> {
   let app_id = get_app(0, app_id).await;
 
   match app_id {
-    Response::AppData(ref_id, id, data) => {
+    Response::AppData(_, id, data) => {
       if let None = async {
         let x = Response::as_msg(Response::DownloadStarted(ref_id, id.clone()));
         ws.send(x).await.ok()?;
@@ -79,12 +79,11 @@ pub async fn download_app(app_id: &str) -> Option<AHQStoreApplication> {
               let perc = (current * 100) / total;
 
               if last != perc {
-                last = perc;
-
                 let msg =
-                  Response::as_msg(Response::DownloadProgress(ref_id, id.clone(), perc as u8));
+                  Response::as_msg(Response::DownloadProgress(ref_id, id.clone(), [current, total]));
 
                 ws.send(msg).await.ok()?;
+                last = perc;
               }
             }
             None => break,

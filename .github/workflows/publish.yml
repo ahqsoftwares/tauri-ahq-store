@@ -102,6 +102,14 @@ jobs:
 
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
+      
+      - name: Cache Rust
+        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: src-s-tools-${{ runner.os }}
+          cache-all-crates: true
+          workspaces: "src-service-tools -> target"
 
       - name: Build Service Installer
         run: cargo build --release
@@ -136,6 +144,14 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust
+        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: src-setup-${{ runner.os }}
+          cache-all-crates: true
+          workspaces: "src-setup -> target"
 
       - name: Build Setup
         run: cargo build --release
@@ -200,6 +216,16 @@ jobs:
         run: node encryptor.js
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
+
+      - name: Cache Rust
+        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: src-tauriapp-${{ runner.os }}
+          cache-all-crates: true
+          workspaces: |
+            src-service -> target
+            src-tauri -> target
 
       - name: Build Service
         run: cargo build --release
@@ -274,7 +300,7 @@ jobs:
   build_and_deploy:
     needs: [undraft-release]
     name: Build Docs Site
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2

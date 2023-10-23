@@ -15,14 +15,3 @@ pub struct ToSendResp {
   pub ref_id: String,
   pub reason: Option<String>,
 }
-
-pub fn get_root() -> String {
-  let root = std::env::var("SYSTEMROOT")
-    .unwrap()
-    .to_uppercase()
-    .as_str()
-    .replace("\\WINDOWS", "")
-    .replace("\\Windows", "");
-
-  return root;
-}

@@ -102,7 +102,7 @@ pub enum Response {
   ListApps(RefId, Vec<AppData>),
 
   DownloadStarted(RefId, AppId),
-  DownloadProgress(RefId, AppId, u8),
+  DownloadProgress(RefId, AppId, [u64; 2]),
   Installing(RefId, AppId),
   Installed(RefId, AppId),
 

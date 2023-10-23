@@ -25,7 +25,7 @@ pub fn handle_msg(data: String, stop: fn()) {
             send_term(ref_id).await;
           }
           Command::InstallApp(ref_id, app_id) => {
-            if let Some(x) = download_app(&app_id).await {
+            if let Some(x) = download_app(ref_id, &app_id).await {
               let _ = ws
                 .send(Response::as_msg(Response::Installing(
                   ref_id,

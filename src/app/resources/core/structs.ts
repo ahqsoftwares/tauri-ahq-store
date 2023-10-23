@@ -86,8 +86,8 @@ export function interpret(data: string) {
     case "DownloadProgress":
       result.method = "DownloadProgress";
       result.data = {
-        c: pyld2,
-        t: 100
+        c: pyld2[0],
+        t: pyld2[1]
       } as Downloaded;
       break;
     case "Installing":
