@@ -9,7 +9,7 @@ use tungstenite::{connect, stream::MaybeTlsStream, WebSocket, Message};
 
 use ahqstore_types::Command;
 
-use crate::{
+use crate::windows::{
   encryption::decrypt,
   get_system_dir
 };
@@ -67,6 +67,7 @@ impl<'a> WsConnection<'a> {
     let pending = self.pending.clone();
 
     if let Ok(mut x) = pending.try_lock() {
+      println!("{}", &msg);
       x.push(msg);
     } else {
       std::thread::sleep(std::time::Duration::from_millis(1000));
@@ -106,20 +107,20 @@ impl<'a> WsConnection<'a> {
         );
         loop {
           if let Ok(ref mut x) = self.to_send.try_lock() {
+            let _ = ws.send(Message::text("KA"));
+            
             let send = x.drain(..).collect::<Vec<String>>();
 
-            let _ = ws.send(Message::text("KA"));
             for msg in send {
               ws.send(tungstenite::Message::Text(msg)).unwrap_or(());
             }
           }
 
           if let Ok(msg) = rx.try_recv() {
-            println!("{}", &msg);
             self.load_into(msg);
           }
 
-          std::thread::sleep(std::time::Duration::from_millis(20));
+          std::thread::sleep(std::time::Duration::from_millis(1));
         }
       }
     } else {

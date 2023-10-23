@@ -91,11 +91,13 @@ fn get_localgroup(user: &String) -> Option<bool> {
     .split("-------------------------------------------------------------------------------")
     .collect::<Vec<&str>>()[1]
     .trim()
-    .replace("The command completed successfully.", "")
-    .replace("Der Befehl wurde erfolgreich ausgef�hrt.", "")
     .trim()
-    .split("\n")
-    .collect::<Vec<&str>>()
+    .split("\n");
+
+  let mut users = users.collect::<Vec<_>>();
+  users.pop();
+
+  let users = users
     .into_iter()
     .map(|x| x.trim().to_lowercase())
     .filter(|x| x == user)

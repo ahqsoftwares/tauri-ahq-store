@@ -7,7 +7,7 @@ use chacha20poly1305::{
   ChaCha20Poly1305,
 };
 
-use serde_json::{from_str, to_string};
+use serde_json::from_str;
 
 use cache::*;
 
@@ -37,7 +37,7 @@ pub fn encrypt2(data: String) -> Option<Vec<u8>> {
   CRYPTER2.encrypt(nonce, data.as_bytes()).ok()
 }
 
-pub fn decrypt(data: String) -> Option<String> {
+pub fn _decrypt(data: String) -> Option<String> {
   let nonce = GenericArray::from_slice(b"SSSSSSSSSSSS");
 
   if let Some(x) = get_decrypted(data.clone()) {

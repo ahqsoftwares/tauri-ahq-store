@@ -25,8 +25,7 @@
     "start": "cross-env BROWSER=none vite",
     "build": "vite build",
     "test": "vite test",
-    "dev": "tauri dev",
-    "serve": "concurrently \"pnpm start\" \"onchange \"src/*\" -- prettier --write ./src\" \"pnpm dev\""
+    "dev": "tauri dev"
   },
   "eslintConfig": {
     "extends": [

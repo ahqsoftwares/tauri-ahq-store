@@ -41,6 +41,7 @@ export function install_app(
       (val) => {
         switch (val.method) {
           case "DownloadProgress":
+            console.log(val.data);
             status_update(val.data as Downloaded);
             break;
           case "Installing":

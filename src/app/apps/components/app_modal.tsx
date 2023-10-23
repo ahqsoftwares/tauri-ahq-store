@@ -208,7 +208,8 @@ export default function ShowModal(props: AppDataPropsModal) {
 
                       button.current.innerHTML = "Starting Download...";
 
-                      await install_app(installData, ({c,t}) => {
+                      await install_app(installData, ({ c, t }) => {
+                        console.log(c, t);
                         if (c == 10000 && t == 0) {
                           button.current.innerHTML = "Installing...";
                         } else {

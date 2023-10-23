@@ -24,6 +24,20 @@ static mut LAST_CONTACTED: u64 = 0;
 
 static mut HANDLE: Option<JoinHandle<()>> = None;
 
+unsafe fn standard_remove() {
+  VERIFIED = false;
+  if CURRENT_WS > 0 {
+    CURRENT_WS = 0;
+  }
+  LAST_CONTACTED = 0;
+  remove_ws();
+
+  if let Some(handle) = &HANDLE {
+    handle.abort();
+  }
+  HANDLE = None;
+}
+
 pub async fn launch() {
   write_log("SERVER - RUNNING PREP");
 
@@ -39,16 +53,13 @@ pub async fn launch() {
       let should_continute = async {
         unsafe {
           if CURRENT_WS + 1 > MAX_WS {
-            if now() - LAST_CONTACTED < 1 {
+            if now() - LAST_CONTACTED > 3 {
               return {
                 if let Some(x) = get_ws() {
+                  let _ = x.flush().await;
                   let _ = x.close().await;
                 }
-                remove_ws();
-                if let Some(handle) = &HANDLE {
-                  handle.abort();
-                }
-                HANDLE = None;
+                standard_remove();
                 true
               };
             }
@@ -81,13 +92,7 @@ pub async fn launch() {
               async {
                 let _ = ws.flush().await;
                 let _ = ws.close().await;
-
-                VERIFIED = false;
-                if CURRENT_WS > 0 {
-                  CURRENT_WS -= 1;
-                }
-                LAST_CONTACTED = 0;
-                remove_ws();
+                standard_remove();
               }
             };
 
@@ -102,12 +107,7 @@ pub async fn launch() {
                           LAST_CONTACTED = now();
                         } else {
                           handlers::handle_msg(x, || {
-                            VERIFIED = false;
-                            if CURRENT_WS > 0 {
-                              CURRENT_WS -= 1;
-                            }
-                            LAST_CONTACTED = 0;
-                            remove_ws();
+                            standard_remove();
                           });
                         }
                       } else {
@@ -118,12 +118,10 @@ pub async fn launch() {
 
                             let _ = ws.send(Response::as_msg(Response::Ready)).await;
                           } else {
-                            write_log("WS HANDLE: Broken Ping");
                             stop(ws).await;
                             break 'a;
                           }
                         } else {
-                          write_log("WS HANDLE: Broken Ping");
                           let _ = ws
                             .send(Response::as_msg(Response::Disconnect(
                               Reason::Unauthenticated,
@@ -135,12 +133,10 @@ pub async fn launch() {
                       }
                     }
                   } else {
-                    write_log("WS HANDLE: WS unknown");
                     stop(ws).await;
                     break 'a;
                   }
                 } else {
-                  write_log("WS HANDLE: WS unable to be found!");
                   break 'a;
                 }
               }
@@ -158,20 +154,12 @@ pub async fn launch() {
                 if VERIFIED {
                   break;
                 }
-                if !VERIFIED && (now() - CONNECTED) > 5 {
-                  write_log("WS STOPPER: Killing WS due to inactivity");
+                if !VERIFIED && (now() - LAST_CONTACTED) > 30 {
                   if let Some(ws) = get_ws() {
                     let _ = ws.flush().await;
                     let _ = ws.close().await;
                   }
-                  if let Some(handle) = &HANDLE {
-                    handle.abort();
-                  }
-                  HANDLE = None;
-                  if CURRENT_WS > 0 {
-                    CURRENT_WS -= 1;
-                  }
-                  remove_ws();
+                  standard_remove();
                   break;
                 }
                 tokio::time::sleep(Duration::from_millis(100)).await;
