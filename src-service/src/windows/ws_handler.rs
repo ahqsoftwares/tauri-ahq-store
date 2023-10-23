@@ -99,8 +99,8 @@ pub async fn launch() {
             'a: loop {
               if let Some(Ok(x)) = recv.next().await {
                 if let Some(ws) = get_ws() {
-                  if x.is_text() {
-                    let x = x.to_text().unwrap().to_string();
+                  if let Ok(x) = x.to_text() {
+                    let x = x.to_string();
                     unsafe {
                       if VERIFIED {
                         if &x == "KA" {

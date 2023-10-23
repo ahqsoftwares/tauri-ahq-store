@@ -38,8 +38,9 @@ pub fn install_app(app_id: String, app: AHQStoreApplication) -> Option<()> {
     if err {
       let _ = fs::remove_dir_all(&install_folder);
     } else {
-      let link = ShellLink::new(format!("{}\\{}", &install_folder, &app.exe)).unwrap();
-      link.create_lnk(get_target_lnk(&app.title)).unwrap();
+      if let Ok(link) = ShellLink::new(format!("{}\\{}", &install_folder, &app.exe)) {
+        let _ = link.create_lnk(get_target_lnk(&app.title));
+      }
     }
   };
 
