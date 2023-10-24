@@ -53,7 +53,7 @@ pub async fn launch() {
       let should_continute = async {
         unsafe {
           if CURRENT_WS + 1 > MAX_WS {
-            if now() - LAST_CONTACTED > 3 {
+            if now() - LAST_CONTACTED > 1 {
               return {
                 if let Some(x) = get_ws() {
                   let _ = x.flush().await;
@@ -62,15 +62,17 @@ pub async fn launch() {
                 standard_remove();
                 true
               };
+            } else {
+              false
             }
+          } else {
+            true
           }
-
-          false
         }
       }
       .await;
 
-      if should_continute {
+      if !should_continute {
         let _ = stream.write_all(b"ERR: TOO MANY REQUESTS");
       } else {
         let ws = accept_async(stream).await.ok();
@@ -162,7 +164,7 @@ pub async fn launch() {
                   standard_remove();
                   break;
                 }
-                tokio::time::sleep(Duration::from_millis(100)).await;
+                tokio::time::sleep(Duration::from_millis(1000)).await;
               }
             }
           });

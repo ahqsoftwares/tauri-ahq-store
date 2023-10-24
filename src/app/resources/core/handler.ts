@@ -11,7 +11,7 @@ const WebSocketMessage = {
   UninstallApp: (app_id: string) => `{"UninstallApp":[{*ref_id},"${app_id}"]}`,
   ListApps: () => `{"ListApps":{*ref_id}}`,
   GetPrefs: () => `{"GetPrefs":{*ref_id}}`,
-  SetPrefs: (prefs: Prefs) => `{"SetPrefs":[{*ref_id},"${JSON.stringify(prefs).replace(/"/g, '\\"')}")}"]}`,
+  SetPrefs: (prefs: Prefs) => `{"SetPrefs":[{*ref_id}, ${JSON.stringify(prefs)}]}`,
 };
 
 type u64 = Number;
@@ -37,49 +37,47 @@ function queueAndWait(data: string, result: (value: ServerResponse) => void) {
   });
 }
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(() => resolve(null), ms));
-
 export function runner() {
-  setInterval(async () => {
+  setInterval(() => {
     for (let i = 0; i < send.length; i++) {
       const req = send[i];
-
-      await delay(50);
 
       toResolve.push(req);
       appWindow.emit("ws_send", req.data);
     }
     send = [];
-  }, 1000);
+  }, 1);
 }
 
-appWindow.listen<string>("ws_resp", ({ payload }) => {
-  const toObj = interpret(payload);
+appWindow.listen<string[]>("ws_resp", ({ payload }) => {
+  payload.forEach((payload) => {
+    const toObj = interpret(payload);
 
-  if (toObj) {
-    if (toObj.method == "DownloadProgress") {
-      const data = toObj.data as Downloaded;
+    if (toObj) {
+      if (toObj.method == "DownloadProgress") {
+        const data = toObj.data as Downloaded;
 
-      invoke("set_progress", {
-        state: 1,
-        c: data.c,
-        t: data.t
-      })
-    } else {
-      invoke("set_progress", {
-        state: 0
+        invoke("set_progress", {
+          state: 1,
+          c: data.c,
+          t: data.t
+        })
+      } else {
+        invoke("set_progress", {
+          state: 0
+        });
+      }
+
+      toResolve = toResolve.filter(({ ref_id, resolve }) => {
+        if (ref_id == toObj.ref) {
+          resolve(toObj);
+        }
+        if (toObj.method == "TerminateBlock") {
+          return false;
+        }
+
+        return true;
       });
     }
-
-    toResolve = toResolve.filter(({ ref_id, resolve }) => {
-      if (ref_id == toObj.ref) {
-        resolve(toObj);
-      }
-      if (toObj.method == "TerminateBlock") {
-        return false;
-      }
-
-      return true;
-    });
-  }
+  });
 });

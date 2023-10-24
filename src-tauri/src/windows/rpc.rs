@@ -1,7 +1,6 @@
 use discord_rich_presence::{
-  DiscordIpcClient,
-  DiscordIpc,
-  activity::{Button, Activity, Assets}
+  activity::{Activity, Assets, Button},
+  DiscordIpc, DiscordIpcClient,
 };
 
 use std::thread::spawn;
@@ -28,22 +27,25 @@ pub fn init_presence(window: tauri::Window) {
       let deatils = format!("v{}-next-internal", &version);
 
       loop {
-        let title = window.title().unwrap_or("Home - AHQ Store".into()).replace(" - AHQ Store", " Page").replace("AHQ Store", "Loading Screen");
+        let title = window
+          .title()
+          .unwrap_or("Home - AHQ Store".into())
+          .replace(" - AHQ Store", " Page")
+          .replace("AHQ Store", "Loading Screen");
         let title = format!("Viewing {}", &title);
 
         let activity = Activity::new()
-        .state(&title)
-        .details(&deatils)
-        .assets(Assets::new()
-          .large_image("icon")
-          .large_text("AHQ Store")
-          .small_image("dev")
-          .small_text("ahqsoftwares")
-        )
-        .buttons(vec![
-          Button::new("Download", "https://ahq-store.web.app")
-        ]);
-        
+          .state(&title)
+          .details(&deatils)
+          .assets(
+            Assets::new()
+              .large_image("icon")
+              .large_text("AHQ Store")
+              .small_image("dev")
+              .small_text("ahqsoftwares"),
+          )
+          .buttons(vec![Button::new("Download", "https://ahq-store.web.app")]);
+
         if let Err(_) = rpc.set_activity(activity) {
           let _ = rpc.reconnect();
         }

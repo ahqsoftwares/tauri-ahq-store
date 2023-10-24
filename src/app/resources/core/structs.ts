@@ -48,10 +48,19 @@ export type {
   Downloaded
 }
 
-export function interpret(data: string) {
+export function interpret(data: string): ServerResponse | undefined {
   const into_array: { [key: string]: any } = JSON.parse(data);
 
   const [mode, valueData] = Object.entries(into_array)[0];
+
+  if (mode == "PrefsSet") {
+    return {
+      data: [],
+      error: [],
+      method: "PrefsSet",
+      ref: valueData
+    }
+  }
 
   let result: ServerResponse = {
     error: [],
@@ -70,6 +79,10 @@ export function interpret(data: string) {
     case "ListApps":
       result.data = pyld as ListedApps;
       result.method = "ListApps";
+      break;
+    case "Prefs":
+      result.method = "Prefs";
+      result.data = pyld as Prefs;
       break;
     case "AppData":
       result.method = "AppData";
@@ -102,51 +115,28 @@ export function interpret(data: string) {
     case "TerminateBlock":
       result.method = "TerminateBlock";
       break;
+    case "Error":
+      result.method = "Error";
+
+      const [eType, eData] = Object.entries<{ [key: string]: any[] }>(ref_id)[0];
+
+      switch (eType) {
+        case "AppInstallError":
+          result.error = [
+            {
+              type: "AppInstallError",
+              details: eData as unknown as any[]
+            }
+          ];
+          result.ref = Number(eData[0]);
+          break;
+        default:
+          break;
+      }
+      break;
     default:
       return undefined;
   }
 
   return result;
 }
-
-// #[derive(Serialize, Deserialize, Debug)]
-// pub enum Reason {
-//   UnknownData(RefId),
-
-//   Unauthenticated,
-// }
-
-// #[derive(Serialize, Deserialize, Debug)]
-// pub enum ErrorType {
-//   GetAppFailed(RefId, AppId),
-//   AppInstallError(RefId, AppId),
-//   AppUninstallError(RefId, AppId),
-//   PrefsError(RefId),
-// }
-
-// #[derive(Serialize, Deserialize, Debug)]
-// pub enum Response {
-//   Ready,
-
-//   Error(ErrorType),
-
-//   Disconnect(Reason),
-
-//   AppData(RefId, AppId, AHQStoreApplication),
-
-//   ListApps(RefId, Vec<AppData>),
-
-//   DownloadStarted(RefId, AppId),
-//   DownloadProgress(RefId, AppId, u8),
-//   DownloadComplete(RefId, AppId),
-//   Installing(RefId, AppId),
-//   Installed(RefId, AppId),
-
-//   UninstallStarting(RefId, AppId),
-//   Uninstalled(RefId, AppId),
-
-//   Prefs(RefId, Prefs),
-//   PrefsSet(RefId),
-
-//   TerminateBlock(RefId, Str)
-// }

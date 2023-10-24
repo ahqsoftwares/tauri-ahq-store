@@ -15,7 +15,11 @@ lazy_static! {
   );
 }
 
-pub fn get_prefs() -> Option<Prefs> {
+pub fn get_prefs() -> Prefs {
+  get_prefs_inner().unwrap_or(Prefs::default())
+}
+
+fn get_prefs_inner() -> Option<Prefs> {
   Prefs::str_to(&decrypt2(Prefs::get(&PREFS)?)?)
 }
 

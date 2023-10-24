@@ -78,14 +78,14 @@ pub fn list_apps() -> Option<Vec<AppData>> {
 
   for dir in dirs {
     let dir = dir.ok()?.file_name();
-    let dir = dir.to_str()?;
+    let dir = dir.to_str().unwrap_or("unknown");
 
     let version = fs::read_to_string(format!(
       "{}\\{}",
       &get_program_folder(&dir),
       "ahqStoreVersion"
     ))
-    .ok()?;
+    .unwrap_or("unknown".into());
 
     vec.push((dir.to_owned(), version));
   }

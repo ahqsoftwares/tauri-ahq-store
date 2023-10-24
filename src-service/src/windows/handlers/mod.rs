@@ -4,6 +4,7 @@ use tokio::spawn;
 use crate::windows::utils::{
   get_ws,
   structs::{Command, ErrorType, Reason, Response},
+  write_log,
 };
 
 use self::service::*;
@@ -36,6 +37,8 @@ pub fn handle_msg(data: String, stop: fn()) {
               let _ = ws
                 .send(Response::as_msg(Response::Installed(ref_id, app_id)))
                 .await;
+            } else {
+              write_log("Error downloading");
             }
             send_term(ref_id).await;
           }
@@ -74,15 +77,9 @@ pub fn handle_msg(data: String, stop: fn()) {
           }
 
           Command::GetPrefs(ref_id) => {
-            if let Some(prefs) = get_prefs() {
-              let _ = ws
-                .send(Response::as_msg(Response::Prefs(ref_id, prefs)))
-                .await;
-            } else {
-              let _ = ws.send(Response::as_msg(Response::Error(ErrorType::PrefsError(
-                ref_id,
-              ))));
-            }
+            let _ = ws
+              .send(Response::as_msg(Response::Prefs(ref_id, get_prefs())))
+              .await;
             send_term(ref_id).await;
           }
           Command::SetPrefs(ref_id, prefs) => {

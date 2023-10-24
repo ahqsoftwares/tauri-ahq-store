@@ -100,6 +100,51 @@ export default function ShowModal(props: AppDataPropsModal) {
   };
   Modal.setAppElement("body");
 
+  const install = async () => {
+    if (!working) {
+      setWorking(true);
+
+      button.current.innerHTML = "Starting Download...";
+
+      await install_app(installData, ({ c, t }) => {
+        if (c == 10000 && t == 0) {
+          button.current.innerHTML = "Installing...";
+        } else {
+          const perc = Math.round((c * 100) / t);
+
+          button.current.innerHTML = `<div class="dui-radial-progress text-base-content" style="--value: ${perc}; --size: 2rem; font-size: 0.75rem;">${perc}</div> (${formatBytes(
+            t,
+          )})`;
+        }
+      }).then(async (success) => {
+        if (!success) {
+          button.current.innerHTML = "Failed...";
+        } else {
+          button.current.innerHTML = "Installed!";
+        }
+
+        setInstalled(true);
+        setWorking(false);
+      });
+    }
+  };
+
+  const uninstall = async () => {
+    if (!working) {
+      setWorking(true);
+      button.current.innerHTML = "Uninstalling...";
+
+      await unInstall(installData);
+
+      button.current.innerHTML = "Uninstalled!";
+
+      setTimeout(async () => {
+        setInstalled(false);
+        setWorking(false);
+      }, 1000);
+    }
+  };
+
   return (
     <Modal isOpen={shown} contentLabel={"App Information"} style={modalStyles}>
       <div className="flex flex-col w-[100%] h-[100%]">
@@ -176,21 +221,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                     color: "white",
                   }}
                   disabled={updating}
-                  onClick={async () => {
-                    if (!working) {
-                      setWorking(true);
-                      button.current.innerHTML = "Uninstalling...";
-
-                      await unInstall(installData);
-
-                      button.current.innerHTML = "Uninstalled!";
-
-                      setTimeout(async () => {
-                        setInstalled(await isInstalled(installData));
-                        setWorking(false);
-                      }, 1000);
-                    }
-                  }}
+                  onClick={() => uninstall()}
                 >
                   Uninstall
                 </button>
@@ -202,35 +233,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                       ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
                       : "dui-btn-success text-success-content"
                   } w-[60%] mb-4`}
-                  onClick={async () => {
-                    if (!working) {
-                      setWorking(true);
-
-                      button.current.innerHTML = "Starting Download...";
-
-                      await install_app(installData, ({ c, t }) => {
-                        console.log(c, t);
-                        if (c == 10000 && t == 0) {
-                          button.current.innerHTML = "Installing...";
-                        } else {
-                          const perc = Math.round((c * 100) / t);
-
-                          button.current.innerHTML = `<div class="dui-radial-progress text-base-content" style="--value: ${perc}; --size: 2rem; font-size: 0.75rem;">${perc}</div> (${formatBytes(
-                            t,
-                          )})`;
-                        }
-                      }).then(async (success) => {
-                        if (!success) {
-                          button.current.innerHTML = "Failed...";
-                        } else {
-                          button.current.innerHTML = "Installed!";
-                        }
-
-                        setInstalled(await isInstalled(installData));
-                        setWorking(false);
-                      });
-                    }
-                  }}
+                  onClick={() => install()}
                 >
                   Install
                 </button>

@@ -60,7 +60,7 @@ export default function Home(props: HomeProps) {
         setUserIcon(data);
       }
     })
-    .catch(console.log);
+    .catch(console.error);
 
   const [greet, setGreet] = useState(didGreet());
   const version = getAppVersion();

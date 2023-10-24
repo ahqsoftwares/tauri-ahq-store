@@ -8,6 +8,7 @@ use crate::windows::utils::{
   get_installer_file, get_ws,
   structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response},
 };
+use std::time::Duration;
 
 #[cfg(debug_assertions)]
 use crate::windows::utils::write_log;
@@ -17,6 +18,7 @@ static URL: &str = "https://ahqstore-server.onrender.com";
 lazy_static! {
     static ref CLIENT: Client = ClientBuilder::new()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36")
+        .timeout(Duration::from_secs(60))
         .build()
         .unwrap();
 }
@@ -61,7 +63,13 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
 
         let mut resp = CLIENT.get(&data.download).send().await.ok()?;
 
+        #[cfg(debug_assertions)]
+        write_log("Response Successful");
+
         let mut file = File::create(&file).ok()?;
+
+        #[cfg(debug_assertions)]
+        write_log("File Successful");
 
         let total = resp.content_length().unwrap_or(0);
         let mut current = 0u64;

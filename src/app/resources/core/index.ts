@@ -29,8 +29,6 @@ export function get_app(app: string): Promise<ApplicationData> {
   });
 }
 
-type u64 = number;
-
 export function install_app(
   app: string,
   status_update: (data: Downloaded) => void,
@@ -41,7 +39,6 @@ export function install_app(
       (val) => {
         switch (val.method) {
           case "DownloadProgress":
-            console.log(val.data);
             status_update(val.data as Downloaded);
             break;
           case "Installing":
@@ -70,7 +67,6 @@ export function list_apps(): Promise<{ id: string; version: string }[]> {
       WebSocketMessage.ListApps(),
       (val) => {
         if (val.method == "ListApps") {
-          console.log(val);
           resolve(
             (val.data as ListedApps).map(([id, version]) => ({
               id,
@@ -90,39 +86,38 @@ interface Prefs {
 
 export type { Prefs };
 
+let accessPrefs: Prefs | undefined;
+
 export async function get_access_perfs(): Promise<Prefs> {
-  return {
-    install_apps: true,
-    launch_app: true
-  };
-  // return new Promise((resolve) => {
-  //   sendWsRequest(
-  //     {
-  //       module: "GET_PREFS",
-  //     },
-  //     (val) => {
-  //       if (val.method == "GET_PREFS") {
-  //         resolve(JSON.parse(val.payload));
-  //       }
-  //     },
-  //   );
-  // });
+  if (accessPrefs != undefined) {
+    return accessPrefs;
+  }
+
+  return new Promise((resolve) => {
+    sendWsRequest(
+      WebSocketMessage.GetPrefs(),
+      (val) => {
+        if (val.method == "Prefs") {
+          accessPrefs = val.data as Prefs;
+          resolve(val.data as Prefs);
+        }
+      },
+    );
+  });
 }
 
 export async function set_access_prefs(prefs: Prefs): Promise<void> {
-  // return new Promise((resolve) => {
-  //   sendWsRequest(
-  //     {
-  //       module: "POST_PREFS",
-  //       data: JSON.stringify(prefs),
-  //     },
-  //     (val) => {
-  //       if (val.method == "POST_PREFS") {
-  //         resolve();
-  //       }
-  //     },
-  //   );
-  // });
+  accessPrefs = undefined;
+  return new Promise((resolve) => {
+    sendWsRequest(
+      WebSocketMessage.SetPrefs(prefs),
+      (val) => {
+        if (val.method == "PrefsSet") {
+          resolve();
+        }
+      },
+    );
+  });
 }
 
 export function un_install(app: string): Promise<void> {

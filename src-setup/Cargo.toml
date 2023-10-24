@@ -1,7 +1,7 @@
 [package]
 name = "ahqstore_setup_x86_64"
 description = "Install AHQ Store in your computer"
-version = "1.3.4"
+version = "1.3.5"
 edition = "2021"
 license = "Creative Commons Attribution Non Commercial 3.0"
 

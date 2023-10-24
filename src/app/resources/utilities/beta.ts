@@ -8,15 +8,15 @@ interface betaPrefs {
 export type { betaPrefs };
 
 export default async function initDeveloperConfiguration() {
-  await createDir("", { dir: BaseDirectory.App }).catch(console.log);
-  await createDir("database", { dir: BaseDirectory.App }).catch(console.log);
+  await createDir("", { dir: BaseDirectory.App }).catch(console.error);
+  await createDir("database", { dir: BaseDirectory.App }).catch(console.error);
 
   let prefs: betaPrefs = await readTextFile("database/config.developer", {
     dir: BaseDirectory.App,
   })
     .then((data) => JSON.parse(data) as betaPrefs)
     .catch(async (e) => {
-      console.log(e);
+      console.error(e);
       return {
         enableSearchOnEnter: false,
       };

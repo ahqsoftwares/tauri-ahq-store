@@ -161,7 +161,7 @@ function Render(props: AppProps) {
         setLoad(true);
       } catch (_) {
         auth.signOut();
-        console.log(_);
+        console.error(_);
         window.location.reload();
       }
     })();

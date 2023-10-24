@@ -148,17 +148,17 @@ if (window.__TAURI_IPC__ == null) {
           "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest",
           {
             method: "GET",
-            timeout: 30,
+            timeout: 2,
             responseType: ResponseType.JSON,
             headers: {
-              "User-Agent": "AHQSoftwares/AHQ-Store",
+              "User-Agent": navigator.userAgent,
             },
           },
         )) as any;
         const currentVersion = await getVersion();
 
         if (!data.assets) {
-          throw new Error("");
+          throw new Error();
         }
 
         let { data: signature } = await fetch(
@@ -201,11 +201,11 @@ if (window.__TAURI_IPC__ == null) {
             }
           })
           .catch((e) => {
-            console.log(e);
+            console.error(e);
             Manage();
           });
       } catch (e) {
-        console.log(e);
+        console.error(e);
         Manage();
       }
     })();

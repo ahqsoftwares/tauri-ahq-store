@@ -3,12 +3,12 @@ use std::{
   process::{Command, Stdio},
 };
 
+use lazy_static::lazy_static;
 use reqwest::{
   blocking::{Client, ClientBuilder},
   header::{HeaderMap, HeaderValue},
 };
 use serde_json::Value;
-use lazy_static::lazy_static;
 
 pub mod structs;
 

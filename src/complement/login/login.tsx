@@ -22,9 +22,9 @@ export default function Login() {
           getAll()
             .filter((window) => window.label === "main")
             .forEach((window) => {
-              window.show().catch(console.log);
-              window.maximize().catch(console.log);
-              window.setFocus().catch(console.log);
+              window.show().catch(console.error);
+              window.maximize().catch(console.error);
+              window.setFocus().catch(console.error);
             });
           appWindow.minimize();
           appWindow.hide();
