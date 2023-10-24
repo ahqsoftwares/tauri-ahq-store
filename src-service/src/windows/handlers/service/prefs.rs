@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{
+use crate::windows::{
   encryption::{decrypt2, encrypt2},
   utils::get_main_drive,
 };
@@ -15,7 +15,11 @@ lazy_static! {
   );
 }
 
-pub fn get_prefs() -> Option<Prefs> {
+pub fn get_prefs() -> Prefs {
+  get_prefs_inner().unwrap_or(Prefs::default())
+}
+
+fn get_prefs_inner() -> Option<Prefs> {
   Prefs::str_to(&decrypt2(Prefs::get(&PREFS)?)?)
 }
 

@@ -36,7 +36,7 @@ export default function App({
         }, 2000);
       }, 125);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       Toast?.edit(`Something might went wrong...`, "danger");
       setTimeout(() => {
         reload();

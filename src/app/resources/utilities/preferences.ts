@@ -69,11 +69,11 @@ export default async function fetchPrefs(): Promise<appData> {
         }) as appData,
     )
     .catch(async (e) => {
-      console.log(e);
+      console.error(e);
       await createDir("database", {
         dir: BaseDirectory.App,
         recursive: true,
-      }).catch(console.log);
+      }).catch(console.error);
 
       const dark = isDarkTheme(defTheme);
 

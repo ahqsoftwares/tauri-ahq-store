@@ -31,6 +31,13 @@ impl Prefs {
   pub fn convert(&self) -> Option<String> {
     to_string(self).ok()
   }
+
+  pub fn default() -> Self {
+    Self {
+      launch_app: true,
+      install_apps: true
+    }
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

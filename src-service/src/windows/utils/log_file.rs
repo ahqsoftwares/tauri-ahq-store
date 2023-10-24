@@ -1,6 +1,6 @@
 use std::{fmt::Display, fs};
 
-use crate::encryption;
+use crate::windows::encryption;
 
 use super::{get_main_drive, now};
 

@@ -41,7 +41,7 @@ export default function Developers(props: DevProps) {
           setPublishedApps(apps as appData[]);
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
         setPublishedApps([]);
       }
     })();

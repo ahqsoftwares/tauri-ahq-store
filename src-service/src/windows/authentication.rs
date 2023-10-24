@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::windows::utils::*;
 use sysinfo::{Pid, ProcessExt, System, SystemExt};
 
 pub fn authenticate_process(pid: usize) -> bool {
@@ -9,9 +9,7 @@ pub fn authenticate_process(pid: usize) -> bool {
   );
 
   #[cfg(debug_assertions)]
-  let path = format!(
-    r"E:\GitHub\ahq-store-tauri\src-tauri\target\debug\AHQ Store.exe"
-  );
+  let path = format!(r"E:\GitHub\ahq-store-tauri\src-tauri\target\debug\AHQ Store.exe");
 
   let path = path.as_bytes();
   let exe = String::from_utf8_lossy(path);
@@ -26,9 +24,7 @@ pub fn authenticate_process(pid: usize) -> bool {
 
     let running_for_secs = now() - process.start_time();
 
-    write_log(
-      format!("{} {} {}", &exe, &exe_path, &running_for_secs)
-    );
+    write_log(format!("{} {} {}", &exe, &exe_path, &running_for_secs));
 
     if exe_path == exe && running_for_secs < 20 {
       return true;

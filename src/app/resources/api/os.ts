@@ -23,12 +23,12 @@ export function init() {
         windowsVersion = windows7;
       } else if (version === "8" || version === "8.1" || version === "10") {
         windowsVersion = windows10;
-      } else {
+      } else if (version == "11") {
         windowsVersion = windows11;
       }
     })
     .catch((e) => {
-      console.log(e);
+      console.error(e);
       windowsVersion = windows95;
     });
 }

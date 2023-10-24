@@ -10,6 +10,8 @@ function App(props: { info: string }) {
     autoUpdate: false,
     font: "bhn",
     sidebar: "flex-row",
+    debug: false,
+    theme: "",
   });
 
   useEffect(() => {
@@ -21,7 +23,7 @@ function App(props: { info: string }) {
   getVersion().then((value) => setVersion(value));
 
   const splashScreens = [
-    "Made possible with open source!",
+    "Made possible with tauri and rust!",
     "The work of AHQ Softwares",
     "ahq-store.web.app",
     `${version !== "" ? `v${version}` : ""}`,

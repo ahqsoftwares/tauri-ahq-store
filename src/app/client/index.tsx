@@ -778,7 +778,7 @@ async function ChangeProfile(
       }
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
     setUser(GeneralUser);
     sendNotification("Failed to update profile picture!");
     setPFD({});

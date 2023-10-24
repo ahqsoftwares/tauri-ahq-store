@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 pub struct PayloadReq {
   pub module: String,
   pub data: Option<String>,
-  pub ref_id: u64
+  pub ref_id: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
