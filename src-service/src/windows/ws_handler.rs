@@ -142,7 +142,7 @@ pub async fn launch() {
                   break 'a;
                 }
               }
-              tokio::time::sleep(Duration::from_millis(5)).await;
+              tokio::time::sleep(Duration::from_nanos(1)).await;
             }
           });
 

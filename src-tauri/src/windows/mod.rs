@@ -1,13 +1,11 @@
 pub mod download;
-#[macro_use]
-pub mod encryption;
 pub mod extract;
 #[macro_use]
-pub mod util;
-
-mod rpc;
+pub mod utils;
 
 mod ws;
+
+use crate::rpc;
 
 //utilities
 #[cfg(not(debug_assertions))]
@@ -16,7 +14,7 @@ use base64::{self, Engine};
 use minisign_verify::{Error, PublicKey, Signature};
 
 //modules
-use encryption::{decrypt, encrypt};
+use crate::encryption::{decrypt, encrypt};
 
 //crates
 use window_vibrancy::apply_mica;
@@ -40,12 +38,12 @@ use std::{
 };
 
 //tauri
-use tauri::{CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri::{SystemTrayMenuItem, CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 //link Launcher
 use open as open_2;
 
-use util::{get_service_url, is_an_admin};
+use utils::{get_service_url, is_an_admin};
 
 #[derive(Debug, Clone)]
 struct AppData {
@@ -56,7 +54,7 @@ struct AppData {
 static mut WINDOW: Option<tauri::Window<tauri::Wry>> = None;
 
 pub fn main() {
-  tauri_plugin_deep_link::prepare("com.ahqsoftwares.store");
+  tauri_plugin_deep_link::prepare("com.AHQ-Softwares.store");
 
   let context = tauri::generate_context!();
 
@@ -134,7 +132,7 @@ pub fn main() {
       {
         let window = window_clone_2.clone();
 
-        rpc::init_presence(window);
+        rpc::init_presence(window.into());
       }
 
       {
@@ -195,7 +193,13 @@ pub fn main() {
       SystemTray::new()
         .with_tooltip("AHQ Store is running")
         .with_menu(
-          SystemTrayMenu::new().add_item(CustomMenuItem::new("quit".to_string(), "Close App")),
+          SystemTrayMenu::new()
+            .add_item(CustomMenuItem::new("0", "AHQ Store").disabled())
+            .add_native_item(SystemTrayMenuItem::Separator)
+            .add_item(CustomMenuItem::new("open", "Open Store"))
+            .add_item(CustomMenuItem::new("update", "Check for Updates..."))
+            .add_native_item(SystemTrayMenuItem::Separator)
+            .add_item(CustomMenuItem::new("quit", "Quit")),
         ),
     )
     .plugin(tauri_plugin_single_instance::init(|app, _, _| {

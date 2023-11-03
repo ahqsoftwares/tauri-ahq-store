@@ -10,7 +10,7 @@ use reqwest::{
 };
 use serde_json::Value;
 
-pub mod structs;
+pub use crate::structs;
 
 lazy_static! {
   static ref CLIENT: Client = {

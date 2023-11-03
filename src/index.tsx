@@ -13,13 +13,13 @@ import {
 import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
-import { fetch, ResponseType } from "@tauri-apps/api/http";
+import { resolveResource } from '@tauri-apps/api/path';
 
 /*Apps
  */
 import App from "./config/App";
-import Store from "./app/index";
-import Login from "./Login";
+import Store, { AppProps } from "./app/index";
+import Login, { LoginHandlerProps } from "./Login";
 
 //2nd Screen
 import SecondApp from "./complement/app";
@@ -97,6 +97,13 @@ function render(state: string, App: (props: { info: string }) => JSX.Element) {
   );
 }
 
+resolveResource("icons/pwd_reset.png").then((icon) => {
+  sendNotification({
+    title: "HI",
+    icon
+  });
+});
+
 if (window.__TAURI_IPC__ == null) {
   render("Not Ready", App);
 } else {
@@ -140,75 +147,15 @@ if (window.__TAURI_IPC__ == null) {
       }
     })();
 
-    render("Checking for updates...", App);
+    render("Welcome!", App);
 
     (async () => {
-      try {
-        const { data } = (await fetch(
-          "https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest",
-          {
-            method: "GET",
-            timeout: 2,
-            responseType: ResponseType.JSON,
-            headers: {
-              "User-Agent": navigator.userAgent,
-            },
-          },
-        )) as any;
-        const currentVersion = await getVersion();
+      const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-        if (!data.assets) {
-          throw new Error();
-        }
+      await delay(2000);
 
-        let { data: signature } = await fetch(
-          data.assets.filter((asset: GitHubAsset) =>
-            asset.name.endsWith(".msi.zip.sig"),
-          )[0][`browser_download_url`],
-          {
-            responseType: ResponseType.Text,
-            method: "GET",
-            headers: {
-              "User-Agent": "ahq-store",
-            },
-          },
-        );
-
-        invoke<boolean>("check_update", {
-          version: data["tag_name"],
-          currentVersion: currentVersion,
-          downloadUrl: data.assets.filter((asset: GitHubAsset) =>
-            asset.name.endsWith(".msi.zip"),
-          )[0][`browser_download_url`],
-          signature,
-        })
-          .then(async (shouldUpdate) => {
-            const manifest = {
-              version: data["tag_name"],
-            };
-
-            if (shouldUpdate) {
-              render(`Verison ${manifest?.version} Available...`, App);
-
-              setTimeout(async () => {
-                render(`Installing ${manifest?.version}`, App);
-                setTimeout(async () => {
-                  await invoke("install_update");
-                }, 3000);
-              }, 5000);
-            } else {
-              Manage();
-            }
-          })
-          .catch((e) => {
-            console.error(e);
-            Manage();
-          });
-      } catch (e) {
-        console.error(e);
-        Manage();
-      }
-    })();
+      Manage();
+    })()
 
     window.addEventListener("offline", () => {
       render("Offline, waiting for network", App);
@@ -225,17 +172,9 @@ if (window.__TAURI_IPC__ == null) {
       render("Launching Store...", App);
       setTimeout(() => {
         if (!auth.currentUser) {
-          storeLoad(Login, {
-            create: createUserWithEmailAndPassword,
-            login: signInWithEmailAndPassword,
-            verify: sendEmailVerification,
-            resetEmail: sendPasswordResetEmail,
-            auth,
-            verifyCode: verifyPasswordResetCode,
-            reset: confirmPasswordReset,
-          });
+          StoreLoad(Login as any, { auth });
         } else {
-          storeLoad(Store, { auth });
+          StoreLoad(Store, { auth });
         }
 
         if (auth.currentUser && !auth.currentUser?.emailVerified) {
@@ -262,19 +201,12 @@ if (window.__TAURI_IPC__ == null) {
           }).catch(() => "a");
 
           if (!(localStorage.getItem("email") && pwd != "a")) {
+            console.log("Signing out");
             auth.signOut();
           }
           user
-            ? storeLoad(Store, { auth })
-            : storeLoad(Login, {
-                create: createUserWithEmailAndPassword,
-                login: signInWithEmailAndPassword,
-                verify: sendEmailVerification,
-                reset: confirmPasswordReset,
-                resetEmail: sendPasswordResetEmail,
-                auth,
-                verifyCode: verifyPasswordResetCode,
-              });
+            ? StoreLoad(Store, { auth })
+            : StoreLoad(Login as any, { auth });
         });
       }, 1000);
     }
@@ -284,13 +216,20 @@ if (window.__TAURI_IPC__ == null) {
      * @param Component
      * @param prop
      */
-    function storeLoad(
-      Component: (props: { data: any }) => JSX.Element,
-      prop?: Object,
+    function StoreLoad(
+      Component: (props: LoginHandlerProps | AppProps) => any,
+      { auth }: AppProps,
     ) {
+      const data = {
+        auth,
+        create: createUserWithEmailAndPassword,
+        login: signInWithEmailAndPassword,
+        resetEmail: sendPasswordResetEmail,
+      };
+
       root.render(
         <>
-          <Component data={prop ? prop : {}} />
+          <Component {...data} />
         </>,
       );
     }

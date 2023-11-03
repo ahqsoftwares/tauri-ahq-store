@@ -22,7 +22,7 @@
     "web-vitals": "^3.5.0"
   },
   "scripts": {
-    "start": "cross-env BROWSER=none vite",
+    "start": "cross-env BROWSER=none NODE_OPTIONS=--max-old-space-size=2048 vite",
     "build": "vite build",
     "test": "vite test",
     "dev": "tauri dev"

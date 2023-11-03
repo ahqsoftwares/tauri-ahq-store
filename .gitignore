@@ -3,6 +3,8 @@
 # dependencies
 /docs/node_modules
 /node_modules
+/node_modules_windows
+/node_modules_linux
 /.pnp
 
 .pnp.js

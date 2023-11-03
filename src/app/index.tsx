@@ -26,8 +26,6 @@ import User from "./client/index";
 import Library from "./library";
 import Settings from "./settings/index";
 
-import BaseAPI, { newServer } from "./server";
-
 import fetchPrefs, {
   appData,
   setConfig,
@@ -43,15 +41,13 @@ import {
 import Package from "./package";
 
 interface AppProps {
-  data: {
-    auth: Auth;
-  };
+  auth: Auth;
 }
 
 function Render(props: AppProps) {
   runner();
 
-  const { auth } = props.data;
+  const { auth } = props;
   let [page, changePage] = useState("home"),
     [dev, setDev] = useState(
       auth.currentUser?.displayName?.startsWith("(dev)"),
@@ -311,3 +307,4 @@ function Render(props: AppProps) {
 }
 
 export default Render;
+export type { AppProps };

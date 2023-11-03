@@ -23,7 +23,8 @@ function App(props: { info: string }) {
   getVersion().then((value) => setVersion(value));
 
   const splashScreens = [
-    "Made possible with tauri and rust!",
+    "Made with tauri and rust!",
+    "Open Sourced Software!",
     "The work of AHQ Softwares",
     "ahq-store.web.app",
     `${version !== "" ? `v${version}` : ""}`,
