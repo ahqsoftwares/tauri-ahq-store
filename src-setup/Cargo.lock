@@ -56,7 +56,7 @@ dependencies = [
 
 [[package]]
 name = "ahqstore_setup_x86_64"
-version = "1.3.5"
+version = "1.3.6"
 dependencies = [
  "env_logger",
  "iced",

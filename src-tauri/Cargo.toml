@@ -16,7 +16,21 @@ tauri-build = { version = "1", features = [] }
 serde_json = "1.0"
 serde = { version = "1", features = ["derive"] }
 
-tauri = { version = "1", features = [ "process-relaunch", "dialog-all", "fs-create-dir", "fs-read-file", "fs-write-file", "global-shortcut-all", "http-all", "notification-all", "path-all", "system-tray", "updater", "window-all", "wry"] }
+tauri = { version = "1", features = [
+  "process-relaunch",
+  "dialog-all",
+  "fs-create-dir",
+  "fs-read-file",
+  "fs-write-file",
+  "global-shortcut-all",
+  "http-all",
+  "notification-all",
+  "path-all",
+  "system-tray",
+  "updater",
+  "window-all",
+  "wry",
+] }
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tauri-plugin-deep-link = { git = "https://github.com/FabianLars/tauri-plugin-deep-link" }
 wry = "*"
@@ -33,7 +47,11 @@ ahqstore-types = { path = "../ahqstore-types" }
 discord-rich-presence = "0.2.3"
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "=0.39.0", features= ["Win32_System_Com", "Win32_Foundation", "Win32_UI_Shell"] }
+windows = { version = "=0.39.0", features = [
+  "Win32_System_Com",
+  "Win32_Foundation",
+  "Win32_UI_Shell",
+] }
 is_elevated = "0.1.2"
 window-vibrancy = "0.4.1"
 downloader = "0.2.6"

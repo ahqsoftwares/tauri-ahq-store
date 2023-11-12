@@ -48,6 +48,7 @@ export function init() {
     })
     .catch((e) => {
       console.error(e);
+      console.error(e);
       windowsVersion = windows95;
     });
 }
@@ -65,8 +66,8 @@ export function versionToBuild(version: string) {
 
   return String(
     Number(major) * 10000 +
-      Number(minor) +
-      Number(`0.${patch}`) +
-      (development ? "-next" : ""),
+    Number(minor) +
+    Number(`0.${patch}`) +
+    (development ? "-next" : ""),
   );
 }
