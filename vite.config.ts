@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
     cssMinify: true,
     sourcemap: mode === "development" || "hidden",
     rollupOptions: {
-      maxParallelFileOps: Math.max(1, cpus().length - 1),
+      maxParallelFileOps: 1,
       output: {
         manualChunks: (id) => {
           if (id.includes("node_modules") || id.includes("src-tauri")) {
@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => ({
           const path = normalize(relativeSourcePath);
           return path.includes("node_modules") || path.includes("src-tauri");
         },
-        cache: false
+        cache: true
       }
     }
   },

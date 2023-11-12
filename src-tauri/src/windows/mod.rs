@@ -132,7 +132,7 @@ pub fn main() {
       {
         let window = window_clone_2.clone();
 
-        rpc::init_presence(window.into());
+        rpc::init_presence(window);
       }
 
       {

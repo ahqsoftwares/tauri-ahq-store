@@ -38,8 +38,6 @@ import {
   signInWithEmailAndPassword,
   sendEmailVerification,
   sendPasswordResetEmail,
-  verifyPasswordResetCode,
-  confirmPasswordReset,
   onAuthStateChanged,
 } from "firebase/auth";
 
@@ -48,9 +46,6 @@ import {
 import "./index.css";
 import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
-import { getVersion } from "@tauri-apps/api/app";
-
-type GitHubAsset = { name: string; browser_download_url: string };
 
 const config = {
   apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
@@ -96,13 +91,6 @@ function render(state: string, App: (props: { info: string }) => JSX.Element) {
     </>,
   );
 }
-
-resolveResource("icons/pwd_reset.png").then((icon) => {
-  sendNotification({
-    title: "HI",
-    icon
-  });
-});
 
 if (window.__TAURI_IPC__ == null) {
   render("Not Ready", App);

@@ -23,10 +23,11 @@ interface prop {
   home: Function;
   dev: boolean | undefined;
   horizontal: boolean;
+  linux: boolean;
 }
 
 export default function Nav(props: prop) {
-  let { active, home: changePage, dev, horizontal: P_H } = props;
+  let { active, home: changePage, dev, horizontal: P_H, linux } = props;
 
   const horizontal = "n-item-h ";
 
@@ -76,11 +77,7 @@ export default function Nav(props: prop) {
 
   return (
     <div
-      className={`${P_H ? "absolute w-[98vh]" : "w-[80px]"} ${
-        P_H ? "h-[15vh] px-[1rem]" : "h-[98vh]"
-      } my-auto ${P_H ? "mt-2" : "ml-2"} rounded-lg flex ${
-        P_H ? "flex-row" : "flex-col"
-      } items-center nav bg-blue-super ${P_H ? "nav-h" : ""}`}
+      className={`w-[80px] ${linux ? "h-[95vh]" : "h-[98vh]"} my-auto ml-2 rounded-lg flex flex-col items-center nav bg-blue-super`}
       id={"sidebar"}
     >
       {P_H ? (

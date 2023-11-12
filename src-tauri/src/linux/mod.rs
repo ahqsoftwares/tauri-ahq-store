@@ -1,5 +1,4 @@
 use std::process;
-use std::sync::Arc;
 
 use tauri::api::notification::Notification;
 use tauri::{Manager, SystemTrayEvent, WindowEvent, RunEvent, AppHandle};
@@ -10,6 +9,8 @@ use crate::rpc;
 use open as open_2;
 
 use crate::encryption::{decrypt, encrypt};
+
+use whatadistro::identify;
 
 mod mock_ws;
 
@@ -29,7 +30,7 @@ pub fn main() {
 
   let app = tauri::Builder::default()
     .setup(|app| {
-      let win = Arc::new(Manager::get_window(app, "main").unwrap());
+      let win = app.get_window("main").unwrap();
 
       #[cfg(debug_assertions)]
       win.open_devtools();
@@ -47,6 +48,7 @@ pub fn main() {
       encrypt,
       is_an_admin,
       get_windows,
+      get_linux_distro,
       check_update,
       is_development,
       set_progress,
@@ -131,6 +133,11 @@ fn is_an_admin() -> bool {
 #[tauri::command(async)]
 fn get_windows() -> Option<String> {
   Some("linux".into())
+}
+
+#[tauri::command(async)]
+fn get_linux_distro() -> Option<String> {
+  Some(identify()?.name().into())
 }
 
 #[tauri::command(async)]

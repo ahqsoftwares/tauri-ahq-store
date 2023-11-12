@@ -10,7 +10,6 @@ const darkThemes = [
 
 const themes = [
   "light",
-  "bumblebee",
   "emerald",
   "fantasy",
   "wireframe",

@@ -77,7 +77,6 @@ impl<'a> WsConnection<'a> {
     let pending = self.pending.clone();
 
     if let Ok(mut x) = pending.try_lock() {
-      println!("{}", &msg);
       x.push(msg);
     } else {
       std::thread::sleep(std::time::Duration::from_millis(1000));

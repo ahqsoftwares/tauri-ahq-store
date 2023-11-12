@@ -7,6 +7,7 @@ import fetchPrefs, { appData } from "./app/resources/utilities/preferences";
 import Login from "./Login/Login";
 import SignUp from "./Login/Signup"
 import ForgotPwd from "./Login/Forgot";
+import TLights from "./TLights";
 
 interface LoginHandlerProps {
   create: typeof createUserWithEmailAndPassword,
@@ -73,6 +74,7 @@ function Init(props: LoginHandlerProps) {
 
   return (
     <header className="login-background">
+      <TLights />
       {data}
     </header>
   );

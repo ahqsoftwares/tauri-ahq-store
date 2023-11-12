@@ -5,11 +5,10 @@ use discord_rich_presence::{
 
 use std::thread::spawn;
 use std::time::Duration;
-use std::sync::Arc;
 
 static CLIENT_ID: &str = "897736309806882827";
 
-pub fn init_presence(window: Arc<tauri::Window>) {
+pub fn init_presence(window: tauri::Window) {
   let _ = spawn(move || {
     if let Ok(mut rpc) = DiscordIpcClient::new(CLIENT_ID) {
       loop {

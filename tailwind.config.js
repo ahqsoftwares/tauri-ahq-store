@@ -10,7 +10,6 @@ module.exports = {
     prefix: "dui-",
     themes: [
       "light",
-      "bumblebee",
       "emerald",
       "fantasy",
       "wireframe",
@@ -23,7 +22,7 @@ module.exports = {
       "luxury",
       "dracula",
       "business",
-      "night"
-    ]
-  }
+      "night",
+    ],
+  },
 };
