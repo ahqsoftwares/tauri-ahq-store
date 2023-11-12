@@ -32,7 +32,7 @@
 
           "http://odin.forcehost.net:25643/*",
           "http://odin.forcehost.net:25643/",
-          
+
           "https://ahqstore-server.onrender.com/",
           "https://ahqstore-server.onrender.com/*"
         ]
@@ -57,6 +57,12 @@
       },
       "globalShortcut": {
         "all": true
+      },
+      "process": {
+        "all": false,
+        "exit": false,
+        "relaunch": true,
+        "relaunchDangerousAllowSymlinkMacos": false
       }
     },
     "bundle": {
@@ -77,7 +83,9 @@
       ],
       "identifier": "com.AHQ-Softwares.store",
       "longDescription": "AHQ Store\nA New Store for downloading apps!",
-      "resources": [],
+      "resources": [
+        "icons/pwd_reset.png"
+      ],
       "shortDescription": "AHQ Store",
       "targets": ["msi", "updater"],
       "windows": {

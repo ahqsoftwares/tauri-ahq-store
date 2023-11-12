@@ -8,5 +8,9 @@ declare global {
         install_apps: boolean;
       };
     };
+    os: {
+      type: "windows" | "linux",
+      version: "10" | "11" | "7" | "lin"
+    };
   }
 }

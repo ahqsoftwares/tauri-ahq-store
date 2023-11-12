@@ -174,7 +174,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        platform: [windows-latest]
+        platform: [windows-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -230,15 +230,18 @@ jobs:
       - name: Build Service
         run: cargo build --release
         working-directory: src-service
+        if: matrix.platform == 'windows-latest'
 
       - name: Upload Executable (standalone)
         uses: actions/upload-artifact@v3
+        if: matrix.platform == 'windows-latest'
         with:
           name: service.exe
           path: ./src-service/target/release/ahqstore_service.exe
 
       - name: Upload Release Asset
         id: upload-release-asset
+        if: matrix.platform == 'windows-latest'
         uses: ahqsoftwares-projects/upload-release-assets@v59
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -249,10 +252,11 @@ jobs:
           asset_content_type: application/vnd.microsoft.portable-executable
 
       - name: Load VCPKG Page
-        if: ${{ !steps.cache.outputs.cache-hit }}
+        if: ${{ !steps.cache.outputs.cache-hit }} && matrix.platform == 'windows-latest'
         run: git clone https://github.com/Microsoft/vcpkg.git
 
       - name: Install OpenSSL with vcpkg
+        if: matrix.platform == 'windows-latest'
         run: |
           cd vcpkg
           .\bootstrap-vcpkg.bat
@@ -270,12 +274,6 @@ jobs:
           args: --verbose
           releaseId: ${{ needs.create-release.outputs.release_id }}
           includeRelease: true
-
-      - name: Upload Executable (standalone)
-        uses: actions/upload-artifact@v3
-        with:
-          name: ahqstore.exe
-          path: "src-tauri/target/release/AHQ Store.exe"
 
   undraft-release:
     needs: [create-release, publish-tauri, make-postinstaller, make-setup]

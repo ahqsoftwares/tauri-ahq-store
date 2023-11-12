@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import { appWindow } from "@tauri-apps/api/window";
 
 let windowsVersion = "";
 let name = "";
@@ -13,21 +14,40 @@ export function init() {
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAABCElEQVRYhe2WwUoDMRCGv2S3LfQmeqmlF4/Vm/psBR9A8N32JsWzSF0KRU+i2zUbD+tJUulkQCzMdwpD/pmPkEDAMIxfccnqYllBvBT2qmnaOaVv8cUDjpkwX3F3cf2zWKb3iuUAJoyGU1x4J4rlAK5SRZ/R6E8xQS0mqMUEtZigFhPUskuwzujVUnQbPsIL8CZOR55S5fRnwXXnwJlogC+fuZ2vAVhUU9zwWJQPcb2/oJZiPKb7PBJlSvdK4uTTgtEvgYloQOhabu5n3+tH8ANRvr9Wp/sJSuV6BgR/0i+jVG7nzIN9xf8GE9RiglpMUIsJajlYwSqjV02zXdFsV+T9J3NmGobxBQNuOlenTHdjAAAAAElFTkSuQmCC";
   const windows10 =
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABmJLR0QA/wD/AP+gvaeTAAABqElEQVRYhe3Yv2oUURSA8d/dDYYUBhZEAhbK7myT1crKzsbGxlhEbSx9BxsfwFoIPoCVNgZjQPAxtra3shAJ2ezOsciw7J9RF8fdjTAfDJeZuXPux5nD3OFQU7Ne0tpW/hBXhMxIhkzSFXIP09PJaRtLlTiKljNtDW2hLRUjN43sYDpFSX82RHXBw7jsQfruMO4JdyWZXCbJDG1LiGJu/C5QOYsJTmYi15Psoo2u8AmPhGfYF/5p4cwLvo/HuE1RG2SGtsaZWHHVlmXwBXqr1fg1jXUL/IlasCplgn/xMVge/2UGLxT1K67KhRcs20meCFsLR8h9AyPPNbysZJOczF6aF2zKDYpFF2HDj/E4rCB3zmA+/CwjbzXdWjhkeOf8b+aVpv1KevSZXvvC12AtWJVasCq1YFVqwaqU7cWvhTuSDjq4umKnKeYF99IBDsbnx7HpxDVNbUkPuxNtjOurF5zlfjrFl+L4PHXvODaFFkjeyH3V0BE6uIFLVQWX2yc4ipZB0SpJ2oyPLrZLnujbS1M/C+trv32MHacyzXGtZ3Kj2fZbTc26+QkUeVzllrl4UwAAAABJRU5ErkJggg==";
+  const linux = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAMe0lEQVR4nO2dC1gU5RrHp6PMgHY5njqV2ckEdlFEZXZhZ1hUVELzEmZZZhnHTFHznlre8l4etbTQCG94VwI1y7tmOyuiHS/lBS90QJDUVK5qXhP + 5 / kGdgV2F1l2FnH5 / s / zPs / sss8zM + 9vvtv7ve / AMFRUVFRUVFRUVFRUVFRUVFRUVFROl69vyKPevPiKihemqDTiChUvxKt4YZFKI45WaQWBYZi / UQxVIB + t2EzNC8vUGuGWWiPClqk0YopaI3zgrdM9TsE4Qc + LoodKI8xRa8SC8kBYGC9eUWvE4QzDPELBKKTGgYFPqjXiEbtAWNrakJCQ2hSKAlLz4hYHYRSbEEWBOApDKwYrA0O2Ai9eH0ShOCCVRoxTEAhUvJhIgVRej6h4IUdJIDIUraijUCohdXNdI6VhFNsCCqQyQPyFjs4BIpyj0 + BKSOUf1NNeZ7fuGI63 + vSHtnVoub / z9tf50lZibwvRCgNNDmwSGIzBo8Zi0Kgx8rE1J8 / 9ZiEu5 + QhO + 8KMi9cRN8hH9oeR / zFCArETvlohGEmB8Zt + F52NLE1676zcHD / 4aPMfzfZhUtZCG7fxdZsayoFUskW8mbvfrKDD / 7yK1JS0 + TjNyL6lnJw0oHD8vf7DxzCD1u24lJ2rvx53sIl1lsJL86mQOwF4i++T5w3b2Esjh4 / AbVaDZ1OQMbv5xG1YLHZuX5Ca7mrWrfhO3h7e6NRo0YYMnSYDOSnvfustxCNOI4CsRcIL / QizkvYuBnLV66SHU1scexS + TuTc9t07iY7Pzy8q / k3np6eOJnyG5JTUm11WUMoEDul0gqdiPNiV8fh24T1ZmdPm / 4plqxca3ZuU7EVLuXkITg42PwbYolJ + 7E7MclGCxEiKRD7gQjEeR9NmobU9LPw9fWFl1cjGBKG4vi65kheVQ + Gb / 6JBRNfwLH9y9Avsp8Zhp + fHzLP / 1GqaytjkygQO + XFi97EeS2C2 + C3M + lI3BGNi1v + hRs7OaTHcYCRw + 3dHDLji45vJfpg3lhfiIFNsSbuW5y / dBn6sM42uiwhngKxU76i + A + TAz / 7uCUKjI / Jjk9bw + LqNlY + JvZzNIs7u4uOiRXu + TtuHmiLtVGh0OoDbXVZGRSI / fqbmhfufvHRiyiU7jm8InZhPStbesLjaKbTWV + ta / VeFIqd6hbePK / AUHEQOZtYLBnlhq8G10b + 1qJWpG8dYCum9QEFYqcie / mdP7KYxbHYe12UNbu + g8N3U90wJaIWDi2499tbPz0JH62N8Akv / kSB2KkWevHAyTX1sP9rNywf4yYP5gXF3RfpxsiAHj / JDZMjasH4pRvKtqbrKZPQqXtPWzOtQhLip1DskFojJgutApEtBSLrexZrxrvhk161MLV3LczoWxuLR7rh8CLWDMlkBUkNce3MwvLDJ0WtJJoCqaB89PrH1LxwkzjOkLQPN5Pfv + 8YUpD0Av5M / Ro5OZfNQUYyZbYVIVbx4h3aSioob154z + S4A78eRXZePm6cGgUY3S1AFCY + hRunxiEn57xF1JdY74HDbO + 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";
 
   invoke<boolean>("is_development").then((value) => (development = value));
 
   invoke<string>("get_windows")
     .then((version) => {
+      window.os = {
+        type: "windows",
+        version: "10"
+      }
       name = version;
       if (version === "7") {
+        window.os.version = "7";
         windowsVersion = windows7;
       } else if (version === "8" || version === "8.1" || version === "10") {
+        window.os.version = "10";
         windowsVersion = windows10;
       } else if (version == "11") {
+        window.os.version = "11";
         windowsVersion = windows11;
+      } else {
+        window.os.version = "lin";
+        window.os.type = "linux";
+        windowsVersion = linux;
+
+        appWindow.setDecorations(false);
+        setInterval(() => {
+          const traffic = document.querySelector("#traffic");
+          if (traffic && traffic.hasAttribute("hidden")) { traffic.removeAttribute("hidden"); }
+        }, 30);
       }
     })
     .catch((e) => {
+      console.error(e);
       console.error(e);
       windowsVersion = windows95;
     });
@@ -46,8 +66,8 @@ export function versionToBuild(version: string) {
 
   return String(
     Number(major) * 10000 +
-      Number(minor) +
-      Number(`0.${patch}`) +
-      (development ? "-next" : ""),
+    Number(minor) +
+    Number(`0.${patch}`) +
+    (development ? "-next" : ""),
   );
 }

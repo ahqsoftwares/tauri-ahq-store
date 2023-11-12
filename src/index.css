@@ -82,12 +82,12 @@ code {
   /*background-image: url("./bg.jpg");*/
   background-image: url("./bg.png");
   background-size: 100% 100%;
-  @apply h-screen w-screen flex items-center justify-center;
+  @apply h-screen w-screen flex flex-col items-center justify-center;
   transition: all 25ms linear;
 }
 
 .modal {
-  @apply items-center justify-center flex w-[25rem] h-[40rem] bg-white rounded-lg shadow-lg flex-col;
+  @apply items-center justify-center flex w-[35vw] max-w-[35vw] h-[90vh] max-h-[90vh] bg-white rounded-lg shadow-lg flex-col mb-auto;
   transition: all 500ms linear;
   user-select: none;
 }
@@ -105,11 +105,11 @@ code {
 }
 
 .modal-d h1 {
-  @apply text-blue-700;
+  @apply text-white;
 }
 
 .style-h1-d {
-  @apply text-blue-700;
+  @apply text-white;
 }
 
 .modal h2 {
@@ -124,11 +124,9 @@ code {
 
 .modal input,
 .style-input {
-  border-bottom: 3px solid gray;
   outline: none;
-  transition: all 500ms linear;
   padding: 10px 15px;
-  @apply bg-gray-200 w-[90%] rounded-t-md shadow-lg focus:shadow-xl focus:rounded-lg;
+  @apply bg-gray-200 w-[90%] rounded-md shadow-lg focus:shadow-xl focus:rounded-lg;
 }
 
 .search-input {
@@ -164,12 +162,6 @@ code {
 .modal-d input,
 .style-input-d {
   @apply bg-gray-800 text-white;
-}
-
-.modal input:enabled:hover,
-.style-input:enabled:hover,
-.modal input:enabled:focus {
-  border-bottom: 3px solid black;
 }
 
 .modal input:disabled,

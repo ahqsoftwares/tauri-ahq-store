@@ -1,0 +1,13 @@
+.traffic-lights {
+  @apply w-full mb-auto bg-gray-800 text-white flex justify-end;
+}
+
+.traffic-nobg {
+  @apply bg-base-100 text-base-content;
+}
+
+.traffic-lights button {
+  @apply w-5 h-5 p-1 mt-[2px] bg-base-300 text-base-content text-lg;
+  @apply flex justify-center items-center;
+  @apply rounded-full mx-1;
+}

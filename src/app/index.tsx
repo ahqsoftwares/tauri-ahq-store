@@ -26,8 +26,6 @@ import User from "./client/index";
 import Library from "./library";
 import Settings from "./settings/index";
 
-import BaseAPI, { newServer } from "./server";
-
 import fetchPrefs, {
   appData,
   setConfig,
@@ -41,17 +39,17 @@ import {
   isDarkTheme,
 } from "./resources/utilities/themes";
 import Package from "./package";
+import TLights from "../TLights";
+import { getWindowsName } from "./resources/api/os";
 
 interface AppProps {
-  data: {
-    auth: Auth;
-  };
+  auth: Auth;
 }
 
 function Render(props: AppProps) {
   runner();
 
-  const { auth } = props.data;
+  const { auth } = props;
   let [page, changePage] = useState("home"),
     [dev, setDev] = useState(
       auth.currentUser?.displayName?.startsWith("(dev)"),
@@ -75,6 +73,14 @@ function Render(props: AppProps) {
     app: JSX.Element = <></>;
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoad((loadStatus) => {
+        if (!loadStatus) {
+          window.location.reload();
+        }
+        return loadStatus;
+      });
+    }, 13 * 1000);
     appWindow.listen("app", ({ payload }: { payload: string }) => {
       if (payload.startsWith("ahqstore://")) {
         const [page] = payload.replace("ahqstore://", "").split("/");
@@ -91,6 +97,10 @@ function Render(props: AppProps) {
         }
       }
     });
+
+    return () => {
+      clearTimeout(timer);
+    }
   }, []);
   /*
         Dark Mode
@@ -285,9 +295,10 @@ function Render(props: AppProps) {
 
   return (
     <>
-      {load === true ? (
+      {load === true ? (<>
+        <TLights useDef={true} />
         <header
-          className={`apps${dark ? "-d" : ""} ${sidebar} ${
+          className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${
             sidebar.includes("flex-row-reverse") ? "pr-2" : ""
           } flex transition-all`}
         >
@@ -296,14 +307,15 @@ function Render(props: AppProps) {
             home={(page: string) => changePage(page)}
             dev={dev}
             horizontal={sidebar.includes("flex-col")}
+            linux={getWindowsName() == "linux"}
           />
-          <div className={`w-screen h-screen`}>
+          <div className={getWindowsName() == "linux" ? "w-screen h-[95vh]" : "w-screen h-screen"}>
             <div className="flex flex-col w-[100%] h-[100%] justify-center">
               {app}
             </div>
           </div>
         </header>
-      ) : (
+      </>) : (
         <Loading info="Almost there!" />
       )}
     </>
@@ -311,3 +323,4 @@ function Render(props: AppProps) {
 }
 
 export default Render;
+export type { AppProps };

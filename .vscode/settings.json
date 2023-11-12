@@ -1,9 +1,9 @@
 {
   "files.watcherExclude": {
-    "**/node_modules": true
+    "**/node_modules**": true
   },
   "files.exclude": {
-    "**/node_modules": true
+    "**/node_modules**": true
   },
   "editor.minimap.enabled": false,
   "githubPullRequests.ignoredPullRequestBranches": ["master"],

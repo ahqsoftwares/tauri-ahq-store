@@ -91,11 +91,19 @@ export default function Init(props: InitProps) {
     [dev, setDev] = useState(user?.displayName?.startsWith("(dev)") as boolean);
 
   const [ver, setVer] = useState("0.9.0");
+  const [os, setOs] = useState("");
+  const [linuxVer, setLinuxVer] = useState("Unknown Distro");
 
   useEffect(() => {
     getVersion()
       .then(setVer)
-      .catch(() => {});
+      .catch(() => { });
+    
+    const ver = getWindowsName();
+    setOs(ver);
+    if (ver == "linux") {
+      invoke<string>("get_linux_distro").then((ver) => setLinuxVer(ver.replace(/"/g, "")));
+    }
   }, []);
 
   async function Update() {
@@ -267,7 +275,7 @@ export default function Init(props: InitProps) {
           active={dev}
         />
 
-        {props.admin ? (
+        {props.admin && os != "linux" ? (
           <PopUp
             dark={props.dark}
             Icon={FaUsersGear}
@@ -291,8 +299,8 @@ export default function Init(props: InitProps) {
           <CheckBox
             dark={props.dark}
             url={false}
-            title="OS"
-            description={`You are running Windows ${getWindowsName()}`}
+            title={os != "linux" ? `Operation System` : "Linux Distro"}
+            description={os != "linux" ? `Windows ${os}` : linuxVer}
             Icon={getWindows()}
             onClick={() => {}}
             disabled={true}

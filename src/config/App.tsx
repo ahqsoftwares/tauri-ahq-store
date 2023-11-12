@@ -2,6 +2,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
 import fetchPrefs, { appData } from "../app/resources/utilities/preferences";
 import logo from "./index.png";
+import TLights from "../TLights";
 
 function App(props: { info: string }) {
   const [version, setVersion] = useState("");
@@ -23,7 +24,8 @@ function App(props: { info: string }) {
   getVersion().then((value) => setVersion(value));
 
   const splashScreens = [
-    "Made possible with tauri and rust!",
+    "Made with tauri and rust!",
+    "Open Sourced Software!",
     "The work of AHQ Softwares",
     "ahq-store.web.app",
     `${version !== "" ? `v${version}` : ""}`,
@@ -31,6 +33,7 @@ function App(props: { info: string }) {
 
   return (
     <header className="login-background">
+      <TLights />
       <div className={`modal ${perfs?.dark ? "modal-d" : ""}`}>
         <div className="mt-10"></div>
         <h1 style={perfs.dark ? { color: "white" } : undefined}>AHQ Store</h1>
