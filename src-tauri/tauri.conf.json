@@ -83,11 +83,9 @@
       ],
       "identifier": "com.AHQ-Softwares.store",
       "longDescription": "AHQ Store\nA New Store for downloading apps!",
-      "resources": [
-        "icons/pwd_reset.png"
-      ],
+      "resources": ["icons/pwd_reset.png"],
       "shortDescription": "AHQ Store",
-      "targets": ["msi", "updater"],
+      "targets": ["msi", "updater", "deb", "appimage"],
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
