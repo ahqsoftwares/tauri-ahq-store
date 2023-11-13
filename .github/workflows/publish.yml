@@ -176,7 +176,7 @@ jobs:
       matrix:
         platform: [windows-latest, ubuntu-latest]
 
-    runs-on: matrix.platform
+    runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
