@@ -7,7 +7,7 @@ use std::{
 };
 use tungstenite::{connect, stream::MaybeTlsStream, Message, WebSocket};
 
-use crate::windows::{encryption::decrypt, get_system_dir};
+use crate::{encryption::decrypt, windows::get_system_dir};
 
 static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
 
