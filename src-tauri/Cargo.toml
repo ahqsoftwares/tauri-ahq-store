@@ -53,7 +53,7 @@ windows = { version = "=0.39.0", features = [
   "Win32_UI_Shell",
 ] }
 is_elevated = "0.1.2"
-window-vibrancy = "0.4.1"
+window-vibrancy = "0.4.3"
 downloader = "0.2.6"
 os-version = "0.2.0"
 minisign-verify = "0.2.1"
