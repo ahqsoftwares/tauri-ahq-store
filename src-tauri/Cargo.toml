@@ -37,7 +37,7 @@ wry = "*"
 
 once_cell = "1.17.0"
 
-open = "5.0.0"
+open = "5.0.1"
 
 reqwest = { version = "*", features = ["blocking", "json"] }
 chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
