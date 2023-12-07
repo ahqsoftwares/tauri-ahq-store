@@ -25,7 +25,7 @@ ahqstore-types = { path = "../ahqstore-types" }
 [target.'cfg(windows)'.dependencies]
 mslnk = "0.1.8"
 windows-service = "0.6.0"
-tokio-tungstenite = "0.20.0"
+tokio-tungstenite = "0.21.0"
 
 [profile.release]
 panic = "abort"
