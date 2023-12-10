@@ -38,12 +38,6 @@ export function init() {
         window.os.version = "lin";
         window.os.type = "linux";
         windowsVersion = linux;
-
-        appWindow.setDecorations(false);
-        setInterval(() => {
-          const traffic = document.querySelector("#traffic");
-          if (traffic && traffic.hasAttribute("hidden")) { traffic.removeAttribute("hidden"); }
-        }, 30);
       }
     })
     .catch((e) => {

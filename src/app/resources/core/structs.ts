@@ -1,5 +1,7 @@
+import { sendNotification } from "@tauri-apps/api/notification";
 import { Prefs } from ".";
 import { ApplicationData } from "../api/fetchApps";
+import { relaunch } from "@tauri-apps/api/process";
 
 type Methods = "Error" |
   "Disconnect" |
@@ -104,7 +106,7 @@ export function interpret(data: string): ServerResponse | undefined {
       } as Downloaded;
       break;
     case "Installing":
-      result.method = "Installed";
+      result.method = "Installing";
       break;
     case "Installed":
       result.method = "Installed";
@@ -133,6 +135,13 @@ export function interpret(data: string): ServerResponse | undefined {
         default:
           break;
       }
+
+      sendNotification({
+        title: "Error",
+        body: `The application had suffered an error from which it was unable to recover, relaunching app\n\n${JSON.stringify({ type: eType, data: eData })}`
+      });
+
+      relaunch();
       break;
     default:
       return undefined;

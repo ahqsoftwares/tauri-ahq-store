@@ -1,5 +1,6 @@
 use std::{fs::File, io::Write};
 
+use std::collections::HashMap;
 use futures_util::SinkExt;
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};
@@ -16,11 +17,25 @@ use crate::windows::utils::write_log;
 static URL: &str = "https://ahqstore-server.onrender.com";
 
 lazy_static! {
+  static ref DOWNLOADER: Client = ClientBuilder::new()
+      .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36")
+      .build()
+      .unwrap();
     static ref CLIENT: Client = ClientBuilder::new()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36")
         .timeout(Duration::from_secs(60))
         .build()
         .unwrap();
+
+    static ref _PACKAGES: HashMap<String, String> = {
+      let mut map = HashMap::new();
+
+      map.insert("vc++".into(), "https://aka.ms/vs/17/release/vc_redist.x64.exe".into());
+      map.insert("node-v21".into(), "https://nodejs.org/dist/v21.4.0/node-v21.4.0-win-x64.zip".into());
+      map.insert("node-lts".into(), "https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip".into());
+
+      map
+    };
 }
 
 pub async fn keep_alive() -> bool {
@@ -61,7 +76,7 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
         let x = Response::as_msg(Response::DownloadStarted(ref_id, id.clone()));
         ws.send(x).await.ok()?;
 
-        let mut resp = CLIENT.get(&data.download).send().await.ok()?;
+        let mut resp = DOWNLOADER.get(&data.download).send().await.ok()?;
 
         #[cfg(debug_assertions)]
         write_log("Response Successful");

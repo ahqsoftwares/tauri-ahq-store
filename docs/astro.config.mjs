@@ -8,7 +8,7 @@ export default defineConfig({
   site: "https://ahq-store.web.app",
   integrations: [
     starlight({
-      favicon: "./src/assets/logo.png",
+      favicon: "/favicon.png",
       title: "AHQ Store",
       customCss: ["./src/css/global.css"],
       locales: {

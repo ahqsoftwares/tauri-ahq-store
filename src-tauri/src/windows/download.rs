@@ -1,74 +1,11 @@
-// Setup warnings/errors:
-#![forbid(unsafe_code)]
-#![deny(bare_trait_objects, unused_doc_comments, unused_import_braces)]
-// Clippy:
-#![warn(clippy::all, clippy::nursery, clippy::pedantic)]
-#![allow(clippy::non_ascii_literal)]
-use downloader::Downloader;
-use std::fs::create_dir_all;
-use std::path::Path;
+use crate::windows::utils::CLIENT;
 
-// Define a custom progress reporter:
-#[allow(dead_code)]
-struct SimpleReporterPrivate {
-  last_update: std::time::Instant,
-  max_progress: Option<u64>,
-  message: String,
-}
-struct SimpleReporter {
-  private: std::sync::Mutex<Option<SimpleReporterPrivate>>,
-  logger: fn(u64, u64) -> (),
-}
+use std::{
+  fs::{create_dir_all, File},
+  io::Write,
+};
 
-impl SimpleReporter {
-  #[cfg(not(feature = "tui"))]
-  fn create(logger: fn(u64, u64) -> ()) -> std::sync::Arc<Self> {
-    std::sync::Arc::new(Self {
-      private: std::sync::Mutex::new(None),
-      logger: logger,
-    })
-  }
-}
-
-impl downloader::progress::Reporter for SimpleReporter {
-  fn setup(&self, max_progress: Option<u64>, message: &str) {
-    let private = SimpleReporterPrivate {
-      last_update: std::time::Instant::now(),
-      max_progress,
-      message: message.to_owned(),
-    };
-
-    let mut guard = self.private.lock().unwrap();
-    *guard = Some(private);
-  }
-
-  fn progress(&self, current: u64) {
-    if let Some(p) = self.private.lock().unwrap().as_mut() {
-      let max_bytes = match p.max_progress {
-        Some(bytes) => format!("{:?}", bytes),
-        None => "{unknown}".to_owned(),
-      };
-
-      let max_bytes: u64 = max_bytes.parse().unwrap_or(0);
-      (self.logger)(current, max_bytes);
-    }
-  }
-
-  fn set_message(&self, _message: &str) {
-    #[cfg(debug_assertions)]
-    println!("App: Message changed to: {}", _message);
-  }
-
-  fn done(&self) {
-    let mut guard = self.private.lock().unwrap();
-    *guard = None;
-
-    #[cfg(debug_assertions)]
-    println!("App Download Status: [DONE]");
-  }
-}
-
-pub fn download(file: &str, path: &str, name: &str, logger: fn(u64, u64) -> ()) -> u8 {
+pub fn download(url: &str, path: &str, file: &str, logger: fn(u64, u64) -> ()) -> u8 {
   let datas = create_dir_all(path);
   match datas {
     Err(_daras) => {
@@ -81,34 +18,23 @@ pub fn download(file: &str, path: &str, name: &str, logger: fn(u64, u64) -> ()) 
     }
   };
 
-  let mut downloader = Downloader::builder()
-    .download_folder(Path::new(path))
-    .parallel_requests(32)
-    .build()
-    .unwrap();
+  (|| {
+    let mut file = File::create(format!("{}/{}", &path, &file)).ok()?;
 
-  let dl = downloader::Download::new(file).file_name(std::path::Path::new(name));
+    let mut bytes = CLIENT.get(url).send().ok()?.bytes().ok()?;
 
-  #[cfg(not(feature = "tui"))]
-  let dl = dl.progress(SimpleReporter::create(logger));
+    let total = bytes.len() as u64;
 
-  let result = downloader.download(&[dl]).unwrap();
+    let mut written = 0 as u64;
 
-  let mut status = 0;
+    for byte in bytes.chunks(20000) {
+      written += byte.len() as u64;
+      file.write(byte).ok()?;
 
-  for r in result {
-    match r {
-      Err(_e) => {
-        #[cfg(debug_assertions)]
-        println!("Error: {}", _e.to_string());
-        status = 1;
-      }
-      Ok(_s) => {
-        #[cfg(debug_assertions)]
-        println!("Success: {}", &_s);
-        status = 0;
-      }
-    };
-  }
-  status
+      logger(written, total);
+    }
+
+    file.flush().ok()
+  })()
+  .map_or_else(|| 1, |_| 0)
 }

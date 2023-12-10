@@ -1,0 +1,24 @@
+.p-card {
+  @apply shadow-xl bg-base-200 hover:bg-base-300 mx-auto dui-card;
+  @apply w-[20rem] h-[20rem];
+}
+
+.p-card figure {
+  @apply my-2;
+}
+
+.pc-body {
+  @apply dui-card-body;
+}
+
+.pc-body h1 {
+  @apply dui-card-title;
+}
+
+.pc-body h2 {
+  @apply dui-card-body justify-start p-0;
+}
+
+.pc-body div {
+  @apply dui-card-actions justify-end;
+}

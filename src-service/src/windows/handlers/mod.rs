@@ -1,15 +1,25 @@
+use std::sync::mpsc::Sender;
+
 use futures_util::SinkExt;
+use lazy_static::lazy_static;
 use tokio::spawn;
 
-use crate::windows::utils::{
-  get_ws,
-  structs::{Command, ErrorType, Reason, Response},
+use crate::windows::{
   write_log,
+  utils::{
+    get_ws,
+    structs::{Command, ErrorType, Reason, Response},
+  }
 };
 
 use self::service::*;
 
+mod daemon;
 mod service;
+
+lazy_static! {
+  static ref GET_INSTALL_DAEMON: Sender<Command> = daemon::get_install_daemon();
+}
 
 pub use self::service::keep_alive;
 
@@ -19,28 +29,10 @@ pub fn handle_msg(data: String, stop: fn()) {
       if let Some(x) = Command::try_from(&data) {
         match x {
           Command::GetApp(ref_id, app_id) => {
-            let app_data = get_app(ref_id, app_id).await;
-            let x = Response::as_msg(app_data);
-            let _ = ws.send(x).await;
-
-            send_term(ref_id).await;
+            let _ = GET_INSTALL_DAEMON.send(Command::GetApp(ref_id, app_id));
           }
           Command::InstallApp(ref_id, app_id) => {
-            if let Some(x) = download_app(ref_id, &app_id).await {
-              let _ = ws
-                .send(Response::as_msg(Response::Installing(
-                  ref_id,
-                  app_id.clone(),
-                )))
-                .await;
-              install_app(app_id.clone(), x);
-              let _ = ws
-                .send(Response::as_msg(Response::Installed(ref_id, app_id)))
-                .await;
-            } else {
-              write_log("Error downloading");
-            }
-            send_term(ref_id).await;
+            let _ = GET_INSTALL_DAEMON.send(Command::InstallApp(ref_id, app_id));
           }
           Command::UninstallApp(ref_id, app_id) => {
             let msg = Response::as_msg(Response::UninstallStarting(ref_id, app_id.clone()));
@@ -68,6 +60,7 @@ pub fn handle_msg(data: String, stop: fn()) {
           }
 
           Command::ListApps(ref_id) => {
+            write_log("Acknowledged");
             if let Some(x) = list_apps() {
               let _ = ws
                 .send(Response::as_msg(Response::ListApps(ref_id, x)))
@@ -99,6 +92,8 @@ pub fn handle_msg(data: String, stop: fn()) {
           Command::UpdateStatus(ref_id) => {
             send_term(ref_id).await;
           }
+
+          _ => {}
         }
         let _ = ws.flush().await;
       } else {
@@ -115,7 +110,7 @@ pub fn handle_msg(data: String, stop: fn()) {
   });
 }
 
-async fn send_term(ref_id: u64) {
+pub async fn send_term(ref_id: u64) {
   if let Some(ws) = get_ws() {
     let x = Response::as_msg(Response::TerminateBlock(ref_id));
 

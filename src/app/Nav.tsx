@@ -23,11 +23,10 @@ interface prop {
   home: Function;
   dev: boolean | undefined;
   horizontal: boolean;
-  linux: boolean;
 }
 
 export default function Nav(props: prop) {
-  let { active, home: changePage, dev, horizontal: P_H, linux } = props;
+  let { active, home: changePage, dev, horizontal: P_H } = props;
 
   const horizontal = "n-item-h ";
 
@@ -77,7 +76,7 @@ export default function Nav(props: prop) {
 
   return (
     <div
-      className={`w-[80px] ${linux ? "h-[95vh]" : "h-[98vh]"} my-auto ml-2 rounded-lg flex flex-col items-center nav bg-blue-super`}
+      className={`w-[80px] h-[95vh] my-auto ml-2 rounded-lg flex flex-col items-center nav bg-blue-super`}
       id={"sidebar"}
     >
       {P_H ? (
@@ -103,13 +102,13 @@ export default function Nav(props: prop) {
         )}
       </button>
 
-      {/* <button className={`n-item ${g}`} onClick={() => changePage("Dependencies")}>
+      <button className={`n-item ${g}`} onClick={() => changePage("Dependencies")}>
         {g === "active" ? (
           <BiSolidPackage size={"2.5em"} />
         ) : (
           <BiPackage size={"2.5em"} />
         )}
-      </button> */}
+      </button>
 
       <div className={P_H ? "mx-auto" : "mt-auto mb-auto"}></div>
 

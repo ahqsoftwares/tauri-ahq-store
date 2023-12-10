@@ -159,6 +159,7 @@ function Render(props: AppProps) {
 
       //Fetch Maps
       try {
+        console.log("Fetching Maps");
         const { data: map } = await get_map<{ [key: string]: Object }>();
 
         setData({
@@ -289,10 +290,6 @@ function Render(props: AppProps) {
       break;
   }
 
-  /*
-        App renderer
-        */
-
   return (
     <>
       {load === true ? (<>
@@ -307,9 +304,8 @@ function Render(props: AppProps) {
             home={(page: string) => changePage(page)}
             dev={dev}
             horizontal={sidebar.includes("flex-col")}
-            linux={getWindowsName() == "linux"}
           />
-          <div className={getWindowsName() == "linux" ? "w-screen h-[95vh]" : "w-screen h-screen"}>
+          <div className="w-screen h-[95vh]">
             <div className="flex flex-col w-[100%] h-[100%] justify-center">
               {app}
             </div>

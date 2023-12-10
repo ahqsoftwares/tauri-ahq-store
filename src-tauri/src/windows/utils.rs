@@ -13,7 +13,7 @@ use serde_json::Value;
 pub use crate::structs;
 
 lazy_static! {
-  static ref CLIENT: Client = {
+  pub static ref CLIENT: Client = {
     let mut map = HeaderMap::new();
     map.insert(
       "User-Agent",

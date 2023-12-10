@@ -250,9 +250,9 @@ export default function Init(props: InitProps) {
             dark={props.dark}
             url={false}
             title="Alpha Build"
-            description="You are currently in a alpha build"
+            description="You are currently in a alpha build; Click to reload app"
             Icon={HiWrenchScrewdriver}
-            onClick={() => { }}
+            onClick={() => { window.location.reload(); }}
             active={false}
             noCheckbox={true}
           />

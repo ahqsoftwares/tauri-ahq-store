@@ -5,7 +5,6 @@ use std::{
 };
 
 use lazy_static::lazy_static;
-use progress_bar::*;
 use reqwest::{
   blocking::{Client, ClientBuilder},
   header::{HeaderMap, HeaderValue},
@@ -76,19 +75,16 @@ pub fn download_release(verbose: bool) {
         let bytes = resp.bytes().ok()?;
 
         let total = bytes.len();
-        init_progress_bar(total);
 
         let mut current: usize = 0;
         for chunk in bytes.chunks(200) {
           current += chunk.len();
           service.write(chunk).ok()?;
 
-          set_progress_bar_progress(current);
+          println!("{}% downloaded", (current * 100) / total)
         }
 
         service.flush().ok()?;
-
-        finalize_progress_bar();
 
         Some(())
       };

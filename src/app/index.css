@@ -109,7 +109,7 @@ Item pallete
   w-[99%] h-[98vh] 
   bg-transparent border-base-content border-2
   rounded-lg flex-col mx-auto my-auto mt-auto;
-  transition: all 500ms linear;
+  transition: background 500ms linear;
   overflow-x: hidden;
   overflow-y: scroll;
   scroll-behavior: smooth;

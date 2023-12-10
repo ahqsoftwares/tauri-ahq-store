@@ -1,9 +1,5 @@
 use serde::{Deserialize, Serialize};
-use serde_json::{
-  to_string_pretty,
-  to_string,
-  from_str
-};
+use serde_json::{from_str, to_string, to_string_pretty};
 use std::fs::read;
 
 use tokio_tungstenite::tungstenite::Message;
@@ -16,7 +12,7 @@ pub type RefId = u64;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Prefs {
   launch_app: bool,
-  install_apps: bool
+  install_apps: bool,
 }
 
 impl Prefs {
@@ -27,7 +23,7 @@ impl Prefs {
   pub fn str_to(s: &str) -> Option<Self> {
     from_str(s).ok()
   }
-  
+
   pub fn convert(&self) -> Option<String> {
     to_string(self).ok()
   }
@@ -35,7 +31,7 @@ impl Prefs {
   pub fn default() -> Self {
     Self {
       launch_app: true,
-      install_apps: true
+      install_apps: true,
     }
   }
 }
@@ -73,6 +69,8 @@ pub enum Command {
 
   GetPrefs(RefId),
   SetPrefs(RefId, Prefs),
+
+  AddPkg(RefId, String),
 }
 
 impl Command {
@@ -94,6 +92,7 @@ pub enum ErrorType {
   AppInstallError(RefId, AppId),
   AppUninstallError(RefId, AppId),
   PrefsError(RefId),
+  PkgError(RefId),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -119,7 +118,11 @@ pub enum Response {
   Prefs(RefId, Prefs),
   PrefsSet(RefId),
 
-  TerminateBlock(RefId)
+  DownloadPkgProg(RefId, [u64; 2]),
+  InstallPkg(RefId),
+  InstalledPkg(RefId),
+
+  TerminateBlock(RefId),
 }
 
 impl Response {

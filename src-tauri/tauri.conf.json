@@ -108,6 +108,7 @@
     "windows": [
       {
         "center": true,
+        "decorations": false,
         "height": 760,
         "resizable": true,
         "title": "AHQ Store",
