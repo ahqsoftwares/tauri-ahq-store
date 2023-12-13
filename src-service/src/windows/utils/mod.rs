@@ -31,6 +31,14 @@ pub fn get_installer_file(app_id: &str) -> String {
   )
 }
 
+pub fn get_file_on_root(file: &str) -> String {
+  format!(
+    "{}\\ProgramData\\AHQ Store Applications\\{}",
+    &get_main_drive(),
+    &file
+  )
+}
+
 pub fn get_target_lnk(name: &str) -> String {
   format!(
     "{}\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\AHQ Store\\{}.lnk",

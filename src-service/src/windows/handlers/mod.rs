@@ -5,11 +5,11 @@ use lazy_static::lazy_static;
 use tokio::spawn;
 
 use crate::windows::{
-  write_log,
   utils::{
     get_ws,
     structs::{Command, ErrorType, Reason, Response},
-  }
+  },
+  write_log,
 };
 
 use self::service::*;
@@ -65,8 +65,11 @@ pub fn handle_msg(data: String, stop: fn()) {
               let _ = ws
                 .send(Response::as_msg(Response::ListApps(ref_id, x)))
                 .await;
+
+              write_log("Acknowledged (Sent)");
             }
             send_term(ref_id).await;
+            write_log("Acknowledged (END)");
           }
 
           Command::GetPrefs(ref_id) => {

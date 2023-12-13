@@ -1,18 +1,19 @@
 use std::{fs::File, io::Write};
 
-use std::collections::HashMap;
 use futures_util::SinkExt;
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};
 
 use crate::windows::utils::{
-  get_installer_file, get_ws,
+  get_file_on_root, get_installer_file, get_ws,
   structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response},
 };
 use std::time::Duration;
 
 #[cfg(debug_assertions)]
 use crate::windows::utils::write_log;
+
+use super::unzip;
 
 static URL: &str = "https://ahqstore-server.onrender.com";
 
@@ -21,21 +22,16 @@ lazy_static! {
       .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36")
       .build()
       .unwrap();
+
     static ref CLIENT: Client = ClientBuilder::new()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36")
         .timeout(Duration::from_secs(60))
         .build()
         .unwrap();
 
-    static ref _PACKAGES: HashMap<String, String> = {
-      let mut map = HashMap::new();
-
-      map.insert("vc++".into(), "https://aka.ms/vs/17/release/vc_redist.x64.exe".into());
-      map.insert("node-v21".into(), "https://nodejs.org/dist/v21.4.0/node-v21.4.0-win-x64.zip".into());
-      map.insert("node-lts".into(), "https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip".into());
-
-      map
-    };
+    static ref NODE21: &'static str = "https://nodejs.org/dist/v21.4.0/node-v21.4.0-win-x64.zip";
+    static ref NODE20: &'static str = "https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip";
+    static ref VC: &'static str = "https://aka.ms/vs/17/release/vc_redist.x64.exe";
 }
 
 pub async fn keep_alive() -> bool {
@@ -146,4 +142,41 @@ pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
     }
   }
   Response::Error(ErrorType::GetAppFailed(ref_id, app_id))
+}
+
+pub async fn install_vcpp() {}
+
+pub async fn install_node(version: String) -> Option<()> {
+  let (f_name, url) = match version.as_str() {
+    "v20" => ("node_20.zip", NODE20.to_string()),
+    "v21" => ("node_21.zip", NODE21.to_string()),
+    _ => return None,
+  };
+
+  let zip = get_file_on_root(&f_name);
+
+  let mut file = File::create(&zip).ok()?;
+
+  write_download(&mut file, &url).await?;
+
+  let true = unzip(&zip, &get_file_on_root(&f_name))
+    .ok()?
+    .wait()
+    .ok()?
+    .success()
+  else {
+    return None;
+  };
+
+  Some(())
+}
+
+pub async fn write_download(file: &mut File, url: &str) -> Option<()> {
+  let mut download = DOWNLOADER.get(url).send().await.ok()?;
+
+  while let Some(chunk) = download.chunk().await.ok()? {
+    file.write(&chunk).ok()?;
+  }
+
+  file.flush().ok()
 }

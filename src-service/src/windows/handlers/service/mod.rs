@@ -2,7 +2,12 @@ mod http;
 mod prefs;
 
 use mslnk::ShellLink;
-use std::{fs, os::windows::process::CommandExt, process::Command};
+use std::{
+  fs,
+  io::Error,
+  os::windows::process::CommandExt,
+  process::{Child, Command},
+};
 
 pub use http::*;
 pub use prefs::*;
@@ -11,6 +16,19 @@ use crate::windows::utils::{
   get_installer_file, get_program_folder, get_programs, get_target_lnk,
   structs::{AHQStoreApplication, AppData},
 };
+
+pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
+  Command::new("powershell")
+    .creation_flags(0x08000000)
+    .args(["-NoProfile", "-WindowStyle", "Minimized"])
+    .args([
+      "Expand-Archive",
+      format!("-Path \"{}\"", &path).as_str(),
+      format!("-DestinationPath \"{}\"", &dest).as_str(),
+      "-Force",
+    ])
+    .spawn()
+}
 
 pub fn install_app(app_id: String, app: AHQStoreApplication) -> Option<()> {
   let zip = get_installer_file(&app_id);
@@ -21,16 +39,7 @@ pub fn install_app(app_id: String, app: AHQStoreApplication) -> Option<()> {
   let _ = fs::remove_dir_all(&install_folder);
   fs::create_dir_all(&install_folder).ok()?;
 
-  let cmd = Command::new("powershell")
-    .creation_flags(0x08000000)
-    .args(["-NoProfile", "-WindowStyle", "Minimized"])
-    .args([
-      "Expand-Archive",
-      format!("-Path \"{}\"", &zip).as_str(),
-      format!("-DestinationPath \"{}\"", &install_folder).as_str(),
-      "-Force",
-    ])
-    .spawn();
+  let cmd = unzip(&zip, &install_folder);
 
   let cleanup = |err| {
     let _ = fs::remove_file(&zip);
