@@ -9,6 +9,9 @@ pub type Str = String;
 pub type AppData = (String, String);
 pub type RefId = u64;
 
+pub mod app;
+pub use app::*;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Prefs {
   launch_app: bool,
@@ -34,26 +37,6 @@ impl Prefs {
       install_apps: true,
     }
   }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AppRepo {
-  pub author: Str,
-  pub repo: Str,
-}
-
-#[allow(non_snake_case)]
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AHQStoreApplication {
-  pub author: Str,
-  pub description: Str,
-  pub displayName: Str,
-  pub download: Str,
-  pub exe: Str,
-  pub icon: Str,
-  pub repo: AppRepo,
-  pub title: Str,
-  pub version: Str,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

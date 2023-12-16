@@ -1,5 +1,6 @@
 use std::{fs::File, io::Write};
 
+use ahqstore_types::Command;
 use futures_util::SinkExt;
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};
@@ -144,7 +145,31 @@ pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
   Response::Error(ErrorType::GetAppFailed(ref_id, app_id))
 }
 
-pub async fn install_vcpp() {}
+pub async fn install_vcpp() -> Option<()> {
+  let file_path = get_file_on_root("vc.exe");
+
+  let mut file = File::create(&file_path).ok()?;
+
+  write_download(&mut file, &VC).await?;
+
+  use std::fs::remove_file;
+  use std::process::Command as SysCmd;
+
+  let true = SysCmd::new(&file_path)
+    .args(["/install", "/passive", "/norestart"])
+    .spawn()
+    .ok()?
+    .wait()
+    .ok()?
+    .success()
+  else {
+    remove_file(&file_path).ok()?;
+
+    return None;
+  };
+
+  remove_file(&file_path).ok()
+}
 
 pub async fn install_node(version: String) -> Option<()> {
   let (f_name, url) = match version.as_str() {
