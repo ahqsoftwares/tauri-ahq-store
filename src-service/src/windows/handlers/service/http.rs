@@ -1,6 +1,5 @@
 use std::{fs::File, io::Write};
 
-use ahqstore_types::Command;
 use futures_util::SinkExt;
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};

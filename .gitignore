@@ -28,6 +28,7 @@ yarn-error.log*
 
 # Secret (env)
 /myapp.key
+/cargo.token
 /function_to_encrypt.js
 /auth_algo
 

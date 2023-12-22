@@ -132,6 +132,26 @@ jobs:
           asset_name: store-tools-installer.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
+  publish-cargo:
+    name: Publish ahqstore-types to cargo
+
+    runs-on: ubuntu-latest
+
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Publish types to cargo
+        run: cargo publish
+        working-directory: ahqstore-types
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
+
   make-setup:
     needs: create-release
     name: Make Setup (exe)

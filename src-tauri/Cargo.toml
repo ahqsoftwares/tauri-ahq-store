@@ -54,7 +54,7 @@ window-vibrancy = "0.4.1"
 os-version = "0.2.0"
 minisign-verify = "0.2.1"
 base64 = "0.21.4"
-tungstenite = "0.20.1"
+tungstenite = "0.21.0"
 tauri-plugin-deep-link = { git = "https://github.com/FabianLars/tauri-plugin-deep-link" }
 
 [target.'cfg(target_os = "linux")'.dependencies]
