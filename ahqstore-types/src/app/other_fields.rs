@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::Str;
 use serde::{Deserialize, Serialize};
 
@@ -33,6 +35,22 @@ pub enum InstallerFormat {
 
   #[doc = "🔬 Unstable; AHQ Store vNext"]
   LinuxAppImage,
+}
+
+impl Display for InstallerFormat {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(
+      f,
+      "{}",
+      match &self {
+        InstallerFormat::WindowsZip => "64-Bit Windows Zip",
+        InstallerFormat::WindowsInstallerExe => "64-Bit Windows Installer Exe",
+        InstallerFormat::WindowsInstallerMsi => "64-Bit Windows Installer Msi",
+        InstallerFormat::WindowsUWPMsix => "UWP Windows Msix Package",
+        InstallerFormat::LinuxAppImage => "64-Bit Linux App Image",
+      }
+    )
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
