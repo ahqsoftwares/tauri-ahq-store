@@ -12,6 +12,9 @@ pub type RefId = u64;
 pub mod app;
 pub use app::*;
 
+pub mod api;
+pub use api::*;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Prefs {
   launch_app: bool,
@@ -72,6 +75,7 @@ pub enum Reason {
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ErrorType {
   GetAppFailed(RefId, AppId),
+  AppPlatformNoSupport(RefId, AppId),
   AppInstallError(RefId, AppId),
   AppUninstallError(RefId, AppId),
   PrefsError(RefId),

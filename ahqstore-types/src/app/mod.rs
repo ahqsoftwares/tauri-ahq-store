@@ -1,5 +1,6 @@
-use crate::Str;
+use crate::{ServerJSONResp, Str};
 use serde::{Deserialize, Serialize};
+use serde_json::from_str;
 use std::collections::HashMap;
 
 pub mod install;
@@ -11,43 +12,97 @@ pub use other_fields::*;
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AHQStoreApplication {
-  //Deprecated
-  #[deprecated = "Overriden by vNext"]
-  pub title: Str,
-  #[deprecated = "Overriden by vNext"]
-  pub author: Str,
-  #[deprecated = "Overriden by vNext"]
-  pub download: Str,
-  #[deprecated = "Overriden by vNext"]
-  pub exe: Str,
+  pub appId: Str,
+  pub appShortcutName: Str,
+  pub appDisplayName: Str,
+  pub authorId: Str,
+  pub downloadUrls: HashMap<u8, DownloadUrl>,
+  pub install: InstallerOptions,
 
-  // vNext
-  #[doc = "🔬 vNext Specification"]
-  pub appId: Option<Str>,
-  #[doc = "🔬 vNext Specification"]
-  pub appInstalledName: Option<Str>,
-  #[doc = "🔬 vNext Specification"]
-  pub authorId: Option<Str>,
-  #[doc = "🔬 vNext Specification"]
-  pub downloadUrls: Option<HashMap<u8, DownloadUrl>>,
-  #[doc = "🔬 vNext Specification"]
-  pub install: Option<InstallerOptions>,
-
-  // <-- no change -->
   pub description: Str,
   pub icon: Str,
   pub repo: AppRepo,
   pub version: Str,
 }
 
-// pub struct AHQStoreApplication {
-//   *pub author: Str,
-//   *pub description: Str,
-//   *pub displayName: Str,
-//   *pub download: Str,
-//   *pub exe: Str,
-//   *pub icon: Str,
-//   *pub repo: AppRepo,
-//   *pub title: Str,
-//   *pub version: Str,
-// }
+impl AHQStoreApplication {
+  pub fn get_win32_download(&self) -> Option<&DownloadUrl> {
+    let Some(win32) = &self.install.win32 else {
+      return None;
+    };
+
+    let url = self.downloadUrls.get(&win32.assetId)?;
+
+    match &url.installerType {
+      InstallerFormat::WindowsZip
+      | InstallerFormat::WindowsInstallerExe
+      | InstallerFormat::WindowsInstallerMsi
+      | InstallerFormat::WindowsUWPMsix => Some(&url),
+      _ => None,
+    }
+  }
+
+  pub fn get_win32_extension(&self) -> Option<&'static str> {
+    match self.get_win32_download()?.installerType {
+      InstallerFormat::WindowsZip => Some(".zip"),
+      InstallerFormat::WindowsInstallerExe => Some(".exe"),
+      InstallerFormat::WindowsInstallerMsi => Some(".msi"),
+      InstallerFormat::WindowsUWPMsix => Some(".msix"),
+      _ => None,
+    }
+  }
+
+  pub fn get_linux_download(&self) -> Option<&DownloadUrl> {
+    let Some(linux) = &self.install.linux else {
+      return None;
+    };
+
+    let url = self.downloadUrls.get(&linux.assetId)?;
+
+    match &url.installerType {
+      InstallerFormat::LinuxAppImage => Some(&url),
+      _ => None,
+    }
+  }
+
+  pub fn get_linux_extension(&self) -> Option<&'static str> {
+    match self.get_linux_download()?.installerType {
+      InstallerFormat::LinuxAppImage => Some(".AppImage"),
+      _ => None,
+    }
+  }
+
+  pub fn has_platform(&self) -> bool {
+    #[cfg(windows)]
+    return self.get_win32_download().is_some();
+
+    #[cfg(target_os = "linux")]
+    return self.get_linux_download().is_some();
+  }
+
+  #[cfg(windows)]
+  pub fn get_platform_deps(&self) -> Option<Vec<Win32Deps>> {
+    if let Some(x) = &self.install.win32 {
+      return Some(x.clone().deps.unwrap_or(vec![]));
+    }
+
+    None
+  }
+
+  #[cfg(target_os = "linux")]
+  pub fn get_platform_deps(&self) -> Option<Vec<UnixDeps>> {
+    if let Some(x) = &self.install.linux {
+      return Some(x.clone().deps.unwrap_or(vec![]));
+    }
+
+    None
+  }
+}
+
+impl TryFrom<ServerJSONResp> for AHQStoreApplication {
+  type Error = serde_json::Error;
+
+  fn try_from(value: ServerJSONResp) -> Result<Self, Self::Error> {
+    from_str(&value.config)
+  }
+}
