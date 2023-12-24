@@ -78,6 +78,9 @@ impl AHQStoreApplication {
 
     #[cfg(target_os = "linux")]
     return self.get_linux_download().is_some();
+
+    #[cfg(not(any(windows, target_os = "linux")))]
+    return false;
   }
 
   #[cfg(windows)]
