@@ -18,7 +18,7 @@ pub struct AHQStoreApplication {
   pub authorId: Str,
   pub downloadUrls: HashMap<u8, DownloadUrl>,
   pub install: InstallerOptions,
-
+  pub displayImages: Vec<Str>,
   pub description: Str,
   pub icon: Str,
   pub repo: AppRepo,
