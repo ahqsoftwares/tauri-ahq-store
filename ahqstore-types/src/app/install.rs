@@ -6,6 +6,15 @@ use serde::{Deserialize, Serialize};
 pub struct InstallerOptions {
   pub win32: Option<InstallerOptionsWin32>,
   pub linux: Option<InstallerOptionsLinux>,
+  pub installType: InstallType,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+/// 🔬 in testing
+pub enum InstallType {
+  PerUser,
+  Computer,
+  Both,
 }
 
 #[allow(non_snake_case)]

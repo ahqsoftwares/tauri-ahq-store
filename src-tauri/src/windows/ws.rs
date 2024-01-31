@@ -1,42 +1,37 @@
+use interprocess::os::windows::named_pipe::DuplexMsgPipeStream;
+
 use serde_json::from_str;
 use std::{
-  fs,
-  net::TcpStream,
+  ffi::OsStr,
+  io::{ErrorKind, Read, Write},
   sync::{Arc, Mutex},
   thread::spawn,
+  time::Duration,
 };
-use tungstenite::{connect, stream::MaybeTlsStream, Message, WebSocket};
 
-use crate::{encryption::decrypt, windows::get_system_dir};
+static mut WS: Option<DuplexMsgPipeStream> = None;
 
-static mut WS: Option<WebSocket<MaybeTlsStream<TcpStream>>> = None;
-
-static mut TERMINATED: bool = false;
 static mut CONNECTION: Option<WsConnection> = None;
 static mut WINDOW: Option<tauri::Window> = None;
 
 static mut LAST_CMD: Option<String> = None;
 
 #[allow(unused)]
-struct WsConnection<'a> {
-  pub binding_server: String,
-  pub error: &'a dyn Fn() -> (),
+struct WsConnection {
   to_send: Arc<Mutex<Vec<String>>>,
   pending: Arc<Mutex<Vec<String>>>,
 }
 
-unsafe impl Send for WsConnection<'_> {}
-unsafe impl Sync for WsConnection<'_> {}
+unsafe impl Send for WsConnection {}
+unsafe impl Sync for WsConnection {}
 
-impl<'a> WsConnection<'a> {
-  pub fn new(server: String, error: &'a dyn Fn() -> ()) -> Self {
+impl WsConnection {
+  pub fn new() -> Self {
     unsafe {
       LAST_CMD = Some("".into());
     }
 
     Self {
-      binding_server: server,
-      error,
       to_send: Arc::new(Mutex::new(vec![])),
       pending: Arc::new(Mutex::new(vec![])),
     }
@@ -85,100 +80,119 @@ impl<'a> WsConnection<'a> {
 
   pub unsafe fn start(&mut self, reinstall_astore: fn()) {
     let (tx, rx) = std::sync::mpsc::channel::<String>();
-    let server = self.binding_server.clone().to_string();
-    match connect(server) {
-      Ok(websocket) => {
-        WS = Some(websocket.0);
+    let path = OsStr::new(r"\\.\pipe\ahqstore-service-api-v3");
 
-        spawn(move || {
-          if let Some(ws) = WS.as_mut() {
-            loop {
-              if let Ok(msg) = ws.read() {
-                if let Ok(txt) = msg.to_text() {
-                  println!("{}", &txt);
-                  let _ = tx.send(txt.into());
-                }
-              } else {
-                let _ = tx.send("DISCONNECT".into());
-                break;
-              }
-              std::thread::sleep(std::time::Duration::from_millis(1));
+    match DuplexMsgPipeStream::connect(path) {
+      Ok(mut ipc) => {
+        loop {
+          // Reading Pending Messages
+          let mut data: Vec<u8> = vec![];
+
+          match ipc.read(&mut data) {
+            Ok(0) => {}
+            Ok(_) => {
+              let stri = String::from_utf8_lossy(&data);
+              let stri = stri.to_string();
+
+              self.load_into(stri);
+            }
+            Err(e) => match e.kind() {
+              ErrorKind::WouldBlock => {}
+              _ => break,
+            },
+          }
+
+          //Sending Messages
+          if let Ok(ref mut x) = self.to_send.try_lock() {
+            let send = x.drain(..).collect::<Vec<String>>();
+
+            for msg in send {
+              let bytes = msg.len().to_be_bytes();
+              let _ = ipc.write_all(&bytes);
+
+              let _ = ipc.write_all(msg.as_bytes());
+
+              let _ = ipc.flush();
             }
           }
-        });
 
-        //Handle Read + Write at high speed
-
-        if let Some(ws) = WS.as_mut() {
-          let _ = ws.send(Message::Text(format!(
-            "{{ \"process\": {} }}",
-            std::process::id()
-          )));
-          loop {
-            if let Ok(ref mut x) = self.to_send.try_lock() {
-              let _ = ws.send(Message::text("KA"));
-
-              let send = x.drain(..).collect::<Vec<String>>();
-
-              for msg in send {
-                ws.send(tungstenite::Message::Text(msg)).unwrap_or(());
-              }
-            }
-
-            if let Ok(msg) = rx.try_recv() {
-              if &msg == "DISCONNECT" {
-                reinstall_astore();
-                break;
-              } else {
-                self.load_into(msg);
-              }
-            }
-
-            std::thread::sleep(std::time::Duration::from_millis(1));
-          }
+          //Sleep
+          std::thread::sleep(Duration::from_millis(1));
         }
+        reinstall_astore();
       }
-      Err(e) => {
+      e => {
         println!("{e:?}");
         reinstall_astore();
       }
     }
+
+    // let server = self.binding_server.clone().to_string();
+    // match connect(server) {
+    //   Ok(websocket) => {
+    //     WS = Some(websocket.0);
+
+    //     spawn(move || {
+    //       if let Some(ws) = WS.as_mut() {
+    //         loop {
+    //           if let Ok(msg) = ws.read() {
+    //             if let Ok(txt) = msg.to_text() {
+    //               println!("{}", &txt);
+    //               let _ = tx.send(txt.into());
+    //             }
+    //           } else {
+    //             let _ = tx.send("DISCONNECT".into());
+    //             break;
+    //           }
+    //           std::thread::sleep(std::time::Duration::from_millis(1));
+    //         }
+    //       }
+    //     });
+
+    //     //Handle Read + Write at high speed
+
+    //     if let Some(ws) = WS.as_mut() {
+    //       let _ = ws.send(Message::Text(format!(
+    //         "{{ \"process\": {} }}",
+    //         std::process::id()
+    //       )));
+    //       loop {
+    //         if let Ok(ref mut x) = self.to_send.try_lock() {
+    //           let _ = ws.send(Message::text("KA"));
+
+    //           let send = x.drain(..).collect::<Vec<String>>();
+
+    //           for msg in send {
+    //             ws.send(tungstenite::Message::Text(msg)).unwrap_or(());
+    //           }
+    //         }
+
+    //         if let Ok(msg) = rx.try_recv() {
+    //           if &msg == "DISCONNECT" {
+    //             reinstall_astore();
+    //             break;
+    //           } else {
+    //             self.load_into(msg);
+    //           }
+    //         }
+
+    //         std::thread::sleep(std::time::Duration::from_millis(1));
+    //       }
+    //     }
+    //   }
+    //   Err(e) => {
+    //     println!("{e:?}");
+    //     reinstall_astore();
+    //   }
+    // }
   }
-}
-
-pub fn get_ws_port() -> Option<u64> {
-  let file = format!(
-    "{}\\ProgramData\\AHQ Store Applications\\service.encrypted.txt",
-    get_system_dir()
-  );
-
-  if let Ok(x) = fs::read(file) {
-    if let Some(x) = decrypt(x) {
-      if let Ok(x) = x.parse::<u64>() {
-        return Some(x);
-      }
-    }
-  }
-
-  None
 }
 
 pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
   spawn(move || {
     WINDOW = Some(window);
 
-    let port = get_ws_port().unwrap_or(0);
-
-    if port == 0 {
-      reinstall_astore();
-      return;
-    }
-
-    let port_data = format!("ws://127.0.0.1:{}", &port);
-
-    let connection = WsConnection::new(port_data, &|| {
-      TERMINATED = true;
-    });
+    let connection = WsConnection::new();
 
     CONNECTION = Some(connection);
 
@@ -203,13 +217,7 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
           }
         }
       }
-      if TERMINATED {
-        break;
-      }
       std::thread::sleep(std::time::Duration::from_millis(10));
     }
-
-    reinstall_astore();
-    panic!("Terminated");
   });
 }

@@ -10,13 +10,13 @@ use windows_service::{
   service_dispatcher, Result as SResult,
 };
 
+use handler::launch;
 use utils::{delete_log, write_log, write_service};
-use ws_handler::launch;
 
 mod authentication;
 mod encryption;
+mod handler;
 mod utils;
-mod ws_handler;
 
 pub mod handlers;
 

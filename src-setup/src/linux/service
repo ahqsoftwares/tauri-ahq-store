@@ -1,0 +1,9 @@
+[Unit]
+Description=AHQ Store Service
+
+[Service]
+ExecStart=/ahqstore/service
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

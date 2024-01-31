@@ -3,6 +3,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 mod db;
 mod log_file;
 
+use ahqstore_types::AHQStoreApplication;
 pub use db::*;
 pub use log_file::*;
 
@@ -23,11 +24,12 @@ pub fn get_programs() -> String {
   )
 }
 
-pub fn get_installer_file(app_id: &str) -> String {
+pub fn get_installer_file(app: &AHQStoreApplication) -> String {
   format!(
-    "{}\\ProgramData\\AHQ Store Applications\\Installers\\{}.zip",
+    "{}\\ProgramData\\AHQ Store Applications\\Installers\\{}.{}",
     &get_main_drive(),
-    &app_id
+    &app.appId,
+    &app.get_win32_extension().unwrap_or(".unknown")
   )
 }
 

@@ -38,7 +38,9 @@ use std::{
 };
 
 //tauri
-use tauri::{SystemTrayMenuItem, CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri::{
+  CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
+};
 
 //link Launcher
 use open as open_2;

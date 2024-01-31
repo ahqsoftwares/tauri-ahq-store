@@ -1,19 +1,18 @@
-import { Auth, signInWithEmailAndPassword } from "firebase/auth";
+import { Auth } from "../auth";
 import { useState } from "react";
 
 import ScaffoldLogin from "./Base";
 import { invoke } from "@tauri-apps/api/tauri";
+import { login } from "../auth/login";
 
 interface LoginProps {
   change: (page: string) => void;
   auth: Auth;
-  login: typeof signInWithEmailAndPassword;
   dark: boolean;
 }
 
 export default function LoginPage(props: LoginProps) {
   const {
-    login,
     auth
   } = props;
 
@@ -29,7 +28,6 @@ export default function LoginPage(props: LoginProps) {
   return <ScaffoldLogin
     e={err}
     onSubmit={async () => {
-      console.log("Received");
       try {
         let data = await invoke("encrypt", {
           payload: pwd,
@@ -39,34 +37,16 @@ export default function LoginPage(props: LoginProps) {
         localStorage.setItem("password", JSON.stringify(data));
       } catch (_) { }
 
-      console.log("Loggging");
-
       await login(auth, email, pwd)
-        .then(() => {
-          console.log("Done");
-          setE("");
-        })
-        .catch((e: any) => {
-          let msg = e.message
-            .replace("Firebase: Error ", "")
-            .replace(")", "")
-            .replace("(", "")
-            .replaceAll(".", "");
-
-          switch (msg) {
-            case "auth/wrong-password":
-              reverse("Wrong Passwod!");
-              break;
-            case "Firebase: Access to this account has been temporarily disabled due to many failed login attempts You can immediately restore it by resetting your password or you can try again later auth/too-many-requests":
-              reverse("Too many login attempts!");
-              break;
-            case "auth/user-not-found":
-              reverse("No Account Found");
-              break;
-            default:
-              reverse("Invalid username/password");
-              break;
+        .then((ok) => {
+          if (ok) {
+            setE("");
+          } else {
+            setE("Invalid username/password or RateLimit");
           }
+        })
+        .catch(() => {
+          reverse("Fetch Error");
         });
     }}
     title="Welcome"

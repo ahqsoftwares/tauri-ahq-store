@@ -2,12 +2,12 @@ use std::{
   sync::mpsc::{channel, Sender},
   time::Duration,
 };
+use tokio::io::AsyncWriteExt;
 
 use ahqstore_types::{Command, Response};
-use futures_util::SinkExt;
 use tokio::{spawn, time::sleep};
 
-use crate::windows::utils::{get_ws, write_log};
+use crate::windows::utils::{get_iprocess, write_log, ws_send};
 
 use super::{
   send_term,
@@ -31,27 +31,28 @@ pub fn get_install_daemon() -> Sender<Command> {
         }
       }
 
-      if let Some(ws) = get_ws() {
+      if let Some(mut ws) = get_iprocess() {
         for cmd in pending {
           match cmd {
             Command::GetApp(ref_id, app_id) => {
               let app_data = get_app(ref_id, app_id).await;
               let x = Response::as_msg(app_data);
-              let _ = ws.send(x).await;
+              ws_send(&mut ws, &x).await;
 
               send_term(ref_id).await;
             }
             Command::InstallApp(ref_id, app_id) => {
               if let Some(x) = download_app(ref_id, &app_id).await {
                 let _ = ws
-                  .send(Response::as_msg(Response::Installing(
+                  .write_all(&Response::as_msg(Response::Installing(
                     ref_id,
                     app_id.clone(),
                   )))
                   .await;
-                install_app(app_id.clone(), x);
+
+                install_app(x).await;
                 let _ = ws
-                  .send(Response::as_msg(Response::Installed(ref_id, app_id)))
+                  .write_all(&Response::as_msg(Response::Installed(ref_id, app_id)))
                   .await;
               } else {
                 write_log("Error downloading");

@@ -1,7 +1,9 @@
 mod http;
 mod prefs;
 
+use ahqstore_types::{InstallerFormat, Win32Deps};
 use mslnk::ShellLink;
+use serde_json::to_string_pretty;
 use std::{
   fs,
   io::Error,
@@ -30,10 +32,62 @@ pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
     .spawn()
 }
 
-pub fn install_app(app_id: String, app: AHQStoreApplication) -> Option<()> {
-  let zip = get_installer_file(&app_id);
+pub fn run(path: &str, args: &[&str]) -> Result<Child, Error> {
+  Command::new(path)
+    .creation_flags(0x08000000)
+    .args(args)
+    .spawn()
+}
 
-  let install_folder = get_program_folder(&app_id);
+pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
+  let file = get_installer_file(&app);
+
+  for dep in app.get_platform_deps()? {
+    match dep {
+      Win32Deps::VisualCpp => install_vcpp().await?,
+      Win32Deps::Node21 => install_node("v21").await?,
+      Win32Deps::Node18 => install_node("v18").await?,
+      _ => {}
+    }
+  }
+
+  let Some(win32) = app.get_win32_download() else {
+    return None;
+  };
+
+  match win32.installerType {
+    InstallerFormat::WindowsZip => load_zip(&file, &app),
+    InstallerFormat::WindowsInstallerMsi => install_msi(&file, &app),
+    _ => None,
+  }
+}
+
+pub fn install_msi(msi: &str, app: &AHQStoreApplication) -> Option<()> {
+  let install_folder = get_program_folder(&app.appId);
+
+  let to_exec_msi = format!("{}\\installer.msi", &install_folder);
+
+  fs::copy(&msi, &to_exec_msi).ok()?;
+  fs::write(
+    format!("{}\\app.json", &install_folder),
+    to_string_pretty(&app).ok()?,
+  )
+  .ok()?;
+  fs::remove_file(&msi).ok()?;
+
+  match run(&to_exec_msi, &["/i", "/jm", "/quiet", "/norestart"])
+    .ok()?
+    .wait()
+    .ok()?
+    .success()
+  {
+    true => Some(()),
+    false => None,
+  }
+}
+
+pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<()> {
+  let install_folder = get_program_folder(&app.appId);
   let version_file = format!("{}\\ahqStoreVersion", install_folder);
 
   let _ = fs::remove_dir_all(&install_folder);
@@ -47,8 +101,8 @@ pub fn install_app(app_id: String, app: AHQStoreApplication) -> Option<()> {
     if err {
       let _ = fs::remove_dir_all(&install_folder);
     } else {
-      if let Ok(link) = ShellLink::new(format!("{}\\{}", &install_folder, &app.exe)) {
-        let _ = link.create_lnk(get_target_lnk(&app.title));
+      if let Ok(link) = ShellLink::new(format!("{}\\{}", &install_folder, &app.appShortcutName)) {
+        let _ = link.create_lnk(get_target_lnk(&app.appShortcutName));
       }
     }
   };
@@ -57,7 +111,14 @@ pub fn install_app(app_id: String, app: AHQStoreApplication) -> Option<()> {
     if let Ok(status) = child.wait() {
       if status.success() {
         if let Some(_) = fs::write(&version_file, &app.version).ok() {
-          cleanup(false);
+          if let Some(_) = fs::write(
+            format!("{}\\app.json", &install_folder),
+            to_string_pretty(&app).ok()?,
+          )
+          .ok()
+          {
+            cleanup(false);
+          }
           return Some(());
         }
       }
@@ -67,15 +128,15 @@ pub fn install_app(app_id: String, app: AHQStoreApplication) -> Option<()> {
   None
 }
 
-pub fn uninstall_app(app_id: String, title: String) -> Option<String> {
-  let link = get_target_lnk(&title);
-  let program = get_program_folder(&app_id);
+pub fn uninstall_app(app: &AHQStoreApplication) -> Option<String> {
+  let link = get_target_lnk(&app.appShortcutName);
+  let program = get_program_folder(&app.appId);
 
   let _ = fs::remove_file(&link);
 
   fs::remove_dir_all(&program).ok()?;
 
-  app_id.into()
+  Some(app.appId.clone())
 }
 
 pub fn list_apps() -> Option<Vec<AppData>> {

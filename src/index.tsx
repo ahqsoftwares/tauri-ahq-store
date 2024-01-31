@@ -31,35 +31,16 @@ import { init } from "./app/resources/api/os";
 
 /*Firebase
  */
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  onAuthStateChanged,
-} from "firebase/auth";
 
 /*Global CSS
  */
 import "./index.css";
 import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
+import { genAuth } from "./auth";
+import { onAuthChange } from "./auth/login";
 
-const config = {
-  apiKey: "AIzaSyAXAkoxKG4chIuIGHPkVG8Sma9mTJqiC84",
-  authDomain: "ahq-store.firebaseapp.com",
-  databaseURL: "https://ahq-store-default-rtdb.firebaseio.com",
-  projectId: "ahq-store",
-  storageBucket: "ahq-store.appspot.com",
-  messagingSenderId: "460016490107",
-  appId: "1:460016490107:web:50123c20ca44ccee3b74de",
-  measurementId: "G-TEZS1Y48L1",
-};
-
-const app = initializeApp(config);
-const auth = getAuth(app);
+const auth = genAuth();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -165,17 +146,17 @@ if (window.__TAURI_IPC__ == null) {
           StoreLoad(Store, { auth });
         }
 
-        if (auth.currentUser && !auth.currentUser?.emailVerified) {
-          sendEmailVerification(auth.currentUser).catch(() => {});
+        if (auth.currentUser && !auth.currentUser?.e_verified) {
+        //sendEmailVerification(auth.currentUser).catch(() => {});
           sendNotification({
             title: "Email Verification",
             body: "Email verification link send! Please verify",
           });
         }
 
-        auth.onAuthStateChanged(async (user) => {
-          if (user && !user.emailVerified) {
-            sendEmailVerification(user).catch(() => {});
+        onAuthChange(auth, async (user) => {
+          if (user && !user.e_verified) {
+        //sendEmailVerification(user).catch(() => {});
             sendNotification({
               title: "Email Verification",
               body: "Email verification link send! Please verify",
@@ -190,7 +171,7 @@ if (window.__TAURI_IPC__ == null) {
 
           if (!(localStorage.getItem("email") && pwd != "a")) {
             console.log("Signing out");
-            auth.signOut();
+
           }
           user
             ? StoreLoad(Store, { auth })
@@ -209,10 +190,7 @@ if (window.__TAURI_IPC__ == null) {
       { auth }: AppProps,
     ) {
       const data = {
-        auth,
-        create: createUserWithEmailAndPassword,
-        login: signInWithEmailAndPassword,
-        resetEmail: sendPasswordResetEmail,
+        auth
       };
 
       root.render(
@@ -249,7 +227,7 @@ if (window.__TAURI_IPC__ == null) {
         appWindow.emit("ready", "");
       });
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthChange(auth, (user) => {
       if (user && localStorage.getItem("password")) {
         load();
       } else {

@@ -3,8 +3,7 @@ React Native
 */
 import { useState, useEffect } from "react";
 import { FiSearch as FcSearch } from "react-icons/fi";
-import { Auth } from "firebase/auth";
-
+import { Auth } from "../../auth";
 /*
 Functions
 */
@@ -23,6 +22,7 @@ StyleSheets
 */
 import "./index.css";
 import { getData } from "../resources/utilities/database";
+import { genAuth } from "../../auth";
 
 /*
 Interfaces

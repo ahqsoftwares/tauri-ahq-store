@@ -1,19 +1,18 @@
-import { Auth, createUserWithEmailAndPassword } from "firebase/auth";
+import { Auth, logOut } from "../auth";
 import { useState } from "react";
 
 import ScaffoldLogin from "./Base";
+import { signUp } from "../auth/signup";
 
 interface SignupProps {
   change: (page: string) => void;
-  create: typeof createUserWithEmailAndPassword,
   auth: Auth;
   dark: boolean;
 }
 
 export default function SignUpPage(props: SignupProps) {
   const {
-    auth,
-    create
+    auth
   } = props;
 
   const [email, setEmail] = useState("");
@@ -32,21 +31,17 @@ export default function SignUpPage(props: SignupProps) {
     onSubmit={
       async () => {
         if (step == 2) {
-          await create(auth, email, pwd)
-            .then(() => {
-              auth.signOut();
-            })
-            .catch((e: Error) => {
-              switch (String(e).replace("FirebaseError: Firebase: ", "")) {
-                case "Password should be at least 6 characters (auth/weak-password).":
-                  reverse("Use a strong password!");
-                  break;
-                case "Error (auth/email-already-in-use).":
-                  reverse("Use unique email address.");
-                  break;
-                default:
-                  reverse("Unknown error");
+          await signUp(auth, { email, pass_word: pwd })
+            .then(([ok, msg]) => {
+              if (ok) {
+                logOut(auth);
+              } else {
+                reverse(msg);
+                setStep(1);
               }
+            })
+            .catch(() => {
+              reverse("Unknown error occured");
               setStep(1);
             });
         } else {

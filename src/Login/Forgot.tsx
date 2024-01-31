@@ -1,21 +1,20 @@
-import { Auth, sendPasswordResetEmail } from "firebase/auth";
+import { Auth } from "../auth";
 import { useState } from "react";
 
 import ScaffoldLogin from "./Base";
 import { sendNotification } from "@tauri-apps/api/notification";
+import { resetPwd } from "../auth/resetPwd";
 
 interface ResetProps {
   change: (page: string) => void;
   auth: Auth;
   dark: boolean;
-  email: typeof sendPasswordResetEmail,
 }
 
 export default function ResetPage(props: ResetProps) {
-  const { email: sendEmail, auth } = props,
+  const { auth } = props,
     [email, setEmail] = useState(""),
-    [step, setStep] = useState(1),
-    [errors, setE] = useState("");
+    [step, setStep] = useState(1);
 
   const [err, setErr] = useState<string | undefined>();
 
@@ -30,27 +29,25 @@ export default function ResetPage(props: ResetProps) {
       switch (step) {
         case 1:
           setStep(step + 1);
-          sendEmail(auth, email)
-            .then(() => {
-              sendNotification({
-                title: "Password Reset",
-                body: "Password Reset Link sent successfully!",
-                icon: "icons/pwd_reset.png"
-              });
-              props.change("login");
-            })
-            .catch((e: Error) => {
-              switch (String(e)) {
-                case "FirebaseError: Firebase: Error (auth/user-not-found).":
-                  reverse("Invalid Email");
-                  break;
-                default:
-                  reverse("Unknown Error");
+          resetPwd(auth, email)
+            .then((ok) => {
+              if (ok) {
+                sendNotification({
+                  title: "Password Reset",
+                  body: "Password Reset Link sent successfully!",
+                  icon: "icons/pwd_reset.png"
+                });
+                props.change("login");
+              } else {
+                reverse("Error");
               }
+            })
+            .catch(() => {
+              reverse("Unknown Error");
             });
           break;
         default:
-          setE("Page Not Found!");
+          reverse("Page Not Found!");
           setStep(0);
       }
     }}

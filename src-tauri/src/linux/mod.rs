@@ -1,9 +1,9 @@
 use std::process;
 
-use tauri::api::notification::Notification;
-use tauri::{Manager, SystemTrayEvent, WindowEvent, RunEvent, AppHandle};
-use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 use tauri::api::dialog::{MessageDialogBuilder, MessageDialogButtons, MessageDialogKind};
+use tauri::api::notification::Notification;
+use tauri::{AppHandle, Manager, RunEvent, SystemTrayEvent, WindowEvent};
+use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
 use crate::rpc;
 use open as open_2;
@@ -25,8 +25,7 @@ pub fn main() {
     .add_native_item(SystemTrayMenuItem::Separator)
     .add_item(CustomMenuItem::new("close", "Quit"));
 
-  let system_tray = SystemTray::new()
-    .with_menu(tray_menu);
+  let system_tray = SystemTray::new().with_menu(tray_menu);
 
   let app = tauri::Builder::default()
     .setup(|app| {
@@ -61,28 +60,26 @@ pub fn main() {
       main.set_focus().unwrap();
     }))
     .system_tray(system_tray)
-    .on_system_tray_event(|handle, event|match event {
-      SystemTrayEvent::MenuItemClick { id, .. } => {
-        match id.as_str() {
-          "win_show" => {
-            if let Some(window) = handle.get_window("main") {
-             let _ = window.show();
-             let _ = window.set_focus();
-             let _ = window.maximize();
-            }
+    .on_system_tray_event(|handle, event| match event {
+      SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+        "win_show" => {
+          if let Some(window) = handle.get_window("main") {
+            let _ = window.show();
+            let _ = window.set_focus();
+            let _ = window.maximize();
           }
-          "close" => {
-            close_app(&handle);
-          }
-          "update" => {
-            let _ = Notification::new(&handle.config().tauri.bundle.identifier)
-              .title("Updater")
-              .body("Updater is under development")
-              .icon("dialog-information")
-              .show();
-          }
-          _ => {}
         }
+        "close" => {
+          close_app(&handle);
+        }
+        "update" => {
+          let _ = Notification::new(&handle.config().tauri.bundle.identifier)
+            .title("Updater")
+            .body("Updater is under development")
+            .icon("dialog-information")
+            .show();
+        }
+        _ => {}
       },
       _ => {}
     })
@@ -101,10 +98,10 @@ pub fn main() {
           if let Some(win) = app.get_window(&label) {
             let _ = win.hide();
           }
-        } 
+        }
       }
       _ => {}
-    }
+    },
     _ => {}
   });
 }
@@ -114,13 +111,15 @@ fn close_app(handle: &&AppHandle) {
     let _ = window.show();
     let _ = window.set_focus();
     let _ = window.maximize();
-    
+
     MessageDialogBuilder::new("Close app", "Do you want to close AHQ Store?")
       .parent(&window)
       .buttons(MessageDialogButtons::YesNo)
       .kind(MessageDialogKind::Warning)
-      .show(|close| if close {
-        process::exit(0);
+      .show(|close| {
+        if close {
+          process::exit(0);
+        }
       });
   }
 }

@@ -17,7 +17,7 @@ import base from "../server";
 import { didGreet, greeted } from "../resources/utilities/greet";
 import { fetch } from "@tauri-apps/api/http";
 import { getData, setData } from "../resources/utilities/database";
-import { Auth } from "firebase/auth";
+import { Auth } from "../../auth";
 import { getAppVersion } from "../resources/api/version";
 import getWindows from "../resources/api/os";
 
@@ -50,7 +50,7 @@ export default function Home(props: HomeProps) {
 
   fetch<string>(`${base}`, {
     headers: {
-      uid: auth.currentUser?.uid as string,
+      uid: auth.currentUser?.u_id as unknown as string,
     },
     method: "GET",
   })

@@ -2,12 +2,7 @@
 Native API
 */
 import { useEffect, useState } from "react";
-import fetch from "./resources/core/http";
 import { appWindow } from "@tauri-apps/api/window";
-/*
-Firebase
-*/
-import { Auth } from "firebase/auth";
 
 /*
 CSS
@@ -40,7 +35,7 @@ import {
 } from "./resources/utilities/themes";
 import Package from "./package";
 import TLights from "../TLights";
-import { getWindowsName } from "./resources/api/os";
+import { Auth, logOut } from "../auth";
 
 interface AppProps {
   auth: Auth;
@@ -52,7 +47,7 @@ function Render(props: AppProps) {
   const { auth } = props;
   let [page, changePage] = useState("home"),
     [dev, setDev] = useState(
-      auth.currentUser?.displayName?.startsWith("(dev)"),
+      auth.currentUser?.dev
     ),
     [admin, setIsAdmin] = useState(false),
     [prefs, setAccessPrefs] = useState<Prefs>({
@@ -171,7 +166,7 @@ function Render(props: AppProps) {
         setApps(home);
         setLoad(true);
       } catch (_) {
-        auth.signOut();
+        logOut(auth);
         console.error(_);
         window.location.reload();
       }

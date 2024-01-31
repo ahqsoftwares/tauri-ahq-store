@@ -12,14 +12,8 @@ import Toast from "../resources/api/toast";
 /*
 Firebase API
 */
-import {
-  Auth,
-  updateProfile,
-  User,
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-  sendPasswordResetEmail,
-} from "firebase/auth";
+import { Auth, User, deleteAcc, logOut, updateProfile } from "../../auth";
+
 
 /*Icons
  */
@@ -37,6 +31,7 @@ import { open } from "@tauri-apps/api/dialog";
 import { readBinaryFile } from "@tauri-apps/api/fs";
 import { VscKey } from "react-icons/vsc";
 import { invoke } from "@tauri-apps/api/tauri";
+import { checkAuth } from "../../auth/login";
 
 /*
 Interfaces
@@ -133,24 +128,20 @@ export default function Init(props: UserProps) {
 
   useEffect(() => {
     (async () => {
-      if (!auth.currentUser?.emailVerified) {
+      if (!auth.currentUser?.e_verified) {
         setAlt("Verify email to upload");
         setUser(GeneralUser);
         setName("Guest");
       } else {
-        if (auth.currentUser?.displayName) {
-          if (auth.currentUser?.displayName.startsWith("(dev)")) {
-            setName(auth.currentUser?.displayName.replace("(dev)", ""));
-          } else {
-            setName(auth.currentUser?.displayName);
-          }
+        if (auth.currentUser?.display_name) {
+          setName(auth.currentUser?.display_name);
         } else {
           setName("Guest");
         }
         setUser(Loading);
-        setUser(await fetchUser(auth?.currentUser?.uid as string));
+        setUser(await fetchUser(auth?.currentUser?.u_id.toString()));
         setAlt(
-          auth.currentUser?.photoURL
+          auth.currentUser?.pfp
             ? "Click to edit picture"
             : "Click to upload",
         );
@@ -169,7 +160,7 @@ export default function Init(props: UserProps) {
       drop.setAttribute("style", "opacity: 0.0");
     });
     image.addEventListener("click", async () => {
-      if (auth.currentUser?.emailVerified) {
+      if (auth.currentUser?.e_verified) {
         const image = await open({
           multiple: false,
           filters: [
@@ -200,7 +191,7 @@ export default function Init(props: UserProps) {
             if (password === false) {
               setpPopop(true);
             } else {
-              verifyUserPassword(auth?.currentUser?.uid as string, password)
+              verifyUserPassword(auth?.currentUser?.u_id.toString() || "", password)
                 .then((ok) => {
                   if (!ok) {
                     return setpPopop(true);
@@ -263,7 +254,7 @@ export default function Init(props: UserProps) {
                 (
                   document.getElementById("accpwdhost") as HTMLInputElement
                 ).value = "";
-                fetchUser(auth?.currentUser?.uid as string).then(setUser);
+                fetchUser(auth?.currentUser?.u_id.toString() as string).then(setUser);
                 setpPopop(false);
               }}
             >
@@ -282,7 +273,7 @@ export default function Init(props: UserProps) {
               ).value;
 
               verifyUserPassword(
-                auth?.currentUser?.uid as string,
+                auth?.currentUser?.u_id.toString() as string,
                 inputPassword,
               )
                 .then(async (ok) => {
@@ -346,6 +337,7 @@ export default function Init(props: UserProps) {
         <ChangeAccountName
           close={() => setNamePopup(false)}
           user={auth.currentUser as User}
+          auth={auth}
           updateName={(value: string) => setName(value)}
           dark={props.dark}
         />
@@ -353,7 +345,7 @@ export default function Init(props: UserProps) {
 
       <div className="menu pb-2">
         <div className="user pb-2">
-          {auth.currentUser?.emailVerified ? (
+          {auth.currentUser?.e_verified ? (
             <></>
           ) : (
             <div className="flex flex-col text-center">
@@ -364,7 +356,7 @@ export default function Init(props: UserProps) {
           )}
           <div className="img" id="img">
             <img
-              src={auth.currentUser?.emailVerified ? user : GeneralUser}
+              src={auth.currentUser?.e_verified ? user : GeneralUser}
               alt="Avatar"
             />
             <div className={`div ${props.dark ? "" : "div-l"}`} id="drop">
@@ -374,7 +366,7 @@ export default function Init(props: UserProps) {
           <div className="flex flex-col text-center mt-2 name">
             <div className="flex justify-center">
               <h1>{name}</h1>
-              {auth.currentUser?.emailVerified ? (
+              {auth.currentUser?.e_verified ? (
                 <>
                   <div className="ml-[0.5rem]"></div>
                   <span
@@ -420,7 +412,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
           className="mx-auto flex items-center text-center justify-center dui-btn"
           onClick={() => {
             localStorage.removeItem("password");
-            auth.signOut();
+            logOut(auth);
           }}
           style={{
             minWidth: "15rem",
@@ -456,7 +448,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
             }, 5000);
           }
 
-          sendPasswordResetEmail(
+          /*sendPasswordResetEmail(
             auth as Auth,
             auth.currentUser?.email as string,
           )
@@ -487,7 +479,7 @@ function Actions(props: { auth: Auth; deleteAcc: Function }) {
             .catch(() => {
               toast?.edit("Failed to send Password reset email!", "danger");
               startUnmount();
-            });
+            });*/
         }}
         className="dui-btn dui-btn-success mt-3 mx-auto flex items-center text-center justify-center"
         style={{
@@ -531,13 +523,16 @@ function DeleteAccount(props: DeleteAccountProps) {
   const ManageDelete: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     setText(`⏲️;;true`);
-    await reauthenticateWithCredential(
-      auth.currentUser as User,
-      EmailAuthProvider.credential(auth.currentUser?.email as string, pass),
+    await checkAuth(
+      auth.currentUser?.email || "",
+      pass
     )
-      .then(() => {
-        reverse("");
-        setStep(1);
+      .then((ok) => {
+        if (ok) {
+          reverse("");
+          setStep(1);
+        } else
+          reverse("Invalid username/password");
       })
       .catch((e) => {
         let msg = e.message
@@ -562,7 +557,14 @@ function DeleteAccount(props: DeleteAccountProps) {
 
   const ConfirmDelete: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    await auth.currentUser?.delete();
+    const succ = await deleteAcc(auth.currentUser as User);
+    if (!succ) {
+      sendNotification({
+        title: "Error",
+        body: "Unable to delete account!"
+      });
+    }
+    logOut(auth);
   };
 
   return (
@@ -667,23 +669,23 @@ function DeleteAccount(props: DeleteAccountProps) {
 interface AccountNameProps {
   close: Function;
   user: User;
+  auth: Auth;
   updateName: Function;
   dark: boolean;
 }
 function ChangeAccountName(props: AccountNameProps) {
-  const { close, dark, user, updateName } = props;
-  const name = user.displayName as string;
-  const dev = name?.startsWith("(dev)");
+  const { close, dark, user, auth, updateName } = props;
+  const name = user.display_name as string;
 
-  let [value, setValue] = useState(dev ? name.replace("(dev)", "") : name);
+  let [value, setValue] = useState(name);
 
   async function confirmName(e: { preventDefault: Function }) {
     close();
     e.preventDefault();
     try {
-      if (user.displayName !== value) {
-        await updateProfile(user, {
-          displayName: dev ? `(dev)${value}` : value,
+      if (user.display_name !== value) {
+        await updateProfile(auth, {
+          display_name: value,
         });
       }
       updateName(value);
@@ -719,13 +721,9 @@ function ChangeAccountName(props: AccountNameProps) {
             maxLength={32}
             minLength={6}
             value={value}
-            onChange={(e) => {
-              if (e.target.value.startsWith("(dev)")) {
-                setValue(e.target.value.replace("(dev)", ""));
-              } else {
-                setValue(e.target.value);
-              }
-            }}
+            onChange={(e) =>
+              setValue(e.target.value)
+            }
             required
           ></input>
 
@@ -758,7 +756,7 @@ async function ChangeProfile(
     fetch(`${base}`, {
       method: "POST",
       headers: {
-        "x-uid": auth.currentUser?.uid as any,
+        "x-uid": auth.currentUser?.u_id.toString() as any,
         "x-password": pwd,
       },
       body: Body.json({ data: fs.result }),
@@ -768,7 +766,7 @@ async function ChangeProfile(
       if (!ok) {
         sendNotification("Failed to update profile picture!");
         setPFD({});
-        fetchUser(auth?.currentUser?.uid as string).then((value) =>
+        fetchUser(auth?.currentUser?.u_id.toString() as string).then((value) =>
           setUser(value),
         );
       } else {

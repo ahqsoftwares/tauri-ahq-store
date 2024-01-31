@@ -1,24 +1,22 @@
-use tokio::net::TcpStream;
+use tokio::{io::AsyncWriteExt, net::windows::named_pipe::NamedPipeServer};
 
-use futures_util::stream::SplitSink;
-use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
+pub type ServiceIpc = NamedPipeServer;
 
-pub type ServiceWs = SplitSink<WebSocketStream<TcpStream>, Message>;
+static mut IPC: Option<ServiceIpc> = None;
 
-static mut WS: Option<ServiceWs> = None;
-
-pub fn set_ws(ws: ServiceWs) {
+pub fn set_iprocess(ipc: ServiceIpc) {
   unsafe {
-    WS = Some(ws);
+    IPC = Some(ipc);
   }
 }
 
-pub fn get_ws() -> Option<&'static mut ServiceWs> {
-  unsafe { WS.as_mut() }
+pub fn get_iprocess() -> Option<&'static mut ServiceIpc> {
+  unsafe { IPC.as_mut() }
 }
 
-pub fn remove_ws() {
-  unsafe {
-    WS = None;
-  }
+pub async fn ws_send(ipc: &mut &'static mut ServiceIpc, val: &[u8]) {
+  let len = val.len().to_be_bytes();
+  let _ = ipc.write_all(&len).await;
+  let _ = ipc.write_all(val).await;
+  let _ = ipc.flush().await;
 }

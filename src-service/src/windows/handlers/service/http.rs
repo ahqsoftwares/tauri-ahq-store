@@ -1,12 +1,11 @@
-use std::{fs::File, io::Write};
-
-use futures_util::SinkExt;
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};
+use std::{fs::File, io::Write};
 
 use crate::windows::utils::{
-  get_file_on_root, get_installer_file, get_ws,
+  get_file_on_root, get_installer_file, get_iprocess,
   structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response},
+  ws_send,
 };
 use std::time::Duration;
 
@@ -60,19 +59,23 @@ pub async fn keep_alive() -> bool {
 
 pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplication> {
   let app_id: AppId = app_id.into();
-  let ws = get_ws().unwrap();
-
-  let file = get_installer_file(&app_id);
+  let mut ws = get_iprocess().unwrap();
 
   let app_id = get_app(0, app_id).await;
 
   match app_id {
     Response::AppData(_, id, data) => {
+      let file = get_installer_file(&data);
+
       if let None = async {
         let x = Response::as_msg(Response::DownloadStarted(ref_id, id.clone()));
-        ws.send(x).await.ok()?;
+        ws_send(&mut ws, &x).await;
 
-        let mut resp = DOWNLOADER.get(&data.download).send().await.ok()?;
+        let mut resp = DOWNLOADER
+          .get(&data.get_win32_download()?.url)
+          .send()
+          .await
+          .ok()?;
 
         #[cfg(debug_assertions)]
         write_log("Response Successful");
@@ -104,7 +107,7 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
                   [current, total],
                 ));
 
-                ws.send(msg).await.ok()?;
+                ws_send(&mut ws, &msg).await;
                 last = perc;
               }
             }
@@ -119,7 +122,8 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
           ref_id,
           id.clone(),
         )));
-        let _ = ws.send(x).await;
+
+        ws_send(&mut ws, &x).await;
         return None;
       }
 
@@ -127,7 +131,8 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
     }
     resp => {
       let x = Response::as_msg(resp);
-      let _ = ws.send(x).await;
+
+      ws_send(&mut ws, &x).await;
       return None;
     }
   }
@@ -170,10 +175,10 @@ pub async fn install_vcpp() -> Option<()> {
   remove_file(&file_path).ok()
 }
 
-pub async fn install_node(version: String) -> Option<()> {
-  let (f_name, url) = match version.as_str() {
-    "v20" => ("node_20.zip", NODE20.to_string()),
-    "v21" => ("node_21.zip", NODE21.to_string()),
+pub async fn install_node(version: &str) -> Option<()> {
+  let (f_name, url) = match &version {
+    &"v20" => ("node_20.zip", NODE20.to_string()),
+    &"v21" => ("node_21.zip", NODE21.to_string()),
     _ => return None,
   };
 
@@ -183,7 +188,7 @@ pub async fn install_node(version: String) -> Option<()> {
 
   write_download(&mut file, &url).await?;
 
-  let true = unzip(&zip, &get_file_on_root(&f_name))
+  let true = unzip(&zip, &get_file_on_root(&format!("node-{}", &version)))
     .ok()?
     .wait()
     .ok()?
@@ -195,7 +200,7 @@ pub async fn install_node(version: String) -> Option<()> {
   Some(())
 }
 
-pub async fn write_download(file: &mut File, url: &str) -> Option<()> {
+async fn write_download(file: &mut File, url: &str) -> Option<()> {
   let mut download = DOWNLOADER.get(url).send().await.ok()?;
 
   while let Some(chunk) = download.chunk().await.ok()? {

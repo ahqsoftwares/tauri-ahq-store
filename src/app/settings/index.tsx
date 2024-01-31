@@ -1,6 +1,7 @@
 //React
 import { useEffect, useState } from "react";
-import { Auth, User, updateProfile } from "firebase/auth";
+import { Auth, User, updateProfile } from "../../auth";
+
 
 //packages
 import Modal from "react-modal";
@@ -88,7 +89,7 @@ export default function Init(props: InitProps) {
   const [user, setUser] = useState(props.auth.currentUser as User),
     [show, setShow] = useState(false),
     [showOtherUserOptions, setOUO] = useState(false),
-    [dev, setDev] = useState(user?.displayName?.startsWith("(dev)") as boolean);
+    [dev, setDev] = useState(user?.dev);
 
   const [ver, setVer] = useState("0.9.0");
   const [os, setOs] = useState("");
@@ -109,12 +110,10 @@ export default function Init(props: InitProps) {
   async function Update() {
     const toast = Toast("Please Wait...", "warn", "never");
     try {
-      if (props.auth?.currentUser?.emailVerified) {
+      if (props.auth?.currentUser?.e_verified) {
         setShow(true);
-        await updateProfile(user, {
-          displayName: !dev
-            ? `(dev)${user?.displayName}`
-            : user?.displayName?.replace("(dev)", ""),
+        await updateProfile(props.auth, {
+          dev: !dev,
         });
         toast?.edit(
           `Successfully ${!dev ? "enabled" : "disabled"} developer mode!`,
@@ -265,13 +264,13 @@ export default function Init(props: InitProps) {
           url={false}
           title="Developer Mode"
           description={
-            props.auth?.currentUser?.emailVerified
+            props.auth?.currentUser?.e_verified
               ? "Allows you to publish windows apps"
               : "(DISABLED, VERIFY EMAIL) Allows you to publish windows apps"
           }
           Icon={BsCodeSlash}
           onClick={() => Update()}
-          disabled={!props.auth?.currentUser?.emailVerified}
+          disabled={!props.auth?.currentUser?.e_verified}
           active={dev}
         />
 

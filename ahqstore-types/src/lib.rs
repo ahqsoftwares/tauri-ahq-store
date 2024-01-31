@@ -2,8 +2,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string, to_string_pretty};
 use std::fs::read;
 
-use tokio_tungstenite::tungstenite::Message;
-
 pub type AppId = String;
 pub type Str = String;
 pub type AppData = (String, String);
@@ -113,11 +111,10 @@ pub enum Response {
 }
 
 impl Response {
-  pub fn as_msg(msg: Self) -> Message {
-    to_string_pretty(&msg).map_or_else(
-      |_| Message::Text("\"ERR\"".to_string()),
-      |x| Message::Text(x),
-    )
+  pub fn as_msg(msg: Self) -> Vec<u8> {
+    to_string_pretty(&msg)
+      .unwrap_or("ERRR".to_string())
+      .into_bytes()
   }
 }
 

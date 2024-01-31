@@ -3,12 +3,13 @@ use std::time::Duration;
 use ahqstore_types::{Reason, Response};
 use tokio::{io::AsyncWriteExt, net::TcpListener, spawn, task::JoinHandle};
 
-use futures_util::{SinkExt, StreamExt};
 use tokio_tungstenite::accept_async;
 
 use crate::windows::{
   authentication::authenticate_process,
-  utils::{get_ws, now, remove_ws, set_ws, structs::AuthPing, write_log, write_service, ServiceWs},
+  utils::{
+    get_iprocess, now, remove_ws, set_ws, structs::AuthPing, write_log, write_service, ServiceWs,
+  },
 };
 
 use crate::windows::handlers;
@@ -55,7 +56,7 @@ pub async fn launch() {
           if CURRENT_WS + 1 > MAX_WS {
             if now() - LAST_CONTACTED > 1 {
               return {
-                if let Some(x) = get_ws() {
+                if let Some(x) = get_iprocess() {
                   let _ = x.flush().await;
                   let _ = x.close().await;
                 }
@@ -100,7 +101,7 @@ pub async fn launch() {
 
             'a: loop {
               if let Some(Ok(x)) = recv.next().await {
-                if let Some(ws) = get_ws() {
+                if let Some(ws) = get_iprocess() {
                   if let Ok(x) = x.to_text() {
                     let x = x.to_string();
                     unsafe {
@@ -118,14 +119,14 @@ pub async fn launch() {
                             LAST_CONTACTED = now();
                             VERIFIED = true;
 
-                            let _ = ws.send(Response::as_msg(Response::Ready)).await;
+                            let _ = ws.write_all(Response::as_msg(Response::Ready)).await;
                           } else {
                             stop(ws).await;
                             break 'a;
                           }
                         } else {
                           let _ = ws
-                            .send(Response::as_msg(Response::Disconnect(
+                            .write_all(Response::as_msg(Response::Disconnect(
                               Reason::Unauthenticated,
                             )))
                             .await;
@@ -157,7 +158,7 @@ pub async fn launch() {
                   break;
                 }
                 if !VERIFIED && (now() - LAST_CONTACTED) > 30 {
-                  if let Some(ws) = get_ws() {
+                  if let Some(ws) = get_iprocess() {
                     let _ = ws.flush().await;
                     let _ = ws.close().await;
                   }

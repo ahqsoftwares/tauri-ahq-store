@@ -1,4 +1,5 @@
-import { Auth, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import { Auth } from "./auth";
+
 
 import { useState, useEffect } from "react";
 import { getCurrent } from "@tauri-apps/api/window";
@@ -10,14 +11,11 @@ import ForgotPwd from "./Login/Forgot";
 import TLights from "./TLights";
 
 interface LoginHandlerProps {
-  create: typeof createUserWithEmailAndPassword,
-  login: typeof signInWithEmailAndPassword,
-  auth: Auth,
-  resetEmail: typeof sendPasswordResetEmail
+  auth: Auth
 }
 
 function Init(props: LoginHandlerProps) {
-  const { create, login, auth, resetEmail } = props;
+  const { auth } = props;
 
   let [type, setType] = useState("login");
 
@@ -45,7 +43,6 @@ function Init(props: LoginHandlerProps) {
           change={(page: string) => {
             setType(page);
           }}
-          login={login}
           auth={auth}
           dark={prefs.dark}
         />;
@@ -54,7 +51,6 @@ function Init(props: LoginHandlerProps) {
           change={(page: string) => {
             setType(page);
           }}
-          create={create}
           auth={auth}
           dark={prefs.dark}
         />;
@@ -63,7 +59,6 @@ function Init(props: LoginHandlerProps) {
           change={(page: string) => {
             setType(page);
           }}
-          email={resetEmail}
           auth={auth}
           dark={prefs.dark}
         />;

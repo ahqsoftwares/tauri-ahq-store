@@ -5,7 +5,7 @@ import { FiExternalLink } from "react-icons/fi";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { RiApps2Line } from "react-icons/ri";
 
-import { Auth } from "firebase/auth";
+import { Auth } from "../../auth";
 
 //Components
 import Option from "./components/Options";
@@ -24,7 +24,7 @@ export default function Developers(props: DevProps) {
     undefined,
   );
 
-  const uid = props.auth?.currentUser?.uid;
+  const uid = props.auth?.currentUser?.u_id;
 
   const { dark } = props;
 
@@ -33,7 +33,7 @@ export default function Developers(props: DevProps) {
   useEffect(() => {
     (async () => {
       try {
-        const { apps } = (await fetchAuthor(uid as string, false)).apps as {
+        const { apps } = (await fetchAuthor(uid as unknown as string, false)).apps as {
           apps: string[];
         };
 

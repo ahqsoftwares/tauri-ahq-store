@@ -1,5 +1,5 @@
 use crate::windows::utils::*;
-use sysinfo::{Pid, ProcessExt, System, SystemExt};
+use sysinfo::{Pid, System};
 
 pub fn authenticate_process(pid: usize) -> bool {
   #[cfg(not(debug_assertions))]
@@ -10,6 +10,7 @@ pub fn authenticate_process(pid: usize) -> bool {
 
   #[cfg(debug_assertions)]
   let path = format!(r"E:\GitHub\ahq-store-tauri\src-tauri\target\debug\AHQ Store.exe");
+  //let path = format!(r"E:\rust\iprocess\target\debug\iprocess.exe");
 
   let path = path.as_bytes();
   let exe = String::from_utf8_lossy(path);
@@ -20,7 +21,10 @@ pub fn authenticate_process(pid: usize) -> bool {
   let process = system.process(Pid::from(pid));
 
   if let Some(process) = process {
-    let exe_path = process.exe().as_os_str().to_string_lossy();
+    let Some(ex) = process.exe() else {
+      return false;
+    };
+    let exe_path = ex.to_string_lossy();
 
     let running_for_secs = now() - process.start_time();
 

@@ -21,7 +21,7 @@ pub fn download(url: &str, path: &str, file: &str, logger: fn(u64, u64) -> ()) -
   (|| {
     let mut file = File::create(format!("{}/{}", &path, &file)).ok()?;
 
-    let mut bytes = CLIENT.get(url).send().ok()?.bytes().ok()?;
+    let bytes = CLIENT.get(url).send().ok()?.bytes().ok()?;
 
     let total = bytes.len() as u64;
 
