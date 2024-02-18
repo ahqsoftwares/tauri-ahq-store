@@ -9,8 +9,6 @@ use std::{
   time::Duration,
 };
 
-static mut WS: Option<DuplexMsgPipeStream> = None;
-
 static mut CONNECTION: Option<WsConnection> = None;
 static mut WINDOW: Option<tauri::Window> = None;
 
@@ -58,7 +56,12 @@ impl WsConnection {
   pub fn recv(&mut self) -> Option<Vec<String>> {
     if let Ok(mut pending) = self.pending.try_lock() {
       Some({
-        let data = pending.drain(..).into_iter().collect();
+        let data: Vec<String> = pending.drain(..).into_iter().collect();
+
+        #[cfg(debug_assertions)]
+        if data.len() > 0 {
+          println!("{:?}", &data);
+        }
 
         data
       })
@@ -71,6 +74,11 @@ impl WsConnection {
     let pending = self.pending.clone();
 
     if let Ok(mut x) = pending.try_lock() {
+      #[cfg(debug_assertions)]
+      if msg.len() > 0 {
+        println!("{:?}", &msg);
+      }
+
       x.push(msg);
     } else {
       std::thread::sleep(std::time::Duration::from_millis(1000));
@@ -79,27 +87,47 @@ impl WsConnection {
   }
 
   pub unsafe fn start(&mut self, reinstall_astore: fn()) {
-    let (tx, rx) = std::sync::mpsc::channel::<String>();
-    let path = OsStr::new(r"\\.\pipe\ahqstore-service-api-v3");
+    let path = OsStr::new(r"ahqstore-service-api-v3");
 
     match DuplexMsgPipeStream::connect(path) {
       Ok(mut ipc) => {
+        let mut len: [u8; 8] = [0; 8];
         loop {
           // Reading Pending Messages
-          let mut data: Vec<u8> = vec![];
-
-          match ipc.read(&mut data) {
-            Ok(0) => {}
+          match ipc.read_exact(&mut len) {
             Ok(_) => {
-              let stri = String::from_utf8_lossy(&data);
-              let stri = stri.to_string();
+              let mut data: Vec<u8> = vec![];
+              data.resize(usize::from_be_bytes(len), 0);
 
-              self.load_into(stri);
+              match ipc.read_exact(&mut data) {
+                Ok(()) => {
+                  #[cfg(debug_assertions)]
+                  println!("{} - {}", data.len(), usize::from_be_bytes(len));
+
+                  if data.len() == usize::from_be_bytes(len) {
+                    let stri = String::from_utf8_lossy(&data);
+                    let stri = stri.to_string();
+
+                    self.load_into(stri);
+                  } else {
+                    println!("Packet Rejected!");
+                  }
+                }
+                Err(e) => match e.kind() {
+                  ErrorKind::WouldBlock => {}
+                  e => {
+                    println!("Fetch {e:?}");
+                    break;
+                  }
+                },
+              }
             }
-            Err(e) => match e.kind() {
+            Err(e) => {
+              println!("{:?}", &e);
+              match e.kind() {
               ErrorKind::WouldBlock => {}
               _ => break,
-            },
+            }},
           }
 
           //Sending Messages
@@ -107,8 +135,8 @@ impl WsConnection {
             let send = x.drain(..).collect::<Vec<String>>();
 
             for msg in send {
-              let bytes = msg.len().to_be_bytes();
-              let _ = ipc.write_all(&bytes);
+              let len = msg.len().to_be_bytes();
+              let _ = ipc.write_all(&len);
 
               let _ = ipc.write_all(msg.as_bytes());
 

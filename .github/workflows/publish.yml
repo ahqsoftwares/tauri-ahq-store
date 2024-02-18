@@ -233,7 +233,7 @@ jobs:
           CI: "false"
 
       - name: Decrypt Key / Load Encryption Key
-        run: node encryptor.js
+        run: node encryptor.cjs
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
 

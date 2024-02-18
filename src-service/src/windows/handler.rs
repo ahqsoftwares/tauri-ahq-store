@@ -100,7 +100,8 @@ pub async fn launch() {
                 }
                 Err(e) => match e.kind() {
                   ErrorKind::WouldBlock => {}
-                  _ => {
+                  e => {
+                    write_log(format!("{e:?}"));
                     let _ = pipe.disconnect();
                     break 'a;
                   }
