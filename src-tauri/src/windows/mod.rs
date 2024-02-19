@@ -17,8 +17,8 @@ use minisign_verify::{Error, PublicKey, Signature};
 use crate::encryption::{decrypt, encrypt};
 
 //crates
-use window_vibrancy::apply_mica;
 use windows::Win32::{
+  Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE},
   System::Com::{CoCreateInstance, CLSCTX_SERVER},
   UI::Shell::{ITaskbarList4, TaskbarList, TBPFLAG},
 };
@@ -138,8 +138,12 @@ pub fn main() {
       }
 
       {
-        let window = window_clone_2.clone();
-        let _ = apply_mica(&window, None);
+        let hwnd = window_clone_2.hwnd().unwrap();
+        //let _ = apply_mica(&window, None);
+        unsafe {
+          //2: Mica, 3: Acrylic, 4: Mica Alt
+          let _ = DwmSetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE(38), &4 as *const _ as _, 4);
+        }
       }
 
       listener.listen("ready", move |_| {

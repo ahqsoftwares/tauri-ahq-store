@@ -23,7 +23,11 @@ pub mod handlers;
 define_windows_service!(ffi_service_main, service_runner);
 
 pub fn main() -> SResult<()> {
+  #[cfg(not(feature = "no_service"))]
   service_dispatcher::start("AHQ Store Service", ffi_service_main)?;
+
+  #[cfg(feature = "no_service")]
+  service_runner("");
   Ok(())
 }
 
@@ -57,66 +61,69 @@ fn start_keep_alive() {
 }
 
 fn service_runner<T>(_: T) {
-  let handler: Arc<Mutex<Option<ServiceStatusHandle>>> = Arc::new(Mutex::new(None));
+  #[cfg(not(feature = "no_service"))]
+  {
+    let handler: Arc<Mutex<Option<ServiceStatusHandle>>> = Arc::new(Mutex::new(None));
 
-  let status_handle = handler.clone();
+    let status_handle = handler.clone();
 
-  let event_handler = move |control_event| -> ServiceControlHandlerResult {
-    match control_event {
-      ServiceControl::Stop => {
-        write_service(-1);
+    let event_handler = move |control_event| -> ServiceControlHandlerResult {
+      match control_event {
+        ServiceControl::Stop => {
+          write_service(-1);
 
-        // Handle stop event and return control back to the system.
-        status_handle
-          .lock()
-          .unwrap()
-          .unwrap()
-          .set_service_status(ServiceStatus {
-            service_type: ServiceType::OWN_PROCESS,
-            current_state: ServiceState::Stopped,
-            controls_accepted: ServiceControlAccept::STOP,
-            exit_code: ServiceExitCode::Win32(0),
-            checkpoint: 0,
-            wait_hint: std::time::Duration::default(),
-            process_id: Some(std::process::id()),
-          })
-          .unwrap();
+          // Handle stop event and return control back to the system.
+          status_handle
+            .lock()
+            .unwrap()
+            .unwrap()
+            .set_service_status(ServiceStatus {
+              service_type: ServiceType::OWN_PROCESS,
+              current_state: ServiceState::Stopped,
+              controls_accepted: ServiceControlAccept::STOP,
+              exit_code: ServiceExitCode::Win32(0),
+              checkpoint: 0,
+              wait_hint: std::time::Duration::default(),
+              process_id: Some(std::process::id()),
+            })
+            .unwrap();
 
-        ServiceControlHandlerResult::NoError
+          ServiceControlHandlerResult::NoError
+        }
+        // All services must accept Interrogate even if it's a no-op.
+        ServiceControl::Interrogate => ServiceControlHandlerResult::NoError,
+        _ => ServiceControlHandlerResult::NotImplemented,
       }
-      // All services must accept Interrogate even if it's a no-op.
-      ServiceControl::Interrogate => ServiceControlHandlerResult::NoError,
-      _ => ServiceControlHandlerResult::NotImplemented,
+    };
+
+    let handle_clone = handler.clone();
+
+    // Register system service event handler
+    let status_handle = service_control_handler::register("AHQ Store Service", event_handler)
+      .expect("This should work");
+
+    match handle_clone.lock() {
+      Ok(mut handle) => {
+        *handle = Some(status_handle.clone());
+      }
+      _ => {}
     }
-  };
 
-  let handle_clone = handler.clone();
-
-  // Register system service event handler
-  let status_handle = service_control_handler::register("AHQ Store Service", event_handler)
-    .expect("This should work");
-
-  match handle_clone.lock() {
-    Ok(mut handle) => {
-      *handle = Some(status_handle.clone());
-    }
-    _ => {}
+    status_handle
+      .set_service_status(ServiceStatus {
+        service_type: ServiceType::OWN_PROCESS,
+        current_state: ServiceState::Running,
+        controls_accepted: ServiceControlAccept::STOP,
+        exit_code: ServiceExitCode::Win32(0),
+        checkpoint: 0,
+        wait_hint: std::time::Duration::default(),
+        process_id: Some(std::process::id()),
+      })
+      .unwrap();
   }
 
-  status_handle
-    .set_service_status(ServiceStatus {
-      service_type: ServiceType::OWN_PROCESS,
-      current_state: ServiceState::Running,
-      controls_accepted: ServiceControlAccept::STOP,
-      exit_code: ServiceExitCode::Win32(0),
-      checkpoint: 0,
-      wait_hint: std::time::Duration::default(),
-      process_id: Some(std::process::id()),
-    })
-    .unwrap();
-
   tokio::runtime::Builder::new_current_thread()
-    .worker_threads(12)
+    .worker_threads(10)
     .enable_all()
     .build()
     .unwrap()

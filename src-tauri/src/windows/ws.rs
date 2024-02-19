@@ -1,13 +1,13 @@
-use interprocess::os::windows::named_pipe::DuplexMsgPipeStream;
+use async_recursion::async_recursion;
+
+use tokio::io::AsyncWriteExt;
+use tokio::net::windows::named_pipe::{ClientOptions, PipeMode};
+use tokio::sync::Mutex;
 
 use serde_json::from_str;
-use std::{
-  ffi::OsStr,
-  io::{ErrorKind, Read, Write},
-  sync::{Arc, Mutex},
-  thread::spawn,
-  time::Duration,
-};
+use std::sync::Arc;
+use std::thread;
+use std::{ffi::OsStr, io::ErrorKind, thread::spawn, time::Duration};
 
 static mut CONNECTION: Option<WsConnection> = None;
 static mut WINDOW: Option<tauri::Window> = None;
@@ -45,7 +45,7 @@ impl WsConnection {
             LAST_CMD = Some(value.into());
             send.push(value.into());
           } else {
-            std::thread::sleep(std::time::Duration::from_millis(10));
+            thread::sleep(std::time::Duration::from_millis(1));
             self.send_ws(value);
           };
         }
@@ -81,53 +81,82 @@ impl WsConnection {
 
       x.push(msg);
     } else {
-      std::thread::sleep(std::time::Duration::from_millis(1000));
+      thread::sleep(std::time::Duration::from_millis(1000));
       self.load_into(msg);
     };
   }
 
-  pub unsafe fn start(&mut self, reinstall_astore: fn()) {
-    let path = OsStr::new(r"ahqstore-service-api-v3");
+  #[async_recursion]
+  pub async unsafe fn start(&mut self, reinstall_astore: fn(), tries: u8) {
+    let path = OsStr::new(r"\\.\pipe\ahqstore-service-api-v3");
 
-    match DuplexMsgPipeStream::connect(path) {
+    let reinstall = || async {
+      if tries > 5 {
+        reinstall_astore();
+        false
+      } else {
+        true
+      }
+    };
+
+    match ClientOptions::new().pipe_mode(PipeMode::Message).open(path) {
       Ok(mut ipc) => {
         let mut len: [u8; 8] = [0; 8];
         loop {
+          println!("WS Loop");
+
           // Reading Pending Messages
-          match ipc.read_exact(&mut len) {
-            Ok(_) => {
+          match ipc.try_read(&mut len) {
+            Ok(8) => {
+              let size = usize::from_be_bytes(len);
+              println!("{size}");
+
               let mut data: Vec<u8> = vec![];
-              data.resize(usize::from_be_bytes(len), 0);
+              let mut bit = [0u8];
 
-              match ipc.read_exact(&mut data) {
-                Ok(()) => {
-                  #[cfg(debug_assertions)]
-                  println!("{} - {}", data.len(), usize::from_be_bytes(len));
-
-                  if data.len() == usize::from_be_bytes(len) {
-                    let stri = String::from_utf8_lossy(&data);
-                    let stri = stri.to_string();
-
-                    self.load_into(stri);
-                  } else {
-                    println!("Packet Rejected!");
+              for _ in 0..size {
+                match ipc.try_read(&mut bit) {
+                  Ok(1) => {
+                    data.push(bit[0]);
                   }
+                  Err(e) => match e.kind() {
+                    ErrorKind::WouldBlock => {}
+                    e => {
+                      println!("Byte: {e:?}");
+                      if &format!("{e:?}") != "Uncategorized" {
+                        break;
+                      }
+                    }
+                  }
+                  _ => {}
                 }
-                Err(e) => match e.kind() {
-                  ErrorKind::WouldBlock => {}
-                  e => {
-                    println!("Fetch {e:?}");
-                    break;
-                  }
-                },
+              }
+
+              #[cfg(debug_assertions)]
+              println!("{} - {}", data.len(), usize::from_be_bytes(len));
+
+              if data.len() == usize::from_be_bytes(len) {
+                let stri = String::from_utf8_lossy(&data);
+                let stri = stri.to_string();
+
+                self.load_into(stri);
+              } else {
+                println!("Packet Rejected!");
               }
             }
-            Err(e) => {
-              println!("{:?}", &e);
-              match e.kind() {
+            Ok(t) => {
+              println!("{t}");
+              break;
+            }
+            Err(e) => match e.kind() {
               ErrorKind::WouldBlock => {}
-              _ => break,
-            }},
+              e => {
+                println!("Len: {e:?}");
+                if &format!("{e:?}") != "Uncategorized" {
+                  break;
+                }
+              }
+            }
           }
 
           //Sending Messages
@@ -136,116 +165,63 @@ impl WsConnection {
 
             for msg in send {
               let len = msg.len().to_be_bytes();
-              let _ = ipc.write_all(&len);
 
-              let _ = ipc.write_all(msg.as_bytes());
+              println!("{:?}", &len);
 
-              let _ = ipc.flush();
+              ipc.write(&len).await.unwrap();
+              ipc.write_all(msg.as_bytes()).await.unwrap();
+
+              ipc.flush().await.unwrap();
             }
           }
-
-          //Sleep
-          std::thread::sleep(Duration::from_millis(1));
         }
-        reinstall_astore();
+        drop(ipc);
+        if reinstall().await {
+          self.start(reinstall_astore, tries + 1).await;
+        }
       }
       e => {
-        println!("{e:?}");
-        reinstall_astore();
+        println!("{tries}: {e:?}");
+        if reinstall().await {
+          self.start(reinstall_astore, tries + 1).await;
+        }
       }
     }
-
-    // let server = self.binding_server.clone().to_string();
-    // match connect(server) {
-    //   Ok(websocket) => {
-    //     WS = Some(websocket.0);
-
-    //     spawn(move || {
-    //       if let Some(ws) = WS.as_mut() {
-    //         loop {
-    //           if let Ok(msg) = ws.read() {
-    //             if let Ok(txt) = msg.to_text() {
-    //               println!("{}", &txt);
-    //               let _ = tx.send(txt.into());
-    //             }
-    //           } else {
-    //             let _ = tx.send("DISCONNECT".into());
-    //             break;
-    //           }
-    //           std::thread::sleep(std::time::Duration::from_millis(1));
-    //         }
-    //       }
-    //     });
-
-    //     //Handle Read + Write at high speed
-
-    //     if let Some(ws) = WS.as_mut() {
-    //       let _ = ws.send(Message::Text(format!(
-    //         "{{ \"process\": {} }}",
-    //         std::process::id()
-    //       )));
-    //       loop {
-    //         if let Ok(ref mut x) = self.to_send.try_lock() {
-    //           let _ = ws.send(Message::text("KA"));
-
-    //           let send = x.drain(..).collect::<Vec<String>>();
-
-    //           for msg in send {
-    //             ws.send(tungstenite::Message::Text(msg)).unwrap_or(());
-    //           }
-    //         }
-
-    //         if let Ok(msg) = rx.try_recv() {
-    //           if &msg == "DISCONNECT" {
-    //             reinstall_astore();
-    //             break;
-    //           } else {
-    //             self.load_into(msg);
-    //           }
-    //         }
-
-    //         std::thread::sleep(std::time::Duration::from_millis(1));
-    //       }
-    //     }
-    //   }
-    //   Err(e) => {
-    //     println!("{e:?}");
-    //     reinstall_astore();
-    //   }
-    // }
   }
 }
 
 pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
   spawn(move || {
-    WINDOW = Some(window);
+    let rt = tokio::runtime::Builder::new_current_thread().worker_threads(5).enable_all().build().unwrap();
+    rt.block_on(async move {
+      WINDOW = Some(window);
 
-    let connection = WsConnection::new();
+      let connection = WsConnection::new();
 
-    CONNECTION = Some(connection);
+      CONNECTION = Some(connection);
 
-    if let Some(win) = WINDOW.as_mut() {
-      win.listen("ws_send", |ev| {
-        if let Some(x) = ev.payload() {
-          if let Ok(x) = from_str::<String>(x) {
-            CONNECTION.as_mut().unwrap().send_ws(&x);
+      if let Some(win) = WINDOW.as_mut() {
+        win.listen("ws_send", |ev| {
+          if let Some(x) = ev.payload() {
+            if let Ok(x) = from_str::<String>(x) {
+              CONNECTION.as_mut().unwrap().send_ws(&x);
+            }
           }
-        }
-      });
-    }
+        });
+      }
 
-    let ras = reinstall_astore.clone();
-    spawn(move || CONNECTION.as_mut().unwrap().start(ras));
+      let ras = reinstall_astore.clone();
+      unsafe { CONNECTION.as_mut().unwrap().start(ras, 0).await };
 
-    loop {
-      if let Some(resp) = CONNECTION.as_mut().unwrap().recv() {
-        if resp.len() > 0 {
-          if let Some(win) = WINDOW.as_mut() {
-            win.emit("ws_resp", &resp).unwrap_or(());
+      loop {
+        if let Some(resp) = CONNECTION.as_mut().unwrap().recv() {
+          if resp.len() > 0 {
+            if let Some(win) = WINDOW.as_mut() {
+              win.emit("ws_resp", &resp).unwrap_or(());
+            }
           }
         }
       }
-      std::thread::sleep(std::time::Duration::from_millis(10));
-    }
+    });
   });
 }

@@ -6,6 +6,12 @@
   user-select: none;
 }
 
+html[data-os="win32"],
+[data-os="win32"] body,
+[data-os="win32"] #root {
+  background: transparent !important;
+}
+
 .ReactModal__Overlay {
   opacity: 0;
   transition: all 200ms ease-in-out;
@@ -74,18 +80,32 @@ code {
 
 .background {
   /*background-image: url("./bg.jpg");*/
-  background-image: url("./bg.png");
+  background:
+    /*url("./bg.png")*/
+    transparent;
   background-size: 100% 100%;
 }
 
 .login-background {
-  /*background-image: url("./bg.jpg");*/
-  background-image: url("./bg.png");
+  background: transparent;
   background-size: 100% 100%;
   @apply h-screen w-screen flex flex-col items-center justify-center;
   transition: all 25ms linear;
 }
 
+/*.login-background::before {
+  content: "";
+  background: url(bg.png);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;
+}*/
 .modal {
   @apply items-center justify-center flex w-[35vw] max-w-[35vw] h-[90vh] max-h-[90vh] bg-white rounded-lg shadow-lg flex-col mb-auto;
   transition: all 500ms linear;
@@ -174,6 +194,7 @@ code {
   min-height: 50px;
   transition: all 250ms linear;
 }
+
 .button:hover {
   @apply bg-blue-900;
 }
@@ -187,6 +208,7 @@ code {
   min-height: 50px;
   transition: all 250ms linear;
 }
+
 .button-danger:hover {
   @apply bg-red-800;
 }

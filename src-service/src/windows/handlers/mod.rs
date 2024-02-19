@@ -30,6 +30,7 @@ pub fn handle_msg(data: String) {
       let stop = |ws: &NamedPipeServer| {
         let _ = ws.disconnect();
       };
+      write_log(&data);
       if let Some(x) = Command::try_from(&data) {
         match x {
           Command::GetApp(ref_id, app_id) => {

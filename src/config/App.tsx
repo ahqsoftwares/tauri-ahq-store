@@ -2,7 +2,6 @@ import { getVersion } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
 import fetchPrefs, { appData } from "../app/resources/utilities/preferences";
 import logo from "./index.png";
-import TLights from "../TLights";
 
 function App(props: { info: string }) {
   const [version, setVersion] = useState("");
@@ -33,8 +32,7 @@ function App(props: { info: string }) {
 
   return (
     <header className="login-background">
-      <TLights />
-      <div className={`modal ${perfs?.dark ? "modal-d" : ""}`}>
+      <div className={`my-auto modal ${perfs?.dark ? "modal-d" : ""}`}>
         <div className="mt-10"></div>
         <h1 style={perfs.dark ? { color: "white" } : undefined}>AHQ Store</h1>
         <div className="mt-[5rem]"></div>

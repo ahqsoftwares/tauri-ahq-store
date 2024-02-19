@@ -29,10 +29,8 @@
           "https://github.com/ahqsoftwares/tauri-ahq-store/releases/*",
           "https://api.github.com/repos/ahqsoftwares/*",
           "https://rawcdn.githack.com/*",
-
           "http://odin.forcehost.net:25643/*",
           "http://odin.forcehost.net:25643/",
-
           "https://ahqstore-server.onrender.com/",
           "https://ahqstore-server.onrender.com/*"
         ]
@@ -56,6 +54,9 @@
         "all": true
       },
       "globalShortcut": {
+        "all": true
+      },
+      "os": {
         "all": true
       }
     },
@@ -108,7 +109,9 @@
         "width": 1240,
         "minHeight": 700,
         "minWidth": 1200,
-        "visible": false
+        "visible": false,
+        "decorations": false,
+        "transparent": true
       },
       {
         "center": true,

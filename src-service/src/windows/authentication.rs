@@ -1,7 +1,7 @@
 use crate::windows::utils::*;
 use sysinfo::{Pid, System};
 
-pub fn authenticate_process(pid: usize) -> bool {
+pub fn authenticate_process(pid: usize, time: bool) -> bool {
   #[cfg(not(debug_assertions))]
   let path = format!(
     r"{}\Program Files\AHQ Store\AHQ Store.exe",
@@ -30,7 +30,10 @@ pub fn authenticate_process(pid: usize) -> bool {
 
     write_log(format!("{} {} {}", &exe, &exe_path, &running_for_secs));
 
-    if exe_path == exe && running_for_secs < 20 {
+    if exe_path == exe {
+      if time && running_for_secs > 20 {
+        return false;
+      }
       return true;
     }
   }

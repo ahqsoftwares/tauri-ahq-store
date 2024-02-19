@@ -37,7 +37,7 @@ pub fn get_service_url() -> String {
   for asset in assets {
     let asset_name = asset["name"].as_str().unwrap();
 
-    if asset_name == "store-tools-installer.exe" {
+    if asset_name.ends_with("setup.exe") {
       return asset["browser_download_url"].as_str().unwrap().to_string();
     }
   }

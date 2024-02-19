@@ -38,7 +38,8 @@ import "./index.css";
 import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
 import { genAuth } from "./auth";
-import { onAuthChange } from "./auth/login";
+import { onAuthChange, tryAutoLogin } from "./auth/login";
+import { os } from "@tauri-apps/api";
 
 const auth = genAuth();
 
@@ -80,6 +81,14 @@ if (window.__TAURI_IPC__ == null) {
 
   /**Sub or main? */
   if (appWindow.label === "main") {
+    (async () => {
+      if (await os.platform() == "win32") {
+        document.querySelector("html")?.setAttribute("data-os", "win32");
+      }
+      setTimeout(() => {
+        appWindow.setDecorations(true);
+      }, 500);
+    })();
     appWindow.onFocusChanged(({ payload: focused }) => {
       if (focused) {
         list.forEach((item) => {
@@ -138,6 +147,36 @@ if (window.__TAURI_IPC__ == null) {
     });
 
     async function Manage() {
+      onAuthChange(auth, async (user) => {
+        const lastEmailSent = Number(localStorage.getItem("last_email_sent") || '0');
+
+        if (user && !user.e_verified && Date.now() > (lastEmailSent + 24 * 60 * 60 * 1000)) {
+          localStorage.setItem("last_email_sent", Date.now().toString());
+
+          sendNotification({
+            title: "Email Verification",
+            body: "Email verification link send! Please verify",
+          });
+        }
+
+        const pwd = await invoke("decrypt", {
+          encrypted: JSON.parse(
+            localStorage.getItem("password") || "[]",
+          ) as number[],
+        }).catch(() => "a");
+
+        if (!(localStorage.getItem("email") && pwd != "a")) {
+          console.log("Signing out");
+        }
+
+        console.log(user);
+
+        user
+          ? StoreLoad(Store, { auth })
+          : StoreLoad(Login as any, { auth });
+      });
+
+      await tryAutoLogin(auth);
       render("Launching Store...", App);
       setTimeout(() => {
         if (!auth.currentUser) {
@@ -145,38 +184,6 @@ if (window.__TAURI_IPC__ == null) {
         } else {
           StoreLoad(Store, { auth });
         }
-
-        if (auth.currentUser && !auth.currentUser?.e_verified) {
-        //sendEmailVerification(auth.currentUser).catch(() => {});
-          sendNotification({
-            title: "Email Verification",
-            body: "Email verification link send! Please verify",
-          });
-        }
-
-        onAuthChange(auth, async (user) => {
-          if (user && !user.e_verified) {
-        //sendEmailVerification(user).catch(() => {});
-            sendNotification({
-              title: "Email Verification",
-              body: "Email verification link send! Please verify",
-            });
-          }
-
-          const pwd = await invoke("decrypt", {
-            encrypted: JSON.parse(
-              localStorage.getItem("password") || "[]",
-            ) as number[],
-          }).catch(() => "a");
-
-          if (!(localStorage.getItem("email") && pwd != "a")) {
-            console.log("Signing out");
-
-          }
-          user
-            ? StoreLoad(Store, { auth })
-            : StoreLoad(Login as any, { auth });
-        });
       }, 1000);
     }
 

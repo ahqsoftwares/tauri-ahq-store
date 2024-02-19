@@ -34,7 +34,6 @@ import {
   isDarkTheme,
 } from "./resources/utilities/themes";
 import Package from "./package";
-import TLights from "../TLights";
 import { Auth, logOut } from "../auth";
 
 interface AppProps {
@@ -288,7 +287,6 @@ function Render(props: AppProps) {
   return (
     <>
       {load === true ? (<>
-        <TLights useDef={true} />
         <header
           className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${
             sidebar.includes("flex-row-reverse") ? "pr-2" : ""
