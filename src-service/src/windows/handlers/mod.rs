@@ -104,7 +104,6 @@ pub fn handle_msg(data: String) {
 
           _ => {}
         }
-        let _ = ws.flush().await;
       } else {
         let x = Response::as_msg(Response::Disconnect(Reason::UnknownData(0)));
         ws_send(&mut ws, &x).await;

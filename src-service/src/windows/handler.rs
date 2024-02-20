@@ -50,6 +50,7 @@ pub async fn launch() {
 
   let pipe = unsafe {
     ServerOptions::new()
+      .first_pipe_instance(true)
       .reject_remote_clients(true)
       .pipe_mode(PipeMode::Message)
       .create_with_security_attributes_raw(
@@ -83,7 +84,6 @@ pub async fn launch() {
         let _ = pipe.disconnect();
       } else {
         'a: loop {
-          println!("Loop");
           let mut val: [u8; 8] = [0u8; 8];
           //let mut buf: Box<[u8]>;
 
@@ -94,8 +94,7 @@ pub async fn launch() {
           }
           match pipe.try_read(&mut val) {
             Ok(d) => {
-              println!("Data {}", &d);
-              write_log("");
+              println!("Read {d}");
               let total = usize::from_be_bytes(val);
 
               let mut buf: Vec<u8> = Vec::new();
@@ -119,10 +118,9 @@ pub async fn launch() {
                     }
                   },
                 }
-                if buf.len() == total {
-                  handle_msg(String::from_utf8_lossy(&buf).to_string());
-                }
               }
+              println!("{:?}", &buf);
+              handle_msg(String::from_utf8_lossy(&buf).to_string());
             }
             Err(e) => match e.kind() {
               ErrorKind::WouldBlock => {}
@@ -137,6 +135,7 @@ pub async fn launch() {
               }
             },
           }
+          tokio::time::sleep(Duration::from_nanos(30)).await;
         }
       }
     }

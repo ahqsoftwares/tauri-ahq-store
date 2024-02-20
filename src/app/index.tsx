@@ -74,7 +74,7 @@ function Render(props: AppProps) {
         }
         return loadStatus;
       });
-    }, 13 * 1000);
+    }, 30 * 1000);
     appWindow.listen("app", ({ payload }: { payload: string }) => {
       if (payload.startsWith("ahqstore://")) {
         const [page] = payload.replace("ahqstore://", "").split("/");
@@ -111,6 +111,7 @@ function Render(props: AppProps) {
         launch_app: true,
       };
       const fullPrefs = await fetchPrefs();
+      console.log(fullPrefs);
 
       const {
         autoUpdate,
@@ -298,7 +299,7 @@ function Render(props: AppProps) {
             dev={dev}
             horizontal={sidebar.includes("flex-col")}
           />
-          <div className="w-screen h-[95vh]">
+          <div className="w-screen h-[98vh]">
             <div className="flex flex-col w-[100%] h-[100%] justify-center">
               {app}
             </div>

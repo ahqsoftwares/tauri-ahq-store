@@ -50,8 +50,11 @@ export function runner() {
 }
 
 appWindow.listen<string[]>("ws_resp", ({ payload }) => {
+  console.log(payload);
   payload.forEach((payload) => {
+    console.log(payload);
     const toObj = interpret(payload);
+    console.log(toObj);
 
     if (toObj) {
       if (toObj.method == "DownloadProgress") {

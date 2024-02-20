@@ -17,5 +17,8 @@
   "editor.formatOnSaveMode": "modificationsIfAvailable",
   "editor.formatOnType": true,
   "editor.tabSize": 2,
-  "rust-analyzer.linkedProjects": ["./src-tauri/Cargo.toml"]
+  "rust-analyzer.linkedProjects": [
+    "./src-service/Cargo.toml",
+    "./src-tauri/Cargo.toml"
+  ]
 }

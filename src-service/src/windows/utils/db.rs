@@ -16,7 +16,11 @@ pub fn get_iprocess() -> Option<&'static mut ServiceIpc> {
 
 pub async fn ws_send(ipc: &mut &'static mut ServiceIpc, val: &[u8]) {
   let len = val.len().to_be_bytes();
-  let _ = ipc.write_all(&len).await;
-  let _ = ipc.write_all(val).await;
-  let _ = ipc.flush().await;
+  let mut data = len.to_vec();
+
+  for byte in val {
+    data.push(*byte);
+  }
+
+  let _ = ipc.try_write(&data);
 }

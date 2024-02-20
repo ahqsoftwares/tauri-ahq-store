@@ -9,7 +9,33 @@
 html[data-os="win32"],
 [data-os="win32"] body,
 [data-os="win32"] #root {
-  background: transparent !important;
+  @apply bg-transparent !important;
+  }
+  
+  
+  @media (prefers-color-scheme: light) {
+  
+    [data-theme="business"] body,
+    [data-theme="dracula"] body,
+    [data-theme="night"] body,
+    [data-theme="synthwave"] body,
+    [data-theme="halloween"] body,
+    [data-theme="forest"] body,
+    [data-theme="luxury"] body {
+      @apply bg-base-100 !important;
+    }
+  }
+  
+  @media (prefers-color-scheme: dark) {
+  
+    [data-theme="light"] body,
+    [data-theme="emerald"] body,
+    [data-theme="fantasy"] body,
+    [data-theme="wireframe"] body,
+    [data-theme="cmyk"] body,
+    [data-theme="autumn"] body {
+      @apply bg-base-100 !important;
+    }
 }
 
 .ReactModal__Overlay {
@@ -93,19 +119,6 @@ code {
   transition: all 25ms linear;
 }
 
-/*.login-background::before {
-  content: "";
-  background: url(bg.png);
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  opacity: 0.5;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  position: absolute;
-  z-index: -1;
-}*/
 .modal {
   @apply items-center justify-center flex w-[35vw] max-w-[35vw] h-[90vh] max-h-[90vh] bg-white rounded-lg shadow-lg flex-col mb-auto;
   transition: all 500ms linear;

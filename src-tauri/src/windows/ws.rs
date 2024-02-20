@@ -1,6 +1,5 @@
 use async_recursion::async_recursion;
 
-use tokio::io::AsyncWriteExt;
 use tokio::net::windows::named_pipe::{ClientOptions, PipeMode};
 use tokio::sync::Mutex;
 
@@ -16,8 +15,7 @@ static mut LAST_CMD: Option<String> = None;
 
 #[allow(unused)]
 struct WsConnection {
-  to_send: Arc<Mutex<Vec<String>>>,
-  pending: Arc<Mutex<Vec<String>>>,
+  to_send: Arc<Mutex<Vec<String>>>
 }
 
 unsafe impl Send for WsConnection {}
@@ -30,8 +28,7 @@ impl WsConnection {
     }
 
     Self {
-      to_send: Arc::new(Mutex::new(vec![])),
-      pending: Arc::new(Mutex::new(vec![])),
+      to_send: Arc::new(Mutex::new(vec![]))
     }
   }
 
@@ -53,44 +50,12 @@ impl WsConnection {
     }
   }
 
-  pub fn recv(&mut self) -> Option<Vec<String>> {
-    if let Ok(mut pending) = self.pending.try_lock() {
-      Some({
-        let data: Vec<String> = pending.drain(..).into_iter().collect();
-
-        #[cfg(debug_assertions)]
-        if data.len() > 0 {
-          println!("{:?}", &data);
-        }
-
-        data
-      })
-    } else {
-      None
-    }
-  }
-
-  fn load_into(&mut self, msg: String) {
-    let pending = self.pending.clone();
-
-    if let Ok(mut x) = pending.try_lock() {
-      #[cfg(debug_assertions)]
-      if msg.len() > 0 {
-        println!("{:?}", &msg);
-      }
-
-      x.push(msg);
-    } else {
-      thread::sleep(std::time::Duration::from_millis(1000));
-      self.load_into(msg);
-    };
-  }
-
   #[async_recursion]
   pub async unsafe fn start(&mut self, reinstall_astore: fn(), tries: u8) {
     let path = OsStr::new(r"\\.\pipe\ahqstore-service-api-v3");
 
     let reinstall = || async {
+      tokio::time::sleep(Duration::from_millis(1)).await;
       if tries > 5 {
         reinstall_astore();
         false
@@ -100,23 +65,28 @@ impl WsConnection {
     };
 
     match ClientOptions::new().pipe_mode(PipeMode::Message).open(path) {
-      Ok(mut ipc) => {
+      Ok(ipc) => {
         let mut len: [u8; 8] = [0; 8];
         loop {
-          println!("WS Loop");
-
           // Reading Pending Messages
           match ipc.try_read(&mut len) {
             Ok(8) => {
               let size = usize::from_be_bytes(len);
-              println!("{size}");
 
               let mut data: Vec<u8> = vec![];
               let mut bit = [0u8];
 
-              for _ in 0..size {
+              let mut iter = 0i64;
+              loop {
+                iter += 1;
+                if iter == i64::MAX {
+                  reinstall_astore();
+                }
+                if data.len() == size {
+                  break;
+                }
                 match ipc.try_read(&mut bit) {
-                  Ok(1) => {
+                  Ok(_) => {
                     data.push(bit[0]);
                   }
                   Err(e) => match e.kind() {
@@ -128,33 +98,29 @@ impl WsConnection {
                       }
                     }
                   }
-                  _ => {}
                 }
               }
-
-              #[cfg(debug_assertions)]
-              println!("{} - {}", data.len(), usize::from_be_bytes(len));
 
               if data.len() == usize::from_be_bytes(len) {
                 let stri = String::from_utf8_lossy(&data);
                 let stri = stri.to_string();
 
-                self.load_into(stri);
+                if let Some(win) = WINDOW.as_mut() {
+                  win.emit("ws_resp", &[stri]).unwrap_or(());
+                }
               } else {
                 println!("Packet Rejected!");
               }
             }
             Ok(t) => {
-              println!("{t}");
+              println!("huh {t}");
               break;
             }
             Err(e) => match e.kind() {
               ErrorKind::WouldBlock => {}
               e => {
                 println!("Len: {e:?}");
-                if &format!("{e:?}") != "Uncategorized" {
-                  break;
-                }
+                break;
               }
             }
           }
@@ -166,14 +132,18 @@ impl WsConnection {
             for msg in send {
               let len = msg.len().to_be_bytes();
 
-              println!("{:?}", &len);
+              let mut data = vec![];
+              for byte in len {
+                data.push(byte);
+              }
+              for byte in msg.as_bytes() {
+                data.push(*byte);
+              }
 
-              ipc.write(&len).await.unwrap();
-              ipc.write_all(msg.as_bytes()).await.unwrap();
-
-              ipc.flush().await.unwrap();
+              let _ = ipc.try_write(&data);
             }
           }
+          tokio::time::sleep(Duration::from_nanos(1)).await;
         }
         drop(ipc);
         if reinstall().await {
@@ -212,16 +182,6 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
 
       let ras = reinstall_astore.clone();
       unsafe { CONNECTION.as_mut().unwrap().start(ras, 0).await };
-
-      loop {
-        if let Some(resp) = CONNECTION.as_mut().unwrap().recv() {
-          if resp.len() > 0 {
-            if let Some(win) = WINDOW.as_mut() {
-              win.emit("ws_resp", &resp).unwrap_or(());
-            }
-          }
-        }
-      }
     });
   });
 }

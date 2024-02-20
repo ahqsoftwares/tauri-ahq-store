@@ -2,7 +2,6 @@ use std::{
   sync::mpsc::{channel, Sender},
   time::Duration,
 };
-use tokio::io::AsyncWriteExt;
 
 use ahqstore_types::{Command, Response};
 use tokio::{spawn, time::sleep};
@@ -43,17 +42,13 @@ pub fn get_install_daemon() -> Sender<Command> {
             }
             Command::InstallApp(ref_id, app_id) => {
               if let Some(x) = download_app(ref_id, &app_id).await {
-                let _ = ws
-                  .write_all(&Response::as_msg(Response::Installing(
-                    ref_id,
-                    app_id.clone(),
-                  )))
-                  .await;
+                let _ = ws.try_write(&Response::as_msg(Response::Installing(
+                  ref_id,
+                  app_id.clone(),
+                )));
 
                 install_app(x).await;
-                let _ = ws
-                  .write_all(&Response::as_msg(Response::Installed(ref_id, app_id)))
-                  .await;
+                let _ = ws.try_write(&Response::as_msg(Response::Installed(ref_id, app_id)));
               } else {
                 write_log("Error downloading");
               }

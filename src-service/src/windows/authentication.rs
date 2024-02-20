@@ -21,6 +21,9 @@ pub fn authenticate_process(pid: usize, time: bool) -> bool {
   let process = system.process(Pid::from(pid));
 
   if let Some(process) = process {
+    #[cfg(feature = "no_auth")]
+    return true;
+
     let Some(ex) = process.exe() else {
       return false;
     };

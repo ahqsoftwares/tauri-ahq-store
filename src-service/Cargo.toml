@@ -40,4 +40,6 @@ opt-level = "s"
 strip = true
 
 [features]
+sudo = ["no_service", "no_auth"]
 no_service = []
+no_auth = []

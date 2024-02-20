@@ -57,7 +57,6 @@ pub async fn launch() {
             if now() - LAST_CONTACTED > 1 {
               return {
                 if let Some(x) = get_iprocess() {
-                  let _ = x.flush().await;
                   let _ = x.close().await;
                 }
                 standard_remove();
@@ -93,7 +92,6 @@ pub async fn launch() {
           let handle = spawn(async move {
             let stop = |ws: &'static mut ServiceWs| unsafe {
               async {
-                let _ = ws.flush().await;
                 let _ = ws.close().await;
                 standard_remove();
               }
@@ -159,7 +157,6 @@ pub async fn launch() {
                 }
                 if !VERIFIED && (now() - LAST_CONTACTED) > 30 {
                   if let Some(ws) = get_iprocess() {
-                    let _ = ws.flush().await;
                     let _ = ws.close().await;
                   }
                   standard_remove();
