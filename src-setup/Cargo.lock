@@ -60,7 +60,7 @@ version = "1.3.6"
 dependencies = [
  "env_logger",
  "iced",
- "iced_core",
+ "iced_core 0.12.1",
  "image",
  "is_elevated",
  "lazy_static",
@@ -858,6 +858,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5418c17512bdf42730f9032c74e1ae39afc408745ebb2acf72fbc4691c17945"
 
 [[package]]
+name = "glam"
+version = "0.25.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "151665d9be52f9bb40fc7966565d39666f2d1e69233571b71b87791c7e0528b3"
+
+[[package]]
 name = "glow"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1098,7 +1104,7 @@ version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c708807ec86f99dd729dc4d42db5239acf118cec14d3c5f57679dcfdbbc472b1"
 dependencies = [
- "iced_core",
+ "iced_core 0.10.0",
  "iced_futures",
  "iced_renderer",
  "iced_widget",
@@ -1122,13 +1128,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "iced_core"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d8f68104cc550807c6c350c13095b1866f08e53c951b540eb122eee67d86b0ab"
+dependencies = [
+ "bitflags 2.4.1",
+ "glam 0.25.0",
+ "log",
+ "num-traits",
+ "raw-window-handle 0.6.0",
+ "smol_str",
+ "thiserror",
+ "web-time",
+ "xxhash-rust",
+]
+
+[[package]]
 name = "iced_futures"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "14dab0054a9c7a1cbce227a8cd9ee4a094497b3d06094551ac6c1488d563802e"
 dependencies = [
  "futures",
- "iced_core",
+ "iced_core 0.10.0",
  "log",
  "tokio",
  "wasm-bindgen-futures",
@@ -1143,13 +1166,13 @@ checksum = "67ff14447a221e9e9205a13d84d7bbdf0636a3b1daa02cfca690ed09689c4d2b"
 dependencies = [
  "bitflags 1.3.2",
  "bytemuck",
- "glam",
+ "glam 0.24.2",
  "half",
- "iced_core",
+ "iced_core 0.10.0",
  "image",
  "kamadak-exif",
  "log",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "thiserror",
 ]
 
@@ -1163,7 +1186,7 @@ dependencies = [
  "iced_tiny_skia",
  "iced_wgpu",
  "log",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "thiserror",
 ]
 
@@ -1173,7 +1196,7 @@ version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c6c89853e1250c6fac82c5015fa2144517be9b33d4b8e456f10e198b23e28bd"
 dependencies = [
- "iced_core",
+ "iced_core 0.10.0",
  "iced_futures",
  "thiserror",
 ]
@@ -1184,7 +1207,7 @@ version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d85c47d9d13e2281f75ddf98c865daf2101632bd2b855c401dd0b1c8b81a31a0"
 dependencies = [
- "iced_core",
+ "iced_core 0.10.0",
  "once_cell",
  "palette",
 ]
@@ -1200,7 +1223,7 @@ dependencies = [
  "iced_graphics",
  "kurbo",
  "log",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "rustc-hash",
  "softbuffer",
  "tiny-skia 0.10.0",
@@ -1216,13 +1239,13 @@ dependencies = [
  "bitflags 1.3.2",
  "bytemuck",
  "futures",
- "glam",
+ "glam 0.24.2",
  "glyphon",
  "guillotiere",
  "iced_graphics",
  "log",
  "once_cell",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "rustc-hash",
  "twox-hash",
  "wgpu",
@@ -1252,7 +1275,7 @@ dependencies = [
  "iced_runtime",
  "iced_style",
  "log",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "thiserror",
  "web-sys",
  "winapi",
@@ -1683,7 +1706,7 @@ dependencies = [
  "jni-sys",
  "ndk-sys",
  "num_enum 0.5.11",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "thiserror",
 ]
 
@@ -2264,6 +2287,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2ff9a1f06a88b01621b7ae906ef0211290d1c8a168a15542486a8f61c0833b9"
 
 [[package]]
+name = "raw-window-handle"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "42a9830a0e1b9fb145ebb365b8bc4ccd75f290f98c0247deafbbe2c75cefb544"
+
+[[package]]
 name = "rayon"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2597,6 +2626,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "smol_str"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6845563ada680337a52d43bb0b29f396f2d911616f6573012645b9e3d048a49"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "socket2"
 version = "0.4.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2631,7 +2669,7 @@ dependencies = [
  "log",
  "nix 0.26.4",
  "objc",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "redox_syscall 0.3.5",
  "thiserror",
  "wasm-bindgen",
@@ -3316,6 +3354,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "web-time"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aa30049b1c872b72c89866d458eae9f20380ab280ffd1b1e18df2d3e2d98cfe0"
+dependencies = [
+ "js-sys",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "weezl"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3334,7 +3382,7 @@ dependencies = [
  "naga",
  "parking_lot 0.12.1",
  "profiling",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "smallvec",
  "static_assertions",
  "wasm-bindgen",
@@ -3359,7 +3407,7 @@ dependencies = [
  "naga",
  "parking_lot 0.12.1",
  "profiling",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "rustc-hash",
  "smallvec",
  "thiserror",
@@ -3399,7 +3447,7 @@ dependencies = [
  "parking_lot 0.12.1",
  "profiling",
  "range-alloc",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "renderdoc-sys",
  "rustc-hash",
  "smallvec",
@@ -3477,7 +3525,7 @@ dependencies = [
  "clipboard_macos",
  "clipboard_wayland",
  "clipboard_x11",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "thiserror",
 ]
 
@@ -3643,7 +3691,7 @@ dependencies = [
  "once_cell",
  "orbclient",
  "percent-encoding",
- "raw-window-handle",
+ "raw-window-handle 0.5.2",
  "redox_syscall 0.3.5",
  "sctk-adwaita",
  "smithay-client-toolkit",
@@ -3747,6 +3795,12 @@ name = "xml-rs"
 version = "0.8.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fcb9cbac069e033553e8bb871be2fbdffcab578eb25bd0f7c508cedc6dcd75a"
+
+[[package]]
+name = "xxhash-rust"
+version = "0.8.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "927da81e25be1e1a2901d59b81b37dd2efd1fc9c9345a55007f09bf5a2d3ee03"
 
 [[package]]
 name = "yazi"
