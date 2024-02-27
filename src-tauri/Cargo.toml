@@ -35,7 +35,7 @@ tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-wo
 tauri-plugin-deep-link = { git = "https://github.com/FabianLars/tauri-plugin-deep-link" }
 wry = "*"
 
-once_cell = "1.17.0"
+once_cell = "1.19.0"
 
 open = "5.0.0"
 
