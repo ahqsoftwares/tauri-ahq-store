@@ -1,5 +1,5 @@
-use std::{thread, time::Duration};
-
+use std::{fs, thread, time::Duration};
+use notify_rust::Notification;
 use slint::SharedString;
 
 use self::fetch::fetch;
@@ -12,6 +12,8 @@ mod fetch;
 
 #[cfg(windows)]
 mod msi;
+#[cfg(not(windows))]
+mod deb;
 
 use download::download;
 
@@ -36,7 +38,51 @@ pub fn start_install(win: AppWindow, install: InstallMode) {
 }
 
 #[cfg(not(windows))]
-fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {}
+fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
+  use std::process;
+
+  use crate::install::deb::{exit, get_sudo, install_deb};
+
+  if &files.deb == "" {
+    Notification::new()
+      .summary("Uh Oh!")
+      .body("We were unable to find the linux build files, try toggling the Pre-Release Option")
+      .show()
+      .unwrap();
+    
+    win.set_counter(-1.0);
+    win.set_msg("Install".into());
+    return;
+  }
+
+  win.set_msg("Downloading...".into());
+
+  let mut sudo = get_sudo();
+  let installer = get_install();
+
+  let _ =fs::remove_file(&installer);
+
+  download(client, &files.deb, &installer, |perc| {
+    win.set_counter(perc);
+  });
+
+  thread::sleep(Duration::from_secs(2));
+  win.set_indet(true);
+
+  win.set_msg("Installing...".into());
+
+  install_deb(&mut sudo, &installer);
+  exit(sudo);
+
+  thread::sleep(Duration::from_secs(1));
+
+  let _ =fs::remove_file(&installer);
+  win.set_msg("Installed 🎉".into());
+  win.set_indet(false);
+
+  thread::sleep(Duration::from_secs(5));
+  process::exit(0);
+}
 
 #[cfg(windows)]
 fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
@@ -51,6 +97,8 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
 
   let installer = get_install();
   let service = get_service_dir();
+
+  let _ = fs::remove_file(&installer);
 
   download(client, &files.msi, &installer, |perc| {
     win.set_counter(perc);
@@ -76,6 +124,8 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
   install_service(&service);
 
   thread::sleep(Duration::from_secs(1));
+
+  let _ = fs::remove_file(&installer);
 
   win.set_msg("Installed 🎉".into());
   win.set_indet(false);

@@ -6,7 +6,6 @@ React && Native
 import { FormEventHandler, useEffect, useState } from "react";
 import { sendNotification } from "@tauri-apps/api/notification";
 import { Body, fetch } from "@tauri-apps/api/http";
-import Modal from "react-modal";
 import Toast from "../resources/api/toast";
 
 /*
@@ -87,8 +86,6 @@ async function fetchUser(uid: string) {
 }
 
 export default function Init(props: UserProps) {
-  Modal.setAppElement("#root");
-
   let { auth, dark } = props;
 
   let [backupUser, setBackup] = useState(""),
@@ -103,28 +100,6 @@ export default function Init(props: UserProps) {
     [namePopup, setNamePopup] = useState(false),
     [passwordPopup, setpPopop] = useState(false),
     [profilePictureData, setPFD] = useState({});
-
-  const customStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      width: "30rem",
-      height: "40rem",
-      transition: "all 500ms linear",
-      borderRadius: "20px",
-      borderWidth: "3px",
-      borderColor: "hsl(var(--bc) / 0.9)",
-      backgroundColor: "hsl(var(--b1) / 1)",
-    },
-    overlay: {
-      backgroundColor: "hsl(var(--b1) / 0.8)",
-      zIndex: 1000,
-    },
-  };
 
   useEffect(() => {
     (async () => {
@@ -225,10 +200,10 @@ export default function Init(props: UserProps) {
 
   return (
     <>
-      <Modal
-        isOpen={showDelete}
-        contentLabel={"Confirm Delete Account"}
-        style={customStyles}
+      <PopUp
+        shown={showDelete}
+        width="30rem"
+        height="40rem"
       >
         <DeleteAccount
           auth={auth}
@@ -240,9 +215,9 @@ export default function Init(props: UserProps) {
           set={{ pwd: setPwd }}
           dark={props.dark}
         />
-      </Modal>
+      </PopUp>
 
-      <PopUp dark={props.dark} shown={passwordPopup}>
+      <PopUp shown={passwordPopup}>
         <>
           <div className="w-[100%] flex flex-col justify-end text-end items-end">
             <button
@@ -333,7 +308,7 @@ export default function Init(props: UserProps) {
         </>
       </PopUp>
 
-      <Modal isOpen={namePopup} contentLabel="Change Name" style={customStyles}>
+      <PopUp shown={namePopup} width="30rem" height="40rem">
         <ChangeAccountName
           close={() => setNamePopup(false)}
           user={auth.currentUser as User}
@@ -341,7 +316,7 @@ export default function Init(props: UserProps) {
           updateName={(value: string) => setName(value)}
           dark={props.dark}
         />
-      </Modal>
+      </PopUp>
 
       <div className="menu pb-2">
         <div className="user pb-2">

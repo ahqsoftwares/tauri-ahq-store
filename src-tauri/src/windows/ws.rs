@@ -55,8 +55,8 @@ impl WsConnection {
     let path = OsStr::new(r"\\.\pipe\ahqstore-service-api-v3");
 
     let reinstall = || async {
-      tokio::time::sleep(Duration::from_millis(1)).await;
-      if tries > 5 {
+      tokio::time::sleep(Duration::from_millis(5)).await;
+      if tries > 20 {
         reinstall_astore();
         false
       } else {

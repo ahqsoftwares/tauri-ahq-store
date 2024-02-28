@@ -1,5 +1,5 @@
 [package]
-name = "setup"
+name = "ahqstore_setup_amd64"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 dirs = "5.0.1"
 lazy_static = "1.4.0"
+notify-rust = "4.10.0"
 reqwest = { version = "0.11.24", features = ["blocking", "json"] }
 serde = { version = "1.0.196", features = ["derive"] }
 slint = "1.4.0"

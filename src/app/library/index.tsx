@@ -1,6 +1,5 @@
 //PUB libraries
 import { useEffect, useState } from "react";
-import Modal from "react-modal";
 
 //Components
 import InstalledAppsMenu from "./components/Style";
@@ -8,8 +7,7 @@ import AppList from "./components/AppsList";
 
 //tauri and updater
 import { appWindow } from "@tauri-apps/api/window";
-import { fetch } from "@tauri-apps/api/http";
-import server from "../server";
+import PopUp from "../resources/components/popup";
 
 interface LibraryProps {
   dark: boolean;
@@ -17,30 +15,6 @@ interface LibraryProps {
 
 export default function Library(props: LibraryProps) {
   const { dark } = props;
-
-  const customStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      width: "95%",
-      height: "90%",
-      transition: "all 500ms linear",
-      borderRadius: "20px",
-      borderWidth: "3px",
-      borderColor: "hsl(var(--bc) / 0.9)",
-      backgroundColor: "hsl(var(--b1) / 1)",
-    },
-    overlay: {
-      backgroundColor: "hsl(var(--b1) / 0.8)",
-      zIndex: 1000,
-    },
-  };
-
-  Modal.setAppElement("body");
 
   const [status, setStatus] = useState("Checking..."),
     [appList, setAppList] = useState<boolean>(false),
@@ -100,14 +74,14 @@ export default function Library(props: LibraryProps) {
 
   return (
     <>
-      <Modal isOpen={appList} style={customStyles}>
+      <PopUp shown={appList} width="95%" height="90%">
         <AppList
           dark={props.dark}
           change={() => {
             setAppList(false);
           }}
         />
-      </Modal>
+      </PopUp>
 
       <div className={`${darkMode(["menu"])}`}>
         <div

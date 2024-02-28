@@ -90,47 +90,6 @@ jobs:
               return data.upload_url;
             }
 
-  make-postinstaller:
-    needs: create-release
-    name: Build & Publish Postinstaller Script
-
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install Rust Stable
-        uses: dtolnay/rust-toolchain@stable
-      
-      - name: Cache Rust
-        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
-        uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: src-s-tools-${{ runner.os }}
-          cache-all-crates: true
-          workspaces: "src-service-tools -> target"
-
-      - name: Build Service Installer
-        run: cargo build --release
-        working-directory: src-service-tools
-
-      - name: Upload Executable (standalone)
-        uses: actions/upload-artifact@v3
-        with:
-          name: postinstall.exe
-          path: "src-service-tools/target/release/store-tools-installer.exe"
-
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: ahqsoftwares-projects/upload-release-assets@v59
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-service-tools/target/release/store-tools-installer.exe
-          asset_name: store-tools-installer.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
 
   publish-cargo:
     name: Publish ahqstore-types to cargo
@@ -156,7 +115,12 @@ jobs:
     needs: create-release
     name: Make Setup (exe)
 
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
@@ -177,15 +141,27 @@ jobs:
         run: cargo build --release
         working-directory: src-setup
 
-      - name: Upload Release Asset
+      - name: Upload Windows Setup
+        if: matrix.os == 'windows-latest'
         uses: ahqsoftwares-projects/upload-release-assets@v59
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-setup/target/release/ahqstore_setup_x86_64.exe
-          asset_name: ahqstore_setup_x86_64.exe
+          asset_path: ./src-setup/target/release/ahqstore_setup_amd64.exe
+          asset_name: ahqstore_setup_win32_amd64.exe
           asset_content_type: application/vnd.microsoft.portable-executable
+
+      - name: Upload Windows Setup
+        if: matrix.os != 'windows-latest'
+        uses: ahqsoftwares-projects/upload-release-assets@v59
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-setup/target/release/ahqstore_setup_amd64
+          asset_name: ahqstore_setup_amd64_linux
+          asset_content_type: application/octet-stream
 
   publish-tauri:
     needs: create-release
@@ -298,7 +274,7 @@ jobs:
           includeRelease: true
 
   undraft-release:
-    needs: [create-release, publish-tauri, make-postinstaller, make-setup]
+    needs: [create-release, publish-tauri, make-setup]
     name: Publish Release
     runs-on: ubuntu-latest
 

@@ -1,3 +1,4 @@
+#[cfg(windows)]
 use std::{
   env::current_exe,
   process::{self, Command},
@@ -10,12 +11,16 @@ use std::os::windows::process::CommandExt;
 
 use crate::InstallMode;
 
+#[cfg(not(windows))]
+pub fn relaunch_if_needed(_: &InstallMode) {}
+
+#[cfg(windows)]
 pub fn relaunch_if_needed(update: &InstallMode) {
   let exe = current_exe().unwrap();
   let exe = exe.to_string_lossy();
   let exe: &str = &format!("{exe}");
 
-  #[cfg(windows)]
+  
   if !is_elevated().unwrap_or(false) {
     let mut cmd = Command::new("powershell");
     let cmd = cmd.creation_flags(0x08000000);
@@ -32,24 +37,4 @@ pub fn relaunch_if_needed(update: &InstallMode) {
 
     process::exit(0);
   }
-
-  // #[cfg(not(windows))]
-  // {
-  //   let val = check();
-  //   println!("{:?}", &val);
-  //   if let RunningAs::User = val {
-  //     let mut cmd = Command::new("pkexec");
-  //     cmd.arg(exe);
-
-  //     if matches!(update, &InstallMode::Install) {
-  //       cmd.arg("update");
-  //     } else if matches!(update, &InstallMode::InstallPR) {
-  //       cmd.arg("update-pr");
-  //     }
-
-  //     cmd.spawn().unwrap();
-
-  //     process::exit(0);
-  //   }
-  // }
 }

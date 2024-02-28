@@ -4,7 +4,6 @@ import { Auth, User, updateProfile } from "../../auth";
 
 
 //packages
-import Modal from "react-modal";
 import Toast from "../resources/api/toast";
 import getWindows, {
   getWindowsName,
@@ -20,7 +19,8 @@ import { invoke } from "@tauri-apps/api/tauri";
 import CheckBox from "./components/checkbox";
 import ListSelector from "./components/font";
 import SidebarSelector from "./components/sidebar";
-import PopUp from "./components/popup";
+import PopUp from "../resources/components/popup";
+import CustomPopUp from "./components/popup";
 import StartOptions from "./components/startOptions";
 import themes from "../resources/utilities/themes";
 
@@ -49,42 +49,6 @@ interface InitProps {
 }
 
 export default function Init(props: InitProps) {
-  const customStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      maxWidth: "35%",
-      minWidth: "35%",
-      maxHeight: "30%",
-      minHeight: "30%",
-      transition: "all 500ms linear",
-      borderRadius: "20px",
-      borderWidth: "3px",
-      borderColor: "hsl(var(--bc) / 0.9)",
-      backgroundColor: "hsl(var(--b1) / 1)",
-    },
-    overlay: {
-      backgroundColor: "hsl(var(--b1) / 0.8)",
-      zIndex: 1000,
-    },
-  };
-
-  const customStylesx2 = {
-    ...customStyles,
-    content: {
-      ...customStyles.content,
-      maxWidth: "50%",
-      minWidth: "50%",
-      maxHeight: "25%",
-      minHeight: "25%",
-    },
-  };
-
-  Modal.setAppElement("body");
 
   const [user, setUser] = useState(props.auth.currentUser as User),
     [show, setShow] = useState(false),
@@ -174,7 +138,7 @@ export default function Init(props: InitProps) {
 
   return (
     <>
-      <Modal isOpen={show} style={customStyles}>
+      <PopUp shown={show} height="30%" width="75%">
         <div className="flex flex-col items-center text-center justify-center">
           <div className="my-auto">
             <h1
@@ -186,10 +150,10 @@ export default function Init(props: InitProps) {
             </h1>
           </div>
         </div>
-      </Modal>
-      <Modal isOpen={showOtherUserOptions} style={customStylesx2}>
+      </PopUp>
+      <PopUp shown={showOtherUserOptions} width="50%" height="25%">
         <StartOptions setOUO={setOUO} dark={props.dark} />
-      </Modal>
+      </PopUp>
 
       <div className={darkMode(["menu"], props.dark)}>
         <h1
@@ -275,7 +239,7 @@ export default function Init(props: InitProps) {
         />
 
         {props.admin && os != "linux" ? (
-          <PopUp
+          <CustomPopUp
             dark={props.dark}
             Icon={FaUsersGear}
             title="Access Policy"

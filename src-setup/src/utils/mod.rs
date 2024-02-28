@@ -1,4 +1,5 @@
 use dirs::home_dir;
+#[cfg(windows)]
 use lazy_static::lazy_static;
 
 #[cfg(windows)]
@@ -21,8 +22,13 @@ lazy_static! {
 }
 
 pub fn get_install() -> String {
+
   let mut path = home_dir().unwrap();
-  path.push("AppData\\Local\\Temp\\ahqstore.msi");
+  #[cfg(windows)]
+  path.push("ahqstore.msi");
+
+  #[cfg(not(windows))]
+  path.push("ahqstore.deb");
 
   path.to_str().unwrap().to_string()
 }

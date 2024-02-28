@@ -64,6 +64,7 @@ export async function deleteAcc(user: User) {
 
   const { ok } = await fetch(`${newServer}/users/@me`, {
     method: "DELETE",
+    responseType: ResponseType.Text,
     headers: {
       uid: user.email,
       pass: passDe,

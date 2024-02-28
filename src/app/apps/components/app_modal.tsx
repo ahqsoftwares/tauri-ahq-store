@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 
 //Worker
 import { BiArrowBack } from "react-icons/bi";
-import Modal from "react-modal";
 import fetchApps, { appData } from "../../resources/api/fetchApps";
 
 //AHQ Store Installer
@@ -11,6 +10,7 @@ import {
   isInstalled,
   unInstall,
 } from "../../resources/api/updateInstallWorker";
+import PopUp from "../../resources/components/popup";
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -76,30 +76,6 @@ export default function ShowModal(props: AppDataPropsModal) {
 
   const { icon, title, description, AuthorObject } = appData;
 
-  const modalStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      width: "95%",
-      height: "90%",
-      transition: "all 0.5s linear",
-      borderRadius: "20px",
-      borderWidth: "3px",
-      borderColor: "hsl(var(--bc) / 0.9)",
-      backgroundColor: "hsl(var(--b1) / 1)",
-    },
-    overlay: {
-      backgroundColor: "hsl(var(--b1) / 0.8)",
-      opacity: "1",
-      zIndex: 1000,
-    },
-  };
-  Modal.setAppElement("body");
-
   const install = async () => {
     if (!working) {
       setWorking(true);
@@ -146,8 +122,8 @@ export default function ShowModal(props: AppDataPropsModal) {
   };
 
   return (
-    <Modal isOpen={shown} contentLabel={"App Information"} style={modalStyles}>
-      <div className="flex flex-col w-[100%] h-[100%]">
+    <PopUp shown={shown} width="95%" height="90%">
+      <div className="bg-base-100 flex flex-col w-[100%] h-[100%]">
         <div className="flex w-[100%] h-[100%] app-data">
           <div
             className={`div w-[40%] p-2 flex flex-col items-center rounded-xl shadow-xl`}
@@ -264,6 +240,6 @@ export default function ShowModal(props: AppDataPropsModal) {
           </div>
         </div>
       </div>
-    </Modal>
+    </PopUp>
   );
 }

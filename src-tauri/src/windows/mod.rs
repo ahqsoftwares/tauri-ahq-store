@@ -142,7 +142,8 @@ pub fn main() {
         
         unsafe {
           //2: Mica, 3: Acrylic, 4: Mica Alt
-          let _ = DwmSetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE(38), &4 as *const _ as _, 4);
+          let attr = 4;
+          let _ = DwmSetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE(38), &attr as *const _ as _, std::mem::size_of_val(&attr) as u32);
         }
       }
 
