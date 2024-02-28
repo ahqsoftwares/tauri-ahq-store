@@ -10,7 +10,7 @@ license = "Creative Commons Attribution Non Commercial 3.0"
 [dependencies]
 env_logger = "0.10.0"
 iced = { version = "0.10.0", features = ["image", "debug", "tokio"] }
-iced_core = "0.10.0"
+iced_core = "0.12.2"
 image = "0.24.6"
 is_elevated = "0.1.2"
 lazy_static = "1.4.0"
