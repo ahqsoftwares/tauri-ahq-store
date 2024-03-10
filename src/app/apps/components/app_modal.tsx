@@ -11,6 +11,7 @@ import {
   unInstall,
 } from "../../resources/api/updateInstallWorker";
 import PopUp from "../../resources/components/popup";
+import { invoke } from "@tauri-apps/api/tauri";
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -32,20 +33,33 @@ function formatBytes(bytes: number, decimals = 2) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
-const defAppData = {
-  icon: "",
-  title: "",
+const defAppData: appData = {
+  appDisplayName: "",
+  appId: "",
+  appShortcutName: "",
+  authorId: "",
   description: "",
-  author: "",
-  displayName: "",
-  download: "",
-  exe: "",
-  id: "",
+  displayImages: [],
+  downloadUrls: [],
+  icon: "",
+  install: {
+    installType: "Both",
+    linux: undefined,
+    win32: undefined,
+  },
   repo: {
     author: "",
-    repo: "",
+    repo: ""
   },
   version: "",
+  AuthorObject: {
+    ahq_verified: false,
+    display_name: "",
+    linked_acc: [],
+    pub_email: "",
+    u_id: 0,
+    username: ""
+  }
 };
 
 export default function ShowModal(props: AppDataPropsModal) {
@@ -66,7 +80,9 @@ export default function ShowModal(props: AppDataPropsModal) {
     setInstalled("hidden");
     (async () => {
       if ((installData || "") !== "") {
-        setAppData((await fetchApps(installData)) as any);
+        const apps = await fetchApps(installData);
+        console.log(apps);
+        setAppData((apps) as any);
         setInstalled(await isInstalled(installData));
 
         setUpdating(false);
@@ -74,7 +90,7 @@ export default function ShowModal(props: AppDataPropsModal) {
     })();
   }, [installData]);
 
-  const { icon, title, description, AuthorObject } = appData;
+  const { icon, appDisplayName, description, authorId, AuthorObject } = appData;
 
   const install = async () => {
     if (!working) {
@@ -160,7 +176,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                 dark ? "text-slate-200" : "text-slate-800"
               }`}
             >
-              {title}
+              {appDisplayName}
             </h1>
 
             <div className="w-[95%] mt-3 mb-auto">
@@ -232,7 +248,14 @@ export default function ShowModal(props: AppDataPropsModal) {
             {/*Author*/}
             <div className="w-[100%]">
               <h1 className="text-xl">About Developer</h1>
-              <h2 className="text-lg">{AuthorObject?.displayName}</h2>
+              <button
+                className="text-lg cursor-pointer"
+                onClick={() => {
+                  invoke("open", {
+                    url: `https://ahqstore.github.io/user?=${authorId}`
+                  });
+                }}
+              >{AuthorObject.display_name}</button>
             </div>
 
             {/*Ratings (soon)*/}

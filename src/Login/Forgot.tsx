@@ -23,65 +23,67 @@ export default function ResetPage(props: ResetProps) {
     setStep(1);
   }
 
-  return <ScaffoldLogin
-    e={err}
-    onSubmit={() => {
-      switch (step) {
-        case 1:
-          setStep(step + 1);
-          resetPwd(auth, email)
-            .then((ok) => {
-              if (ok) {
-                sendNotification({
-                  title: "Password Reset",
-                  body: "Password Reset Link sent successfully!",
-                  icon: "icons/pwd_reset.png"
-                });
-                props.change("login");
-              } else {
-                reverse("Error");
-              }
-            })
-            .catch(() => {
-              reverse("Unknown Error");
-            });
-          break;
-        default:
-          reverse("Page Not Found!");
-          setStep(0);
-      }
-    }}
-    title="Restore"
-    subtitle="Reset the password via email"
-    body={
-      <>
-        <input
-          type="email"
-          autoComplete={"off"}
-          disabled={step !== 1}
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required={true}
-        />
+  return (
+    <ScaffoldLogin
+      e={err}
+      onSubmit={() => {
+        switch (step) {
+          case 1:
+            setStep(step + 1);
+            resetPwd(auth, email)
+              .then((ok) => {
+                if (ok) {
+                  sendNotification({
+                    title: "Password Reset",
+                    body: "Password Reset Link sent successfully!",
+                    icon: "icons/pwd_reset.png",
+                  });
+                  props.change("login");
+                } else {
+                  reverse("Error");
+                }
+              })
+              .catch(() => {
+                reverse("Unknown Error");
+              });
+            break;
+          default:
+            reverse("Page Not Found!");
+            setStep(0);
+        }
+      }}
+      title="Restore"
+      subtitle="Reset the password via email"
+      body={
+        <>
+          <input
+            type="email"
+            autoComplete={"off"}
+            disabled={step !== 1}
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required={true}
+          />
 
-        <button className="button" disabled={step === 2}>
-          {step === 1 ? "Email Me!" : step === 3 ? "✔️" : "⏲️"}
-        </button>
-      </>
-    }
-    button1={{
-      label: "Login",
-      onClick: () => {
-        props.change("login");
+          <button className="button" disabled={step === 2}>
+            {step === 1 ? "Email Me!" : step === 3 ? "✔️" : "⏲️"}
+          </button>
+        </>
       }
-    }}
-    button2={{
-      label: "Create your account",
-      onClick: () => {
-        props.change("signup");
-      }
-    }}
-    dark={props.dark}
-  />
+      button1={{
+        label: "Login",
+        onClick: () => {
+          props.change("login");
+        },
+      }}
+      button2={{
+        label: "Create your account",
+        onClick: () => {
+          props.change("signup");
+        },
+      }}
+      dark={props.dark}
+    />
+  );
 }

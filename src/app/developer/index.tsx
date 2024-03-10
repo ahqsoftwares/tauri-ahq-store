@@ -33,7 +33,8 @@ export default function Developers(props: DevProps) {
   useEffect(() => {
     (async () => {
       try {
-        const { apps } = (await fetchAuthor(uid as unknown as string, false)).apps as {
+        const { apps } = (await fetchAuthor(uid as unknown as string))
+          .apps as {
           apps: string[];
         };
 

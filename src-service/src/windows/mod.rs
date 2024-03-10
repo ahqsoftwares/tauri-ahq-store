@@ -13,6 +13,8 @@ use windows_service::{
 use handler::launch;
 use utils::{delete_log, write_log, write_service};
 
+use self::handlers::init;
+
 mod authentication;
 mod encryption;
 mod handler;
@@ -134,6 +136,7 @@ fn service_runner<T>(_: T) {
 
       write_log("WIN NT: STARTING");
 
+      init();
       start_keep_alive();
 
       launch().await;

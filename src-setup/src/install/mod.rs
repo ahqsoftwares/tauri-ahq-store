@@ -12,6 +12,8 @@ mod fetch;
 
 #[cfg(windows)]
 mod msi;
+#[cfg(windows)]
+mod regedit;
 #[cfg(not(windows))]
 mod deb;
 
@@ -60,7 +62,7 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
   let mut sudo = get_sudo();
   let installer = get_install();
 
-  let _ =fs::remove_file(&installer);
+  let _ = fs::remove_file(&installer);
 
   download(client, &files.deb, &installer, |perc| {
     win.set_counter(perc);
@@ -76,7 +78,7 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
 
   thread::sleep(Duration::from_secs(1));
 
-  let _ =fs::remove_file(&installer);
+  let _ = fs::remove_file(&installer);
   win.set_msg("Installed 🎉".into());
   win.set_indet(false);
 
@@ -114,6 +116,8 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
   win.set_indet(true);
 
   win.set_msg("Installing...".into());
+
+  regedit::create_association();
 
   thread::sleep(Duration::from_secs(2));
 

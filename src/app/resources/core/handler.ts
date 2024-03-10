@@ -11,17 +11,26 @@ const WebSocketMessage = {
   UninstallApp: (app_id: string) => `{"UninstallApp":[{*ref_id},"${app_id}"]}`,
   ListApps: () => `{"ListApps":{*ref_id}}`,
   GetPrefs: () => `{"GetPrefs":{*ref_id}}`,
-  SetPrefs: (prefs: Prefs) => `{"SetPrefs":[{*ref_id}, ${JSON.stringify(prefs)}]}`,
+  SetPrefs: (prefs: Prefs) =>
+    `{"SetPrefs":[{*ref_id}, ${JSON.stringify(prefs)}]}`,
+  GetSha: () => `{"GetSha":{*ref_id}}`,
 };
 
 type u64 = Number;
 
-type CacheValues = { data: string; ref_id: u64; resolve: (value: ServerResponse) => void }[];
+type CacheValues = {
+  data: string;
+  ref_id: u64;
+  resolve: (value: ServerResponse) => void;
+}[];
 
 let send: CacheValues = [];
 let toResolve: CacheValues = [];
 
-export function sendWsRequest(data: string, result: (value: ServerResponse) => void) {
+export function sendWsRequest(
+  data: string,
+  result: (value: ServerResponse) => void,
+) {
   queueAndWait(data, result);
 }
 
@@ -49,12 +58,10 @@ export function runner() {
   }, 1);
 }
 
-appWindow.listen<string[]>("ws_resp", ({ payload }) => {
-  console.log(payload);
-  payload.forEach((payload) => {
-    console.log(payload);
-    const toObj = interpret(payload);
-    console.log(toObj);
+appWindow.listen<string[]>("ws_resp", async ({ payload: pload }) => {
+  for (let i = 0; i < pload.length; i++) {
+    const payload = pload[i];
+    const toObj = await interpret(payload);
 
     if (toObj) {
       if (toObj.method == "DownloadProgress") {
@@ -63,11 +70,11 @@ appWindow.listen<string[]>("ws_resp", ({ payload }) => {
         invoke("set_progress", {
           state: 1,
           c: data.c,
-          t: data.t
-        })
+          t: data.t,
+        });
       } else {
         invoke("set_progress", {
-          state: 0
+          state: 0,
         });
       }
 
@@ -82,5 +89,5 @@ appWindow.listen<string[]>("ws_resp", ({ payload }) => {
         return true;
       });
     }
-  });
+  }
 });

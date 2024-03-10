@@ -13,7 +13,7 @@ import {
 import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
 import { invoke } from "@tauri-apps/api/tauri";
 import { appWindow } from "@tauri-apps/api/window";
-import { resolveResource } from '@tauri-apps/api/path';
+import { resolveResource } from "@tauri-apps/api/path";
 
 /*Apps
  */
@@ -81,8 +81,11 @@ if (window.__TAURI_IPC__ == null) {
 
   /**Sub or main? */
   if (appWindow.label === "main") {
+    // invoke("set_overlay", {
+    //   set: true,
+    // });
     (async () => {
-      if (await os.platform() == "win32") {
+      if ((await os.platform()) == "win32") {
         document.querySelector("html")?.setAttribute("data-os", "win32");
       }
       setTimeout(() => {
@@ -128,12 +131,13 @@ if (window.__TAURI_IPC__ == null) {
     render("Welcome!", App);
 
     (async () => {
-      const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+      const delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
       await delay(2000);
 
       Manage();
-    })()
+    })();
 
     window.addEventListener("offline", () => {
       render("Offline, waiting for network", App);
@@ -148,9 +152,15 @@ if (window.__TAURI_IPC__ == null) {
 
     async function Manage() {
       onAuthChange(auth, async (user) => {
-        const lastEmailSent = Number(localStorage.getItem("last_email_sent") || '0');
+        const lastEmailSent = Number(
+          localStorage.getItem("last_email_sent") || "0",
+        );
 
-        if (user && !user.e_verified && Date.now() > (lastEmailSent + 24 * 60 * 60 * 1000)) {
+        if (
+          user &&
+          !user.e_verified &&
+          Date.now() > lastEmailSent + 24 * 60 * 60 * 1000
+        ) {
           localStorage.setItem("last_email_sent", Date.now().toString());
 
           sendNotification({
@@ -169,11 +179,7 @@ if (window.__TAURI_IPC__ == null) {
           console.log("Signing out");
         }
 
-        console.log(user);
-
-        user
-          ? StoreLoad(Store, { auth })
-          : StoreLoad(Login as any, { auth });
+        user ? StoreLoad(Store, { auth }) : StoreLoad(Login as any, { auth });
       });
 
       await tryAutoLogin(auth);
@@ -197,7 +203,7 @@ if (window.__TAURI_IPC__ == null) {
       { auth }: AppProps,
     ) {
       const data = {
-        auth
+        auth,
       };
 
       root.render(

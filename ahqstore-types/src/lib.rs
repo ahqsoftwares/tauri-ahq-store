@@ -14,6 +14,11 @@ pub mod api;
 pub use api::*;
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct Commit {
+  pub sha: String
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Prefs {
   launch_app: bool,
   install_apps: bool,
@@ -42,6 +47,8 @@ impl Prefs {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Command {
+  GetSha(RefId),
+
   GetApp(RefId, AppId),
   InstallApp(RefId, AppId),
   UninstallApp(RefId, AppId),
@@ -78,6 +85,7 @@ pub enum ErrorType {
   AppUninstallError(RefId, AppId),
   PrefsError(RefId),
   PkgError(RefId),
+  GetSHAFailed(RefId),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -86,9 +94,12 @@ pub enum Response {
 
   Error(ErrorType),
 
+  SHAId(RefId, String),
+
   Disconnect(Reason),
 
   AppData(RefId, AppId, AHQStoreApplication),
+  AppDataUrl(RefId, AppId, String),
 
   ListApps(RefId, Vec<AppData>),
 

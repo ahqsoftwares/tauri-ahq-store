@@ -13,10 +13,10 @@ rust-version = "1.57"
 tauri-build = { version = "1.5.1", features = [] }
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1", features = ["derive"] }
+serde_json = "1.0.114"
+serde = { version = "1.0.197", features = ["derive"] }
 
-tauri = { version = "1.6.0", features = [
+tauri = { version = "1.6.1", features = [
   "os-all",
   "dialog-all",
   "fs-create-dir",
@@ -27,14 +27,13 @@ tauri = { version = "1.6.0", features = [
   "notification-all",
   "path-all",
   "system-tray",
-  "updater",
   "window-all",
   "wry",
 ] }
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 wry = "*"
 
-open = "5.0.0"
+open = "5.1.0"
 
 reqwest = { version = "*", features = ["blocking", "json"] }
 chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
@@ -42,7 +41,7 @@ lazy_static = "1.4.0"
 
 ahqstore-types = { path = "../ahqstore-types" }
 discord-rich-presence = "0.2.3"
-tokio = "*"
+tokio = "1.36.0"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "=0.39.0", features = [
@@ -51,9 +50,6 @@ windows = { version = "=0.39.0", features = [
   "Win32_UI_Shell",
 ] }
 is_elevated = "0.1.2"
-os-version = "0.2.0"
-minisign-verify = "0.2.1"
-base64 = "0.21.4"
 tauri-plugin-deep-link = { git = "https://github.com/FabianLars/tauri-plugin-deep-link" }
 async-recursion = "1.0.5"
 

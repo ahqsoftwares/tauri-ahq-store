@@ -1,16 +1,15 @@
 import { Auth } from "./auth";
 
-
 import { useState, useEffect } from "react";
 import { getCurrent } from "@tauri-apps/api/window";
 import fetchPrefs, { appData } from "./app/resources/utilities/preferences";
 
 import Login from "./Login/Login";
-import SignUp from "./Login/Signup"
+import SignUp from "./Login/Signup";
 import ForgotPwd from "./Login/Forgot";
 
 interface LoginHandlerProps {
-  auth: Auth
+  auth: Auth;
 }
 
 function Init(props: LoginHandlerProps) {
@@ -38,39 +37,41 @@ function Init(props: LoginHandlerProps) {
   const data = (() => {
     switch (type) {
       case "login":
-        return <Login
-          change={(page: string) => {
-            setType(page);
-          }}
-          auth={auth}
-          dark={prefs.dark}
-        />;
+        return (
+          <Login
+            change={(page: string) => {
+              setType(page);
+            }}
+            auth={auth}
+            dark={prefs.dark}
+          />
+        );
       case "signup":
-        return <SignUp
-          change={(page: string) => {
-            setType(page);
-          }}
-          auth={auth}
-          dark={prefs.dark}
-        />;
+        return (
+          <SignUp
+            change={(page: string) => {
+              setType(page);
+            }}
+            auth={auth}
+            dark={prefs.dark}
+          />
+        );
       case "reset":
-        return <ForgotPwd
-          change={(page: string) => {
-            setType(page);
-          }}
-          auth={auth}
-          dark={prefs.dark}
-        />;
+        return (
+          <ForgotPwd
+            change={(page: string) => {
+              setType(page);
+            }}
+            auth={auth}
+            dark={prefs.dark}
+          />
+        );
       default:
         return <></>;
     }
   })();
 
-  return (
-    <header className="login-background">
-      {data}
-    </header>
-  );
+  return <header className="login-background">{data}</header>;
 }
 
 export default Init;

@@ -1,12 +1,12 @@
 import { IconBaseProps, IconType } from "react-icons";
-import "./card.css"
+import "./card.css";
 
 interface CardProps {
-  title: string,
-  body?: string,
-  installed: boolean,
-  cannotRemove?: boolean,
-  Icon: IconType | ((props: IconBaseProps) => JSX.Element)
+  title: string;
+  body?: string;
+  installed: boolean;
+  cannotRemove?: boolean;
+  Icon: IconType | ((props: IconBaseProps) => JSX.Element);
 }
 
 export default function Card(props: CardProps) {
@@ -23,7 +23,12 @@ export default function Card(props: CardProps) {
         <h2>{props.body || "<-- OPTIONAL COMPONENT -->"}</h2>
 
         <div>
-          <button className={`dui-btn ${installed ? "dui-btn-error" : "dui-btn-primary"}`} disabled={cannotRemove}>{installed ? "Uninstall" : "Install"}</button>
+          <button
+            className={`dui-btn ${installed ? "dui-btn-error" : "dui-btn-primary"}`}
+            disabled={cannotRemove}
+          >
+            {installed ? "Uninstall" : "Install"}
+          </button>
         </div>
       </div>
     </div>

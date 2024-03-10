@@ -5,31 +5,42 @@ import { newServer } from "../../server";
 let commit_id = "";
 
 interface AuthorObject {
-  displayName: string;
-  email: string;
-  apps:
-  | []
-  | {
-    apps: string[];
-    ignored: string[];
-  };
+  u_id: number,
+  username: string,
+  pub_email: string,
+  linked_acc: string[],
+  display_name: string,
+  pf_pic?: string,
+  ahq_verified: boolean
 }
 
+type Str = string;
+
 interface appData {
-  author: string;
-  AuthorObject?: AuthorObject;
-  description: string;
-  download: string;
-  exe: string;
-  icon: string;
+  appId: Str,
+  appShortcutName: Str,
+  appDisplayName: Str,
+  authorId: Str,
+  downloadUrls: {
+    [key: number]: {
+      installerType: "WindowsZip" | "WindowsInstallerExe" | "WindowsInstallerMsi" | "WindowsUWPMsix" | "LinuxAppImage",
+      url: Str,
+    }
+  },
+  install: {
+    win32: unknown | undefined,
+    linux: unknown | undefined,
+    installType: "PerUser" | "Computer" | "Both",
+  },
+  displayImages: Str[],
+  description: Str,
+  icon: Str,
   repo: {
-    author: string;
-    repo: string;
-  };
-  title: string;
-  displayName: string;
-  version: string;
-  id: string;
+    author: Str,
+    repo: Str,
+  },
+  version: Str,
+  AuthorObject: AuthorObject
 }
 
 let cache: {
@@ -69,7 +80,7 @@ export async function fetchSearchData() {
   }
 }
 
-export async function fetchAuthor(id: string, partial = true) {
+export async function fetchAuthor(id: string) {
   let author = (
     await fetch(`${newServer}/users/${id}`, {
       method: "GET",
@@ -77,22 +88,22 @@ export async function fetchAuthor(id: string, partial = true) {
     })
   ).data as AuthorObject;
 
-  if (!partial) {
-    const apps = (
-      await fetch(
-        `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/apps_dev_${id}.json`,
-        {
-          method: "GET",
-          responseType: 1,
-        },
-      )
-    ).data as any;
+  // if (!partial) {
+  //   const apps = (
+  //     await fetch(
+  //       `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/apps_dev_${id}.json`,
+  //       {
+  //         method: "GET",
+  //         responseType: 1,
+  //       },
+  //     )
+  //   ).data as any;
 
-    author = {
-      ...author,
-      apps,
-    };
-  }
+  //   author = {
+  //     ...author,
+  //     apps,
+  //   };
+  // }
 
   return author;
 }
@@ -111,7 +122,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
       promises.push(
         (async () => {
           const app = await get_app(appId);
-          const authorObj = await fetchAuthor(app.author);
+          const authorObj = await fetchAuthor(app.authorId);
 
           const appData = {
             ...app,

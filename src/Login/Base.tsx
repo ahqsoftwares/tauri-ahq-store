@@ -1,23 +1,32 @@
-import { FormEventHandler } from "react"
+import { FormEventHandler } from "react";
 
 interface ScaffoldProps {
-  title: string,
-  subtitle: string,
-  dark: boolean,
-  onSubmit: FormEventHandler<HTMLFormElement>,
-  e?: string,
-  body: JSX.Element,
+  title: string;
+  subtitle: string;
+  dark: boolean;
+  onSubmit: FormEventHandler<HTMLFormElement>;
+  e?: string;
+  body: JSX.Element;
   button1: {
-    onClick: Function,
-    label: string
-  },
+    onClick: Function;
+    label: string;
+  };
   button2: {
-    onClick: Function,
-    label: string
-  }
+    onClick: Function;
+    label: string;
+  };
 }
 
-export default function ScaffoldLogin({ onSubmit, title, subtitle, dark, body, e, button1, button2 }: ScaffoldProps) {
+export default function ScaffoldLogin({
+  onSubmit,
+  title,
+  subtitle,
+  dark,
+  body,
+  e,
+  button1,
+  button2,
+}: ScaffoldProps) {
   return (
     <>
       <form
@@ -31,29 +40,27 @@ export default function ScaffoldLogin({ onSubmit, title, subtitle, dark, body, e
 
         <h1 className="line">{title}</h1>
         <h2 className="line">{subtitle}</h2>
-        <h3 className="text-2xl mt-2" style={{ color: "red" }}>{e}</h3>
+        <h3 className="text-2xl mt-2" style={{ color: "red" }}>
+          {e}
+        </h3>
 
         <div className="mt-auto w-[100%] flex flex-col items-center">
           {body}
         </div>
 
-        <div className={`mt-auto w-[100%] px-3 mb-2 flex ${dark ? "text-white" : ""}`}>
-          <button
-            onClick={() => button1.onClick()}
-            type="button"
-          >
+        <div
+          className={`mt-auto w-[100%] px-3 mb-2 flex ${dark ? "text-white" : ""}`}
+        >
+          <button onClick={() => button1.onClick()} type="button">
             {button1.label}
           </button>
           <div className="ml-auto"></div>
-          <button
-            onClick={() => button2.onClick()}
-            type="button"
-          >
+          <button onClick={() => button2.onClick()} type="button">
             {button2.label}
           </button>
           <div className="mb-2"></div>
         </div>
       </form>
     </>
-  )
+  );
 }

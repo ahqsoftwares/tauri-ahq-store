@@ -44,7 +44,7 @@ pub fn init_presence(window: tauri::Window) {
               .small_image("dev")
               .small_text("ahqsoftwares"),
           )
-          .buttons(vec![Button::new("Download", "https://ahq-store.web.app")]);
+          .buttons(vec![Button::new("Download", "https://ahqstore.github.io")]);
 
         if let Err(_) = rpc.set_activity(activity) {
           let _ = rpc.reconnect();

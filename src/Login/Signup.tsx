@@ -11,9 +11,7 @@ interface SignupProps {
 }
 
 export default function SignUpPage(props: SignupProps) {
-  const {
-    auth
-  } = props;
+  const { auth } = props;
 
   const [email, setEmail] = useState("");
   const [step, setStep] = useState(1);
@@ -26,10 +24,10 @@ export default function SignUpPage(props: SignupProps) {
     setErr(err);
   }
 
-  return <ScaffoldLogin
-    e={err}
-    onSubmit={
-      async () => {
+  return (
+    <ScaffoldLogin
+      e={err}
+      onSubmit={async () => {
         if (step == 2) {
           await signUp(auth, { email, pass_word: pwd })
             .then(([ok, msg]) => {
@@ -47,61 +45,61 @@ export default function SignUpPage(props: SignupProps) {
         } else {
           setStep((s) => s + 1);
         }
-      }
-    }
-    title="Sign Up"
-    subtitle="Create your new account"
-    body={
-      <>
-        <input
-          type={"email"}
-          autoComplete={"off"}
-          required={true}
-          placeholder={"Email ID"}
-          disabled={step === 2}
-          onChange={(e) => {
-            if (step === 1) {
-              setEmail(e.target.value);
-            } else {
-              e.target.value = email;
-            }
-          }}
-        />
-
-        {step > 1 ? (
+      }}
+      title="Sign Up"
+      subtitle="Create your new account"
+      body={
+        <>
           <input
-            type={"password"}
-            className="mt-3"
+            type={"email"}
+            autoComplete={"off"}
             required={true}
-            minLength={8}
-            placeholder={"Password"}
+            placeholder={"Email ID"}
+            disabled={step === 2}
             onChange={(e) => {
-              if (step === 2) {
-                setPwd(e.target.value);
+              if (step === 1) {
+                setEmail(e.target.value);
               } else {
-                e.target.value = pwd;
+                e.target.value = email;
               }
             }}
           />
-        ) : (
-          <></>
-        )}
 
-        <button className="button">Continue</button>
-      </>
-    }
-    button1={{
-      label: "Login",
-      onClick: () => {
-        props.change("login");
+          {step > 1 ? (
+            <input
+              type={"password"}
+              className="mt-3"
+              required={true}
+              minLength={8}
+              placeholder={"Password"}
+              onChange={(e) => {
+                if (step === 2) {
+                  setPwd(e.target.value);
+                } else {
+                  e.target.value = pwd;
+                }
+              }}
+            />
+          ) : (
+            <></>
+          )}
+
+          <button className="button">Continue</button>
+        </>
       }
-    }}
-    button2={{
-      label: "Forgot Password?",
-      onClick: () => {
-        props.change("reset");
-      }
-    }}
-    dark={props.dark}
-  />
+      button1={{
+        label: "Login",
+        onClick: () => {
+          props.change("login");
+        },
+      }}
+      button2={{
+        label: "Forgot Password?",
+        onClick: () => {
+          props.change("reset");
+        },
+      }}
+      dark={props.dark}
+    />
+  );
 }

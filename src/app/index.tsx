@@ -45,9 +45,7 @@ function Render(props: AppProps) {
 
   const { auth } = props;
   let [page, changePage] = useState("home"),
-    [dev, setDev] = useState(
-      auth.currentUser?.dev
-    ),
+    [dev, setDev] = useState(auth.currentUser?.dev),
     [admin, setIsAdmin] = useState(false),
     [prefs, setAccessPrefs] = useState<Prefs>({
       install_apps: false,
@@ -94,7 +92,7 @@ function Render(props: AppProps) {
 
     return () => {
       clearTimeout(timer);
-    }
+    };
   }, []);
   /*
         Dark Mode
@@ -111,7 +109,6 @@ function Render(props: AppProps) {
         launch_app: true,
       };
       const fullPrefs = await fetchPrefs();
-      console.log(fullPrefs);
 
       const {
         autoUpdate,
@@ -155,13 +152,16 @@ function Render(props: AppProps) {
       //Fetch Maps
       try {
         console.log("Fetching Maps");
-        const { data: map } = await get_map<{ [key: string]: Object }>();
+        const map = await get_map<{ [key: string]: Object }>();
+        console.log(map);
 
         setData({
           map,
         });
 
-        const { data: home } = await get_home<any>();
+        console.log("Home");
+        const home = await get_home();
+        console.log(home);
 
         setApps(home);
         setLoad(true);
@@ -281,31 +281,32 @@ function Render(props: AppProps) {
       app = <Library dark={dark} />;
       break;
     case "Dependencies":
-      app = <Package />
+      app = <Package />;
       break;
   }
 
   return (
     <>
-      {load === true ? (<>
-        <header
-          className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${
-            sidebar.includes("flex-row-reverse") ? "pr-2" : ""
-          } flex transition-all`}
-        >
-          <Nav
-            active={page}
-            home={(page: string) => changePage(page)}
-            dev={dev}
-            horizontal={sidebar.includes("flex-col")}
-          />
-          <div className="w-screen h-[98vh]">
-            <div className="flex flex-col w-[100%] h-[100%] justify-center">
-              {app}
+      {load === true ? (
+        <>
+          <header
+            className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${sidebar.includes("flex-row-reverse") ? "pr-2" : ""
+              } flex transition-all`}
+          >
+            <Nav
+              active={page}
+              home={(page: string) => changePage(page)}
+              dev={dev}
+              horizontal={sidebar.includes("flex-col")}
+            />
+            <div className="w-screen h-[98vh]">
+              <div className="flex flex-col w-[100%] h-[100%] justify-center">
+                {app}
+              </div>
             </div>
-          </div>
-        </header>
-      </>) : (
+          </header>
+        </>
+      ) : (
         <Loading info="Almost there!" />
       )}
     </>

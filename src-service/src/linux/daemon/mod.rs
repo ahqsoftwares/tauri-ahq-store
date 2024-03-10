@@ -1,14 +1,20 @@
-use std::{sync::{Arc, Mutex}, thread, collections::HashMap, io::{Read, Write}};
+use std::{
+  collections::HashMap,
+  io::{Read, Write},
+  sync::{Arc, Mutex},
+  thread,
+};
 
-use lazy_static::lazy_static;
 use interprocess::local_socket::LocalSocketStream;
+use lazy_static::lazy_static;
 
-use super::utils::{sleep, log, warn, now};
+use super::utils::{log, now, sleep, warn};
 
 mod worker;
 
 lazy_static! {
-  static ref CONNECTIONS: Arc<Mutex<HashMap<u64, LocalSocketStream>>> = Arc::new(HashMap::new().into());
+  static ref CONNECTIONS: Arc<Mutex<HashMap<u64, LocalSocketStream>>> =
+    Arc::new(HashMap::new().into());
 }
 
 static mut DAEMON_RUNNING: bool = false;
@@ -30,7 +36,8 @@ fn start_daemon() {
       let connections = CONNECTIONS.clone();
 
       if let Ok(mut conn) = connections.try_lock() {
-        let values: Vec<(u64, String)> = conn.iter_mut()
+        let values: Vec<(u64, String)> = conn
+          .iter_mut()
           .map(|(id, reader)| {
             let mut read_value = String::new();
 
@@ -42,9 +49,7 @@ fn start_daemon() {
 
             (*id, read_value)
           })
-          .filter(|(_, f)| {
-            f != ""
-          })
+          .filter(|(_, f)| f != "")
           .collect();
 
         // Unlock the Mutex
@@ -65,7 +70,7 @@ fn start_daemon() {
                 let _ = x.write_all(data.as_bytes());
                 let _ = x.flush();
               }
-            };
+            }
 
             for (key, data) in heartbeats.iter() {
               if data > &30 {
@@ -102,7 +107,10 @@ pub fn accept(stream: LocalSocketStream, turns: u8) -> Option<()> {
   }
 
   if let Ok(mut conn) = CONNECTIONS.try_lock() {
-    let num = unsafe {CUR_VAL += 1; CUR_VAL};
+    let num = unsafe {
+      CUR_VAL += 1;
+      CUR_VAL
+    };
     conn.insert(num, stream);
     Some(())
   } else {

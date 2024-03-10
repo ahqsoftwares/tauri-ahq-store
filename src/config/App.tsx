@@ -26,7 +26,7 @@ function App(props: { info: string }) {
     "Made with tauri and rust!",
     "Open Sourced Software!",
     "The work of AHQ Softwares",
-    "ahq-store.web.app",
+    "ahqstore.github.io",
     `${version !== "" ? `v${version}` : ""}`,
   ];
 

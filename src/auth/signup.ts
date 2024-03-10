@@ -7,7 +7,10 @@ export interface SignupData {
   pass_word: string;
 }
 
-export async function signUp(auth: Auth, data: SignupData): Promise<[boolean, string]> {
+export async function signUp(
+  auth: Auth,
+  data: SignupData,
+): Promise<[boolean, string]> {
   if (auth.loggedIn) {
     return [false, "Already logged in"];
   }

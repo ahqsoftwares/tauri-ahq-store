@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { Auth, User, updateProfile } from "../../auth";
 
-
 //packages
 import Toast from "../resources/api/toast";
 import getWindows, {
@@ -49,7 +48,6 @@ interface InitProps {
 }
 
 export default function Init(props: InitProps) {
-
   const [user, setUser] = useState(props.auth.currentUser as User),
     [show, setShow] = useState(false),
     [showOtherUserOptions, setOUO] = useState(false),
@@ -63,11 +61,13 @@ export default function Init(props: InitProps) {
     getVersion()
       .then(setVer)
       .catch(() => { });
-    
+
     const ver = getWindowsName();
     setOs(ver);
     if (ver == "linux") {
-      invoke<string>("get_linux_distro").then((ver) => setLinuxVer(ver.replace(/"/g, "")));
+      invoke<string>("get_linux_distro").then((ver) =>
+        setLinuxVer(ver.replace(/"/g, "")),
+      );
     }
   }, []);
 
@@ -215,7 +215,9 @@ export default function Init(props: InitProps) {
             title="Alpha Build"
             description="You are currently in a alpha build; Click to reload app"
             Icon={HiWrenchScrewdriver}
-            onClick={() => { window.location.reload(); }}
+            onClick={() => {
+              window.location.reload();
+            }}
             active={false}
             noCheckbox={true}
           />
@@ -280,7 +282,7 @@ export default function Init(props: InitProps) {
             description={`AHQ Store v${ver} (Build ${versionToBuild(ver)})`}
             Icon={"/logo192.png"}
             onClick={() => {
-              openUrl("https://ahq-store.web.app");
+              openUrl("https://ahqstore.github.io");
             }}
             disabled={true}
             active={true}

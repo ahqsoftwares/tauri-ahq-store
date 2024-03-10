@@ -22,5 +22,6 @@ pub async fn ws_send(ipc: &mut &'static mut ServiceIpc, val: &[u8]) {
     data.push(*byte);
   }
 
+  println!("{:?}", &data);
   let _ = ipc.try_write(&data);
 }

@@ -12,22 +12,35 @@ export default function AppCard(props: {
   dark: boolean;
 }) {
   const [appData, setAppData] = useState<appData>({
-    author: "",
-    description: "",
-    displayName: "The component is loading...",
-    download: "",
-    exe: "",
+    authorId: "",
+    description: "The component is loading...",
+    downloadUrls: [],
+    appId: "%temp%",
     icon: packageImg,
     repo: {
       author: "",
       repo: "",
     },
-    title: "Loading...",
+    appDisplayName: "Loading...",
     version: "",
-    id: "%temp%",
+    appShortcutName: "",
+    displayImages: [],
+    install: {
+      installType: "Both",
+      linux: undefined,
+      win32: undefined,
+    },
+    AuthorObject: {
+      ahq_verified: false,
+      display_name: "",
+      linked_acc: [],
+      pub_email: "",
+      u_id: 0,
+      username: ""
+    }
   });
 
-  const { displayName, title, description, icon, AuthorObject } = appData;
+  const { appDisplayName, description, icon, AuthorObject } = appData;
 
   useEffect(() => {
     (async () => {
@@ -45,7 +58,7 @@ export default function AppCard(props: {
       style={{ cursor: "pointer" }}
       onClick={props.onClick as React.MouseEventHandler<HTMLDivElement>}
     >
-      {title === "Loading..." ? (
+      {appDisplayName === "Loading..." ? (
         <div
           className={`mx-auto mt-[1rem] mb-[0.75rem] ${
             props.dark ? "text-white" : ""
@@ -57,13 +70,13 @@ export default function AppCard(props: {
         <img className="card-img" src={icon} alt="Logo"></img>
       )}
 
-      <h1 className="card-title">{displayName}</h1>
+      <h1 className="card-title">{appDisplayName}</h1>
 
       <div className="card-description">{description}</div>
 
       <div className="card-footer">
         <button className="text-blue-500 text-2xl" style={{ minWidth: "95%" }}>
-          {AuthorObject?.displayName}
+          {AuthorObject.display_name}
         </button>
       </div>
     </div>

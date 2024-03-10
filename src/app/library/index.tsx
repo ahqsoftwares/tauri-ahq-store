@@ -92,12 +92,12 @@ export default function Library(props: LibraryProps) {
               {status === "Check for Updates"
                 ? "You are up to date!"
                 : status === "Checking..."
-                ? "Checking for updates..."
-                : status === "none"
-                ? "Your apps may not be up to date!"
-                : `${apps.length} update${
-                    apps.length > 1 ? "s" : ""
-                  } available`}
+                  ? "Checking for updates..."
+                  : status === "none"
+                    ? "Your apps may not be up to date!"
+                    : `${apps.length} update${
+                        apps.length > 1 ? "s" : ""
+                      } available`}
             </h1>
             <button
               className="dui-btn dui-btn-primary ml-auto my-auto"

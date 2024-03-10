@@ -28,7 +28,6 @@ pub struct InstallerOptionsWin32 {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Win32Deps {
-  VisualCpp,
   AHQStoreAPI,
   Node21,
   Node18,

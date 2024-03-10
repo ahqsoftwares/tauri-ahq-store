@@ -13,7 +13,6 @@ Firebase API
 */
 import { Auth, User, deleteAcc, logOut, updateProfile } from "../../auth";
 
-
 /*Icons
  */
 import { BsPen, BsPenFill } from "react-icons/bs";
@@ -116,9 +115,7 @@ export default function Init(props: UserProps) {
         setUser(Loading);
         setUser(await fetchUser(auth?.currentUser?.u_id.toString()));
         setAlt(
-          auth.currentUser?.pfp
-            ? "Click to edit picture"
-            : "Click to upload",
+          auth.currentUser?.pfp ? "Click to edit picture" : "Click to upload",
         );
       }
     })();
@@ -166,7 +163,10 @@ export default function Init(props: UserProps) {
             if (password === false) {
               setpPopop(true);
             } else {
-              verifyUserPassword(auth?.currentUser?.u_id.toString() || "", password)
+              verifyUserPassword(
+                auth?.currentUser?.u_id.toString() || "",
+                password,
+              )
                 .then((ok) => {
                   if (!ok) {
                     return setpPopop(true);
@@ -200,11 +200,7 @@ export default function Init(props: UserProps) {
 
   return (
     <>
-      <PopUp
-        shown={showDelete}
-        width="30rem"
-        height="40rem"
-      >
+      <PopUp shown={showDelete} width="30rem" height="40rem">
         <DeleteAccount
           auth={auth}
           cancel={() => {
@@ -229,7 +225,9 @@ export default function Init(props: UserProps) {
                 (
                   document.getElementById("accpwdhost") as HTMLInputElement
                 ).value = "";
-                fetchUser(auth?.currentUser?.u_id.toString() as string).then(setUser);
+                fetchUser(auth?.currentUser?.u_id.toString() as string).then(
+                  setUser,
+                );
                 setpPopop(false);
               }}
             >
@@ -498,16 +496,12 @@ function DeleteAccount(props: DeleteAccountProps) {
   const ManageDelete: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     setText(`⏲️;;true`);
-    await checkAuth(
-      auth.currentUser?.email || "",
-      pass
-    )
+    await checkAuth(auth.currentUser?.email || "", pass)
       .then((ok) => {
         if (ok) {
           reverse("");
           setStep(1);
-        } else
-          reverse("Invalid username/password");
+        } else reverse("Invalid username/password");
       })
       .catch((e) => {
         let msg = e.message
@@ -536,7 +530,7 @@ function DeleteAccount(props: DeleteAccountProps) {
     if (!succ) {
       sendNotification({
         title: "Error",
-        body: "Unable to delete account!"
+        body: "Unable to delete account!",
       });
     }
     logOut(auth);
@@ -696,9 +690,7 @@ function ChangeAccountName(props: AccountNameProps) {
             maxLength={32}
             minLength={6}
             value={value}
-            onChange={(e) =>
-              setValue(e.target.value)
-            }
+            onChange={(e) => setValue(e.target.value)}
             required
           ></input>
 

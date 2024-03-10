@@ -22,16 +22,16 @@ export default defineConfig(({ mode }) => ({
           const path = normalize(relativeSourcePath);
           return path.includes("node_modules") || path.includes("src-tauri");
         },
-        cache: true
-      }
-    }
+        cache: true,
+      },
+    },
   },
   server: {
     port: 3000,
     strictPort: true,
     watched: {
-      ignored: "**/target/**"
-    }
+      ignored: "**/target/**",
+    },
   },
   plugins: [
     reactRefresh(),

@@ -1,3 +1,4 @@
+use ahqstore_types::Commit;
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};
 use std::{fs::File, io::Write};
@@ -15,6 +16,7 @@ use crate::windows::utils::write_log;
 use super::unzip;
 
 static URL: &str = "https://ahqstore-server.onrender.com";
+pub static mut GH_URL: Option<String> = None;
 
 lazy_static! {
   static ref DOWNLOADER: Client = ClientBuilder::new()
@@ -30,7 +32,26 @@ lazy_static! {
 
     static ref NODE21: &'static str = "https://nodejs.org/dist/v21.4.0/node-v21.4.0-win-x64.zip";
     static ref NODE20: &'static str = "https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip";
-    static ref VC: &'static str = "https://aka.ms/vs/17/release/vc_redist.x64.exe";
+}
+
+pub fn init() {
+  tokio::spawn(async {
+    loop {
+      if let Ok(resp) = CLIENT
+        .get("https://api.github.com/repos/ahqstore/apps/commits")
+        .send()
+        .await
+      {
+        if let Ok(mut data) = resp.json::<Vec<Commit>>().await {
+          let data = data.remove(0);
+          #[cfg(debug_assertions)]
+          println!("SHA: {}", &data.sha);
+          unsafe { GH_URL = Some(data.sha) }
+        }
+      }
+      tokio::time::sleep(Duration::from_secs(1800)).await;
+    }
+  });
 }
 
 pub async fn keep_alive() -> bool {
@@ -138,41 +159,36 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
   }
 }
 
+pub async fn get_app_url(ref_id: RefId, app_id: AppId) -> Response {
+    let url = unsafe {
+      if let Some(x) = &GH_URL {
+        x
+      } else {
+        return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
+      }
+    };
+    let url = format!("https://rawcdn.githack.com/ahqstore/apps/{}/db/apps/{}.json", &url, &app_id);
+  
+    Response::AppDataUrl(ref_id, app_id, url)
+}
+
 pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
-  let url = format!("{}/apps/id/{app_id}", &URL);
+  let url = unsafe {
+    if let Some(x) = &GH_URL {
+      x
+    } else {
+      return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
+    }
+  };
+  let url = format!("https://rawcdn.githack.com/ahqstore/apps/{}/db/apps/{}.json", &url, &app_id);
 
   if let Some(x) = CLIENT.get(url).send().await.ok() {
     if let Some(x) = x.json::<AHQStoreApplication>().await.ok() {
+      println!("App: {:?}", &x);
       return Response::AppData(ref_id, app_id, x);
     }
   }
   Response::Error(ErrorType::GetAppFailed(ref_id, app_id))
-}
-
-pub async fn install_vcpp() -> Option<()> {
-  let file_path = get_file_on_root("vc.exe");
-
-  let mut file = File::create(&file_path).ok()?;
-
-  write_download(&mut file, &VC).await?;
-
-  use std::fs::remove_file;
-  use std::process::Command as SysCmd;
-
-  let true = SysCmd::new(&file_path)
-    .args(["/install", "/passive", "/norestart"])
-    .spawn()
-    .ok()?
-    .wait()
-    .ok()?
-    .success()
-  else {
-    remove_file(&file_path).ok()?;
-
-    return None;
-  };
-
-  remove_file(&file_path).ok()
 }
 
 pub async fn install_node(version: &str) -> Option<()> {

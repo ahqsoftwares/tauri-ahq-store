@@ -10,8 +10,9 @@ use crate::windows::utils::{get_iprocess, write_log, ws_send};
 
 use super::{
   send_term,
-  service::{download_app, get_app, install_app},
+  service::{download_app, get_app_url, install_app},
 };
+
 
 pub fn get_install_daemon() -> Sender<Command> {
   let (tx, rx) = channel();
@@ -34,7 +35,7 @@ pub fn get_install_daemon() -> Sender<Command> {
         for cmd in pending {
           match cmd {
             Command::GetApp(ref_id, app_id) => {
-              let app_data = get_app(ref_id, app_id).await;
+              let app_data = get_app_url(ref_id, app_id).await;
               let x = Response::as_msg(app_data);
               ws_send(&mut ws, &x).await;
 

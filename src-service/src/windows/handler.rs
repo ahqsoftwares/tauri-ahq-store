@@ -93,6 +93,7 @@ pub async fn launch() {
             break 'a;
           }
           match pipe.try_read(&mut val) {
+            Ok(0) => {}
             Ok(d) => {
               println!("Read {d}");
               let total = usize::from_be_bytes(val);

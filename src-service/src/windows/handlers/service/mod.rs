@@ -44,7 +44,6 @@ pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
 
   for dep in app.get_platform_deps()? {
     match dep {
-      Win32Deps::VisualCpp => install_vcpp().await?,
       Win32Deps::Node21 => install_node("v21").await?,
       Win32Deps::Node18 => install_node("v18").await?,
       _ => {}

@@ -22,13 +22,21 @@ lazy_static! {
 }
 
 pub fn get_install() -> String {
-
   let mut path = home_dir().unwrap();
   #[cfg(windows)]
   path.push("ahqstore.msi");
 
   #[cfg(not(windows))]
   path.push("ahqstore.deb");
+
+  path.to_str().unwrap().to_string()
+}
+
+#[cfg(windows)]
+pub fn get_vc() -> String {
+  let mut path = home_dir().unwrap();
+  
+  path.push("vc.msi");
 
   path.to_str().unwrap().to_string()
 }

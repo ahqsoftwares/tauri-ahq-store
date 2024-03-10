@@ -16,6 +16,8 @@ use self::service::*;
 mod daemon;
 mod service;
 
+pub use self::service::init;
+
 lazy_static! {
   static ref GET_INSTALL_DAEMON: Sender<Command> = daemon::get_install_daemon();
 }
@@ -33,6 +35,19 @@ pub fn handle_msg(data: String) {
       write_log(&data);
       if let Some(x) = Command::try_from(&data) {
         match x {
+          Command::GetSha(ref_id) => {
+            println!("GetSha: {}", &ref_id);
+            unsafe {
+              let val = if let Some(x) = &GH_URL {
+                Response::as_msg(Response::SHAId(ref_id, x.into()))
+              } else {
+                Response::as_msg(Response::Error(ErrorType::GetSHAFailed(ref_id)))
+              };
+
+              ws_send(&mut ws, &val).await;
+              send_term(ref_id).await;
+            }
+          }
           Command::GetApp(ref_id, app_id) => {
             let _ = GET_INSTALL_DAEMON.send(Command::GetApp(ref_id, app_id));
           }

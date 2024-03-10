@@ -17,17 +17,14 @@ use minisign_verify::{Error, PublicKey, Signature};
 use crate::encryption::{decrypt, encrypt};
 
 //crates
-use windows::Win32::{
-  Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE},
-  System::Com::{CoCreateInstance, CLSCTX_SERVER},
-  UI::Shell::{ITaskbarList4, TaskbarList, TBPFLAG},
-};
+use windows::{core::PCWSTR, Win32::{
+  Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE}, System::Com::{CoCreateInstance, CLSCTX_SERVER}, UI::{Shell::{ITaskbarList4, TaskbarList, TBPFLAG}, WindowsAndMessaging::HICON}
+}};
 
 use std::env::current_exe;
 use std::panic::catch_unwind;
 use std::time::Duration;
 //std
-use os_version::Windows;
 use std::os::windows::process::CommandExt;
 use std::{
   fs,
@@ -138,11 +135,12 @@ pub fn main() {
       }
 
       {
+        thread::sleep(Duration::from_secs(1));
         let hwnd = window_clone_2.hwnd().unwrap();
         
         unsafe {
           //2: Mica, 3: Acrylic, 4: Mica Alt
-          let attr = 4;
+          let attr = 2;
           let _ = DwmSetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE(38), &attr as *const _ as _, std::mem::size_of_val(&attr) as u32);
         }
       }
@@ -240,7 +238,8 @@ pub fn main() {
       open,
       set_progress,
       is_an_admin,
-      is_development
+      is_development,
+      set_overlay
     ])
     .menu(if cfg!(target_os = "macos") {
       tauri::Menu::os_default(&context.package_info().name)
@@ -251,6 +250,16 @@ pub fn main() {
     .unwrap();
 
   let window = tauri::Manager::get_window(&app, "main").unwrap();
+
+  unsafe {
+    let hwnd = window.clone().hwnd().unwrap();
+
+    let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+    let icon = HICON(32518);
+    
+    taskbar.SetOverlayIcon(hwnd, icon, PCWSTR::from_raw("Test" as *const _ as _)).unwrap();
+  }
 
   {
     let window = window.clone();
@@ -433,8 +442,18 @@ fn sys_handler() -> String {
     .replace("\\Windows", "")
 }
 
-pub fn get_system_dir() -> String {
-  sys_handler()
+#[tauri::command(async)]
+fn set_overlay(set: bool) {
+  println!("Called {}", &set);
+  unsafe {
+    let hwnd = WINDOW.clone().unwrap().hwnd().unwrap();
+
+    let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+    let icon = HICON(32518);
+    
+    taskbar.SetOverlayIcon(hwnd, icon, PCWSTR::from_raw("Test" as *const _ as _)).unwrap();
+  }
 }
 
 #[tauri::command(async)]
@@ -459,20 +478,11 @@ fn set_progress(state: i32, c: Option<u64>, t: Option<u64>) {
 }
 
 #[tauri::command(async)]
-fn get_windows() -> Option<String> {
-  match Windows::detect() {
-    Ok(win) => {
-      if win.version == String::from("10") {
-        Some(if is_windows_11() {
-          11.to_string()
-        } else {
-          10.to_string()
-        })
-      } else {
-        Some(win.version)
-      }
-    }
-    Err(_) => None,
+fn get_windows() -> &'static str {
+  if is_windows_11() {
+    "11"
+  } else {
+    "10"
   }
 }
 

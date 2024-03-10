@@ -3,8 +3,8 @@ use std::fs::remove_file;
 use interprocess::local_socket::LocalSocketListener;
 
 pub mod auth;
-pub mod utils;
 mod daemon;
+pub mod utils;
 
 use utils::{log, warn};
 

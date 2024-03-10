@@ -8,10 +8,7 @@ import {
 } from "react-icons/ai";
 import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
 import { IoLibraryOutline, IoLibrarySharp } from "react-icons/io5";
-import {
-  BiPackage,
-  BiSolidPackage
-} from "react-icons/bi";
+import { BiPackage, BiSolidPackage } from "react-icons/bi";
 
 import { getCurrent } from "@tauri-apps/api/window";
 
@@ -102,7 +99,10 @@ export default function Nav(props: prop) {
         )}
       </button>
 
-      <button className={`n-item ${g}`} onClick={() => changePage("Dependencies")}>
+      <button
+        className={`n-item ${g}`}
+        onClick={() => changePage("Dependencies")}
+      >
         {g === "active" ? (
           <BiSolidPackage size={"2.5em"} />
         ) : (

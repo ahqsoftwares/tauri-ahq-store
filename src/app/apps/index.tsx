@@ -23,6 +23,7 @@ StyleSheets
 import "./index.css";
 import { getData } from "../resources/utilities/database";
 import { genAuth } from "../../auth";
+import { FaInfoCircle } from "react-icons/fa";
 
 /*
 Interfaces
@@ -45,8 +46,8 @@ export default function Apps(props: AppsProps) {
   function Fix() {
     const element = document.querySelector("#search-result") as any;
     if (element) {
-      element.style = `width: ${document.querySelector("#get-width")
-        ?.clientWidth}px;`;
+      element.style = `width: ${document.querySelector("#get-width")?.clientWidth
+        }px;`;
     }
   }
 
@@ -194,9 +195,10 @@ export default function Apps(props: AppsProps) {
 
           <div className="appss">
             {apps.length === 0 ? (
-              <>
-                <h1 className="apps-text">Loading Your Apps...</h1>
-              </>
+              <div className={`flex justify-center text-center items-center mt-9 ${dark ? "text-yellow-400" : "text-yellow-600"}`}>
+                <FaInfoCircle size={"3em"} />
+                <h1 className="ml-2 apps-text">No apps!</h1>
+              </div>
             ) : (
               <></>
             )}

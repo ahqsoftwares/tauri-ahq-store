@@ -15,12 +15,17 @@ export default function Package() {
     <div className="menu">
       <div role="alert" className="w-[98%] dui-alert dui-alert-warning mt-2">
         <MdWarning size={"1.5rem"} />
-        <span>The required components will be automatically installed when an app needs them</span>
+        <span>
+          The required components will be automatically installed when an app
+          needs them
+        </span>
       </div>
 
       <div role="alert" className="w-[98%] dui-alert dui-alert-error mt-2">
         <MdError size={"1.5rem"} />
-        <span>Uninstalling any of the below ones might break apps or even your os</span>
+        <span>
+          Uninstalling any of the below ones might break apps or even your os
+        </span>
       </div>
 
       <div className="px-2 py-5 w-[98%] grid gap-3 grid-cols-3">

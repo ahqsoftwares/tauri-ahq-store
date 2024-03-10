@@ -21,6 +21,7 @@ pub struct ReleaseData {
   pub service: String,
   pub deb: String,
   pub app_image: String,
+  pub vc: &'static str
 }
 
 pub fn fetch(install: &InstallMode) -> (Client, ReleaseData) {
@@ -53,6 +54,8 @@ pub fn fetch(install: &InstallMode) -> (Client, ReleaseData) {
   };
 
   let mut data = ReleaseData::default();
+
+  data.vc = "https://aka.ms/vs/17/release/vc_redist.x64.exe";
 
   release.assets.into_iter().for_each(|x| {
     if x.name.ends_with(".msi") {

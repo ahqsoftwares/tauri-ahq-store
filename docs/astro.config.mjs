@@ -5,7 +5,7 @@ import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://ahq-store.web.app",
+  site: "https://ahqstore.github.io",
   integrations: [
     starlight({
       favicon: "/favicon.png",

@@ -3,17 +3,17 @@ import { newServer } from "../app/server";
 import { invoke } from "@tauri-apps/api/tauri";
 
 export interface Auth {
-  loggedIn: boolean,
-  onAuthChange: ((auth?: User) => void)[],
-  currentUser?: User,
+  loggedIn: boolean;
+  onAuthChange: ((auth?: User) => void)[];
+  currentUser?: User;
 }
 
 export interface User {
-  email: string,
-  e_verified?: boolean,
-  u_id: number,
-  display_name?: string,
-  pfp?: string,
+  email: string;
+  e_verified?: boolean;
+  u_id: number;
+  display_name?: string;
+  pfp?: string;
   dev: boolean;
 }
 
@@ -21,13 +21,13 @@ export function genAuth(): Auth {
   return {
     loggedIn: false,
     onAuthChange: [],
-  }
+  };
 }
 
 export function logOut(auth: Auth) {
   auth.loggedIn = false;
   auth.currentUser = undefined;
-  auth.onAuthChange.forEach(cb => cb(undefined));
+  auth.onAuthChange.forEach((cb) => cb(undefined));
 }
 
 export interface UpdateVal {
@@ -37,7 +37,10 @@ export interface UpdateVal {
   dev?: boolean;
 }
 
-export async function updateProfile(user: Auth, data: UpdateVal): Promise<[boolean, string]> {
+export async function updateProfile(
+  user: Auth,
+  data: UpdateVal,
+): Promise<[boolean, string]> {
   const pass = localStorage.getItem("password") || "[]";
   const passDe = await invoke<string>("decrypt", {
     encrypted: JSON.parse(pass),
@@ -50,10 +53,10 @@ export async function updateProfile(user: Auth, data: UpdateVal): Promise<[boole
       uid: user.currentUser?.u_id,
       pass: passDe,
     },
-    body: Body.json(data)
+    body: Body.json(data),
   });
 
-  return [ok, reason]
+  return [ok, reason];
 }
 
 export async function deleteAcc(user: User) {
@@ -68,7 +71,7 @@ export async function deleteAcc(user: User) {
     headers: {
       uid: user.email,
       pass: passDe,
-    }
+    },
   });
   return ok;
 }
