@@ -17,8 +17,6 @@ export async function tryAutoLogin(auth: Auth) {
     encrypted: pwd,
   }).catch(() => "");
 
-  console.log(email, pass);
-
   await login(auth, email, pass);
 }
 
@@ -34,10 +32,8 @@ export async function login(
       uid: email,
       pass: password,
     },
-    timeout: 5
+    timeout: 10
   });
-
-  console.log(ok, data);
 
   if (ok) {
     auth.currentUser = data;

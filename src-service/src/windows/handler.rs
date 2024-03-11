@@ -95,7 +95,6 @@ pub async fn launch() {
           match pipe.try_read(&mut val) {
             Ok(0) => {}
             Ok(d) => {
-              println!("Read {d}");
               let total = usize::from_be_bytes(val);
 
               let mut buf: Vec<u8> = Vec::new();

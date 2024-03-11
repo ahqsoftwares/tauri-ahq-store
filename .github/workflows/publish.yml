@@ -292,33 +292,3 @@ jobs:
               release_id: process.env.R_ID,
               draft: false
             });
-
-  build_and_deploy:
-    needs: [undraft-release]
-    name: Build Docs Site
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: latest
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-
-      - name: Build
-        run: pnpm install; cd docs; pnpm install; pnpm prebuild; pnpm build; cd ..
-        env:
-          CI: false
-
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_AHQ_STORE }}"
-          channelId: live
-          projectId: ahq-store

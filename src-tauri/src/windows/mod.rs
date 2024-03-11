@@ -7,12 +7,6 @@ mod ws;
 
 use crate::rpc;
 
-//utilities
-#[cfg(not(debug_assertions))]
-use base64::{self, Engine};
-#[cfg(not(debug_assertions))]
-use minisign_verify::{Error, PublicKey, Signature};
-
 //modules
 use crate::encryption::{decrypt, encrypt};
 
@@ -21,7 +15,6 @@ use windows::{core::PCWSTR, Win32::{
   Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE}, System::Com::{CoCreateInstance, CLSCTX_SERVER}, UI::{Shell::{ITaskbarList4, TaskbarList, TBPFLAG}, WindowsAndMessaging::HICON}
 }};
 
-use std::env::current_exe;
 use std::panic::catch_unwind;
 use std::time::Duration;
 //std
@@ -373,62 +366,8 @@ fn check_update(
   update_available
 }
 
-#[cfg(not(debug_assertions))]
-fn verify_signature(data: Vec<u8>, release_signature: &str) -> Result<bool, Error> {
-  let pub_key = base64_to_string("dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCNUQyRTdGQUVFN0FDQTQKUldTa3JPZXVmeTVkbTBUL0JjSnNjLytQOHlyYkRnakJ2Q3dnYW51WTJIRVVCL1psWFNLT0pLSkgK").unwrap_or("".to_string());
-  let key_verifier = PublicKey::decode(&pub_key)?;
-
-  let signature_decoded = base64_to_string(release_signature).unwrap_or("".to_string());
-  let signature = Signature::decode(&signature_decoded)?;
-
-  key_verifier.verify(&data, &signature, true)?;
-  Ok(true)
-}
-
 #[tauri::command(async)]
 fn install_update() {
-  let sys_dir = sys_handler();
-  let path = UPDATER_PATH.replace("%root%", sys_dir.as_str());
-
-  Command::new("powershell")
-    .creation_flags(0x08000000)
-    .args([
-      "Expand-Archive",
-      format!("-Path \"{}\\updater.zip\"", path.clone()).as_str(),
-      format!("-DestinationPath \"{}\"", path.clone()).as_str(),
-      "-Force",
-    ])
-    .spawn()
-    .unwrap()
-    .wait()
-    .unwrap();
-
-  let files = std::fs::read_dir(path.clone()).unwrap();
-
-  let mut app_executable = String::new();
-  for file in files {
-    let name = file.unwrap().file_name();
-    let file_name = name.to_str().unwrap_or("");
-
-    if file_name.ends_with(".msi") {
-      app_executable = format!("\"{}\\{}\"", path.clone(), file_name);
-    }
-  }
-
-  let mut current_exe_arg = std::ffi::OsString::new();
-  current_exe_arg.push("\"");
-  current_exe_arg.push(current_exe().unwrap());
-  current_exe_arg.push("\"");
-
-  Command::new("powershell")
-    .creation_flags(0x08000000)
-    .args(["Start-Process", "-Wait"])
-    .arg(app_executable)
-    .arg("/qb+; start-process")
-    .arg(current_exe_arg)
-    .spawn()
-    .unwrap();
-
   exit(0);
 }
 

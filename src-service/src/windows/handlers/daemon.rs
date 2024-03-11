@@ -43,13 +43,13 @@ pub fn get_install_daemon() -> Sender<Command> {
             }
             Command::InstallApp(ref_id, app_id) => {
               if let Some(x) = download_app(ref_id, &app_id).await {
-                let _ = ws.try_write(&Response::as_msg(Response::Installing(
+                ws_send(&mut ws, &Response::as_msg(Response::Installing(
                   ref_id,
                   app_id.clone(),
-                )));
+                ))).await;
 
                 install_app(x).await;
-                let _ = ws.try_write(&Response::as_msg(Response::Installed(ref_id, app_id)));
+                ws_send(&mut ws, &Response::as_msg(Response::Installed(ref_id, app_id))).await;
               } else {
                 write_log("Error downloading");
               }

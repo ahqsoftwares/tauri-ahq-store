@@ -74,8 +74,6 @@ impl WsConnection {
             Ok(8) => {
               let size = usize::from_be_bytes(len);
 
-              println!("{}", &size);
-
               let mut data: Vec<u8> = vec![];
               let mut bit = [0u8];
 
