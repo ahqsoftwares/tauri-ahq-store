@@ -83,15 +83,21 @@ pub async fn launch() {
         println!("Unauthenticated");
         let _ = pipe.disconnect();
       } else {
+        let mut ext: u8 = 0;
         'a: loop {
           let mut val: [u8; 8] = [0u8; 8];
           //let mut buf: Box<[u8]>;
 
-          if !authenticate_process(process_id as usize, false) {
-            println!("Unauthenticated");
-            let _ = pipe.disconnect();
-            break 'a;
+          ext += 1;
+          if ext >= 20 {
+            ext = 0;
+            if !authenticate_process(process_id as usize, false) {
+              println!("Unauthenticated");
+              let _ = pipe.disconnect();
+              break 'a;
+            }
           }
+
           match pipe.try_read(&mut val) {
             Ok(0) => {}
             Ok(d) => {
@@ -135,9 +141,10 @@ pub async fn launch() {
               }
             },
           }
-          tokio::time::sleep(Duration::from_nanos(30)).await;
+          tokio::time::sleep(Duration::from_millis(100)).await;
         }
       }
     }
+    tokio::time::sleep(Duration::from_millis(100)).await;
   }
 }

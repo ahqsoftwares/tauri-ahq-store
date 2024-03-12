@@ -141,7 +141,7 @@ pub async fn launch() {
                   break 'a;
                 }
               }
-              tokio::time::sleep(Duration::from_nanos(1)).await;
+              tokio::time::sleep(Duration::from_millis(100)).await;
             }
           });
 
@@ -162,12 +162,13 @@ pub async fn launch() {
                   standard_remove();
                   break;
                 }
-                tokio::time::sleep(Duration::from_millis(1000)).await;
+                tokio::time::sleep(Duration::from_millis(100)).await;
               }
             }
           });
         }
       }
     }
+    tokio::time::sleep(Duration::from_millis(100)).await;
   }
 }

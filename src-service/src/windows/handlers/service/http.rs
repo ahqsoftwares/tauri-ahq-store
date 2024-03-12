@@ -44,8 +44,7 @@ pub fn init() {
       {
         if let Ok(mut data) = resp.json::<Vec<Commit>>().await {
           let data = data.remove(0);
-          #[cfg(debug_assertions)]
-          println!("SHA: {}", &data.sha);
+          
           unsafe { GH_URL = Some(data.sha) }
         }
       }
@@ -184,7 +183,6 @@ pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
 
   if let Some(x) = CLIENT.get(url).send().await.ok() {
     if let Some(x) = x.json::<AHQStoreApplication>().await.ok() {
-      println!("App: {:?}", &x);
       return Response::AppData(ref_id, app_id, x);
     }
   }

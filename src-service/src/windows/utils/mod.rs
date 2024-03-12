@@ -26,7 +26,7 @@ pub fn get_programs() -> String {
 
 pub fn get_installer_file(app: &AHQStoreApplication) -> String {
   format!(
-    "{}\\ProgramData\\AHQ Store Applications\\Installers\\{}.{}",
+    "{}\\ProgramData\\AHQ Store Applications\\Installers\\{}{}",
     &get_main_drive(),
     &app.appId,
     &app.get_win32_extension().unwrap_or(".unknown")

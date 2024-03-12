@@ -3,7 +3,7 @@ use std::{
   time::Duration,
 };
 
-use ahqstore_types::{Command, Response};
+use ahqstore_types::{Command, Response, ErrorType};
 use tokio::{spawn, time::sleep};
 
 use crate::windows::utils::{get_iprocess, write_log, ws_send};
@@ -20,7 +20,7 @@ pub fn get_install_daemon() -> Sender<Command> {
   spawn(async move {
     let mut pending: Vec<Command> = vec![];
 
-    let between = || sleep(Duration::from_millis(50));
+    let between = || sleep(Duration::from_millis(100));
 
     loop {
       'r: loop {
@@ -29,6 +29,7 @@ pub fn get_install_daemon() -> Sender<Command> {
         } else {
           break 'r;
         }
+        between().await;
       }
 
       if let Some(mut ws) = get_iprocess() {
@@ -43,15 +44,20 @@ pub fn get_install_daemon() -> Sender<Command> {
             }
             Command::InstallApp(ref_id, app_id) => {
               if let Some(x) = download_app(ref_id, &app_id).await {
+                between().await;
                 ws_send(&mut ws, &Response::as_msg(Response::Installing(
                   ref_id,
                   app_id.clone(),
                 ))).await;
 
-                install_app(x).await;
-                ws_send(&mut ws, &Response::as_msg(Response::Installed(ref_id, app_id))).await;
+                between().await;
+                if let None = install_app(x).await {
+                  ws_send(&mut ws, &Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, app_id)))).await;
+                } else {
+                  ws_send(&mut ws, &Response::as_msg(Response::Installed(ref_id, app_id))).await;
+                }
               } else {
-                write_log("Error downloading");
+                ws_send(&mut ws, &Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, app_id)))).await
               }
               send_term(ref_id).await;
             }
@@ -63,7 +69,7 @@ pub fn get_install_daemon() -> Sender<Command> {
         pending = vec![];
       }
 
-      sleep(Duration::from_nanos(1)).await;
+      between().await;
     }
   });
 

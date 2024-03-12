@@ -32,7 +32,7 @@ export async function login(
       uid: email,
       pass: password,
     },
-    timeout: 10
+    timeout: 100
   });
 
   if (ok) {

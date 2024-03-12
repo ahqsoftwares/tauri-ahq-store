@@ -64,6 +64,8 @@ pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
 pub fn install_msi(msi: &str, app: &AHQStoreApplication) -> Option<()> {
   let install_folder = get_program_folder(&app.appId);
 
+  fs::create_dir_all(&install_folder).ok()?;
+
   let to_exec_msi = format!("{}\\installer.msi", &install_folder);
 
   fs::copy(&msi, &to_exec_msi).ok()?;
@@ -74,7 +76,7 @@ pub fn install_msi(msi: &str, app: &AHQStoreApplication) -> Option<()> {
   .ok()?;
   fs::remove_file(&msi).ok()?;
 
-  match run(&to_exec_msi, &["/i", "/jm", "/quiet", "/norestart"])
+  match run("msiexec", &["/norestart", "/qn", "/passive", "/i", &to_exec_msi])
     .ok()?
     .wait()
     .ok()?
@@ -100,8 +102,12 @@ pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<()> {
     if err {
       let _ = fs::remove_dir_all(&install_folder);
     } else {
-      if let Ok(link) = ShellLink::new(format!("{}\\{}", &install_folder, &app.appShortcutName)) {
-        let _ = link.create_lnk(get_target_lnk(&app.appShortcutName));
+      if let Some(val) = &app.install.win32 {
+        if let Some(exec) = &val.exec {
+          if let Ok(link) = ShellLink::new(format!("{}\\{}", &install_folder, &exec)) {
+            let _ = link.create_lnk(get_target_lnk(&app.appShortcutName));
+          }
+        }
       }
     }
   };
