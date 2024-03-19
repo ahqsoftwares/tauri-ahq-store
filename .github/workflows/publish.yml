@@ -5,6 +5,8 @@ on:
       - master
       - pr_in
 
+permissions: write-all
+
 jobs:
   create-release:
     name: Create a new github release
@@ -153,7 +155,7 @@ jobs:
           asset_name: ahqstore_setup_win32_amd64.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
-      - name: Upload Windows Setup
+      - name: Upload Linux Setup
         if: matrix.os != 'windows-latest'
         uses: ahqsoftwares-projects/upload-release-assets@v59
         env:
