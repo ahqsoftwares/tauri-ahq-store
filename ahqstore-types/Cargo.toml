@@ -1,7 +1,7 @@
 [package]
 name = "ahqstore-types"
 description = "Standard types used by AHQ Store"
-version = "1.4.0-rc6"
+version = "1.4.0-rc7"
 edition = "2021"
 license-file = "../LICENSE.md"
 repository = "https://www.github.com/ahqsoftwares/tauri-ahq-store"

@@ -15,25 +15,23 @@ pub enum InstallerFormat {
   #[doc = "🎯 Stable as of v1"]
   WindowsZip,
 
+  #[doc = "🎯 Stable as of v1.5\n\n"]
+  WindowsInstallerMsi,
+
   #[doc = "🔬 Unstable; AHQ Store vNext\n\n"]
+  /// **Doesn't work**
   /// **⚠️ AHQ Store will act just like downloading from the web and running it ONCE[^1]**
   ///
   /// [^1]: You'll need to provide app's final location
   WindowsInstallerExe,
 
-  #[doc = "🔬 Unstable; AHQ Store vNext\n\n"]
-  /// **⚠️ AHQ Store will act just like downloading from the web and running it ONCE[^1]**
-  ///
-  /// [^1]: You'll need to provide app's final location
-  WindowsInstallerMsi,
-
-  #[doc = "🔬 Unstable; AHQ Store vNext\n\n"]
+  #[doc = "🔬 Planned\n\n"]
   /// **⚠️ AHQ Store will act just like downloading from the web and running it ONCE[^1]**
   ///
   /// [^1]: You'll need to provide app's final location
   WindowsUWPMsix,
 
-  #[doc = "🔬 Unstable; AHQ Store vNext"]
+  #[doc = "🔬 Planned"]
   LinuxAppImage,
 }
 

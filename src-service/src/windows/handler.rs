@@ -125,7 +125,6 @@ pub async fn launch() {
                   },
                 }
               }
-              println!("{:?}", &buf);
               handle_msg(String::from_utf8_lossy(&buf).to_string());
             }
             Err(e) => match e.kind() {

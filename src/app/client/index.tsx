@@ -20,7 +20,7 @@ import { BsPen, BsPenFill } from "react-icons/bs";
 /*
 Database Refs
 */
-import base from "../server";
+import { server } from "../server";
 import GeneralUser from "./user.png";
 import Loading from "./loading.gif";
 import { BiLogOut, BiUserX } from "react-icons/bi";
@@ -37,51 +37,6 @@ Interfaces
 interface UserProps {
   auth: Auth;
   dark: boolean;
-}
-
-async function verifyUserPassword(uid: string, password: string) {
-  return await fetch(`${base}verify`, {
-    method: "GET",
-    responseType: 1,
-    headers: {
-      "x-uid": uid,
-      "x-password": String(password),
-    },
-    timeout: 6,
-  })
-    .then(({ ok, status, data }) => {
-      if (ok) {
-        return true;
-      } else if (status >= 500) {
-        throw new Error("Server Error!");
-      } else {
-        return false;
-      }
-    })
-    .catch((_e) => {
-      throw new Error("Server Fetch Error!");
-    });
-}
-
-async function fetchUser(uid: string) {
-  return await fetch(`${base}`, {
-    method: "GET",
-    headers: {
-      uid,
-    },
-    responseType: 1,
-    timeout: 5,
-  })
-    .then(({ ok, data }) => {
-      if (ok) {
-        return data as string;
-      } else {
-        return GeneralUser;
-      }
-    })
-    .catch(() => {
-      return GeneralUser;
-    });
 }
 
 export default function Init(props: UserProps) {
@@ -113,7 +68,7 @@ export default function Init(props: UserProps) {
           setName("Guest");
         }
         setUser(Loading);
-        setUser(await fetchUser(auth?.currentUser?.u_id.toString()));
+        setUser(auth?.currentUser?.pfp || GeneralUser);
         setAlt(
           auth.currentUser?.pfp ? "Click to edit picture" : "Click to upload",
         );
@@ -163,7 +118,7 @@ export default function Init(props: UserProps) {
             if (password === false) {
               setpPopop(true);
             } else {
-              verifyUserPassword(
+              checkAuth(
                 auth?.currentUser?.u_id.toString() || "",
                 password,
               )
@@ -225,9 +180,6 @@ export default function Init(props: UserProps) {
                 (
                   document.getElementById("accpwdhost") as HTMLInputElement
                 ).value = "";
-                fetchUser(auth?.currentUser?.u_id.toString() as string).then(
-                  setUser,
-                );
                 setpPopop(false);
               }}
             >
@@ -245,7 +197,7 @@ export default function Init(props: UserProps) {
                 document.getElementById("accpwdhost") as HTMLInputElement
               ).value;
 
-              verifyUserPassword(
+              checkAuth(
                 auth?.currentUser?.u_id.toString() as string,
                 inputPassword,
               )
@@ -720,22 +672,17 @@ async function ChangeProfile(
     setUser(Loading);
     setAlt("Please Wait...");
 
-    fetch(`${base}`, {
-      method: "POST",
-      headers: {
-        "x-uid": auth.currentUser?.u_id.toString() as any,
-        "x-password": pwd,
-      },
-      body: Body.json({ data: fs.result }),
-      timeout: 20,
-    }).then((data) => {
-      const { ok } = data;
+    updateProfile(auth, {
+      pf_pic: fs.result
+    }).then(([ok, reason]) => {
       if (!ok) {
-        sendNotification("Failed to update profile picture!");
+        sendNotification({
+          title: "Failed to update profile picture!",
+          body: reason
+        });
         setPFD({});
-        fetchUser(auth?.currentUser?.u_id.toString() as string).then((value) =>
-          setUser(value),
-        );
+
+        setUser(auth?.currentUser?.pfp || GeneralUser);
       } else {
         setAlt("Click to edit picture");
         setUser(fs.result);

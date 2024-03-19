@@ -299,7 +299,7 @@ function Render(props: AppProps) {
               dev={dev}
               horizontal={sidebar.includes("flex-col")}
             />
-            <div className="w-screen h-[98vh]">
+            <div className="bg-transparent w-screen h-[98vh]">
               <div className="flex flex-col w-[100%] h-[100%] justify-center">
                 {app}
               </div>

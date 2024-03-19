@@ -1,5 +1,5 @@
 import { Body, ResponseType, fetch } from "@tauri-apps/api/http";
-import { newServer } from "../app/server";
+import { server } from "../app/server";
 import { invoke } from "@tauri-apps/api/tauri";
 
 export interface Auth {
@@ -46,7 +46,7 @@ export async function updateProfile(
     encrypted: JSON.parse(pass),
   });
 
-  const { ok, data: reason } = await fetch<string>(`${newServer}/users/@me`, {
+  const { ok, data: reason } = await fetch<string>(`${server}/users/@me`, {
     responseType: ResponseType.Text,
     method: "PATCH",
     headers: {
@@ -55,6 +55,18 @@ export async function updateProfile(
     },
     body: Body.json(data),
   });
+
+  if (ok) {
+    if (data.display_name && user.currentUser) {
+      user.currentUser.display_name = data.display_name;
+    }
+    if (data.pf_pic && user.currentUser) {
+      user.currentUser.pfp = data.pf_pic;
+    }
+    if (data.dev && user.currentUser) {
+      user.currentUser.dev = data.dev;
+    }
+  }
 
   return [ok, reason];
 }
@@ -65,7 +77,7 @@ export async function deleteAcc(user: User) {
     encrypted: JSON.parse(pass),
   });
 
-  const { ok } = await fetch(`${newServer}/users/@me`, {
+  const { ok } = await fetch(`${server}/users/@me`, {
     method: "DELETE",
     responseType: ResponseType.Text,
     headers: {

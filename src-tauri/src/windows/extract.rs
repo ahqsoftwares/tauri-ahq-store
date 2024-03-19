@@ -1,6 +1,6 @@
 use std::env::current_exe;
 use std::os::windows::process::CommandExt;
-use std::{path::Path, process::Command};
+use std::process::Command;
 
 pub fn run_admin(path: String) {
   let mut child = Command::new("powershell");

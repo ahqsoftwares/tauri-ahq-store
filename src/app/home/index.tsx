@@ -11,7 +11,7 @@ import AHQStore from "./index.png";
 
 //components
 import Button from "./components/Button";
-import base from "../server";
+import { server } from "../server";
 
 //API
 import { didGreet, greeted } from "../resources/utilities/greet";
@@ -48,19 +48,10 @@ export default function Home(props: HomeProps) {
 
   const { dark, setPage, auth } = props;
 
-  fetch<string>(`${base}`, {
-    headers: {
-      uid: auth.currentUser?.u_id as unknown as string,
-    },
-    method: "GET",
-  })
-    .then(({ data }) => {
-      if (!data.includes("<!DOCTYPE html>")) {
-        setData("x-icon", data);
-        setUserIcon(data);
-      }
-    })
-    .catch(console.error);
+  useEffect(() => {
+    setData("x-icon", auth.currentUser?.pfp || "");
+    setUserIcon(auth.currentUser?.pfp || "");
+  }, [auth.currentUser]);
 
   const [greet, setGreet] = useState(didGreet());
   const version = getAppVersion();

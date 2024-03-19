@@ -13,6 +13,11 @@ pub use app::*;
 pub mod api;
 pub use api::*;
 
+/// **You should use cli**
+/// ```sh
+/// cargo install ahqstore_cli_rs
+/// ```
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Commit {
   pub sha: String

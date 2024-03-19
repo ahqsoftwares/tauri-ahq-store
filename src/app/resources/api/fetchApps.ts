@@ -1,6 +1,6 @@
 import fetch from "../core/http";
 import { get_app } from "../core";
-import { newServer } from "../../server";
+import { server } from "../../server";
 
 let commit_id = "";
 
@@ -46,6 +46,9 @@ interface appData {
 let cache: {
   [key: string]: appData;
 } = {};
+let authorCache: {
+  [key: string]: AuthorObject;
+} = {};
 
 export default async function fetchApps(
   apps: string | string[],
@@ -70,7 +73,7 @@ export async function fetchSearchData() {
     return searchDataCache;
   } else {
     let data = (
-      await fetch(`${newServer}/apps/search`, {
+      await fetch(`${server}/apps/search`, {
         method: "GET",
         responseType: 1,
       })
@@ -81,29 +84,18 @@ export async function fetchSearchData() {
 }
 
 export async function fetchAuthor(id: string) {
+  if (authorCache[id]) {
+    return authorCache[id];
+  }
+
   let author = (
-    await fetch(`${newServer}/users/${id}`, {
+    await fetch(`${server}/users/${id}`, {
       method: "GET",
       responseType: 1,
     })
   ).data as AuthorObject;
 
-  // if (!partial) {
-  //   const apps = (
-  //     await fetch(
-  //       `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/apps_dev_${id}.json`,
-  //       {
-  //         method: "GET",
-  //         responseType: 1,
-  //       },
-  //     )
-  //   ).data as any;
-
-  //   author = {
-  //     ...author,
-  //     apps,
-  //   };
-  // }
+  authorCache[id] = author;
 
   return author;
 }

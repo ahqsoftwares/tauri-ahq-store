@@ -1,4 +1,5 @@
 mod http;
+mod msi;
 mod prefs;
 
 use ahqstore_types::{InstallerFormat, Win32Deps};
@@ -76,11 +77,14 @@ pub fn install_msi(msi: &str, app: &AHQStoreApplication) -> Option<()> {
   .ok()?;
   fs::remove_file(&msi).ok()?;
 
-  match run("msiexec", &["/norestart", "/qn", "/passive", "/i", &to_exec_msi])
-    .ok()?
-    .wait()
-    .ok()?
-    .success()
+  match run(
+    "msiexec",
+    &["/norestart", "/qn", "/i", &to_exec_msi],
+  )
+  .ok()?
+  .wait()
+  .ok()?
+  .success()
   {
     true => Some(()),
     false => None,
@@ -137,6 +141,10 @@ pub fn uninstall_app(app: &AHQStoreApplication) -> Option<String> {
   let link = get_target_lnk(&app.appShortcutName);
   let program = get_program_folder(&app.appId);
 
+  if msi::is_msi(&app.appId) {
+    msi::uninstall_msi(&app.appId);
+  }
+
   let _ = fs::remove_file(&link);
 
   fs::remove_dir_all(&program).ok()?;
@@ -162,7 +170,13 @@ pub fn list_apps() -> Option<Vec<AppData>> {
     ))
     .unwrap_or("unknown".into());
 
-    vec.push((dir.to_owned(), version));
+    if msi::is_msi(dir) {
+      if msi::exists(dir).unwrap_or(false) {
+        vec.push((dir.to_owned(), version));
+      }
+    } else {
+      vec.push((dir.to_owned(), version));
+    }
   }
 
   Some(vec)

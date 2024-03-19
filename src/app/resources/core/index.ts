@@ -1,5 +1,5 @@
 import { ResponseType } from "@tauri-apps/api/http";
-import { newServer } from "../../server";
+import { server } from "../../server";
 import { ApplicationData } from "../api/fetchApps";
 import { WebSocketMessage, sendWsRequest } from "./handler";
 import fetch from "./http";

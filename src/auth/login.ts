@@ -1,5 +1,5 @@
 import { ResponseType, fetch } from "@tauri-apps/api/http";
-import { newServer } from "../app/server";
+import { server } from "../app/server";
 import { Auth, User } from ".";
 import { invoke } from "@tauri-apps/api/tauri";
 
@@ -25,7 +25,7 @@ export async function login(
   email: string,
   password: string,
 ): Promise<boolean> {
-  const { ok, data } = await fetch<User>(`${newServer}/users/@me`, {
+  const { ok, data } = await fetch<User>(`${server}/users/@me`, {
     method: "GET",
     responseType: ResponseType.JSON,
     headers: {
@@ -51,7 +51,7 @@ export async function checkAuth(
   email: string,
   password: string,
 ): Promise<boolean> {
-  const { ok } = await fetch<User>(`${newServer}/users/@me`, {
+  const { ok } = await fetch<User>(`${server}/users/@me`, {
     method: "GET",
     responseType: ResponseType.JSON,
     headers: {

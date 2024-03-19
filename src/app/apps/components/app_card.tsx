@@ -53,8 +53,8 @@ export default function AppCard(props: {
   return (
     <div
       className={`card ${
-        props.dark ? "hover:bg-gray-900 " : "hover:bg-gray-200 "
-      }hover:mb-2 hover:shadow-xl`}
+        props.dark ? "hover:bg-gray-900 bg-opacity-50" : "bg-opacity-50 hover:bg-gray-200"
+        } hover:mb-2 hover:shadow-xl`}
       style={{ cursor: "pointer" }}
       onClick={props.onClick as React.MouseEventHandler<HTMLDivElement>}
     >

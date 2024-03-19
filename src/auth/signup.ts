@@ -1,6 +1,6 @@
 import { Body, ResponseType, fetch } from "@tauri-apps/api/http";
 import { Auth } from ".";
-import { newServer } from "../app/server";
+import { server } from "../app/server";
 
 export interface SignupData {
   email: string;
@@ -15,7 +15,7 @@ export async function signUp(
     return [false, "Already logged in"];
   }
 
-  const { ok, data: resp } = await fetch<string>(`${newServer}/users/new`, {
+  const { ok, data: resp } = await fetch<string>(`${server}/users/new`, {
     responseType: ResponseType.Text,
     method: "POST",
     body: Body.json(data),

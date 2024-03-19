@@ -120,13 +120,13 @@ code {
 }
 
 .modal {
-  @apply items-center justify-center flex w-[35vw] max-w-[35vw] h-[90vh] max-h-[90vh] bg-white rounded-lg shadow-lg flex-col mb-auto;
+  @apply items-center justify-center flex w-[35vw] max-w-[35vw] h-[90vh] max-h-[90vh] bg-opacity-75 bg-white rounded-lg shadow-lg flex-col mb-auto;
   transition: all 500ms linear;
   user-select: none;
 }
 
 .modal-d {
-  @apply bg-gray-700;
+  @apply bg-opacity-75 bg-gray-700;
 }
 
 .modal h1,

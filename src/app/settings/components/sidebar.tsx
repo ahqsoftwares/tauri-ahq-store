@@ -46,17 +46,8 @@ export default function SidebarSelector(props: {
           fontWeight: "bold",
         }}
       >
-        <optgroup label="Stable">
-          <option value="flex-row">Left</option>
-          <option value="flex-row-reverse">Right</option>
-        </optgroup>
-        {initial == "flex-col" ? (
-          <optgroup label="Unstable">
-            <option value="flex-col">Dock {"(UnStable)"}</option>
-          </optgroup>
-        ) : (
-          <></>
-        )}
+        <option value="flex-row">Left</option>
+        <option value="flex-row-reverse">Right</option>
       </select>
 
       <div className="mr-3"></div>
