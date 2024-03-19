@@ -110,6 +110,7 @@ jobs:
         working-directory: ahqstore-types
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
+        continue-on-error: true
 
   make-setup:
     needs: create-release

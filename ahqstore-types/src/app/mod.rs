@@ -91,15 +91,6 @@ impl AHQStoreApplication {
 
     None
   }
-
-  #[cfg(target_os = "linux")]
-  pub fn get_platform_deps(&self) -> Option<Vec<UnixDeps>> {
-    if let Some(x) = &self.install.linux {
-      return Some(x.clone().deps.unwrap_or(vec![]));
-    }
-
-    None
-  }
 }
 
 impl TryFrom<ServerJSONResp> for AHQStoreApplication {
