@@ -118,10 +118,7 @@ export default function Init(props: UserProps) {
             if (password === false) {
               setpPopop(true);
             } else {
-              checkAuth(
-                auth?.currentUser?.u_id.toString() || "",
-                password,
-              )
+              checkAuth(auth?.currentUser?.u_id.toString() || "", password)
                 .then((ok) => {
                   if (!ok) {
                     return setpPopop(true);
@@ -673,12 +670,12 @@ async function ChangeProfile(
     setAlt("Please Wait...");
 
     updateProfile(auth, {
-      pf_pic: fs.result
+      pf_pic: fs.result,
     }).then(([ok, reason]) => {
       if (!ok) {
         sendNotification({
           title: "Failed to update profile picture!",
-          body: reason
+          body: reason,
         });
         setPFD({});
 

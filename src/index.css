@@ -22,7 +22,7 @@ html[data-os="win32"],
     [data-theme="halloween"] body,
     [data-theme="forest"] body,
     [data-theme="luxury"] body {
-      @apply bg-base-100 !important;
+      @apply bg-base-200 !important;
     }
   }
   
@@ -34,7 +34,7 @@ html[data-os="win32"],
     [data-theme="wireframe"] body,
     [data-theme="cmyk"] body,
     [data-theme="autumn"] body {
-      @apply bg-base-100 !important;
+      @apply bg-base-200 !important;
     }
 }
 

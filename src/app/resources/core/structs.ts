@@ -54,7 +54,9 @@ export type {
   Downloaded,
 };
 
-export async function interpret(data: string): Promise<ServerResponse | undefined> {
+export async function interpret(
+  data: string,
+): Promise<ServerResponse | undefined> {
   const into_array: { [key: string]: any } = JSON.parse(data);
 
   const [mode, valueData] = Object.entries(into_array)[0];
@@ -99,11 +101,11 @@ export async function interpret(data: string): Promise<ServerResponse | undefine
 
       const { data } = await fetch<ApplicationData>(pyld2, {
         method: "GET",
-        responseType: ResponseType.JSON
+        responseType: ResponseType.JSON,
       });
 
       const adata: ApplicationData = {
-        ...data
+        ...data,
       };
 
       result.data = adata;

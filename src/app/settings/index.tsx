@@ -60,7 +60,7 @@ export default function Init(props: InitProps) {
   useEffect(() => {
     getVersion()
       .then(setVer)
-      .catch(() => { });
+      .catch(() => {});
 
     const ver = getWindowsName();
     setOs(ver);

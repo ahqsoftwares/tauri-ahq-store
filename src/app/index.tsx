@@ -290,8 +290,9 @@ function Render(props: AppProps) {
       {load === true ? (
         <>
           <header
-            className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${sidebar.includes("flex-row-reverse") ? "pr-2" : ""
-              } flex transition-all`}
+            className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${
+              sidebar.includes("flex-row-reverse") ? "pr-2" : ""
+            } flex transition-all`}
           >
             <Nav
               active={page}

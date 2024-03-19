@@ -53,7 +53,7 @@ Item pallete
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
-  @apply bg-base-200;
+  @apply bg-base-100;
 }
 
 .n-item:active,
@@ -264,7 +264,7 @@ User Panel
 /* Navigation Bar
 */
 .nav-h {
-  @apply absolute bg-base-100 bg-opacity-100 z-[10] !important;
+  @apply absolute bg-base-200 bg-opacity-100 z-[10] !important;
 }
 
 .nav-h .n-item-h {
@@ -281,5 +281,5 @@ User Panel
   margin-top: 0px !important;
   margin-left: 8px !important;
   margin-right: 8px !important;
-  @apply bg-base-200 !important;
+  @apply bg-base-100 !important;
 }

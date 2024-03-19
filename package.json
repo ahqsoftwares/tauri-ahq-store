@@ -1,6 +1,6 @@
 {
   "name": "ahq-store-tauri",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "private": true,
   "license": "Creative Commons Attribution Non Commercial 3.0",
@@ -8,7 +8,7 @@
     "@tauri-apps/api": "^1.5.3",
     "autoprefixer": "^10.4.17",
     "daisyui": "^4.7.2",
-    "fuse.js": "^7.0.0",
+    "minisearch": "^6.3.0",
     "postcss": "^8.4.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

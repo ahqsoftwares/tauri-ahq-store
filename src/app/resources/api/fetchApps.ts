@@ -1,46 +1,50 @@
 import fetch from "../core/http";
-import { get_app } from "../core";
+import { get_app, get_devs_apps, get_search_data } from "../core";
 import { server } from "../../server";
 
-let commit_id = "";
-
 interface AuthorObject {
-  u_id: number,
-  username: string,
-  pub_email: string,
-  linked_acc: string[],
-  display_name: string,
-  pf_pic?: string,
-  ahq_verified: boolean
+  u_id: number;
+  username: string;
+  pub_email: string;
+  linked_acc: string[];
+  display_name: string;
+  pf_pic?: string;
+  ahq_verified: boolean;
+  apps: string[];
 }
 
 type Str = string;
 
 interface appData {
-  appId: Str,
-  appShortcutName: Str,
-  appDisplayName: Str,
-  authorId: Str,
+  appId: Str;
+  appShortcutName: Str;
+  appDisplayName: Str;
+  authorId: Str;
   downloadUrls: {
     [key: number]: {
-      installerType: "WindowsZip" | "WindowsInstallerExe" | "WindowsInstallerMsi" | "WindowsUWPMsix" | "LinuxAppImage",
-      url: Str,
-    }
-  },
+      installerType:
+        | "WindowsZip"
+        | "WindowsInstallerExe"
+        | "WindowsInstallerMsi"
+        | "WindowsUWPMsix"
+        | "LinuxAppImage";
+      url: Str;
+    };
+  };
   install: {
-    win32: unknown | undefined,
-    linux: unknown | undefined,
-    installType: "PerUser" | "Computer" | "Both",
-  },
-  displayImages: Str[],
-  description: Str,
-  icon: Str,
+    win32: unknown | undefined;
+    linux: unknown | undefined;
+    installType: "PerUser" | "Computer" | "Both";
+  };
+  displayImages: Str[];
+  description: Str;
+  icon: Str;
   repo: {
-    author: Str,
-    repo: Str,
-  },
-  version: Str,
-  AuthorObject: AuthorObject
+    author: Str;
+    repo: Str;
+  };
+  version: Str;
+  AuthorObject: AuthorObject;
 }
 
 let cache: {
@@ -66,20 +70,17 @@ let searchDataCache: SearchData[] = [];
 
 interface SearchData {
   name: string;
+  title: string;
   id: string;
 }
 export async function fetchSearchData() {
   if (searchDataCache.length >= 1) {
     return searchDataCache;
   } else {
-    let data = (
-      await fetch(`${server}/apps/search`, {
-        method: "GET",
-        responseType: 1,
-      })
-    ).data;
-    searchDataCache = data as SearchData[];
-    return data as SearchData[];
+    const data = await get_search_data<SearchData[]>();
+
+    searchDataCache = data;
+    return data;
   }
 }
 
@@ -95,6 +96,7 @@ export async function fetchAuthor(id: string) {
     })
   ).data as AuthorObject;
 
+  author.apps = await get_devs_apps(id);
   authorCache[id] = author;
 
   return author;

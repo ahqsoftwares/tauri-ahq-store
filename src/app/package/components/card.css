@@ -1,5 +1,5 @@
 .p-card {
-  @apply shadow-xl bg-base-200 hover:bg-base-300 mx-auto dui-card;
+  @apply shadow-xl bg-opacity-50 bg-base-100 hover:bg-opacity-50 hover:bg-base-300 mx-auto dui-card;
   @apply w-[20rem] h-[20rem];
 }
 

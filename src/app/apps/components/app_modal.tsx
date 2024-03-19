@@ -12,6 +12,9 @@ import {
 } from "../../resources/api/updateInstallWorker";
 import PopUp from "../../resources/components/popup";
 import { invoke } from "@tauri-apps/api/tauri";
+import { IoCheckmarkCircle, IoWarning } from "react-icons/io5";
+import { FaLinux } from "react-icons/fa6";
+import { SiWindows } from "react-icons/si";
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -49,7 +52,7 @@ const defAppData: appData = {
   },
   repo: {
     author: "",
-    repo: ""
+    repo: "",
   },
   version: "",
   AuthorObject: {
@@ -58,8 +61,9 @@ const defAppData: appData = {
     linked_acc: [],
     pub_email: "",
     u_id: 0,
-    username: ""
-  }
+    username: "",
+    apps: [],
+  },
 };
 
 export default function ShowModal(props: AppDataPropsModal) {
@@ -82,7 +86,7 @@ export default function ShowModal(props: AppDataPropsModal) {
       if ((installData || "") !== "") {
         const apps = await fetchApps(installData);
         console.log(apps);
-        setAppData((apps) as any);
+        setAppData(apps as any);
         setInstalled(await isInstalled(installData));
 
         setUpdating(false);
@@ -90,7 +94,16 @@ export default function ShowModal(props: AppDataPropsModal) {
     })();
   }, [installData]);
 
-  const { icon, appDisplayName, description, authorId, AuthorObject } = appData;
+  const {
+    icon,
+    appDisplayName,
+    description,
+    authorId,
+    AuthorObject,
+    displayImages,
+    version,
+    repo,
+  } = appData;
 
   const install = async () => {
     if (!working) {
@@ -139,7 +152,7 @@ export default function ShowModal(props: AppDataPropsModal) {
 
   return (
     <PopUp shown={shown} width="95%" height="90%">
-      <div className="bg-base-100 flex flex-col w-[100%] h-[100%]">
+      <div className="bg-base-200 flex flex-col w-[100%] h-[100%]">
         <div className="flex w-[100%] h-[100%] app-data">
           <div
             className={`div w-[40%] p-2 flex flex-col items-center rounded-xl shadow-xl`}
@@ -185,7 +198,8 @@ export default function ShowModal(props: AppDataPropsModal) {
                   dark ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                {description}
+                {description.substring(0, 32)}
+                {description.length > 32 && <>...</>}
               </h2>
             </div>
 
@@ -218,17 +232,28 @@ export default function ShowModal(props: AppDataPropsModal) {
                   Uninstall
                 </button>
               ) : (
-                <button
-                  ref={button}
-                  className={`dui-btn ${
-                    working
-                      ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
-                      : "dui-btn-success text-success-content"
-                  } w-[60%] mb-4`}
-                  onClick={() => install()}
-                >
-                  Install
-                </button>
+                    <>
+                      {appData.install.win32 == undefined && (
+                        <div
+                          role="alert"
+                          className="dui-alert dui-alert-warning text-warning-content mb-2"
+                        >
+                          <IoWarning size={"1.5rem"} />
+                          <span>Unsupported</span>
+                        </div>
+                      )}
+                      <button
+                        ref={button}
+                        className={`dui-btn ${working
+                            ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
+                            : "dui-btn-success text-success-content"
+                          } w-[60%] mb-4`}
+                        onClick={() => install()}
+                        disabled={appData.install.win32 == undefined}
+                      >
+                        Install
+                      </button>
+                    </>
               )
             ) : (
               <button className="dui-btn dui-btn-error text-white bg-red-700 hover:bg-red-700 border-red-700 hover:border-red-700 w-[60%] mb-4">
@@ -240,26 +265,122 @@ export default function ShowModal(props: AppDataPropsModal) {
           <div
             className={`${
               dark ? "text-slate-200" : "text-slate-800"
-            } div p-4 ml-2 w-[100%] rounded-xl shadow-xl flex flex-col`}
+              } div p-4 ml-2 w-[100%] rounded-xl shadow-xl flex flex-col overflow-scroll`}
           >
-            {/*"Images (soon)"*/}
-            <div></div>
-
-            {/*Author*/}
-            <div className="w-[100%]">
-              <h1 className="text-xl">About Developer</h1>
-              <button
-                className="text-lg cursor-pointer"
-                onClick={() => {
-                  invoke("open", {
-                    url: `https://ahqstore.github.io/user?=${authorId}`
-                  });
-                }}
-              >{AuthorObject.display_name}</button>
+            <div className="w-full">
+              <h1 className="text-xl">Description</h1>
+              <p>{description}</p>
             </div>
 
-            {/*Ratings (soon)*/}
-            <div></div>
+            {/* Display Images */}
+            <div
+              className={`mt-3 w-[100%] ${displayImages.length == 0 ? "hidden" : ""}`}
+            >
+              <h1 className="text-xl">Images</h1>
+              <div className="dui-carousel dui-carousel-end w-full rounded-md pl-0">
+                {displayImages.map((img, i) => (
+                  <div
+                    key={img}
+                    id={`app-desc-slide-${i}`}
+                    className="dui-carousel-item relative w-full"
+                  >
+                    <img src={`data:image;base64;${img}`} className="mx-auto" />
+                    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                      <a
+                        href={i != 0 ? `#app-desc-slide-${i - 1}` : ""}
+                        className="dui-btn dui-btn-circle dui-btn-accent"
+                      >
+                        ❮
+                      </a>
+                      <a
+                        href={
+                          i + 1 != displayImages.length
+                            ? `#app-desc-slide-${i + 2}`
+                            : ""
+                        }
+                        className="dui-btn dui-btn-circle dui-btn-accent"
+                      >
+                        ❯
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Author */}
+            <div className="mt-3 w-[100%]">
+              <h1 className="text-xl">About</h1>
+              <button
+                className="text-lg font-extralight flex items-center cursor-pointer text-blue-400"
+                onClick={() => {
+                  invoke("open", {
+                    url: `https://ahqstore.github.io/user?${authorId}`,
+                  });
+                }}
+              >
+                Provided by{" "}
+                {authorId == "1" || authorId == "ahqsoftwares" ? (
+                  <IoCheckmarkCircle className="ml-1" />
+                ) : (
+                  <></>
+                )}
+                {AuthorObject.display_name}
+              </button>
+              <span className="block">
+                <strong className="mr-2">Application id:</strong>
+                {appData.appId}
+              </span>
+              <span className="block">
+                <strong className="mr-2">Version:</strong>
+                {version.substring(0, 64)}
+                {version.length > 64 && <>...</>}
+              </span>
+              <span className="block">
+                <strong className="mr-2">Repository:</strong>
+                <span
+                  className="text-blue-400 cursor-pointer"
+                  onClick={() =>
+                    invoke("open", {
+                      url: `https://github.com/${repo.author}/${repo.repo}`,
+                    })
+                  }
+                >
+                  {repo.author}/{repo.repo}
+                </span>
+              </span>
+              <span className="flex">
+                <strong className="mr-2">Supported Platforms:</strong>
+                <span className="flex items-center space-x-2">
+                  {appData.install.win32 != undefined && (
+                    <div
+                      className="cursor-pointer flex text-center items-center justify-center border-[1px] border-base-content px-1"
+                      onClick={() =>
+                        invoke("open", {
+                          url: "https://microsoft.com/windows",
+                        })
+                      }
+                    >
+                      <SiWindows />
+                      <span className="ml-1">Windows</span>
+                    </div>
+                  )}
+                  {appData.install.linux != undefined && (
+                    <div
+                      className="cursor-pointer flex text-center items-center justify-center border-[1px] border-base-content px-1"
+                      onClick={() =>
+                        invoke("open", {
+                          url: "https://en.wikipedia.org/wiki/Linux",
+                        })
+                      }
+                    >
+                      <FaLinux />
+                      <span className="ml-1">Linux</span>
+                    </div>
+                  )}
+                </span>
+              </span>
+            </div>
           </div>
         </div>
       </div>

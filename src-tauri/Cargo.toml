@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "1.3.6"
+version = "1.4.1"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "Creative Commons Attribution Non Commercial 3.0"

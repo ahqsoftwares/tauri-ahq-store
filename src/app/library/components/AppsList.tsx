@@ -71,7 +71,7 @@ export default function AppsList(props: Props) {
         {apps.map((data) => {
           return (
             <App
-              key={data.id}
+              key={data.appId}
               appInfo={data}
               dark={dark}
               reload={parseAppsData}

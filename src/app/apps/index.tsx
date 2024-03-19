@@ -21,8 +21,6 @@ import SearchModal from "./components/search_modal";
 StyleSheets
 */
 import "./index.css";
-import { getData } from "../resources/utilities/database";
-import { genAuth } from "../../auth";
 import { FaInfoCircle } from "react-icons/fa";
 
 /*
@@ -46,8 +44,9 @@ export default function Apps(props: AppsProps) {
   function Fix() {
     const element = document.querySelector("#search-result") as any;
     if (element) {
-      element.style = `width: ${document.querySelector("#get-width")?.clientWidth
-        }px;`;
+      element.style = `width: ${
+        document.querySelector("#get-width")?.clientWidth
+      }px;`;
     }
   }
 
@@ -95,18 +94,14 @@ export default function Apps(props: AppsProps) {
           <div
             className="w-[40%] mt-2"
             onBlur={() => {
-              let searchOnEnter = getData("enableSearchOnEnter");
-
-              if (searchOnEnter) {
-                setTimeout(() => {
-                  setEnter((enter) => {
-                    if (!enter) {
-                      searchText("");
-                    }
-                    return enter;
-                  });
-                }, 100);
-              }
+              setTimeout(() => {
+                setEnter((enter) => {
+                  if (!enter) {
+                    searchText("");
+                  }
+                  return enter;
+                });
+              }, 100);
             }}
           >
             <div className="w-[100%] flex" id="get-width">
@@ -127,12 +122,9 @@ export default function Apps(props: AppsProps) {
                   searchText(e.target.value);
                 }}
                 onKeyUp={(e) => {
-                  let data = getData("enableSearchOnEnter");
                   if (e.key === "Enter") {
-                    if (data) {
-                      if (search.length >= 1) {
-                        setEnter(true);
-                      }
+                    if (search.length >= 1) {
+                      setEnter(true);
                     }
                   } else {
                     setEnter(false);
@@ -147,16 +139,12 @@ export default function Apps(props: AppsProps) {
                 type="submit"
                 id={"search-btn"}
                 onClick={() => {
-                  let searchBiggerBoxEnabled = getData("enableSearchOnEnter");
-
-                  if (searchBiggerBoxEnabled) {
-                    setTimeout(() => {
-                      if (search.length >= 1) {
-                        setEnter(true);
-                        searchText(search);
-                      }
-                    }, 0);
-                  }
+                  setTimeout(() => {
+                    if (search.length >= 1) {
+                      setEnter(true);
+                      searchText(search);
+                    }
+                  }, 0);
                 }}
                 style={{
                   borderColor: "rgb(96,70,255)",
@@ -195,7 +183,9 @@ export default function Apps(props: AppsProps) {
 
           <div className="appss">
             {apps.length === 0 ? (
-              <div className={`flex justify-center text-center items-center mt-9 ${dark ? "text-yellow-400" : "text-yellow-600"}`}>
+              <div
+                className={`flex justify-center text-center items-center mt-9 ${dark ? "text-yellow-400" : "text-yellow-600"}`}
+              >
                 <FaInfoCircle size={"3em"} />
                 <h1 className="ml-2 apps-text">No apps!</h1>
               </div>

@@ -6,43 +6,48 @@ import { appData } from "../../resources/api/fetchApps";
 import fetchApps from "../../resources/api/fetchApps";
 import packageImg from "../../resources/package.png";
 
+const def: appData = {
+  authorId: "",
+  description: "The component is loading...",
+  downloadUrls: [],
+  appId: "%temp%",
+  icon: packageImg,
+  repo: {
+    author: "",
+    repo: "",
+  },
+  appDisplayName: "Loading...",
+  version: "",
+  appShortcutName: "",
+  displayImages: [],
+  install: {
+    installType: "Both",
+    linux: undefined,
+    win32: undefined,
+  },
+  AuthorObject: {
+    ahq_verified: false,
+    display_name: "",
+    linked_acc: [],
+    pub_email: "",
+    u_id: 0,
+    username: "",
+    apps: [],
+    pf_pic: "",
+  },
+};
+
 export default function AppCard(props: {
   id: string;
   onClick: Function;
   dark: boolean;
 }) {
-  const [appData, setAppData] = useState<appData>({
-    authorId: "",
-    description: "The component is loading...",
-    downloadUrls: [],
-    appId: "%temp%",
-    icon: packageImg,
-    repo: {
-      author: "",
-      repo: "",
-    },
-    appDisplayName: "Loading...",
-    version: "",
-    appShortcutName: "",
-    displayImages: [],
-    install: {
-      installType: "Both",
-      linux: undefined,
-      win32: undefined,
-    },
-    AuthorObject: {
-      ahq_verified: false,
-      display_name: "",
-      linked_acc: [],
-      pub_email: "",
-      u_id: 0,
-      username: ""
-    }
-  });
+  const [appData, setAppData] = useState<appData>(def);
 
   const { appDisplayName, description, icon, AuthorObject } = appData;
 
   useEffect(() => {
+    setAppData(def);
     (async () => {
       const dta = await fetchApps(props.id);
 
@@ -53,10 +58,16 @@ export default function AppCard(props: {
   return (
     <div
       className={`card ${
-        props.dark ? "hover:bg-gray-900 bg-opacity-50" : "bg-opacity-50 hover:bg-gray-200"
-        } hover:mb-2 hover:shadow-xl`}
+        props.dark
+          ? "hover:bg-gray-900 bg-opacity-50"
+          : "bg-opacity-50 hover:bg-gray-200"
+      } hover:mb-2 hover:shadow-xl ${props.id ? "" : "hidden"}`}
       style={{ cursor: "pointer" }}
-      onClick={props.onClick as React.MouseEventHandler<HTMLDivElement>}
+      onClick={
+        appData.appId == "%temp%"
+          ? () => {}
+          : (props.onClick as React.MouseEventHandler<HTMLDivElement>)
+      }
     >
       {appDisplayName === "Loading..." ? (
         <div
@@ -76,7 +87,7 @@ export default function AppCard(props: {
 
       <div className="card-footer">
         <button className="text-blue-500 text-2xl" style={{ minWidth: "95%" }}>
-          {AuthorObject.display_name}
+          {AuthorObject?.display_name}
         </button>
       </div>
     </div>

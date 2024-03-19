@@ -27,8 +27,11 @@ export default function App({
   async function handleClick() {
     const Toast = toast("Please wait...", "warn", "never");
     try {
-      await unInstall(appInfo.id as string);
-      Toast?.edit(`Successfully uninstalled ${appInfo.title}`, "success");
+      await unInstall(appInfo.appId as string);
+      Toast?.edit(
+        `Successfully uninstalled ${appInfo.appDisplayName}`,
+        "success",
+      );
       setTimeout(() => {
         reload();
         setTimeout(() => {
@@ -49,20 +52,19 @@ export default function App({
 
   return (
     <div
-      className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] bg-base-200 text-base-content rounded-md mt-2 shadow-xl pl-2`}
+      className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] bg-base-100 text-base-content rounded-md mt-2 shadow-xl pl-2 border-[1px] border-base-content`}
     >
       <img
         width={"64px"}
-        height={"64px"}
         src={appInfo.icon}
-        alt={appInfo.title}
+        alt={appInfo.appDisplayName}
         className={`mr-2 ${appInfo.icon === pkg ? "p-2" : ""}`}
         draggable={false}
       ></img>
 
       <div className="flex flex-col my-auto text-start">
         <h1 className={`flex ${dark ? "text-blue-400" : "text-blue-700"}`}>
-          <span className="text-2xl">{appInfo.title}</span>
+          <span className="text-2xl">{appInfo.appDisplayName}</span>
           {updating ? (
             <div className={`${dark ? "text-yellow-500" : "text-yellow-900"}`}>
               <IoIosNotifications />

@@ -13,6 +13,7 @@ import fetchApps, { appData, fetchAuthor } from "../resources/api/fetchApps";
 import App from "./components/App";
 import Toast from "../resources/api/toast";
 import { invoke } from "@tauri-apps/api/tauri";
+import { FaDiscord } from "react-icons/fa6";
 
 interface DevProps {
   auth: Auth;
@@ -33,8 +34,7 @@ export default function Developers(props: DevProps) {
   useEffect(() => {
     (async () => {
       try {
-        const { apps } = (await fetchAuthor(uid as unknown as string))
-          .apps as {
+        const { apps } = (await fetchAuthor(uid as unknown as string)).apps as {
           apps: string[];
         };
 
@@ -99,6 +99,19 @@ export default function Developers(props: DevProps) {
         ShowCaseIcon={AiOutlineAppstoreAdd}
         title={"Add"}
         description="Submit a new app to the store"
+        onClick={() => {
+          invoke("open", {
+            url: "https://ahqstore.github.io/reference/",
+          });
+          Toast("Launched docs site...", "success", 2);
+        }}
+        PopUp={FiExternalLink}
+      />
+      <Option
+        dark={dark}
+        ShowCaseIcon={FaDiscord}
+        title={"Discord"}
+        description="Get support via discord!"
         onClick={() => {
           invoke("open", {
             url: "https://discord.gg/a485NGvc4c",

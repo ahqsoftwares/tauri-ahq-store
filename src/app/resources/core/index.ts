@@ -9,9 +9,29 @@ let sha = "";
 
 const totalUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/total";
 const homeUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/home.json";
-const appUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/apps/{app}.json";
+const appUrl =
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/apps/{app}.json";
 const mapUrl =
   "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/map/{id}.json";
+const searchUrl =
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/search/{id}.json";
+const appsUserUrl =
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/dev/{dev}";
+
+export async function get_devs_apps(dev: string) {
+  if (sha == "") {
+    await get_sha();
+  }
+  const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", dev);
+  const { data } = await fetch(url, {
+    method: "GET",
+    responseType: ResponseType.Text,
+  });
+
+  const apps: string[] = data.split("\n");
+
+  return apps;
+}
 
 export async function get_total() {
   if (sha == "") {
@@ -46,7 +66,30 @@ export async function get_home() {
   return data;
 }
 
-export async function get_map<T>() {
+export async function get_search_data<T>() {
+  if (sha == "") {
+    await get_sha();
+  }
+  const map = [];
+
+  const total = await get_total();
+
+  for (let i = 1; i <= total; i++) {
+    const url = searchUrl.replace("{sha}", sha).replace("{id}", i.toString());
+
+    const val = await fetch<any[]>(url, {
+      method: "GET",
+      responseType: ResponseType.JSON,
+    });
+
+    map.push(...val.data);
+  }
+
+  console.log(map);
+  return map as unknown as any as T;
+}
+
+export async function get_map<T>(): Promise<T> {
   if (sha == "") {
     await get_sha();
   }
@@ -63,12 +106,10 @@ export async function get_map<T>() {
     });
 
     console.log(val);
-
-
   }
 
   console.log(map);
-  return map;
+  return map as unknown as any as T;
 }
 
 export function get_sha() {
@@ -86,15 +127,18 @@ export function get_sha() {
 }
 
 export async function get_app(app: string): Promise<ApplicationData> {
-  const { data } = await fetch<ApplicationData>(appUrl.replace("{sha}", sha).replace("{app}", app), {
-    method: "GET",
-    responseType: ResponseType.JSON,
-  });
+  const { data } = await fetch<ApplicationData>(
+    appUrl.replace("{sha}", sha).replace("{app}", app),
+    {
+      method: "GET",
+      responseType: ResponseType.JSON,
+    },
+  );
 
   const appData: ApplicationData = {
     ...data,
-    icon: `data:image;base64,${data.icon}`
-  }
+    icon: `data:image;base64,${data.icon}`,
+  };
 
   return appData;
 }
