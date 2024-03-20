@@ -46,15 +46,19 @@ export async function updateProfile(
     encrypted: JSON.parse(pass),
   });
 
+  console.log(data);
+
   const { ok, data: reason } = await fetch<string>(`${server}/users/@me`, {
     responseType: ResponseType.Text,
     method: "PATCH",
     headers: {
-      uid: user.currentUser?.u_id,
-      pass: passDe,
+      uid: String(user.currentUser?.u_id),
+      pass: String(passDe),
     },
     body: Body.json(data),
   });
+
+  console.log(ok, reason);
 
   if (ok) {
     if (data.display_name && user.currentUser) {

@@ -1,5 +1,4 @@
 import { ResponseType } from "@tauri-apps/api/http";
-import { server } from "../../server";
 import { ApplicationData } from "../api/fetchApps";
 import { WebSocketMessage, sendWsRequest } from "./handler";
 import fetch from "./http";
@@ -18,17 +17,20 @@ const searchUrl =
 const appsUserUrl =
   "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/dev/{dev}";
 
-export async function get_devs_apps(dev: string) {
+export async function get_devs_apps(devId: string) {
   if (sha == "") {
     await get_sha();
   }
-  const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", dev);
-  const { data } = await fetch(url, {
+  const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
+
+  const { ok, data } = await fetch(url, {
     method: "GET",
     responseType: ResponseType.Text,
   });
 
-  const apps: string[] = data.split("\n");
+  const apps: string[] = ok ? data.split("\n") : [""];
+
+  apps.pop();
 
   return apps;
 }
@@ -52,16 +54,12 @@ export async function get_home() {
     await get_sha();
   }
 
-  console.log("Getting home");
-
   const url = homeUrl.replace("{sha}", sha);
-  console.log(url);
+
   const { data } = await fetch(url, {
     method: "GET",
     responseType: ResponseType.JSON,
   });
-
-  console.log(data);
 
   return data;
 }

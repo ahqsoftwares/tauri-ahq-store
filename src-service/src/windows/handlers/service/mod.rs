@@ -75,16 +75,18 @@ pub fn install_msi(msi: &str, app: &AHQStoreApplication) -> Option<()> {
     to_string_pretty(&app).ok()?,
   )
   .ok()?;
+  fs::write(
+    format!("{}\\ahqStoreVersion", &install_folder),
+    &app.version,
+  )
+  .ok()?;
   fs::remove_file(&msi).ok()?;
 
-  match run(
-    "msiexec",
-    &["/norestart", "/qn", "/i", &to_exec_msi],
-  )
-  .ok()?
-  .wait()
-  .ok()?
-  .success()
+  match run("msiexec", &["/norestart", "/qn", "/i", &to_exec_msi])
+    .ok()?
+    .wait()
+    .ok()?
+    .success()
   {
     true => Some(()),
     false => None,

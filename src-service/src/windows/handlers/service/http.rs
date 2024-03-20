@@ -36,21 +36,24 @@ lazy_static! {
 
 pub fn init() {
   tokio::spawn(async {
-    loop {
-      if let Ok(resp) = CLIENT
-        .get("https://api.github.com/repos/ahqstore/apps/commits")
-        .send()
-        .await
-      {
-        if let Ok(mut data) = resp.json::<Vec<Commit>>().await {
-          let data = data.remove(0);
-          
-          unsafe { GH_URL = Some(data.sha) }
-        }
-      }
-      tokio::time::sleep(Duration::from_secs(1800)).await;
-    }
+    get_commit().await;
   });
+}
+
+pub async fn get_commit() -> u8 {
+  if let Ok(resp) = CLIENT
+    .get("https://api.github.com/repos/ahqstore/apps/commits")
+    .send()
+    .await
+  {
+    if let Ok(mut data) = resp.json::<Vec<Commit>>().await {
+      let data = data.remove(0);
+
+      unsafe { GH_URL = Some(data.sha) }
+      return 0;
+    }
+  }
+  1
 }
 
 pub async fn keep_alive() -> bool {
@@ -159,16 +162,19 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
 }
 
 pub async fn get_app_url(ref_id: RefId, app_id: AppId) -> Response {
-    let url = unsafe {
-      if let Some(x) = &GH_URL {
-        x
-      } else {
-        return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
-      }
-    };
-    let url = format!("https://rawcdn.githack.com/ahqstore/apps/{}/db/apps/{}.json", &url, &app_id);
-  
-    Response::AppDataUrl(ref_id, app_id, url)
+  let url = unsafe {
+    if let Some(x) = &GH_URL {
+      x
+    } else {
+      return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
+    }
+  };
+  let url = format!(
+    "https://rawcdn.githack.com/ahqstore/apps/{}/db/apps/{}.json",
+    &url, &app_id
+  );
+
+  Response::AppDataUrl(ref_id, app_id, url)
 }
 
 pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
@@ -179,7 +185,10 @@ pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
       return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
     }
   };
-  let url = format!("https://rawcdn.githack.com/ahqstore/apps/{}/db/apps/{}.json", &url, &app_id);
+  let url = format!(
+    "https://rawcdn.githack.com/ahqstore/apps/{}/db/apps/{}.json",
+    &url, &app_id
+  );
 
   if let Some(x) = CLIENT.get(url).send().await.ok() {
     if let Some(x) = x.json::<AHQStoreApplication>().await.ok() {

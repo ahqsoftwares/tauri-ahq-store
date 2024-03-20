@@ -1,7 +1,8 @@
+use ahqstore_types::UpdateStatusReport;
 use lazy_static::lazy_static;
 use std::sync::mpsc::Sender;
+use tokio::net::windows::named_pipe::NamedPipeServer;
 use tokio::spawn;
-use tokio::{io::AsyncWriteExt, net::windows::named_pipe::NamedPipeServer};
 
 use crate::windows::{
   utils::{
@@ -11,6 +12,7 @@ use crate::windows::{
   write_log,
 };
 
+use self::daemon::UPDATE_STATUS_REPORT;
 use self::service::*;
 
 mod daemon;
@@ -35,18 +37,16 @@ pub fn handle_msg(data: String) {
       write_log(&data);
       if let Some(x) = Command::try_from(&data) {
         match x {
-          Command::GetSha(ref_id) => {
-            unsafe {
-              let val = if let Some(x) = &GH_URL {
-                Response::as_msg(Response::SHAId(ref_id, x.into()))
-              } else {
-                Response::as_msg(Response::Error(ErrorType::GetSHAFailed(ref_id)))
-              };
+          Command::GetSha(ref_id) => unsafe {
+            let val = if let Some(x) = &GH_URL {
+              Response::as_msg(Response::SHAId(ref_id, x.into()))
+            } else {
+              Response::as_msg(Response::Error(ErrorType::GetSHAFailed(ref_id)))
+            };
 
-              ws_send(&mut ws, &val).await;
-              send_term(ref_id).await;
-            }
-          }
+            ws_send(&mut ws, &val).await;
+            send_term(ref_id).await;
+          },
           Command::GetApp(ref_id, app_id) => {
             let _ = GET_INSTALL_DAEMON.send(Command::GetApp(ref_id, app_id));
           }
@@ -110,12 +110,21 @@ pub fn handle_msg(data: String) {
           }
 
           Command::RunUpdate(ref_id) => {
-            send_term(ref_id).await;
+            let _ = GET_INSTALL_DAEMON.send(Command::RunUpdate(ref_id));
           }
           Command::UpdateStatus(ref_id) => {
+            let _ = ws_send(
+              &mut ws,
+              &Response::as_msg(Response::UpdateStatus(ref_id, unsafe {
+                UPDATE_STATUS_REPORT
+                  .as_ref()
+                  .unwrap_or(&UpdateStatusReport::Checking)
+                  .clone()
+              })),
+            )
+            .await;
             send_term(ref_id).await;
           }
-
           _ => {}
         }
       } else {

@@ -38,15 +38,12 @@ pub fn exists(app_id: &str) -> Option<bool> {
       if let Some(f) = f {
         let calc: Option<bool> = (|| {
           let r = &reg
-          .open_subkey(&f)
-          .ok()?
-          .get_value::<String, &str>("DisplayName")
-          .unwrap_or("".into());
-        
-          Some(
-            &r
-              == &title,
-          )
+            .open_subkey(&f)
+            .ok()?
+            .get_value::<String, &str>("DisplayName")
+            .unwrap_or("".into());
+
+          Some(&r == &title)
         })();
         return calc.unwrap_or(false);
       }

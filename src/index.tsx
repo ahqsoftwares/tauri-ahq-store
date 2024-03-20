@@ -89,6 +89,7 @@ if (window.__TAURI_IPC__ == null) {
         document.querySelector("html")?.setAttribute("data-os", "win32");
       }
       setTimeout(() => {
+        console.log("Decorations: true");
         appWindow.setDecorations(true);
       }, 500);
     })();
@@ -182,7 +183,7 @@ if (window.__TAURI_IPC__ == null) {
         user ? StoreLoad(Store, { auth }) : StoreLoad(Login as any, { auth });
       });
 
-      await tryAutoLogin(auth);
+      await tryAutoLogin(auth).catch(() => {});
       render("Launching Store...", App);
       setTimeout(() => {
         if (!auth.currentUser) {

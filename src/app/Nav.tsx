@@ -100,7 +100,7 @@ export default function Nav(props: prop) {
       </button>
 
       <button
-        className={`n-item ${g}`}
+        className={`n-item ${g} hidden`}
         onClick={() => changePage("Dependencies")}
       >
         {g === "active" ? (

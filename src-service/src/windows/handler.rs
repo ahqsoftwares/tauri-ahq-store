@@ -5,10 +5,7 @@ use std::{
   ptr,
   time::Duration,
 };
-use tokio::{
-  net::windows::named_pipe::{PipeMode, ServerOptions},
-  time::sleep,
-};
+use tokio::net::windows::named_pipe::{PipeMode, ServerOptions};
 use windows::Win32::{
   Foundation::HANDLE,
   Security::{
@@ -100,7 +97,7 @@ pub async fn launch() {
 
           match pipe.try_read(&mut val) {
             Ok(0) => {}
-            Ok(d) => {
+            Ok(_) => {
               let total = usize::from_be_bytes(val);
 
               let mut buf: Vec<u8> = Vec::new();

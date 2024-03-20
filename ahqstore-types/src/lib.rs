@@ -17,6 +17,10 @@ pub use api::*;
 /// ```sh
 /// cargo install ahqstore_cli_rs
 /// ```
+/// or visit app / api sub module
+/// 
+/// This Module:
+/// This module lists the standard commands that AHQ Store sends to AHQ Store Service
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Commit {
@@ -25,8 +29,9 @@ pub struct Commit {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Prefs {
-  launch_app: bool,
-  install_apps: bool,
+  pub launch_app: bool,
+  pub install_apps: bool,
+  pub auto_update_apps: bool
 }
 
 impl Prefs {
@@ -46,8 +51,15 @@ impl Prefs {
     Self {
       launch_app: true,
       install_apps: true,
+      auto_update_apps: true,
     }
   }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub enum Package {
+  LeadLang,
+  DevCamp
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -66,7 +78,7 @@ pub enum Command {
   GetPrefs(RefId),
   SetPrefs(RefId, Prefs),
 
-  AddPkg(RefId, String),
+  AddPkg(RefId, Package),
 }
 
 impl Command {
@@ -93,6 +105,14 @@ pub enum ErrorType {
   GetSHAFailed(RefId),
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum UpdateStatusReport {
+  Disabled,
+  UpToDate,
+  Checking,
+  Updating(String, Vec<String>),
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Response {
   Ready,
@@ -107,6 +127,8 @@ pub enum Response {
   AppDataUrl(RefId, AppId, String),
 
   ListApps(RefId, Vec<AppData>),
+
+  UpdateStatus(RefId, UpdateStatusReport),
 
   DownloadStarted(RefId, AppId),
   DownloadProgress(RefId, AppId, [u64; 2]),

@@ -130,7 +130,6 @@ export default function Init(props: UserProps) {
                       {
                         result: fs.result as string,
                       },
-                      password,
                       setPFD,
                     );
                   }
@@ -220,7 +219,6 @@ export default function Init(props: UserProps) {
                       {
                         result: (profilePictureData as any).fs.result,
                       },
-                      inputPassword,
                       setPFD,
                     );
 
@@ -604,9 +602,24 @@ function ChangeAccountName(props: AccountNameProps) {
       if (user.display_name !== value) {
         await updateProfile(auth, {
           display_name: value,
-        });
+        })
+          .then(([ok, reason]) => {
+            if (ok) {
+              updateName(value);
+            } else {
+              sendNotification({
+                title: "Uh Oh!",
+                body: reason.replace(/"/g, ""),
+              });
+            }
+          })
+          .catch(() => {
+            sendNotification({
+              title: "Error",
+              body: "Could not set name",
+            });
+          });
       }
-      updateName(value);
       setValue("");
     } catch (e) {
       sendNotification({ title: "Error", body: "Could not set name" });
@@ -662,7 +675,6 @@ async function ChangeProfile(
   setAlt: Function,
   setUser: Function,
   fs: { result: string },
-  pwd: string,
   setPFD: ({}) => void,
 ) {
   try {
@@ -675,7 +687,7 @@ async function ChangeProfile(
       if (!ok) {
         sendNotification({
           title: "Failed to update profile picture!",
-          body: reason,
+          body: reason.replace(/"/g, ""),
         });
         setPFD({});
 

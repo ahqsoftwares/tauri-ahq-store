@@ -1,6 +1,7 @@
 import fetch from "../core/http";
 import { get_app, get_devs_apps, get_search_data } from "../core";
 import { server } from "../../server";
+import { ResponseType } from "@tauri-apps/api/http";
 
 interface AuthorObject {
   u_id: number;
@@ -84,20 +85,22 @@ export async function fetchSearchData() {
   }
 }
 
-export async function fetchAuthor(id: string) {
-  if (authorCache[id]) {
-    return authorCache[id];
+export async function fetchAuthor(uid: string) {
+  console.log(uid);
+  if (authorCache[uid]) {
+    return authorCache[uid];
   }
 
-  let author = (
-    await fetch(`${server}/users/${id}`, {
-      method: "GET",
-      responseType: 1,
-    })
-  ).data as AuthorObject;
+  console.log(uid);
+  const url = `${server}/users/${uid}`;
+  const { ok, data: author } = await fetch<AuthorObject>(url, {
+    method: "GET",
+    responseType: ResponseType.JSON,
+  });
 
-  author.apps = await get_devs_apps(id);
-  authorCache[id] = author;
+  console.log(uid, ok, author, url);
+  author.apps = await get_devs_apps(String(author.u_id)).catch(() => []);
+  authorCache[uid] = author;
 
   return author;
 }
@@ -116,6 +119,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
       promises.push(
         (async () => {
           const app = await get_app(appId);
+          console.log("App", appId, app.appId);
           const authorObj = await fetchAuthor(app.authorId);
 
           const appData = {

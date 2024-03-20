@@ -31,6 +31,7 @@ export function sendWsRequest(
   data: string,
   result: (value: ServerResponse) => void,
 ) {
+  console.log(data);
   queueAndWait(data, result);
 }
 

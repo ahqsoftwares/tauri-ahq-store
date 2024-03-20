@@ -5,7 +5,6 @@ use std::{
   thread,
 };
 
-use interprocess::local_socket::LocalSocketStream;
 use lazy_static::lazy_static;
 
 use super::utils::{log, now, sleep, warn};

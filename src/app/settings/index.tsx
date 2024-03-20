@@ -30,6 +30,7 @@ import { FaUsersGear } from "react-icons/fa6";
 import { HiOutlineColorSwatch } from "react-icons/hi";
 
 import "./styles.css";
+import { SiDaisyui, SiTailwindcss } from "react-icons/si";
 
 interface InitProps {
   dark: boolean;
@@ -314,6 +315,70 @@ export default function Init(props: InitProps) {
             Icon={"/tauri.svg"}
             onClick={() => {
               openUrl("https://tauri.app");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+        </div>
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="CSS Framework"
+            description={`Tailwindcss`}
+            Icon={(o) => SiTailwindcss({ ...o, color: "#39bcf8" })}
+            onClick={() => {
+              openUrl("https://tailwindcss.com/");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+            roundedImage={true}
+          />
+
+          <div className="w-[1.2rem]"></div>
+
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="CSS Framework"
+            description={`Daisyui`}
+            Icon={(s) => SiDaisyui({ ...s, color: "white" })}
+            onClick={() => {
+              openUrl("https://daisyui.com");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+        </div>
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="React Icons"
+            description={`Thanks for the icons to make it possible`}
+            Icon={"/ri.svg"}
+            onClick={() => {
+              openUrl("https://react-icons.github.io/react-icons/");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+            roundedImage={true}
+          />
+
+          <div className="w-[1.2rem]"></div>
+
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="Icons8"
+            description={`Thanks for some of the icons 😇`}
+            Icon={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAABuklEQVR4nO2Y204CQQyG9z2ko4K36hMoLSSoib6Tp5dRYTv7Ch6QB1G883QlwYDpeohRCQtbmI3pn2zmajr5Zjrdzh9FJpNpIoHHK+dpqPhdjFprqUXrwHjkmDrgqQsee+nIdA0eDxeS2lo0rZQh0u/nGqWkugKM8di5TANgbEFMlcKBQEwN8PQwyXxgegau7RUGZDGu7TiPr1PFYeqXGLeCg6Tp5PExTxyQk2zWy0FBnCfWiAVMZ8FApDrJxVWJxzQo8eZqEBDHdKwZD5gOQoF0VEE8toOAANOd7sbgbRgQjz3djcGXQCDUVT6RG7sjLl9qHeqmFu0HORHpYv/FfySSZpGxpRMPT8ZCzBQkpkreXssx3btkYzkoiKiUVLeli50Soi9PgEwQswb5OJlGurMTzAfGJxdXdzNDzAMkXaNZL0sXO7YAMA0c42nmdJo3yKek+kgDKL2TtB0gHcD72JYSm6k6FQHEzIeiXHYzH9jMB1JLLTMf/O9/i5kPLm96mflAIzbGzAfKlVpmPviiGXRmPtBfFdDMh6FGi2Lmg/9KKTMfhrN4WM3NfACmS93yi+dBzAeTyRR91xuOT9XMkoUR3gAAAABJRU5ErkJggg=="}
+            onClick={() => {
+              openUrl("https://icons8.com");
             }}
             disabled={true}
             active={true}

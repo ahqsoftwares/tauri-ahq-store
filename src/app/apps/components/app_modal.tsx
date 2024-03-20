@@ -233,7 +233,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                 </button>
               ) : (
                     <>
-                      {appData.install.win32 == undefined && (
+                      {(window.os.type == "windows" ? appData.install.win32 == undefined : appData.install.linux == undefined) && (
                         <div
                           role="alert"
                           className="dui-alert dui-alert-warning text-warning-content mb-2"
@@ -249,7 +249,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                             : "dui-btn-success text-success-content"
                           } w-[60%] mb-4`}
                         onClick={() => install()}
-                        disabled={appData.install.win32 == undefined}
+                        disabled={window.os.type == "windows" ? appData.install.win32 == undefined : appData.install.linux == undefined}
                       >
                         Install
                       </button>

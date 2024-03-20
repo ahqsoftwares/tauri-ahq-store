@@ -34,13 +34,14 @@ export default function Developers(props: DevProps) {
   useEffect(() => {
     (async () => {
       try {
-        const { apps } = (await fetchAuthor(uid as unknown as string)).apps as {
-          apps: string[];
-        };
+        if (uid) {
+          console.log(uid);
+          const { apps } = await fetchAuthor(String(uid))
 
-        fetchApps(apps).then((apps) => {
-          setPublishedApps(apps as appData[]);
-        });
+          fetchApps(apps).then((apps) => {
+            setPublishedApps(apps as appData[]);
+          });
+        }
       } catch (e) {
         console.error(e);
         setPublishedApps([]);

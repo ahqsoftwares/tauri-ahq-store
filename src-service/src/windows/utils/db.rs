@@ -1,4 +1,4 @@
-use tokio::{io::AsyncWriteExt, net::windows::named_pipe::NamedPipeServer};
+use tokio::net::windows::named_pipe::NamedPipeServer;
 
 pub type ServiceIpc = NamedPipeServer;
 
