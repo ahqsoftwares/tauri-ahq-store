@@ -53,6 +53,7 @@ impl Display for InstallerFormat {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AppRepo {
+  /// author must be your GitHub username or username of an org where you're a "visible" member
   pub author: Str,
   pub repo: Str,
 }

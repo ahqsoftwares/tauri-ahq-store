@@ -23,6 +23,14 @@ pub struct AHQStoreApplication {
   pub icon: Str,
   pub repo: AppRepo,
   pub version: Str,
+
+  /// The Site to your app
+  pub site: Option<Str>,
+
+  /// This'll be ignored unless you're ahq_verified tag which no one except AHQ Store Team has
+  /// 
+  /// The general dev isn't meant to redistribute others' apps
+  pub source: Option<Str>
 }
 
 impl AHQStoreApplication {
