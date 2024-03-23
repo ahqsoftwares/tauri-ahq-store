@@ -44,7 +44,7 @@ export default function AppCard(props: {
 }) {
   const [appData, setAppData] = useState<appData>(def);
 
-  const { appDisplayName, description, icon, AuthorObject } = appData;
+  const { appDisplayName, description, icon, source, AuthorObject } = appData;
 
   useEffect(() => {
     setAppData(def);
@@ -83,11 +83,11 @@ export default function AppCard(props: {
 
       <h1 className="card-title">{appDisplayName}</h1>
 
-      <div className="card-description">{description}</div>
+      <div className="card-description">{description.substring(0, 64)}...</div>
 
       <div className="card-footer">
         <button className="text-blue-500 text-2xl" style={{ minWidth: "95%" }}>
-          {AuthorObject?.display_name}
+          {source || AuthorObject?.display_name}
         </button>
       </div>
     </div>

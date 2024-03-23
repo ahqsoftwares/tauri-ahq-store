@@ -38,12 +38,15 @@ export default function App({
       } ${lastIndex ? "rounded-b-md" : ""} hover:shadow-xl pl-2 cursor-default`}
     >
       <img
-        width={"64px"}
-        height={"64px"}
         src={appInfo.icon}
         alt={appInfo.appDisplayName}
         className={`mr-2`}
         draggable={false}
+        style={{
+          width: "60px",
+          marginTop: "auto",
+          marginBottom: "auto"
+        }}
       ></img>
 
       <div className="flex flex-col my-auto text-start">

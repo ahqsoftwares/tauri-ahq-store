@@ -94,6 +94,8 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
         let x = Response::as_msg(Response::DownloadStarted(ref_id, id.clone()));
         ws_send(&mut ws, &x).await;
 
+        println!("{:?} {:?} {:?}", &data.downloadUrls, &data.install, &data.get_win32_download());
+
         let mut resp = DOWNLOADER
           .get(&data.get_win32_download()?.url)
           .send()
@@ -141,6 +143,7 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
       }
       .await
       {
+        println!("Got Error");
         let x = Response::as_msg(Response::Error(ErrorType::AppInstallError(
           ref_id,
           id.clone(),

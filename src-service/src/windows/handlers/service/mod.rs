@@ -55,6 +55,7 @@ pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
     return None;
   };
 
+  println!("{:?}", &win32.installerType);
   match win32.installerType {
     InstallerFormat::WindowsZip => load_zip(&file, &app),
     InstallerFormat::WindowsInstallerMsi => install_msi(&file, &app),

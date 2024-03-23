@@ -1,7 +1,7 @@
-use msi::open;
+use msi::{open, Select};
 use winreg::{enums::HKEY_LOCAL_MACHINE, RegKey};
 
-use std::fs;
+use std::fs::{self, File};
 
 use crate::windows::utils::get_program_folder;
 
@@ -17,41 +17,31 @@ pub fn is_msi(app_id: &str) -> bool {
   fs::metadata(msi_from_id(app_id)).is_ok()
 }
 
+fn get_product_code(msi: &mut msi::Package<File>) -> Option<String> {
+  let mut property = msi.select_rows(
+      Select::table("Property")
+  ).ok()?;
+
+  property.find(|x| &x[0].as_str() == &Some("ProductCode"))?[1].as_str().map_or_else(|| None, |x| Some(x.into()))
+}
+
 pub fn exists(app_id: &str) -> Option<bool> {
   let msi = msi_from_id(app_id);
 
-  let msi = open(msi).ok()?;
-  let title = msi.summary_info().subject()?;
+  let mut msi = open(msi).ok()?;
+  
+  let product_code = get_product_code(&mut msi)?;
 
-  println!("Title: {}", &title);
+  println!("Code: {}", &product_code);
 
   let reg = RegKey::predef(HKEY_LOCAL_MACHINE);
-  let reg = reg
-    .open_subkey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
+  reg
+    .open_subkey(
+      &format!("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{}", &product_code)
+    )
     .ok()?;
 
-  let vect: Vec<_> = reg
-    .enum_keys()
-    .into_iter()
-    .map(|f| f.ok())
-    .filter(|f| {
-      if let Some(f) = f {
-        let calc: Option<bool> = (|| {
-          let r = &reg
-            .open_subkey(&f)
-            .ok()?
-            .get_value::<String, &str>("DisplayName")
-            .unwrap_or("".into());
-
-          Some(&r == &title)
-        })();
-        return calc.unwrap_or(false);
-      }
-      false
-    })
-    .collect();
-
-  Some(vect.len() == 1)
+  Some(true)
 }
 
 pub fn uninstall_msi(app_id: &str) -> Option<()> {

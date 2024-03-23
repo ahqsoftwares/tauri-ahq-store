@@ -100,6 +100,7 @@ export default function ShowModal(props: AppDataPropsModal) {
     description,
     authorId,
     AuthorObject,
+    source,
     displayImages,
     version,
     repo,
@@ -182,7 +183,7 @@ export default function ShowModal(props: AppDataPropsModal) {
               src={icon}
               alt="Logo"
               className="rounded-3xl shadow-2xl"
-            ></img>
+            />
 
             <h1
               className={`mt-5 text-3xl ${
@@ -198,8 +199,8 @@ export default function ShowModal(props: AppDataPropsModal) {
                   dark ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                {description.substring(0, 32)}
-                {description.length > 32 && <>...</>}
+                {description.substring(0, 128)}
+                {description.length > 128 && <>...</>}
               </h2>
             </div>
 
@@ -319,13 +320,14 @@ export default function ShowModal(props: AppDataPropsModal) {
                   });
                 }}
               >
-                Provided by{" "}
-                {authorId == "1" || authorId == "ahqsoftwares" ? (
-                  <IoCheckmarkCircle className="ml-1" />
-                ) : (
-                  <></>
-                )}
-                {AuthorObject.display_name}
+                {source ? <>Destributed from {source} by {AuthorObject.display_name}</> : <>"Provided by{" "}
+                  {authorId == "1" || authorId == "ahqsoftwares" ? (
+                    <IoCheckmarkCircle className="ml-1" />
+                  ) : (
+                    <></>
+                  )}
+                  {AuthorObject.display_name}"</>
+                }
               </button>
               <span className="block">
                 <strong className="mr-2">Application id:</strong>

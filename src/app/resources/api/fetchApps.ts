@@ -45,6 +45,8 @@ interface appData {
     repo: Str;
   };
   version: Str;
+  site?: Str;
+  source?: Str;
   AuthorObject: AuthorObject;
 }
 
