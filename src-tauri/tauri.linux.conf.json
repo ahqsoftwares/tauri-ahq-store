@@ -11,22 +11,6 @@
         "minWidth": 1200,
         "visible": false,
         "decorations": true
-      },
-      {
-        "center": true,
-        "height": 550,
-        "width": 400,
-        "minHeight": 550,
-        "minWidth": 400,
-        "maxHeight": 550,
-        "maxWidth": 400,
-        "title": "AHQ Store Complement",
-        "alwaysOnTop": true,
-        "decorations": false,
-        "visible": false,
-        "resizable": false,
-        "label": "complement",
-        "transparent": true
       }
     ]
   }

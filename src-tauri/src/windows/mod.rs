@@ -46,8 +46,6 @@ struct AppData {
 static mut WINDOW: Option<tauri::Window<tauri::Wry>> = None;
 
 pub fn main() {
-  tauri_plugin_deep_link::prepare("com.AHQ-Softwares.store");
-
   let context = tauri::generate_context!();
 
   let app = tauri::Builder::default()
@@ -59,7 +57,7 @@ pub fn main() {
       let ready = Arc::new(Mutex::new(false));
       let queue = Arc::new(Mutex::new(Vec::<AppData>::new()));
 
-      let window = tauri::Manager::get_window(app, "complement").unwrap();
+      let window = tauri::Manager::get_window(app, "main").unwrap();
 
       let listener = window.clone();
 
@@ -177,14 +175,6 @@ pub fn main() {
         }
       }
 
-      let window = window.clone();
-      tauri_plugin_deep_link::register("ahqstore", move |request| {
-        #[cfg(debug_assertions)]
-        println!("{:?}", request);
-        window.emit("app", request).unwrap_or(());
-      })
-      .unwrap();
-
       Ok(())
     })
     .system_tray(
@@ -265,7 +255,6 @@ pub fn main() {
   }
 
   let main = window.clone();
-  let complement = tauri::Manager::get_window(&app, "complement").unwrap();
 
   app.run(move |_, event| match event {
     RunEvent::ExitRequested { api, .. } => {
@@ -274,12 +263,7 @@ pub fn main() {
     RunEvent::WindowEvent { event, label, .. } => match event {
       tauri::WindowEvent::CloseRequested { api, .. } => {
         api.prevent_close();
-        if &label == "complement" {
-          complement.hide().unwrap();
-        } else {
-          complement.hide().unwrap();
-          main.hide().unwrap();
-        }
+        main.hide().unwrap();
       }
       _ => {}
     },

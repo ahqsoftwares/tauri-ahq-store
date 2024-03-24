@@ -104,7 +104,10 @@ export default function Apps(props: AppsProps) {
               }, 100);
             }}
           >
-            <div className="w-[100%] flex border-[1px] border-base-content rounded-md" id="get-width">
+            <div
+              className="w-[100%] flex border-[1px] border-base-content rounded-md"
+              id="get-width"
+            >
               <input
                 className={`search-input search-input-m-modified ${
                   dark ? "style-input-d search-input-m-modified-d" : ""

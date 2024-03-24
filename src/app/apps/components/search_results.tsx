@@ -19,7 +19,11 @@ export default function Load(props: LoadProps) {
         show();
       }}
     >
-      <img src={icon} alt="Logo" style={{ "height": "2rem", marginTop: "auto", marginBottom: "auto" }} />
+      <img
+        src={icon}
+        alt="Logo"
+        style={{ height: "2rem", marginTop: "auto", marginBottom: "auto" }}
+      />
       <div className="ml-2">
         <h1 className={dark ? "text-white" : "text-black"}>{appDisplayName}</h1>
         <h2>

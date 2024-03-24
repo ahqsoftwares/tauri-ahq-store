@@ -74,7 +74,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.AHQ-Softwares.store",
+      "identifier": "com.ahqstore.app",
       "longDescription": "AHQ Store\nA New Store for downloading apps!",
       "resources": ["icons/pwd_reset.png"],
       "shortDescription": "AHQ Store",
@@ -93,10 +93,7 @@
       "csp": null
     },
     "updater": {
-      "active": false,
-      "endpoints": [],
-      "pubkey": "",
-      "dialog": false
+      "active": false
     },
     "windows": [
       {
@@ -109,22 +106,6 @@
         "minWidth": 1200,
         "visible": false,
         "decorations": false,
-        "transparent": true
-      },
-      {
-        "center": true,
-        "height": 550,
-        "width": 400,
-        "minHeight": 550,
-        "minWidth": 400,
-        "maxHeight": 550,
-        "maxWidth": 400,
-        "title": "AHQ Store Complement",
-        "alwaysOnTop": true,
-        "decorations": false,
-        "visible": false,
-        "resizable": false,
-        "label": "complement",
         "transparent": true
       }
     ]

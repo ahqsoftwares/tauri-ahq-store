@@ -16,6 +16,7 @@ slint = "1.4.1"
 [target.'cfg(windows)'.dependencies]
 check_elevation = "0.2.4"
 winres = "0.1.12"
+winreg = "0.52.0"
 
 
 [build-dependencies]

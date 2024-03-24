@@ -233,28 +233,35 @@ export default function ShowModal(props: AppDataPropsModal) {
                   Uninstall
                 </button>
               ) : (
-                    <>
-                      {(window.os.type == "windows" ? appData.install.win32 == undefined : appData.install.linux == undefined) && (
-                        <div
-                          role="alert"
-                          className="dui-alert dui-alert-warning text-warning-content mb-2"
-                        >
-                          <IoWarning size={"1.5rem"} />
-                          <span>Unsupported</span>
-                        </div>
-                      )}
-                      <button
-                        ref={button}
-                        className={`dui-btn ${working
-                            ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
-                            : "dui-btn-success text-success-content"
-                          } w-[60%] mb-4`}
-                        onClick={() => install()}
-                        disabled={window.os.type == "windows" ? appData.install.win32 == undefined : appData.install.linux == undefined}
-                      >
-                        Install
-                      </button>
-                    </>
+                <>
+                  {(window.os.type == "windows"
+                    ? appData.install.win32 == undefined
+                    : appData.install.linux == undefined) && (
+                    <div
+                      role="alert"
+                      className="dui-alert dui-alert-warning text-warning-content mb-2"
+                    >
+                      <IoWarning size={"1.5rem"} />
+                      <span>Unsupported</span>
+                    </div>
+                  )}
+                  <button
+                    ref={button}
+                    className={`dui-btn ${
+                      working
+                        ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
+                        : "dui-btn-success text-success-content"
+                    } w-[60%] mb-4`}
+                    onClick={() => install()}
+                    disabled={
+                      window.os.type == "windows"
+                        ? appData.install.win32 == undefined
+                        : appData.install.linux == undefined
+                    }
+                  >
+                    Install
+                  </button>
+                </>
               )
             ) : (
               <button className="dui-btn dui-btn-error text-white bg-red-700 hover:bg-red-700 border-red-700 hover:border-red-700 w-[60%] mb-4">
@@ -266,7 +273,7 @@ export default function ShowModal(props: AppDataPropsModal) {
           <div
             className={`${
               dark ? "text-slate-200" : "text-slate-800"
-              } div p-4 ml-2 w-[100%] rounded-xl shadow-xl flex flex-col overflow-scroll`}
+            } div p-4 ml-2 w-[100%] rounded-xl shadow-xl flex flex-col overflow-scroll`}
           >
             <div className="w-full">
               <h1 className="text-xl">Description</h1>
@@ -320,14 +327,21 @@ export default function ShowModal(props: AppDataPropsModal) {
                   });
                 }}
               >
-                {source ? <>Destributed from {source} by {AuthorObject.display_name}</> : <>"Provided by{" "}
-                  {authorId == "1" || authorId == "ahqsoftwares" ? (
-                    <IoCheckmarkCircle className="ml-1" />
-                  ) : (
-                    <></>
-                  )}
-                  {AuthorObject.display_name}"</>
-                }
+                {source ? (
+                  <>
+                    Destributed from {source} by {AuthorObject.display_name}
+                  </>
+                ) : (
+                  <>
+                    "Provided by{" "}
+                    {authorId == "1" || authorId == "ahqsoftwares" ? (
+                      <IoCheckmarkCircle className="ml-1" />
+                    ) : (
+                      <></>
+                    )}
+                    {AuthorObject.display_name}"
+                  </>
+                )}
               </button>
               <span className="block">
                 <strong className="mr-2">Application id:</strong>

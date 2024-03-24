@@ -36,7 +36,7 @@ export default function Developers(props: DevProps) {
       try {
         if (uid) {
           console.log(uid);
-          const { apps } = await fetchAuthor(String(uid))
+          const { apps } = await fetchAuthor(String(uid));
 
           fetchApps(apps).then((apps) => {
             setPublishedApps(apps as appData[]);

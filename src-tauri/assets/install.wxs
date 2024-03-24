@@ -14,7 +14,7 @@
             Name="{{{product_name}}}"
             UpgradeCode="{{{upgrade_code}}}"
             Language="!(loc.TauriLanguage)"
-            Manufacturer="{{{manufacturer}}}"
+            Manufacturer="AHQ Softwares and Contributors"
             Version="{{{version}}}">
 
         <Package Id="*"

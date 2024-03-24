@@ -27,7 +27,7 @@ export default function App({
   async function handleClick() {
     toast("Opened in browser", "success", 1);
     invoke("open", {
-      url: "https://github.com/ahqstore/apps"
+      url: "https://github.com/ahqstore/apps",
     });
   }
 
@@ -45,7 +45,7 @@ export default function App({
         style={{
           width: "60px",
           marginTop: "auto",
-          marginBottom: "auto"
+          marginBottom: "auto",
         }}
       ></img>
 
