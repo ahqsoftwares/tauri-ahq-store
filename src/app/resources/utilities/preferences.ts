@@ -1,16 +1,15 @@
 import {
   BaseDirectory,
-  createDir,
+  mkdir,
   readTextFile,
   writeFile,
-} from "@tauri-apps/api/fs";
+} from "@tauri-apps/plugin-fs";
 
-import { sendNotification } from "@tauri-apps/api/notification";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 
 import { Prefs, get_access_perfs } from "../core";
-import { invoke } from "@tauri-apps/api/tauri";
-import { notification } from "@tauri-apps/api";
-import { exit } from "@tauri-apps/api/process";
+import { invoke } from "@tauri-apps/api/core";
+import { exit } from "@tauri-apps/plugin-process";
 import { isDarkTheme } from "./themes";
 
 interface appData {
@@ -27,14 +26,14 @@ interface appData {
 export type { appData };
 
 export default async function fetchPrefs(): Promise<appData> {
-  createDir("", { dir: BaseDirectory.App }).catch((e) => e);
-  createDir("database", { dir: BaseDirectory.App }).catch((e) => e);
+  mkdir("", { baseDir: BaseDirectory.AppData }).catch((e) => e);
+  mkdir("database", { baseDir: BaseDirectory.AppData }).catch((e) => e);
 
   const is_admin = await invoke<boolean>("is_an_admin");
   const prefs = await get_access_perfs();
 
   if (!is_admin && !prefs.launch_app) {
-    notification.sendNotification({
+    sendNotification({
       title: "Denied",
       body: "You are not allowed to launch the app!",
     });
@@ -49,7 +48,7 @@ export default async function fetchPrefs(): Promise<appData> {
   const defTheme = mode ? "synthwave" : "winter";
 
   return await readTextFile("database/config.astore", {
-    dir: BaseDirectory.App,
+    baseDir: BaseDirectory.AppData,
   })
     .then((data) => JSON.parse(data) as appData | undefined)
     .then(
@@ -70,8 +69,8 @@ export default async function fetchPrefs(): Promise<appData> {
     )
     .catch(async (e) => {
       console.error(e);
-      await createDir("database", {
-        dir: BaseDirectory.App,
+      await mkdir("database", {
+        baseDir: BaseDirectory.AppData,
         recursive: true,
       }).catch(console.error);
 
@@ -79,8 +78,8 @@ export default async function fetchPrefs(): Promise<appData> {
 
       await writeFile(
         "database/config.astore",
-        `{"dark": ${dark}, "theme": "${defTheme}", "font": "def", "autoUpdate": false, "sidebar": "flex-row"}`,
-        { dir: BaseDirectory.App, append: false },
+        new TextEncoder().encode(`{"dark": ${dark}, "theme": "${defTheme}", "font": "def", "autoUpdate": false, "sidebar": "flex-row"}`),
+        { baseDir: BaseDirectory.AppData, append: false },
       ).catch(() => {
         sendNotification({
           title: "Error",
@@ -105,8 +104,8 @@ export function setConfig(data: appData) {
   delete data["accessPrefs"];
   delete data["isAdmin"];
 
-  writeFile("database/config.astore", JSON.stringify(data), {
-    dir: BaseDirectory.App,
+  writeFile("database/config.astore", new TextEncoder().encode(JSON.stringify(data)), {
+    baseDir: BaseDirectory.AppData,
     append: false,
   }).catch(() => {
     sendNotification({ title: "Error", body: "Could not save settings!" });

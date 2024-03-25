@@ -15,7 +15,7 @@ import { server } from "../server";
 
 //API
 import { didGreet, greeted } from "../resources/utilities/greet";
-import { fetch } from "@tauri-apps/api/http";
+import { fetch } from "@tauri-apps/plugin-http";
 import { getData, setData } from "../resources/utilities/database";
 import { Auth } from "../../auth";
 import { getAppVersion } from "../resources/api/version";

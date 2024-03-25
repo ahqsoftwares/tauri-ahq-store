@@ -18,6 +18,6 @@
   "editor.formatOnType": true,
   "editor.tabSize": 2,
   "rust-analyzer.linkedProjects": [
-    "./src-service/Cargo.toml"
+    "./src-tauri/Cargo.toml"
   ]
 }

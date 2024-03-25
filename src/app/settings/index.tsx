@@ -10,9 +10,9 @@ import getWindows, {
 } from "../resources/api/os";
 
 //Tauri
-import { sendNotification } from "@tauri-apps/api/notification";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 import { getVersion } from "@tauri-apps/api/app";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 //Components
 import CheckBox from "./components/checkbox";

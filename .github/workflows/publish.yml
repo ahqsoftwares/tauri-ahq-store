@@ -266,7 +266,7 @@ jobs:
 
       - name: Build Tauri App
         id: tauri-app
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI }}
@@ -275,6 +275,7 @@ jobs:
           args: --verbose
           releaseId: ${{ needs.create-release.outputs.release_id }}
           includeRelease: true
+          includeUpdaterJson: false
 
   undraft-release:
     needs: [create-release, publish-tauri, make-setup]

@@ -1,7 +1,7 @@
 import { Auth } from "./auth";
 
 import { useState, useEffect } from "react";
-import { getCurrent } from "@tauri-apps/api/window";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 import fetchPrefs, { appData } from "./app/resources/utilities/preferences";
 
 import Login from "./Login/Login";

@@ -8,7 +8,9 @@ use std::time::Duration;
 
 static CLIENT_ID: &str = "897736309806882827";
 
-pub fn init_presence(window: tauri::Window) {
+pub fn init_presence(window: &tauri::WebviewWindow) {
+  let window = window.clone();
+
   let _ = spawn(move || {
     if let Ok(mut rpc) = DiscordIpcClient::new(CLIENT_ID) {
       loop {

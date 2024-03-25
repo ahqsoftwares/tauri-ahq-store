@@ -1,6 +1,6 @@
-import { Body, ResponseType, fetch } from "@tauri-apps/api/http";
+import { fetch } from "@tauri-apps/plugin-http";
 import { server } from "../app/server";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 export interface Auth {
   loggedIn: boolean;
@@ -48,15 +48,14 @@ export async function updateProfile(
 
   console.log(data);
 
-  const { ok, data: reason } = await fetch<string>(`${server}/users/@me`, {
-    responseType: ResponseType.Text,
+  const { ok, data: reason } = await fetch(`${server}/users/@me`, {
     method: "PATCH",
     headers: {
       uid: String(user.currentUser?.u_id),
       pass: String(passDe),
     },
-    body: Body.json(data),
-  });
+    body: JSON.stringify(data),
+  }).then(async (r) => ({ ...r, data: await r.text() }));
 
   console.log(ok, reason);
 
@@ -83,7 +82,6 @@ export async function deleteAcc(user: User) {
 
   const { ok } = await fetch(`${server}/users/@me`, {
     method: "DELETE",
-    responseType: ResponseType.Text,
     headers: {
       uid: user.email,
       pass: passDe,

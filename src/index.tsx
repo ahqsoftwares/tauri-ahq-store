@@ -9,10 +9,9 @@ import {
   isPermissionGranted,
   requestPermission,
   sendNotification,
-} from "@tauri-apps/api/notification";
-import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
-import { invoke } from "@tauri-apps/api/tauri";
-import { appWindow } from "@tauri-apps/api/window";
+} from "@tauri-apps/plugin-notification";
+import { invoke } from "@tauri-apps/api/core";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 
 /*Apps
  */
@@ -34,8 +33,9 @@ import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
 import { genAuth } from "./auth";
 import { onAuthChange, tryAutoLogin } from "./auth/login";
-import { os } from "@tauri-apps/api";
+import { platform } from "@tauri-apps/plugin-os";
 
+const appWindow = getCurrent();
 const auth = genAuth();
 
 const root = ReactDOM.createRoot(
@@ -43,18 +43,26 @@ const root = ReactDOM.createRoot(
 );
 
 let list = [
-  "F5", //Reload
-  "CommandOrControl+R", //Reload
-  "CommandOrControl+Shift+R", //Reload
-  "CommandOrControl+Shift+E", //Find
-  "CommandOrControl+Shift+X", //Useless Screenshot
-  "CommandOrControl+F", //Find
-  "CommandOrControl+G", //Find
-  "CommandOrControl+Shift+G", //Find
-  "CommandOrControl+P", //Print
-  "CommandOrControl+Shift+P", //Print
-  "CommandOrControl+U", //Inspect Page
+  [false, false, "F5"], //Reload
+  [true, false, "R"], //Reload
+  [true, true, "R"], //Reload
+  [true, true, "E"], //Find
+  [true, true, "X"], //Useless Screenshot
+  [true, false, "F"], //Find
+  [true, false, "G"], //Find
+  [true, false, "G"], //Find
+  [true, false, "P"], //Print
+  [true, true, "P"], //Print
+  [true, false, "U"], //Inspect Page
 ];
+
+window.addEventListener("keydown", (e) => {
+  list.forEach(([ct, sh, key]) => {
+    if (e.ctrlKey == ct && e.shiftKey == sh && e.key == key) {
+      e.preventDefault();
+    }
+  });
+});
 
 /**
  * Loads updater
@@ -69,29 +77,22 @@ function render(state: string, App: (props: { info: string }) => JSX.Element) {
   );
 }
 
-if (window.__TAURI_IPC__ == null) {
+if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
   render("Not Ready", App);
 } else {
   initDeveloperConfiguration();
 
   (async () => {
-    if ((await os.platform()) == "win32") {
+    const ptf = await platform();
+    console.log(ptf, "Platform");
+    if (ptf == "windows") {
       document.querySelector("html")?.setAttribute("data-os", "win32");
     }
     setTimeout(() => {
       console.log("Decorations: true");
-      appWindow.setDecorations(true);
+      appWindow.setDecorations(true).catch(console.log).then(console.log);
     }, 500);
   })();
-  appWindow.onFocusChanged(({ payload: focused }) => {
-    if (focused) {
-      list.forEach((item) => {
-        register(item, () => {}).catch(() => {});
-      });
-    } else if (appWindow.label === "main") {
-      unregisterAll().catch(() => {});
-    }
-  });
 
   appWindow.show();
   loadAppVersion();

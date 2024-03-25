@@ -8,7 +8,7 @@ import { IoIosNotifications } from "react-icons/io";
 //API
 import { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 export default function App({
   appInfo,

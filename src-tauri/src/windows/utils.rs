@@ -10,8 +10,6 @@ use reqwest::{
 };
 use serde_json::Value;
 
-pub use crate::structs;
-
 lazy_static! {
   pub static ref CLIENT: Client = {
     let mut map = HeaderMap::new();

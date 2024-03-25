@@ -11,7 +11,7 @@ import {
   unInstall,
 } from "../../resources/api/updateInstallWorker";
 import PopUp from "../../resources/components/popup";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { IoCheckmarkCircle, IoWarning } from "react-icons/io5";
 import { FaLinux } from "react-icons/fa6";
 import { SiWindows } from "react-icons/si";

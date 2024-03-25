@@ -1,7 +1,6 @@
 import fetch from "../core/http";
 import { get_app, get_devs_apps, get_search_data } from "../core";
 import { server } from "../../server";
-import { ResponseType } from "@tauri-apps/api/http";
 
 interface AuthorObject {
   u_id: number;
@@ -25,7 +24,7 @@ interface appData {
     [key: number]: {
       installerType:
         | "WindowsZip"
-        | "WindowsInstallerExe"
+      | "WindowsInstallerExe"
         | "WindowsInstallerMsi"
         | "WindowsUWPMsix"
         | "LinuxAppImage";
@@ -95,10 +94,10 @@ export async function fetchAuthor(uid: string) {
 
   console.log(uid);
   const url = `${server}/users/${uid}`;
-  const { ok, data: author } = await fetch<AuthorObject>(url, {
-    method: "GET",
-    responseType: ResponseType.JSON,
+  const { ok, json } = await fetch(url, {
+    method: "GET"
   });
+  const author = await json() as AuthorObject;
 
   console.log(uid, ok, author, url);
   author.apps = await get_devs_apps(String(author.u_id)).catch(() => []);

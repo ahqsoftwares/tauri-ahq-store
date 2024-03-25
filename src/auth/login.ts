@@ -1,7 +1,7 @@
-import { ResponseType, fetch } from "@tauri-apps/api/http";
+import { fetch } from "@tauri-apps/plugin-http";
 import { server } from "../app/server";
 import { Auth, User } from ".";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 export function onAuthChange(auth: Auth, callback: (auth?: User) => void) {
   auth.onAuthChange.push(callback);
@@ -25,15 +25,14 @@ export async function login(
   email: string,
   password: string,
 ): Promise<boolean> {
-  const { ok, data } = await fetch<User>(`${server}/users/@me`, {
+  const { ok, data } = await fetch(`${server}/users/@me`, {
     method: "GET",
-    responseType: ResponseType.JSON,
     headers: {
       uid: email,
       pass: password,
     },
-    timeout: 100,
-  });
+    connectTimeout: 100_000,
+  }).then(async (d) => ({ ...d, data: await d.json() }));
 
   if (ok) {
     auth.currentUser = data;
@@ -51,9 +50,8 @@ export async function checkAuth(
   email: string,
   password: string,
 ): Promise<boolean> {
-  const { ok } = await fetch<User>(`${server}/users/@me`, {
+  const { ok } = await fetch(`${server}/users/@me`, {
     method: "GET",
-    responseType: ResponseType.JSON,
     headers: {
       uid: email,
       pass: password,

@@ -2,8 +2,9 @@
 Native API
 */
 import { useEffect, useState } from "react";
-import { appWindow } from "@tauri-apps/api/window";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 
+const appWindow = getCurrent();
 /*
 CSS
 */
@@ -26,7 +27,7 @@ import fetchPrefs, {
   setConfig,
 } from "./resources/utilities/preferences";
 import { runner } from "./resources/core/handler";
-import { notification } from "@tauri-apps/api";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 import { Prefs, get_home, get_map } from "./resources/core";
 import {
   defaultDark,
@@ -135,7 +136,7 @@ function Render(props: AppProps) {
 
       if (debug) {
         appWindow.listen("error", ({ payload }) => {
-          notification.sendNotification({
+          sendNotification({
             title: "Info / Error / Warn",
             body: payload as any,
           });

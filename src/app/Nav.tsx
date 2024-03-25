@@ -10,7 +10,7 @@ import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
 import { IoLibraryOutline, IoLibrarySharp } from "react-icons/io5";
 import { BiPackage, BiSolidPackage } from "react-icons/bi";
 
-import { getCurrent } from "@tauri-apps/api/window";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 
 import drag from "./drag";
 import { useEffect } from "react";

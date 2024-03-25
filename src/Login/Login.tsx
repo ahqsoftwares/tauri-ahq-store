@@ -2,7 +2,7 @@ import { Auth } from "../auth";
 import { useState } from "react";
 
 import ScaffoldLogin from "./Base";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { login } from "../auth/login";
 
 interface LoginProps {

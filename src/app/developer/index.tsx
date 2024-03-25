@@ -12,7 +12,7 @@ import Option from "./components/Options";
 import fetchApps, { appData, fetchAuthor } from "../resources/api/fetchApps";
 import App from "./components/App";
 import Toast from "../resources/api/toast";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { FaDiscord } from "react-icons/fa6";
 
 interface DevProps {

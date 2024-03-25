@@ -1,8 +1,8 @@
-import { sendNotification } from "@tauri-apps/api/notification";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 import { Prefs } from ".";
 import { ApplicationData } from "../api/fetchApps";
-import { relaunch } from "@tauri-apps/api/process";
-import { ResponseType, fetch } from "@tauri-apps/api/http";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { fetch } from "@tauri-apps/plugin-http";
 
 type Methods =
   | "Error"
@@ -99,10 +99,9 @@ export async function interpret(
     case "AppDataUrl":
       result.method = "AppData";
 
-      const { data } = await fetch<ApplicationData>(pyld2, {
-        method: "GET",
-        responseType: ResponseType.JSON,
-      });
+      const { data } = await fetch(pyld2, {
+        method: "GET"
+      }).then(async (r) => ({ ...r, data: await r.json() }));
 
       const adata: ApplicationData = {
         ...data,

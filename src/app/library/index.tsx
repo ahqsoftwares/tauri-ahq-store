@@ -6,9 +6,10 @@ import InstalledAppsMenu from "./components/Style";
 import AppList from "./components/AppsList";
 
 //tauri and updater
-import { appWindow } from "@tauri-apps/api/window";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 import PopUp from "../resources/components/popup";
 
+const appWindow = getCurrent();
 interface LibraryProps {
   dark: boolean;
 }

@@ -1,4 +1,6 @@
 use ahqstore_types::*;
+use lazy_static::lazy_static;
+use reqwest::{Client, ClientBuilder};
 use serde_json::{from_str, to_string};
 use std::{
   sync::mpsc::{channel, Sender},
@@ -6,11 +8,8 @@ use std::{
   time::Duration,
 };
 use tauri::{Manager, Window};
-use lazy_static::lazy_static;
-use reqwest::{ClientBuilder, Client};
 
 pub static mut GH_URL: Option<String> = None;
-
 
 lazy_static! {
     static ref CLIENT: Client = ClientBuilder::new()
@@ -36,26 +35,26 @@ pub fn init(window: Window) {
 
 fn gh_url() {
   tokio::runtime::Builder::new_current_thread()
-  .worker_threads(1)
-  .enable_all()
-  .build()
-  .unwrap()
-  .block_on(async {
-    loop {
-      if let Ok(resp) = CLIENT
-        .get("https://api.github.com/repos/ahqstore/apps/commits")
-        .send()
-        .await
-      {
-        if let Ok(mut data) = resp.json::<Vec<Commit>>().await {
-          let data = data.remove(0);
-          
-          unsafe { GH_URL = Some(data.sha) }
+    .worker_threads(1)
+    .enable_all()
+    .build()
+    .unwrap()
+    .block_on(async {
+      loop {
+        if let Ok(resp) = CLIENT
+          .get("https://api.github.com/repos/ahqstore/apps/commits")
+          .send()
+          .await
+        {
+          if let Ok(mut data) = resp.json::<Vec<Commit>>().await {
+            let data = data.remove(0);
+
+            unsafe { GH_URL = Some(data.sha) }
+          }
         }
+        tokio::time::sleep(Duration::from_secs(1800)).await;
       }
-      tokio::time::sleep(Duration::from_secs(1800)).await;
-    }
-  });
+    });
 }
 
 fn daemon(window: Window) -> Sender<Command> {
@@ -75,7 +74,7 @@ fn daemon(window: Window) -> Sender<Command> {
           unsafe {
             send_window(Response::SHAId(ref_id, GH_URL.as_ref().unwrap().into()));
           }
-          
+
           term(ref_id);
         }
         Command::GetPrefs(ref_id) => {

@@ -8,14 +8,16 @@ use std::sync::Arc;
 use std::thread;
 use std::{ffi::OsStr, io::ErrorKind, thread::spawn, time::Duration};
 
+use tauri::Manager;
+
 static mut CONNECTION: Option<WsConnection> = None;
-static mut WINDOW: Option<tauri::Window> = None;
+static mut WINDOW: Option<tauri::WebviewWindow> = None;
 
 static mut LAST_CMD: Option<String> = None;
 
 #[allow(unused)]
 struct WsConnection {
-  to_send: Arc<Mutex<Vec<String>>>
+  to_send: Arc<Mutex<Vec<String>>>,
 }
 
 unsafe impl Send for WsConnection {}
@@ -28,13 +30,13 @@ impl WsConnection {
     }
 
     Self {
-      to_send: Arc::new(Mutex::new(vec![]))
+      to_send: Arc::new(Mutex::new(vec![])),
     }
   }
 
   pub fn send_ws(&mut self, value: &str) {
     unsafe {
-      if let Some(x) = &LAST_CMD {
+      if let Some(x) = LAST_CMD.as_mut() {
         if &x != &value {
           let to_send = self.to_send.clone();
 
@@ -98,7 +100,7 @@ impl WsConnection {
                         break;
                       }
                     }
-                  }
+                  },
                 }
               }
 
@@ -123,7 +125,7 @@ impl WsConnection {
                 println!("Len: {e:?}");
                 break;
               }
-            }
+            },
           }
 
           //Sending Messages
@@ -161,9 +163,14 @@ impl WsConnection {
   }
 }
 
-pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
+pub unsafe fn init<'a>(window: &tauri::WebviewWindow, reinstall_astore: fn()) {
+  let window: tauri::WebviewWindow = window.clone();
   spawn(move || {
-    let rt = tokio::runtime::Builder::new_current_thread().worker_threads(5).enable_all().build().unwrap();
+    let rt = tokio::runtime::Builder::new_current_thread()
+      .worker_threads(5)
+      .enable_all()
+      .build()
+      .unwrap();
     rt.block_on(async move {
       WINDOW = Some(window);
 
@@ -173,10 +180,9 @@ pub unsafe fn init<'a>(window: tauri::Window, reinstall_astore: fn()) {
 
       if let Some(win) = WINDOW.as_mut() {
         win.listen("ws_send", |ev| {
-          if let Some(x) = ev.payload() {
-            if let Ok(x) = from_str::<String>(x) {
-              CONNECTION.as_mut().unwrap().send_ws(&x);
-            }
+          let x = ev.payload();
+          if let Ok(x) = from_str::<String>(x) {
+            CONNECTION.as_mut().unwrap().send_ws(&x);
           }
         });
       }

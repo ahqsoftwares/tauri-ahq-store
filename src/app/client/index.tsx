@@ -4,8 +4,7 @@
 React && Native
 */
 import { FormEventHandler, useEffect, useState } from "react";
-import { sendNotification } from "@tauri-apps/api/notification";
-import { Body, fetch } from "@tauri-apps/api/http";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 import Toast from "../resources/api/toast";
 
 /*
@@ -20,15 +19,14 @@ import { BsPen, BsPenFill } from "react-icons/bs";
 /*
 Database Refs
 */
-import { server } from "../server";
 import GeneralUser from "./user.png";
 import Loading from "./loading.gif";
 import { BiLogOut, BiUserX } from "react-icons/bi";
 import PopUp from "../resources/components/popup";
-import { open } from "@tauri-apps/api/dialog";
-import { readBinaryFile } from "@tauri-apps/api/fs";
+import { open } from "@tauri-apps/plugin-dialog";
+import { readFile } from "@tauri-apps/plugin-fs";
 import { VscKey } from "react-icons/vsc";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { checkAuth } from "../../auth/login";
 
 /*
@@ -99,7 +97,7 @@ export default function Init(props: UserProps) {
         });
 
         if (image) {
-          const data = await readBinaryFile(image as string);
+          const data = await readFile(image.path as string);
           const blob = new Blob([data]);
 
           const fs = new FileReader();

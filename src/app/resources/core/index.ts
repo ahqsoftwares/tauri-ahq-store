@@ -1,4 +1,3 @@
-import { ResponseType } from "@tauri-apps/api/http";
 import { ApplicationData } from "../api/fetchApps";
 import { WebSocketMessage, sendWsRequest } from "./handler";
 import fetch from "./http";
@@ -23,10 +22,10 @@ export async function get_devs_apps(devId: string) {
   }
   const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
 
-  const { ok, data } = await fetch(url, {
+  const { ok, text } = await fetch(url, {
     method: "GET",
-    responseType: ResponseType.Text,
   });
+  const data = await text();
 
   const apps: string[] = ok ? data.split("\n") : [""];
 
@@ -41,10 +40,9 @@ export async function get_total() {
   }
   return Number(
     (
-      await fetch<string>(totalUrl.replace("{sha}", sha), {
-        method: "GET",
-        responseType: ResponseType.Text,
-      })
+      await fetch(totalUrl.replace("{sha}", sha), {
+        method: "GET"
+      }).then(async (res) => ({ data: await res.text() }))
     ).data,
   );
 }
@@ -57,9 +55,8 @@ export async function get_home() {
   const url = homeUrl.replace("{sha}", sha);
 
   const { data } = await fetch(url, {
-    method: "GET",
-    responseType: ResponseType.JSON,
-  });
+    method: "GET"
+  }).then(async (d) => ({ ...d, data: await d.json() }));
 
   return data;
 }
@@ -75,10 +72,9 @@ export async function get_search_data<T>() {
   for (let i = 1; i <= total; i++) {
     const url = searchUrl.replace("{sha}", sha).replace("{id}", i.toString());
 
-    const val = await fetch<any[]>(url, {
-      method: "GET",
-      responseType: ResponseType.JSON,
-    });
+    const val = await fetch(url, {
+      method: "GET"
+    }).then(async (r) => ({ ...r, data: await r.json() }));
 
     map.push(...val.data);
   }
@@ -98,10 +94,9 @@ export async function get_map<T>(): Promise<T> {
   for (let i = 1; i <= total; i++) {
     const url = mapUrl.replace("{sha}", sha).replace("{id}", i.toString());
 
-    const val = await fetch<{ [key: string]: string }>(url, {
-      method: "GET",
-      responseType: ResponseType.JSON,
-    });
+    const val = await fetch(url, {
+      method: "GET"
+    }).then(async (r) => ({ ...r, json: await r.json() }));
 
     console.log(val);
   }
@@ -125,13 +120,12 @@ export function get_sha() {
 }
 
 export async function get_app(app: string): Promise<ApplicationData> {
-  const { data } = await fetch<ApplicationData>(
+  const { data } = await fetch(
     appUrl.replace("{sha}", sha).replace("{app}", app),
     {
-      method: "GET",
-      responseType: ResponseType.JSON,
+      method: "GET"
     },
-  );
+  ).then(async (d) => ({ ...d, json: await d.json() }));
 
   const appData: ApplicationData = {
     ...data,

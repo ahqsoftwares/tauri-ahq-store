@@ -2,7 +2,7 @@ import { Auth } from "../auth";
 import { useState } from "react";
 
 import ScaffoldLogin from "./Base";
-import { sendNotification } from "@tauri-apps/api/notification";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 import { resetPwd } from "../auth/resetPwd";
 
 interface ResetProps {

@@ -6,14 +6,28 @@ pub mod utils;
 mod ws;
 
 use crate::rpc;
-
+use tauri::menu::IconMenuItemBuilder;
+use tauri::tray::{ClickType, TrayIconBuilder, TrayIconEvent};
+use tauri::{
+  menu::{Menu, MenuBuilder, MenuItem},
+  Manager, RunEvent,
+  image::Image,
+};
 //modules
 use crate::encryption::{decrypt, encrypt};
 
 //crates
-use windows::{core::PCWSTR, Win32::{
-  Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE}, System::Com::{CoCreateInstance, CLSCTX_SERVER}, UI::{Shell::{ITaskbarList4, TaskbarList, TBPFLAG}, WindowsAndMessaging::HICON}
-}};
+use windows::{
+  core::PCWSTR,
+  Win32::{
+    Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE},
+    System::Com::{CoCreateInstance, CLSCTX_SERVER},
+    UI::{
+      Shell::{ITaskbarList4, TaskbarList, TBPFLAG},
+      WindowsAndMessaging::HICON,
+    },
+  },
+};
 
 use std::panic::catch_unwind;
 use std::time::Duration;
@@ -27,11 +41,6 @@ use std::{
   thread,
 };
 
-//tauri
-use tauri::{
-  CustomMenuItem, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
-};
-
 //link Launcher
 use open as open_2;
 
@@ -43,7 +52,7 @@ struct AppData {
   pub data: String,
 }
 
-static mut WINDOW: Option<tauri::Window<tauri::Wry>> = None;
+static mut WINDOW: Option<tauri::WebviewWindow<tauri::Wry>> = None;
 
 pub fn main() {
   let context = tauri::generate_context!();
@@ -57,22 +66,34 @@ pub fn main() {
       let ready = Arc::new(Mutex::new(false));
       let queue = Arc::new(Mutex::new(Vec::<AppData>::new()));
 
-      let window = tauri::Manager::get_window(app, "main").unwrap();
+      let window = app.get_webview_window("main").unwrap();
 
       let listener = window.clone();
 
       let ready_clone = ready.clone();
       let queue_clone = queue.clone();
-      let window_clone = window.clone();
-      let window_clone_2 = tauri::Manager::get_window(app, "main").unwrap();
 
       unsafe {
         fs::remove_dir_all(format!("{}\\astore", sys_handler())).unwrap_or(());
-        let window = tauri::Manager::get_window(app, "main").unwrap();
+        let window = app.get_webview_window("main").unwrap();
 
         WINDOW = Some(window.clone());
 
-        ws::init(window, || {
+        {
+          let hwnd = window.clone().hwnd().unwrap();
+
+          let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
+
+          let icon = HICON(32518);
+
+          taskbar
+            .SetOverlayIcon(hwnd, icon, PCWSTR::from_raw("Test" as *const _ as _))
+            .unwrap();
+        }
+
+        rpc::init_presence(&window);
+
+        ws::init(&window, || {
           #[cfg(debug_assertions)]
           println!("Reinstall AHQ Store Service Required...");
 
@@ -120,44 +141,47 @@ pub fn main() {
       }
 
       {
-        let window = window_clone_2.clone();
-
-        rpc::init_presence(window);
-      }
-
-      {
         thread::sleep(Duration::from_secs(1));
-        let hwnd = window_clone_2.hwnd().unwrap();
-        
+        let hwnd = window.hwnd().unwrap();
+
         unsafe {
           //2: Mica, 3: Acrylic, 4: Mica Alt
           let attr = 2;
-          let _ = DwmSetWindowAttribute(hwnd, DWMWINDOWATTRIBUTE(38), &attr as *const _ as _, std::mem::size_of_val(&attr) as u32);
+          let _ = DwmSetWindowAttribute(
+            hwnd,
+            DWMWINDOWATTRIBUTE(38),
+            &attr as *const _ as _,
+            std::mem::size_of_val(&attr) as u32,
+          );
         }
       }
 
-      listener.listen("ready", move |_| {
-        #[cfg(debug_assertions)]
-        println!("ready");
+      {
+        let window = window.clone();
+        listener.listen("ready", move |_| {
+          #[cfg(debug_assertions)]
+          println!("ready");
 
-        *ready_clone.lock().unwrap() = true;
+          *ready_clone.lock().unwrap() = true;
 
-        for item in queue_clone.lock().unwrap().iter() {
-          window_clone
-            .emit(item.name.as_str(), item.data.clone())
-            .unwrap();
-        }
+          for item in queue_clone.lock().unwrap().iter() {
+            window.emit(item.name.as_str(), item.data.clone()).unwrap();
+          }
 
-        let lock = queue_clone.lock();
+          let lock = queue_clone.lock();
 
-        if lock.is_ok() {
-          *lock.unwrap() = Vec::<AppData>::new();
-        }
-      });
+          if lock.is_ok() {
+            *lock.unwrap() = Vec::<AppData>::new();
+          }
+        });
+      }
 
-      listener.listen("activate", move |_| {
-        window_clone_2.show().unwrap();
-      });
+      {
+        let window = window.clone();
+        listener.listen("activate", move |_| {
+          window.show().unwrap();
+        });
+      }
 
       if std::env::args().last().unwrap().as_str() != exec.clone().as_str() {
         let args = args.last().unwrap_or(String::from(""));
@@ -177,40 +201,18 @@ pub fn main() {
 
       Ok(())
     })
-    .system_tray(
-      SystemTray::new()
-        .with_tooltip("AHQ Store is running")
-        .with_menu(
-          SystemTrayMenu::new()
-            .add_item(CustomMenuItem::new("0", "AHQ Store").disabled())
-            .add_native_item(SystemTrayMenuItem::Separator)
-            .add_item(CustomMenuItem::new("open", "Open Store"))
-            .add_item(CustomMenuItem::new("update", "Check for Updates..."))
-            .add_native_item(SystemTrayMenuItem::Separator)
-            .add_item(CustomMenuItem::new("quit", "Quit")),
-        ),
-    )
+    .plugin(tauri_plugin_notification::init())
+    .plugin(tauri_plugin_http::init())
+    .plugin(tauri_plugin_dialog::init())
+    .plugin(tauri_plugin_fs::init())
+    .plugin(tauri_plugin_process::init())
+    .plugin(tauri_plugin_os::init())
     .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-      let main = tauri::Manager::get_window(app, "main").unwrap();
+      let main = app.get_webview_window("main").unwrap();
 
       main.show().unwrap();
       main.set_focus().unwrap();
     }))
-    .on_system_tray_event(|app, event| match event {
-      SystemTrayEvent::LeftClick { .. } => {
-        #[cfg(debug_assertions)]
-        println!("Received a left Click");
-        let main = tauri::Manager::get_window(app, "main").unwrap();
-
-        main.show().unwrap();
-        main.set_focus().unwrap();
-      }
-      SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-        "quit" => std::process::exit(0),
-        _ => {}
-      },
-      _ => {}
-    })
     .invoke_handler(tauri::generate_handler![
       get_windows,
       sys_handler,
@@ -223,47 +225,53 @@ pub fn main() {
       is_development,
       set_overlay
     ])
-    .menu(if cfg!(target_os = "macos") {
-      tauri::Menu::os_default(&context.package_info().name)
-    } else {
-      tauri::Menu::default()
-    })
+    .menu(|handle| Menu::new(handle))
     .build(context)
     .unwrap();
 
-  let window = tauri::Manager::get_window(&app, "main").unwrap();
+  let tray = TrayIconBuilder::with_id("main")
+    .tooltip("AHQ Store is running")
+    .icon(Image::from_bytes(include_bytes!("../../icons/icon.png")).unwrap())
+    .menu_on_left_click(false)
+    .menu(
+      &MenuBuilder::new(&app)
+        .id("tray-menu")
+        .item(&IconMenuItemBuilder::new("&AHQ Store")
+            .enabled(false)
+            .icon(Image::from_bytes(include_bytes!("../../icons/icon.png")).unwrap())
+            .build(&app)
+            .unwrap()
+          )
+        .separator()
+        .item(&MenuItem::with_id(&app, "open", "Open App", true, None::<String>).unwrap())
+        .item(&MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap())
+        .separator()
+        .quit()
+        .build()
+        .unwrap()
+    )
+    .on_tray_icon_event(|app, event| match event {
+      TrayIconEvent { click_type, .. } => match click_type {
+        ClickType::Left => {
+          let _ = app.app_handle().get_webview_window("main").unwrap().show();
+        }
+        _ => {}
+      }
+    })
+    .build(&app)
+    .unwrap();
 
-  unsafe {
-    let hwnd = window.clone().hwnd().unwrap();
-
-    let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
-
-    let icon = HICON(32518);
-    
-    taskbar.SetOverlayIcon(hwnd, icon, PCWSTR::from_raw("Test" as *const _ as _)).unwrap();
-  }
-
-  {
-    let window = window.clone();
-    let window2 = window.clone();
-
-    window.listen("sendUpdaterStatus", move |event| {
-      window2
-        .emit("sendUpdaterStatus", event.payload().unwrap())
-        .unwrap();
-    });
-  }
-
-  let main = window.clone();
-
-  app.run(move |_, event| match event {
+  app.run(move |app, event| match event {
     RunEvent::ExitRequested { api, .. } => {
       api.prevent_exit();
     }
     RunEvent::WindowEvent { event, label, .. } => match event {
       tauri::WindowEvent::CloseRequested { api, .. } => {
         api.prevent_close();
-        main.hide().unwrap();
+
+        if let Some(win) = app.get_webview_window(&label) {
+          win.hide().unwrap();
+        }
       }
       _ => {}
     },
@@ -362,8 +370,10 @@ fn set_overlay(set: bool) {
     let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
 
     let icon = HICON(32518);
-    
-    taskbar.SetOverlayIcon(hwnd, icon, PCWSTR::from_raw("Test" as *const _ as _)).unwrap();
+
+    taskbar
+      .SetOverlayIcon(hwnd, icon, PCWSTR::from_raw("Test" as *const _ as _))
+      .unwrap();
   }
 }
 
