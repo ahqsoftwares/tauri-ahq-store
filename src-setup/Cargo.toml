@@ -8,7 +8,7 @@ license = "Creative Commons Attribution Non Commercial 3.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-env_logger = "0.10.0"
+env_logger = "0.11.2"
 iced = { version = "0.10.0", features = ["image", "debug", "tokio"] }
 iced_core = "0.10.0"
 image = "0.24.6"
