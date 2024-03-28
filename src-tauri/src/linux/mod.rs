@@ -1,9 +1,10 @@
 use std::process;
 
-use tauri::api::dialog::{MessageDialogBuilder, MessageDialogButtons, MessageDialogKind};
+use tauri_plugin_dialog::{MessageDialogBuilder, MessageDialogKind};
 use tauri::api::notification::Notification;
+use tauri::tray::{TrayIconBuilder, TrayIconEvent};
+use tauri::menu::*;
 use tauri::{AppHandle, Manager, RunEvent, SystemTrayEvent, WindowEvent};
-use tauri::{CustomMenuItem, SystemTray, SystemTrayMenu, SystemTrayMenuItem};
 
 use crate::rpc;
 use open as open_2;
@@ -16,16 +17,6 @@ mod mock_ws;
 
 pub fn main() {
   let context = tauri::generate_context!();
-
-  let tray_menu = SystemTrayMenu::new()
-    .add_item(CustomMenuItem::new("10", "AHQ Store").disabled())
-    .add_native_item(SystemTrayMenuItem::Separator)
-    .add_item(CustomMenuItem::new("win_show", "Open Store"))
-    .add_item(CustomMenuItem::new("update", "Check for Updates..."))
-    .add_native_item(SystemTrayMenuItem::Separator)
-    .add_item(CustomMenuItem::new("close", "Quit"));
-
-  let system_tray = SystemTray::new().with_menu(tray_menu);
 
   let app = tauri::Builder::default()
     .setup(|app| {
@@ -53,13 +44,19 @@ pub fn main() {
       set_progress,
       open
     ])
+    .plugin(tauri_plugin_dialog::init())
+    .plugin(tauri_plugin_fs::init())
+    .plugin(tauri_plugin_os::init())
+    .plugin(tauri_plugin_notification::init())
+    .plugin(tauri_plugin_http::init())
+    .plugin(tauri_plugin_os::init())
     .plugin(tauri_plugin_single_instance::init(|app, _, _| {
       let main = Manager::get_window(app, "main").unwrap();
 
       main.show().unwrap();
       main.set_focus().unwrap();
     }))
-    .system_tray(system_tray)
+    /*.system_tray(system_tray)
     .on_system_tray_event(|handle, event| match event {
       SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
         "win_show" => {
@@ -82,14 +79,47 @@ pub fn main() {
         _ => {}
       },
       _ => {}
-    })
+    })*/
     .build(context)
     .unwrap();
+
+  let tray = TrayIconBuilder::with_id("main")
+    .tooltip("AHQ Store is running")
+    .icon(Image::from_bytes(include_bytes!("../../icons/icon.png")).unwrap())
+    .menu_on_left_click(false)
+    .menu(
+      &MenuBuilder::new(&app)
+        .id("tray-menu")
+        .item(&IconMenuItemBuilder::new("&AHQ Store")
+            .enabled(false)
+            .icon(Image::from_bytes(include_bytes!("../../icons/icon.png")).unwrap())
+            .build(&app)
+            .unwrap()
+          )
+        .separator()
+        .item(&MenuItem::with_id(&app, "open", "Open App", true, None::<String>).unwrap())
+        .item(&MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap())
+        .separator()
+        .quit()
+        .build()
+        .unwrap()
+    )
+    .on_tray_icon_event(|app, event| match event {
+      TrayIconEvent { click_type, .. } => match click_type {
+        ClickType::Left => {
+          let _ = app.app_handle().get_webview_window("main").unwrap().show();
+        }
+        _ => {}
+      }
+    })
+    .build(&app)
+    .unwrap();
+
 
   app.run(move |app, event| match event {
     RunEvent::ExitRequested { api, .. } => {
       api.prevent_exit();
-      close_app(&app);
+      close_app(app);
     }
     RunEvent::WindowEvent { label, event, .. } => match event {
       WindowEvent::CloseRequested { api, .. } => {
@@ -106,15 +136,13 @@ pub fn main() {
   });
 }
 
-fn close_app(handle: &&AppHandle) {
+fn close_app(handle: &AppHandle) {
   if let Some(window) = handle.get_window("main") {
     let _ = window.show();
     let _ = window.set_focus();
     let _ = window.maximize();
 
-    MessageDialogBuilder::new("Close app", "Do you want to close AHQ Store?")
-      .parent(&window)
-      .buttons(MessageDialogButtons::YesNo)
+    MessageDialogBuilder::new(handle, "Close app", "Do you want to close AHQ Store?")
       .kind(MessageDialogKind::Warning)
       .show(|close| {
         if close {
