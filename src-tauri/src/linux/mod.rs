@@ -1,10 +1,10 @@
 use std::process;
 
-use tauri_plugin_dialog::{MessageDialogBuilder, MessageDialogKind};
-use tauri::api::notification::Notification;
+use tauri::image::Image;
+use tauri_plugin_dialog::{DialogExt, MessageDialogBuilder, MessageDialogKind};
 use tauri::tray::{TrayIconBuilder, TrayIconEvent};
 use tauri::menu::*;
-use tauri::{AppHandle, Manager, RunEvent, SystemTrayEvent, WindowEvent};
+use tauri::{AppHandle, Manager, RunEvent, tray::ClickType, WindowEvent};
 
 use crate::rpc;
 use open as open_2;
@@ -20,12 +20,12 @@ pub fn main() {
 
   let app = tauri::Builder::default()
     .setup(|app| {
-      let win = app.get_window("main").unwrap();
+      let win = app.get_webview_window("main").unwrap();
 
       #[cfg(debug_assertions)]
       win.open_devtools();
 
-      rpc::init_presence(win.clone());
+      rpc::init_presence(&win);
 
       println!("Starting Mock WS");
       mock_ws::init(win);
@@ -51,7 +51,7 @@ pub fn main() {
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_os::init())
     .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-      let main = Manager::get_window(app, "main").unwrap();
+      let main = Manager::get_webview_window(app, "main").unwrap();
 
       main.show().unwrap();
       main.set_focus().unwrap();
@@ -60,7 +60,7 @@ pub fn main() {
     .on_system_tray_event(|handle, event| match event {
       SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
         "win_show" => {
-          if let Some(window) = handle.get_window("main") {
+          if let Some(window) = handle.get_webview_window("main") {
             let _ = window.show();
             let _ = window.set_focus();
             let _ = window.maximize();
@@ -83,7 +83,7 @@ pub fn main() {
     .build(context)
     .unwrap();
 
-  let tray = TrayIconBuilder::with_id("main")
+  TrayIconBuilder::with_id("main")
     .tooltip("AHQ Store is running")
     .icon(Image::from_bytes(include_bytes!("../../icons/icon.png")).unwrap())
     .menu_on_left_click(false)
@@ -100,7 +100,7 @@ pub fn main() {
         .item(&MenuItem::with_id(&app, "open", "Open App", true, None::<String>).unwrap())
         .item(&MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap())
         .separator()
-        .quit()
+        .item(&MenuItem::with_id(&app, "quit", "Quit", true, None::<String>).unwrap())
         .build()
         .unwrap()
     )
@@ -125,7 +125,7 @@ pub fn main() {
       WindowEvent::CloseRequested { api, .. } => {
         api.prevent_close();
         if &label == "main" {
-          if let Some(win) = app.get_window(&label) {
+          if let Some(win) = app.get_webview_window(&label) {
             let _ = win.hide();
           }
         }
@@ -137,12 +137,12 @@ pub fn main() {
 }
 
 fn close_app(handle: &AppHandle) {
-  if let Some(window) = handle.get_window("main") {
+  if let Some(window) = handle.get_webview_window("main") {
     let _ = window.show();
     let _ = window.set_focus();
     let _ = window.maximize();
 
-    MessageDialogBuilder::new(handle, "Close app", "Do you want to close AHQ Store?")
+    MessageDialogBuilder::new(handle.dialog().clone(), "Close app", "Do you want to close AHQ Store?")
       .kind(MessageDialogKind::Warning)
       .show(|close| {
         if close {

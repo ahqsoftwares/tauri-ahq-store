@@ -169,7 +169,7 @@ function Render(props: AppProps) {
       } catch (_) {
         logOut(auth);
         console.error(_);
-        window.location.reload();
+        //window.location.reload();
       }
     })();
   }, []);

@@ -4,7 +4,6 @@
   "local": true,
   "windows": ["main"],
   "permissions": [
-    "path:default",
     "event:default",
     "window:default",
     "app:default",

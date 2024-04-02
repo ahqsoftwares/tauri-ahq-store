@@ -16,14 +16,10 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 serde_json = "1.0.114"
 serde = { version = "1.0.197", features = ["derive"] }
 
-tauri = { version = "2.0.0-beta", features = [
-  "wry", "tray-icon", "image-png"
-] }
-tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
+tauri = { version = "2.0.0-beta", features = ["wry", "tray-icon", "image-png"] }
 wry = "*"
 
 open = "5.1.0"
-
 reqwest = { version = "*", features = ["blocking", "json"] }
 chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 lazy_static = "1.4.0"
@@ -37,23 +33,21 @@ tauri-plugin-dialog = "2.0.0-beta"
 tauri-plugin-fs = "2.0.0-beta"
 tauri-plugin-process = "2.0.0-beta"
 tauri-plugin-os = "2.0.0-beta"
+tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "=0.52.0", features = [
   "Win32_System_Com",
   "Win32_Foundation",
   "Win32_UI_Shell",
+  "Win32_Graphics_Dwm",
+  "Win32_UI_WindowsAndMessaging"
 ] }
 is_elevated = "0.1.2"
 async-recursion = "1.0.5"
 
-
 [target.'cfg(target_os = "linux")'.dependencies]
 whatadistro = "0.1.0"
-
-[features]
-default = ["custom-protocol"]
-custom-protocol = ["tauri/custom-protocol"]
 
 [profile.release]
 panic = "abort"

@@ -9,7 +9,7 @@ use crate::rpc;
 use tauri::menu::IconMenuItemBuilder;
 use tauri::tray::{ClickType, TrayIconBuilder, TrayIconEvent};
 use tauri::{
-  menu::{Menu, MenuBuilder, MenuItem},
+  menu::{Menu, MenuBuilder, MenuEvent, MenuId, MenuItem},
   Manager, RunEvent,
   image::Image,
 };
@@ -20,7 +20,6 @@ use crate::encryption::{decrypt, encrypt};
 use windows::{
   core::PCWSTR,
   Win32::{
-    Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE},
     System::Com::{CoCreateInstance, CLSCTX_SERVER},
     UI::{
       Shell::{ITaskbarList4, TaskbarList, TBPFLAG},
@@ -28,6 +27,7 @@ use windows::{
     },
   },
 };
+use windows::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE};
 
 use std::panic::catch_unwind;
 use std::time::Duration;
@@ -258,6 +258,21 @@ pub fn main() {
         _ => {}
       }
     })
+    .on_menu_event(|app, ev| {
+      let MenuEvent { id: MenuId(id) } = ev;
+
+      match id.as_str() {
+        "open" => {
+          let window = app.get_webview_window("main").unwrap();
+          window.show().unwrap();
+        }
+        "update" => {
+          let window = app.get_webview_window("main").unwrap();
+          window.emit("check_update", "None").unwrap();
+        }
+        _ => {}
+      }
+    })
     .build(&app)
     .unwrap();
 
@@ -270,7 +285,7 @@ pub fn main() {
         api.prevent_close();
 
         if let Some(win) = app.get_webview_window(&label) {
-          win.hide().unwrap();
+          win.close().unwrap();
         }
       }
       _ => {}

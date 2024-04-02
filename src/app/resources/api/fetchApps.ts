@@ -94,10 +94,10 @@ export async function fetchAuthor(uid: string) {
 
   console.log(uid);
   const url = `${server}/users/${uid}`;
-  const { ok, json } = await fetch(url, {
+  const { ok, data } = await fetch(url, {
     method: "GET"
   });
-  const author = await json() as AuthorObject;
+  const author = data as AuthorObject;
 
   console.log(uid, ok, author, url);
   author.apps = await get_devs_apps(String(author.u_id)).catch(() => []);

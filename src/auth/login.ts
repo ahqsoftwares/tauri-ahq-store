@@ -32,7 +32,7 @@ export async function login(
       pass: password,
     },
     connectTimeout: 100_000,
-  }).then(async (d) => ({ ...d, data: await d.json() }));
+  }).then(async (d) => ({ ...d, ok: d.ok, data: await d.json() }));
 
   if (ok) {
     auth.currentUser = data;

@@ -38,12 +38,13 @@ export async function get_total() {
   if (sha == "") {
     await get_sha();
   }
+
+  const { data } = await fetch(totalUrl.replace("{sha}", sha), {
+    method: "GET"
+  });
+
   return Number(
-    (
-      await fetch(totalUrl.replace("{sha}", sha), {
-        method: "GET"
-      }).then(async (res) => ({ data: await res.text() }))
-    ).data,
+    data
   );
 }
 
@@ -56,7 +57,7 @@ export async function get_home() {
 
   const { data } = await fetch(url, {
     method: "GET"
-  }).then(async (d) => ({ ...d, data: await d.json() }));
+  });
 
   return data;
 }
@@ -74,7 +75,7 @@ export async function get_search_data<T>() {
 
     const val = await fetch(url, {
       method: "GET"
-    }).then(async (r) => ({ ...r, data: await r.json() }));
+    });
 
     map.push(...val.data);
   }
@@ -96,7 +97,7 @@ export async function get_map<T>(): Promise<T> {
 
     const val = await fetch(url, {
       method: "GET"
-    }).then(async (r) => ({ ...r, json: await r.json() }));
+    });
 
     console.log(val);
   }
@@ -125,7 +126,7 @@ export async function get_app(app: string): Promise<ApplicationData> {
     {
       method: "GET"
     },
-  ).then(async (d) => ({ ...d, json: await d.json() }));
+  );
 
   const appData: ApplicationData = {
     ...data,

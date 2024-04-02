@@ -7,7 +7,7 @@ use std::{
   thread::{sleep, spawn},
   time::Duration,
 };
-use tauri::{Manager, Window};
+use tauri::{Manager, WebviewWindow};
 
 pub static mut GH_URL: Option<String> = None;
 
@@ -19,17 +19,17 @@ lazy_static! {
         .unwrap();
 }
 
-pub fn init(window: Window) {
+pub fn init(window: WebviewWindow) {
   std::thread::spawn(|| gh_url());
   let tx = daemon(window.clone());
   window.listen("ws_send", move |event| {
-    if let Some(data) = event.payload() {
+    let data = event.payload();
       if let Ok(data) = from_str::<String>(&data) {
         if let Ok(data) = from_str::<Command>(&data) {
           let _ = tx.send(data);
         }
       }
-    }
+    
   });
 }
 
@@ -57,12 +57,12 @@ fn gh_url() {
     });
 }
 
-fn daemon(window: Window) -> Sender<Command> {
+fn daemon(window: WebviewWindow) -> Sender<Command> {
   let (tx, t_rx) = channel::<Command>();
 
   spawn(move || loop {
     let send_window = |resp: Response| {
-      let _ = window.emit_all("ws_resp", &vec![to_string(&resp).unwrap()]);
+      let _ = window.app_handle().emit("ws_resp", &vec![to_string(&resp).unwrap()]);
     };
     let term = |ref_id: u64| {
       send_window(Response::TerminateBlock(ref_id));
