@@ -12,7 +12,7 @@ futures-util = "0.3.28"
 lazy_static = "1.4.0"
 reqwest = { version = "0.11.20", features = ["json"] }
 serde = { version = "1.0.189", features = ["derive"] }
-serde_json = "1.0.105"
+serde_json = "1.0.115"
 sysinfo = "0.29.10"
 threadpool = "1.8.1"
 tokio = { version = "1.33.0", default-features = false, features = [
