@@ -34,6 +34,7 @@ import initDeveloperConfiguration from "./app/resources/utilities/beta";
 import { genAuth } from "./auth";
 import { onAuthChange, tryAutoLogin } from "./auth/login";
 import { platform } from "@tauri-apps/plugin-os";
+import { Loading } from "./config/Load";
 
 const appWindow = getCurrent();
 const auth = genAuth();
@@ -66,6 +67,17 @@ window.addEventListener("keydown", (e) => {
 
 /**
  * Loads updater
+ */
+function loadRender(unsupported: boolean) {
+  root.render(
+    <>
+      <Loading unsupported={unsupported} />
+    </>,
+  );
+}
+
+/**
+ * Loads updater
  * @param {string} state
  * @param {React.Component} App
  */
@@ -78,7 +90,7 @@ function render(state: string, App: (props: { info: string }) => JSX.Element) {
 }
 
 if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
-  render("Not Ready", App);
+  loadRender(true);
 } else {
   initDeveloperConfiguration();
 
@@ -120,13 +132,13 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
     }
   })();
 
-  render("Welcome!", App);
+  loadRender(false);
 
   (async () => {
     const delay = (ms: number) =>
       new Promise((resolve) => setTimeout(resolve, ms));
 
-    await delay(2000);
+    await delay(20 * 1000);
 
     Manage();
   })();

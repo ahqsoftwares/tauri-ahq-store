@@ -15,7 +15,7 @@ use crate::windows::utils::write_log;
 
 use super::unzip;
 
-static URL: &str = "https://ahqstore-server.onrender.com";
+static URL: &str = "https://ahqstore-server.onrender.com/";
 pub static mut GH_URL: Option<String> = None;
 
 lazy_static! {
@@ -166,7 +166,7 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
 
 pub async fn get_app_url(ref_id: RefId, app_id: AppId) -> Response {
   let url = unsafe {
-    if let Some(x) = &GH_URL {
+    if let Some(x) = GH_URL.as_ref() {
       x
     } else {
       return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
@@ -182,7 +182,7 @@ pub async fn get_app_url(ref_id: RefId, app_id: AppId) -> Response {
 
 pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
   let url = unsafe {
-    if let Some(x) = &GH_URL {
+    if let Some(x) = GH_URL.as_ref() {
       x
     } else {
       return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));

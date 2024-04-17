@@ -38,7 +38,7 @@ pub fn handle_msg(data: String) {
       if let Some(x) = Command::try_from(&data) {
         match x {
           Command::GetSha(ref_id) => unsafe {
-            let val = if let Some(x) = &GH_URL {
+            let val = if let Some(x) = GH_URL.as_ref() {
               Response::as_msg(Response::SHAId(ref_id, x.into()))
             } else {
               Response::as_msg(Response::Error(ErrorType::GetSHAFailed(ref_id)))

@@ -333,13 +333,13 @@ export default function ShowModal(props: AppDataPropsModal) {
                   </>
                 ) : (
                   <>
-                    "Provided by{" "}
+                      Provided by{" "}
                     {authorId == "1" || authorId == "ahqsoftwares" ? (
                       <IoCheckmarkCircle className="ml-1" />
                     ) : (
                       <></>
                     )}
-                    {AuthorObject.display_name}"
+                      {AuthorObject.display_name}
                   </>
                 )}
               </button>

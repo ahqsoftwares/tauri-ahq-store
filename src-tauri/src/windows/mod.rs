@@ -229,7 +229,7 @@ pub fn main() {
     .build(context)
     .unwrap();
 
-  let tray = TrayIconBuilder::with_id("main")
+  TrayIconBuilder::with_id("main")
     .tooltip("AHQ Store is running")
     .icon(Image::from_bytes(include_bytes!("../../icons/icon.png")).unwrap())
     .menu_on_left_click(false)

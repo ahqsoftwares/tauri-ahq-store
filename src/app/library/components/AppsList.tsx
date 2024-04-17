@@ -61,8 +61,9 @@ export default function AppsList(props: Props) {
             <GiPartyPopper size="1.5em" />
           </h1>
         ) : apps.length === 0 ? (
-          <h1 className={`my-2 ${dark ? "text-slate-400" : "text-slate-700"}`}>
-            Loading...
+            <h1 className={`my-2 flex items-center justify-center text-center ${dark ? "text-slate-400" : "text-slate-700"}`}>
+              <span className="dui-loading dui-loading-spinner mr-2"></span>
+              Loading...
           </h1>
         ) : (
           <></>

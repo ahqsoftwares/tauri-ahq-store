@@ -90,8 +90,10 @@ export default function Developers(props: DevProps) {
                     lastIndex={index === publishedApps.length - 1}
                   />
                 ))
-              )}
-            </div>
+                )}
+                <span className="mx-auto mt-auto fix-color mb-5 dui-loading dui-loading-spinner dui-loading-lg"></span>
+              </div>
+
           )
         }
       />
