@@ -13,7 +13,7 @@ export interface User {
   e_verified?: boolean;
   u_id: number;
   display_name?: string;
-  pfp?: string;
+  pf_pic?: string;
   dev: boolean;
 }
 
@@ -64,7 +64,7 @@ export async function updateProfile(
       user.currentUser.display_name = data.display_name;
     }
     if (data.pf_pic && user.currentUser) {
-      user.currentUser.pfp = data.pf_pic;
+      user.currentUser.pf_pic = data.pf_pic;
     }
     if (data.dev && user.currentUser) {
       user.currentUser.dev = data.dev;

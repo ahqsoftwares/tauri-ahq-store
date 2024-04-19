@@ -290,6 +290,47 @@ export default function Init(props: InitProps) {
             noCheckbox={true}
           />
         </div>
+
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="Developer"
+            description={`AHQ (github.com/ahqsoftwares)`}
+            Icon={"/ahq.png"}
+            onClick={() => {
+              openUrl("https://github.com/ahqsoftwares");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+            roundedImage={true}
+          />
+
+          <div className="w-[1.2rem]"></div>
+
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="Github Repo"
+            description={`Click to open in default browser`}
+            Icon={props.dark ? "/github-dark.png" : "/github.png"}
+            onClick={() => {
+              openUrl("https://github.com/ahqsoftwares/tauri-ahq-store");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+        </div>
+
+        <h1
+          className={`mt-3 text-3xl ${props.dark ? "text-white" : "text-slate-700"
+            } mr-auto ml-3`}
+        >
+          Toolkits
+        </h1>
+
         <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
           <CheckBox
             dark={props.dark}
@@ -353,7 +394,7 @@ export default function Init(props: InitProps) {
             noCheckbox={true}
           />
         </div>
-        <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center mb-5">
           <CheckBox
             dark={props.dark}
             url={true}
@@ -381,38 +422,6 @@ export default function Init(props: InitProps) {
             }
             onClick={() => {
               openUrl("https://icons8.com");
-            }}
-            disabled={true}
-            active={true}
-            noCheckbox={true}
-          />
-        </div>
-        <div className="flex mx-auto w-[98%] h-auto items-center justify-center mb-5">
-          <CheckBox
-            dark={props.dark}
-            url={true}
-            title="Developer"
-            description={`AHQ (github.com/ahqsoftwares)`}
-            Icon={"/ahq.png"}
-            onClick={() => {
-              openUrl("https://github.com/ahqsoftwares");
-            }}
-            disabled={true}
-            active={true}
-            noCheckbox={true}
-            roundedImage={true}
-          />
-
-          <div className="w-[1.2rem]"></div>
-
-          <CheckBox
-            dark={props.dark}
-            url={true}
-            title="Github Repo"
-            description={`Click to open in default browser`}
-            Icon={props.dark ? "/github-dark.png" : "/github.png"}
-            onClick={() => {
-              openUrl("https://github.com/ahqsoftwares/tauri-ahq-store");
             }}
             disabled={true}
             active={true}

@@ -8,7 +8,18 @@ use reqwest::{
   blocking::{Client, ClientBuilder},
   header::{HeaderMap, HeaderValue},
 };
-use serde_json::Value;
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+struct GhRelease {
+  pub assets: Vec<GHAsset>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct GHAsset {
+  pub name: String,
+  pub browser_download_url: String,
+}
 
 lazy_static! {
   pub static ref CLIENT: Client = {
@@ -27,20 +38,16 @@ pub fn get_service_url() -> String {
     .get("https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases/latest")
     .send()
     .unwrap()
-    .json::<Value>()
+    .json::<GhRelease>()
     .unwrap();
 
-  let assets = get["assets"].as_array().unwrap();
-
-  for asset in assets {
-    let asset_name = asset["name"].as_str().unwrap();
-
-    if asset_name.ends_with("setup.exe") {
-      return asset["browser_download_url"].as_str().unwrap().to_string();
+  for asset in get.assets {
+    if asset.name.contains("_setup_") && asset.name.ends_with(".exe") {
+      return asset.browser_download_url;
     }
   }
 
-  panic!("");
+  panic!("Asset not found");
 }
 
 #[tauri::command(async)]

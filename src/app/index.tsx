@@ -13,7 +13,7 @@ import "./index.css";
 /*
 Components
 */
-import Loading from "../config/App";
+import { Loading } from "../config/Load";
 import Home from "./home/index";
 import Nav from "./Nav";
 import Developer from "./developer/";
@@ -309,7 +309,7 @@ function Render(props: AppProps) {
           </header>
         </>
       ) : (
-        <Loading info="Almost there!" />
+          <Loading unsupported={false} text="Almost there!" />
       )}
     </>
   );

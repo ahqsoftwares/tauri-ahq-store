@@ -68,23 +68,10 @@ window.addEventListener("keydown", (e) => {
 /**
  * Loads updater
  */
-function loadRender(unsupported: boolean) {
+function loadRender(unsupported: boolean, text = "Loading") {
   root.render(
     <>
-      <Loading unsupported={unsupported} />
-    </>,
-  );
-}
-
-/**
- * Loads updater
- * @param {string} state
- * @param {React.Component} App
- */
-function render(state: string, App: (props: { info: string }) => JSX.Element) {
-  root.render(
-    <>
-      <App info={state} />
+      <Loading unsupported={unsupported} text={text} />
     </>,
   );
 }
@@ -112,7 +99,7 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
 
   const unlisten = appWindow.listen("needs_reinstall", () => {
     unlisten.then((f) => f());
-    setInterval(() => render("Running PostInstall Script", App), 10);
+    setInterval(() => loadRender(false, "Running PostInstall Script"), 10);
   });
 
   /*Logic
@@ -138,20 +125,20 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
     const delay = (ms: number) =>
       new Promise((resolve) => setTimeout(resolve, ms));
 
-    await delay(20 * 1000);
+    await delay(1000);
 
     Manage();
   })();
 
   window.addEventListener("offline", () => {
-    render("Offline, waiting for network", App);
+    loadRender(false, "Offline, waiting for network");
   });
 
   window.addEventListener("online", () => {
-    render("Online!", App);
+    loadRender(false, "Back online!");
     setTimeout(() => {
       Manage();
-    }, 3000);
+    }, 1000);
   });
 
   async function Manage() {
@@ -187,14 +174,14 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
     });
 
     await tryAutoLogin(auth).catch(() => {});
-    render("Launching Store...", App);
+    loadRender(false, "Launching Store...");
     setTimeout(() => {
       if (!auth.currentUser) {
         StoreLoad(Login as any, { auth });
       } else {
         StoreLoad(Store, { auth });
       }
-    }, 1000);
+    }, 500);
   }
 
   /**

@@ -9,11 +9,12 @@ import { Auth } from "../../auth";
 
 //Components
 import Option from "./components/Options";
-import fetchApps, { appData, fetchAuthor } from "../resources/api/fetchApps";
+import fetchApps, { appData } from "../resources/api/fetchApps";
 import App from "./components/App";
 import Toast from "../resources/api/toast";
 import { invoke } from "@tauri-apps/api/core";
 import { FaDiscord } from "react-icons/fa6";
+import { get_devs_apps } from "../resources/core";
 
 interface DevProps {
   auth: Auth;
@@ -35,10 +36,11 @@ export default function Developers(props: DevProps) {
     (async () => {
       try {
         if (uid) {
-          console.log(uid);
-          const { apps } = await fetchAuthor(String(uid));
+          const apps = await get_devs_apps(String(uid));
 
+          console.log(apps);
           fetchApps(apps).then((apps) => {
+            console.log(apps);
             setPublishedApps(apps as appData[]);
           });
         }
@@ -82,14 +84,15 @@ export default function Developers(props: DevProps) {
                   Fetching...
                 </h1>
               ) : (
-                publishedApps.map((value, index) => (
-                  <App
-                    appInfo={value}
-                    dark={props.dark}
-                    toast={Toast}
-                    lastIndex={index === publishedApps.length - 1}
-                  />
-                ))
+                    publishedApps.map((value, index) => {
+                      console.log(value, index);
+                      return <App
+                        appInfo={value}
+                        dark={props.dark}
+                        toast={Toast}
+                        lastIndex={index === publishedApps.length - 1}
+                      />;
+                    })
                 )}
                 <span className="mx-auto mt-auto fix-color mb-5 dui-loading dui-loading-spinner dui-loading-lg"></span>
               </div>

@@ -49,8 +49,8 @@ export default function Home(props: HomeProps) {
   const { dark, setPage, auth } = props;
 
   useEffect(() => {
-    setData("x-icon", auth.currentUser?.pfp || "");
-    setUserIcon(auth.currentUser?.pfp || "");
+    setData("x-icon", auth.currentUser?.pf_pic || "");
+    setUserIcon(auth.currentUser?.pf_pic || "");
   }, [auth.currentUser]);
 
   const [greet, setGreet] = useState(didGreet());

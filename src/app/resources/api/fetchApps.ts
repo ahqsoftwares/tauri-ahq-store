@@ -87,12 +87,10 @@ export async function fetchSearchData() {
 }
 
 export async function fetchAuthor(uid: string) {
-  console.log(uid);
   if (authorCache[uid]) {
     return authorCache[uid];
   }
 
-  console.log(uid);
   const url = `${server}/users/${uid}`;
   const { ok, data } = await fetch(url, {
     method: "GET"

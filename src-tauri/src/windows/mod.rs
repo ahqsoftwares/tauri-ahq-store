@@ -9,14 +9,15 @@ use crate::rpc;
 use tauri::menu::IconMenuItemBuilder;
 use tauri::tray::{ClickType, TrayIconBuilder, TrayIconEvent};
 use tauri::{
+  image::Image,
   menu::{Menu, MenuBuilder, MenuEvent, MenuId, MenuItem},
   Manager, RunEvent,
-  image::Image,
 };
 //modules
 use crate::encryption::{decrypt, encrypt};
 
 //crates
+use windows::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE};
 use windows::{
   core::PCWSTR,
   Win32::{
@@ -27,7 +28,6 @@ use windows::{
     },
   },
 };
-use windows::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE};
 
 use std::panic::catch_unwind;
 use std::time::Duration;
@@ -114,22 +114,26 @@ pub fn main() {
               }
             }
 
-            let url = get_service_url();
+            thread::spawn(|| {
+              let url = get_service_url();
 
-            let sys = sys_handler();
+              
+              let sys = sys_handler();
 
-            fs::create_dir_all(format!("{}\\astore", sys)).unwrap();
-            download::download(
-              &url,
-              &format!("{}\\astore", sys),
-              "astore_service_installer.exe",
-              |_c, _t| {
-                #[cfg(debug_assertions)]
-                println!("{}", _c * 100 / _t);
-              },
-            );
+              fs::create_dir_all(format!("{}\\astore", sys)).unwrap();
+              download::download(
+                &url,
+                &format!("{}\\astore", sys),
+                "astore_service_installer.exe",
+                |_c, _t| {
+                  #[cfg(debug_assertions)]
+                  println!("{}", _c * 100 / _t);
+                },
+              );
 
-            extract::run_admin(format!("{}\\astore\\astore_service_installer.exe", sys));
+              extract::run_admin(format!("{}\\astore\\astore_service_installer.exe", sys));
+          
+            }).join().unwrap();
           })
           .is_err()
           {
@@ -236,19 +240,22 @@ pub fn main() {
     .menu(
       &MenuBuilder::new(&app)
         .id("tray-menu")
-        .item(&IconMenuItemBuilder::new("&AHQ Store")
+        .item(
+          &IconMenuItemBuilder::new("&AHQ Store")
             .enabled(false)
             .icon(Image::from_bytes(include_bytes!("../../icons/icon.png")).unwrap())
             .build(&app)
-            .unwrap()
-          )
+            .unwrap(),
+        )
         .separator()
         .item(&MenuItem::with_id(&app, "open", "Open App", true, None::<String>).unwrap())
-        .item(&MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap())
+        .item(
+          &MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap(),
+        )
         .separator()
         .quit()
         .build()
-        .unwrap()
+        .unwrap(),
     )
     .on_tray_icon_event(|app, event| match event {
       TrayIconEvent { click_type, .. } => match click_type {
@@ -256,7 +263,7 @@ pub fn main() {
           let _ = app.app_handle().get_webview_window("main").unwrap().show();
         }
         _ => {}
-      }
+      },
     })
     .on_menu_event(|app, ev| {
       let MenuEvent { id: MenuId(id) } = ev;

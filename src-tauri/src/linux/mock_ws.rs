@@ -24,12 +24,11 @@ pub fn init(window: WebviewWindow) {
   let tx = daemon(window.clone());
   window.listen("ws_send", move |event| {
     let data = event.payload();
-      if let Ok(data) = from_str::<String>(&data) {
-        if let Ok(data) = from_str::<Command>(&data) {
-          let _ = tx.send(data);
-        }
+    if let Ok(data) = from_str::<String>(&data) {
+      if let Ok(data) = from_str::<Command>(&data) {
+        let _ = tx.send(data);
       }
-    
+    }
   });
 }
 
@@ -62,7 +61,9 @@ fn daemon(window: WebviewWindow) -> Sender<Command> {
 
   spawn(move || loop {
     let send_window = |resp: Response| {
-      let _ = window.app_handle().emit("ws_resp", &vec![to_string(&resp).unwrap()]);
+      let _ = window
+        .app_handle()
+        .emit("ws_resp", &vec![to_string(&resp).unwrap()]);
     };
     let term = |ref_id: u64| {
       send_window(Response::TerminateBlock(ref_id));

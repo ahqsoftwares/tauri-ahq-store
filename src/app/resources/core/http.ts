@@ -24,5 +24,13 @@ export default async function fetch(
       pwd,
       ...(config?.headers || {}),
     },
-  }).then(async (data) => ({ ...data, data: await data.json() }));
+  }).then(async (data) => ({
+    ...data, data: await data.text().then((val) => {
+      try {
+        return JSON.parse(val);
+      } catch (_) {
+        return val;
+      }
+    })
+  }));
 }

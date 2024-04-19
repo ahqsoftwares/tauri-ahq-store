@@ -22,14 +22,13 @@ export async function get_devs_apps(devId: string) {
   }
   const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
 
-  const { ok, text } = await fetch(url, {
+  const { ok, data } = await fetch(url, {
     method: "GET",
   });
-  const data = await text();
 
-  const apps: string[] = ok ? data.split("\n") : [""];
+  const apps: string[] = ok ? data.split("\n") : [];
 
-  apps.pop();
+  console.log(apps);
 
   return apps;
 }

@@ -66,9 +66,9 @@ export default function Init(props: UserProps) {
           setName("Guest");
         }
         setUser(Loading);
-        setUser(auth?.currentUser?.pfp || GeneralUser);
+        setUser(auth?.currentUser?.pf_pic || GeneralUser);
         setAlt(
-          auth.currentUser?.pfp ? "Click to edit picture" : "Click to upload",
+          auth.currentUser?.pf_pic ? "Click to edit picture" : "Click to upload",
         );
       }
     })();
@@ -689,7 +689,7 @@ async function ChangeProfile(
         });
         setPFD({});
 
-        setUser(auth?.currentUser?.pfp || GeneralUser);
+        setUser(auth?.currentUser?.pf_pic || GeneralUser);
       } else {
         setAlt("Click to edit picture");
         setUser(fs.result);

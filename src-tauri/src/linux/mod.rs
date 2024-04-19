@@ -1,10 +1,10 @@
 use std::process;
 
 use tauri::image::Image;
-use tauri_plugin_dialog::{DialogExt, MessageDialogBuilder, MessageDialogKind};
-use tauri::tray::{TrayIconBuilder, TrayIconEvent};
 use tauri::menu::*;
-use tauri::{AppHandle, Manager, RunEvent, tray::ClickType, WindowEvent};
+use tauri::tray::{TrayIconBuilder, TrayIconEvent};
+use tauri::{tray::ClickType, AppHandle, Manager, RunEvent, WindowEvent};
+use tauri_plugin_dialog::{DialogExt, MessageDialogBuilder, MessageDialogKind};
 
 use crate::rpc;
 use open as open_2;
@@ -90,19 +90,22 @@ pub fn main() {
     .menu(
       &MenuBuilder::new(&app)
         .id("tray-menu")
-        .item(&IconMenuItemBuilder::new("&AHQ Store")
+        .item(
+          &IconMenuItemBuilder::new("&AHQ Store")
             .enabled(false)
             .icon(Image::from_bytes(include_bytes!("../../icons/icon.png")).unwrap())
             .build(&app)
-            .unwrap()
-          )
+            .unwrap(),
+        )
         .separator()
         .item(&MenuItem::with_id(&app, "open", "Open App", true, None::<String>).unwrap())
-        .item(&MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap())
+        .item(
+          &MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap(),
+        )
         .separator()
         .item(&MenuItem::with_id(&app, "quit", "Quit", true, None::<String>).unwrap())
         .build()
-        .unwrap()
+        .unwrap(),
     )
     .on_tray_icon_event(|app, event| match event {
       TrayIconEvent { click_type, .. } => match click_type {
@@ -110,11 +113,10 @@ pub fn main() {
           let _ = app.app_handle().get_webview_window("main").unwrap().show();
         }
         _ => {}
-      }
+      },
     })
     .build(&app)
     .unwrap();
-
 
   app.run(move |app, event| match event {
     RunEvent::ExitRequested { api, .. } => {
@@ -142,13 +144,17 @@ fn close_app(handle: &AppHandle) {
     let _ = window.set_focus();
     let _ = window.maximize();
 
-    MessageDialogBuilder::new(handle.dialog().clone(), "Close app", "Do you want to close AHQ Store?")
-      .kind(MessageDialogKind::Warning)
-      .show(|close| {
-        if close {
-          process::exit(0);
-        }
-      });
+    MessageDialogBuilder::new(
+      handle.dialog().clone(),
+      "Close app",
+      "Do you want to close AHQ Store?",
+    )
+    .kind(MessageDialogKind::Warning)
+    .show(|close| {
+      if close {
+        process::exit(0);
+      }
+    });
   }
 }
 
