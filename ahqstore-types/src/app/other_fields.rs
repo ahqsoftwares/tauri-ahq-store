@@ -4,13 +4,13 @@ use crate::Str;
 use serde::{Deserialize, Serialize};
 
 #[allow(non_snake_case)]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DownloadUrl {
   pub installerType: InstallerFormat,
   pub url: Str,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum InstallerFormat {
   #[doc = "🎯 Stable as of v1"]
   WindowsZip,
@@ -51,7 +51,7 @@ impl Display for InstallerFormat {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AppRepo {
   /// author must be your GitHub username or username of an org where you're a "visible" member
   pub author: Str,

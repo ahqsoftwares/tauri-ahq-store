@@ -1,13 +1,11 @@
-use ahqstore_types::Commit;
+use ahqstore_types::{AppStatus, Commit, Library};
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};
 use std::{fs::File, io::Write};
 
-use crate::windows::utils::{
-  get_file_on_root, get_installer_file, get_iprocess,
-  structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response},
-  ws_send,
-};
+use crate::windows::{handlers::daemon::{lib_msg, LIBRARY}, utils::{
+  get_file_on_root, get_installer_file, get_iprocess, structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response}, ws_send
+}};
 use std::time::Duration;
 
 #[cfg(debug_assertions)]
@@ -80,21 +78,26 @@ pub async fn keep_alive() -> bool {
   false
 }
 
-pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplication> {
-  let app_id: AppId = app_id.into();
-  let mut ws = get_iprocess().unwrap();
-
+pub async fn download_app(
+  val: &mut Library,
+) -> Option<AHQStoreApplication> {
+  let app_id = &val.app_id;
+  let app_id = app_id.to_string();
   let app_id = get_app(0, app_id).await;
 
   match app_id {
-    Response::AppData(_, id, data) => {
+    Response::AppData(_, _, data) => {
       let file = get_installer_file(&data);
 
       if let None = async {
-        let x = Response::as_msg(Response::DownloadStarted(ref_id, id.clone()));
-        ws_send(&mut ws, &x).await;
+        val.status = AppStatus::Downloading;
 
-        println!("{:?} {:?} {:?}", &data.downloadUrls, &data.install, &data.get_win32_download());
+        println!(
+          "{:?} {:?} {:?}",
+          &data.downloadUrls,
+          &data.install,
+          &data.get_win32_download()
+        );
 
         let mut resp = DOWNLOADER
           .get(&data.get_win32_download()?.url)
@@ -113,7 +116,7 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
         let total = resp.content_length().unwrap_or(0);
         let mut current = 0u64;
 
-        let mut last = 0u64;
+        let mut last = 0.0f64;
 
         loop {
           let byte = resp.chunk().await.ok()?;
@@ -123,17 +126,15 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
               current += x.len() as u64;
               file.write(&x).ok()?;
 
-              let perc = (current * 100) / total;
+              let perc = ((current as f64) * 100.0) / (total as f64);
 
               if last != perc {
-                let msg = Response::as_msg(Response::DownloadProgress(
-                  ref_id,
-                  id.clone(),
-                  [current, total],
-                ));
-
-                ws_send(&mut ws, &msg).await;
+                val.progress = perc;
                 last = perc;
+                
+                ws_send(&mut get_iprocess().unwrap(), 
+                  &lib_msg()
+                ).await;
               }
             }
             None => break,
@@ -143,41 +144,15 @@ pub async fn download_app(ref_id: u64, app_id: &str) -> Option<AHQStoreApplicati
       }
       .await
       {
-        println!("Got Error");
-        let x = Response::as_msg(Response::Error(ErrorType::AppInstallError(
-          ref_id,
-          id.clone(),
-        )));
-
-        ws_send(&mut ws, &x).await;
         return None;
       }
 
       return Some(data);
     }
-    resp => {
-      let x = Response::as_msg(resp);
-
-      ws_send(&mut ws, &x).await;
+    _ => {
       return None;
     }
   }
-}
-
-pub async fn get_app_url(ref_id: RefId, app_id: AppId) -> Response {
-  let url = unsafe {
-    if let Some(x) = GH_URL.as_ref() {
-      x
-    } else {
-      return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
-    }
-  };
-  let url = format!(
-    "https://rawcdn.githack.com/ahqstore/apps/{}/db/apps/{}.json",
-    &url, &app_id
-  );
-
-  Response::AppDataUrl(ref_id, app_id, url)
 }
 
 pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {

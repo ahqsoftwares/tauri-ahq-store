@@ -2,16 +2,13 @@
 #[macro_use]
 mod windows;
 
-#[cfg(target_os = "linux")]
-#[macro_use]
-mod linux;
-
-#[cfg(target_os = "linux")]
-use linux::main as m_main;
-
 #[cfg(windows)]
 use windows::main as m_main;
 
 fn main() {
+  #[cfg(windows)]
   m_main().unwrap();
+
+  #[cfg(unix)]
+  println!("This executable will not run in linux!");
 }

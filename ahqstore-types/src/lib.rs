@@ -71,6 +71,7 @@ pub enum Command {
   UninstallApp(RefId, AppId),
 
   ListApps(RefId),
+  GetLibrary(RefId),
 
   RunUpdate(RefId),
   UpdateStatus(RefId),
@@ -98,19 +99,62 @@ pub enum Reason {
 pub enum ErrorType {
   GetAppFailed(RefId, AppId),
   AppPlatformNoSupport(RefId, AppId),
-  AppInstallError(RefId, AppId),
-  AppUninstallError(RefId, AppId),
   PrefsError(RefId),
   PkgError(RefId),
   GetSHAFailed(RefId),
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Library {
+  pub app_id: String,
+  pub status: AppStatus,
+  pub is_update: bool,
+  pub to: ToDo,
+  pub progress: f64,
+  pub app: Option<AHQStoreApplication>
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum ToDo {
+  Install,
+  Uninstall,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub enum AppStatus {
+  Pending,
+  Downloading,
+  Installing,
+  Uninstalling,
+  InstallSuccessful,
+  UninstallSuccessful,
+  NotSuccessful,
+}
+
+impl Serialize for AppStatus {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: serde::Serializer,
+  {
+    serializer.serialize_str(match self {
+      AppStatus::Pending => "Pending...",
+      AppStatus::Downloading => "Downloading...",
+      AppStatus::Installing => "Installing...",
+      AppStatus::Uninstalling => "Uninstalling...",
+      AppStatus::InstallSuccessful => "Successfully Installed",
+      AppStatus::UninstallSuccessful => "Successfully Uninstalled",
+      AppStatus::NotSuccessful => "Something went wrong!",
+    })
+  }
+}
+
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum UpdateStatusReport {
   Disabled,
   UpToDate,
   Checking,
-  Updating(String, Vec<String>),
+  Updating,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -127,16 +171,11 @@ pub enum Response {
   AppDataUrl(RefId, AppId, String),
 
   ListApps(RefId, Vec<AppData>),
+  Library(RefId, Vec<Library>),
 
   UpdateStatus(RefId, UpdateStatusReport),
 
-  DownloadStarted(RefId, AppId),
-  DownloadProgress(RefId, AppId, [u64; 2]),
-  Installing(RefId, AppId),
-  Installed(RefId, AppId),
-
-  UninstallStarting(RefId, AppId),
-  Uninstalled(RefId, AppId),
+  Acknowledged(RefId),
 
   Prefs(RefId, Prefs),
   PrefsSet(RefId),

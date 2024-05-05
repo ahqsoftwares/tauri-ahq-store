@@ -10,7 +10,7 @@ pub use install::*;
 pub use other_fields::*;
 
 #[allow(non_snake_case)]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AHQStoreApplication {
   pub appId: Str,
   pub appShortcutName: Str,

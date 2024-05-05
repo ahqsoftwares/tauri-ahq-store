@@ -18,27 +18,28 @@ pub fn is_msi(app_id: &str) -> bool {
 }
 
 fn get_product_code(msi: &mut msi::Package<File>) -> Option<String> {
-  let mut property = msi.select_rows(
-      Select::table("Property")
-  ).ok()?;
+  let mut property = msi.select_rows(Select::table("Property")).ok()?;
 
-  property.find(|x| &x[0].as_str() == &Some("ProductCode"))?[1].as_str().map_or_else(|| None, |x| Some(x.into()))
+  property.find(|x| &x[0].as_str() == &Some("ProductCode"))?[1]
+    .as_str()
+    .map_or_else(|| None, |x| Some(x.into()))
 }
 
 pub fn exists(app_id: &str) -> Option<bool> {
   let msi = msi_from_id(app_id);
 
   let mut msi = open(msi).ok()?;
-  
+
   let product_code = get_product_code(&mut msi)?;
 
   println!("Code: {}", &product_code);
 
   let reg = RegKey::predef(HKEY_LOCAL_MACHINE);
   reg
-    .open_subkey(
-      &format!("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{}", &product_code)
-    )
+    .open_subkey(&format!(
+      "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{}",
+      &product_code
+    ))
     .ok()?;
 
   Some(true)

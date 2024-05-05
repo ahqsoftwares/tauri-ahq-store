@@ -104,8 +104,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Rust
+      - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
 
       - name: Publish types to cargo
         run: cargo publish
@@ -129,8 +131,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install Rust
+      - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
 
       - name: Cache Rust
         if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
@@ -197,8 +201,10 @@ jobs:
         with:
           version: latest
 
-      - name: Install Rust Stable
+      - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'

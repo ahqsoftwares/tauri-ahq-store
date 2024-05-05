@@ -36,7 +36,7 @@ use std::os::windows::process::CommandExt;
 use std::{
   fs,
   process::Command,
-  process::{exit, Stdio},
+  process::Stdio,
   sync::{Arc, Mutex},
   thread,
 };
@@ -220,14 +220,14 @@ pub fn main() {
     .invoke_handler(tauri::generate_handler![
       get_windows,
       sys_handler,
-      install_update,
       encrypt,
       decrypt,
       open,
       set_progress,
       is_an_admin,
       is_development,
-      set_overlay
+      set_overlay,
+      check_install_update
     ])
     .menu(|handle| Menu::new(handle))
     .build(context)
@@ -274,8 +274,9 @@ pub fn main() {
           window.show().unwrap();
         }
         "update" => {
-          let window = app.get_webview_window("main").unwrap();
-          window.emit("check_update", "None").unwrap();
+          tauri::async_runtime::spawn(async {
+            check_install_update().await;
+          });
         }
         _ => {}
       }
@@ -292,7 +293,7 @@ pub fn main() {
         api.prevent_close();
 
         if let Some(win) = app.get_webview_window(&label) {
-          win.close().unwrap();
+          let _ = win.hide();
         }
       }
       _ => {}
@@ -314,63 +315,22 @@ fn open(url: String) -> Option<()> {
   }
 }
 
-// #[tauri::command(async)]
-// #[cfg(debug_assertions)]
-// fn check_update(
-//   version: String,
-//   current_version: String,
-//   download_url: String,
-//   signature: String,
-// ) -> bool {
-//   drop(version);
-//   drop(current_version);
-//   drop(download_url);
-//   drop(signature);
-//   return false;
-// }
+#[tauri::command]
+async fn check_install_update() {
+  use updater::*;
+   let (avail, release) = is_update_available(
+    env!("CARGO_PKG_VERSION"),
+    env!("CARGO_PKG_VERSION").contains("-alpha")
+   ).await;
 
-// #[tauri::command(async)]
-// #[cfg(not(debug_assertions))]
-// fn check_update(
-//   version: String,
-//   current_version: String,
-//   download_url: String,
-//   signature: String,
-// ) -> bool {
-//   fs::remove_dir_all(UPDATER_PATH.replace("%root%", &sys_handler())).unwrap_or(());
-
-//   let mut update_available = &version != &current_version;
-
-//   if update_available {
-//     let sys_dir = sys_handler();
-
-//     let path = UPDATER_PATH.replace("%root%", sys_dir.as_str());
-
-//     fs::remove_file(format!("{}\\updater.zip", path.clone())).unwrap_or(());
-
-//     let path2 = path.clone();
-//     thread::spawn(move || {
-//       download::download(
-//         download_url.as_str(),
-//         path2.as_str(),
-//         "updater.zip",
-//         |_, _| {},
-//       );
-//     })
-//     .join()
-//     .unwrap();
-
-//     let data = std::fs::read(format!("{}\\updater.zip", path.clone())).unwrap_or(vec![]);
-
-//     update_available = verify_signature(data, signature.as_str()).unwrap_or(false);
-//   }
-
-//   update_available
-// }
-
-#[tauri::command(async)]
-fn install_update() {
-  exit(0);
+   if avail {
+    if let Some(release) = release {
+      unsafe {
+        let _ = WINDOW.clone().unwrap().emit("update", "installing");
+      }
+      update(release).await;
+    }
+   }
 }
 
 #[tauri::command(async)]

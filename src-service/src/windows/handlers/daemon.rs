@@ -3,18 +3,19 @@ use std::{
   time::{Duration, SystemTime},
 };
 
-use ahqstore_types::{Command, ErrorType, Response, UpdateStatusReport};
+use ahqstore_types::{AppStatus, Command, Library, Response, ToDo, UpdateStatusReport};
 use tokio::{spawn, time::sleep};
 
 use crate::windows::utils::{get_iprocess, ws_send};
 
 use super::{
-  get_app, get_commit, get_prefs, list_apps, send_term,
-  service::{download_app, get_app_url, install_app},
+  get_app, get_commit, get_prefs, list_apps,
+  service::{download_app, install_app},
   uninstall_app,
 };
 
 pub static mut UPDATE_STATUS_REPORT: Option<UpdateStatusReport> = None;
+pub static mut LIBRARY: Option<Vec<Library>> = None;
 
 fn time() -> u64 {
   SystemTime::now()
@@ -23,31 +24,83 @@ fn time() -> u64 {
     .as_secs()
 }
 
+pub fn lib_msg() -> Vec<u8> {
+  Response::as_msg(Response::Library(0, unsafe {
+    LIBRARY.as_ref().unwrap().clone()
+      .into_iter()
+      .map(|mut x| {
+        x.app = None; 
+        x
+      })
+      .collect()
+  }))
+}
+
 pub fn get_install_daemon() -> Sender<Command> {
   let (tx, rx) = channel();
 
   spawn(async move {
     unsafe {
       UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Disabled);
+      LIBRARY = Some(vec![]);
     }
     let should_autorun = get_prefs().auto_update_apps;
+
+    if should_autorun {
+      unsafe { UPDATE_STATUS_REPORT = Some(UpdateStatusReport::UpToDate); }
+    }
+
     let mut secs = time() + 600;
-    let mut pending: Vec<Command> = vec![];
 
     let between = || sleep(Duration::from_millis(100));
     let run_update = || check_update();
 
+    let pending = unsafe { LIBRARY.as_mut().unwrap() };
+    
+    let mut run_update_now = false;
     loop {
       'r: loop {
         if let Ok(data) = rx.try_recv() {
-          pending.push(data);
+          match data {
+            Command::InstallApp(_, app_id) => {
+              pending.push(Library {
+                app_id,
+                is_update: false,
+                status: AppStatus::Pending,
+                to: ToDo::Install,
+                progress: 0.0,
+                app: None,
+              });
+            },
+            Command::UninstallApp(ref_id, app_id) => {
+              if let Response::AppData(_, app_id, app) = get_app(ref_id, app_id).await {
+                pending.push(Library {
+                  app_id,
+                  is_update: false,
+                  app: Some(
+                    app
+                  ),
+                  progress: 0.0,
+                  status: AppStatus::Pending,
+                  to: ToDo::Uninstall,
+                });
+              }
+            }
+            Command::RunUpdate(_) => {
+              run_update_now = true;
+            }
+            _ => {
+              panic!("");
+            }
+          }
         } else {
           break 'r;
         }
         between().await;
       }
 
-      if time() > secs {
+      if time() > secs || run_update_now {
+        run_update_now = false;
         if 0 == get_commit().await {
           secs = time() + 600;
 
@@ -58,57 +111,98 @@ pub fn get_install_daemon() -> Sender<Command> {
       }
 
       if let Some(mut ws) = get_iprocess() {
-        for cmd in pending {
-          match cmd {
-            Command::GetApp(ref_id, app_id) => {
-              let app_data = get_app_url(ref_id, app_id).await;
-              let x = Response::as_msg(app_data);
-              ws_send(&mut ws, &x).await;
+        let mut was_updates = false;
+        for cmd in pending.iter_mut() {
+          let to = cmd.to.clone();
+          match &to {
+            ToDo::Install => {
+              cmd.status = AppStatus::Downloading;
+              ws_send(&mut ws, &lib_msg()).await;
+              if let Some(x) = download_app(cmd).await {
+                cmd.status = AppStatus::Installing;
 
-              send_term(ref_id).await;
-            }
-            Command::InstallApp(ref_id, app_id) => {
-              if let Some(x) = download_app(ref_id, &app_id).await {
-                between().await;
-                ws_send(
-                  &mut ws,
-                  &Response::as_msg(Response::Installing(ref_id, app_id.clone())),
-                )
-                .await;
+                ws_send(&mut ws, &lib_msg()).await;
+                if let Some(_) = install_app(x).await {
+                  cmd.status = AppStatus::InstallSuccessful;
 
-                between().await;
-                if let None = install_app(x).await {
-                  ws_send(
-                    &mut ws,
-                    &Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, app_id))),
-                  )
-                  .await;
+                  if cmd.is_update {
+                    was_updates = true;
+                  }
                 } else {
-                  ws_send(
-                    &mut ws,
-                    &Response::as_msg(Response::Installed(ref_id, app_id)),
-                  )
-                  .await;
+                  cmd.status = AppStatus::NotSuccessful;
                 }
               } else {
-                ws_send(
-                  &mut ws,
-                  &Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, app_id))),
-                )
-                .await
+                cmd.status = AppStatus::NotSuccessful;
               }
-              send_term(ref_id).await;
+              ws_send(&mut ws, &lib_msg()).await;
             }
-            Command::RunUpdate(ref_id) => {
-              send_term(ref_id).await;
-              run_update().await;
+            ToDo::Uninstall => {
+              cmd.status = AppStatus::Uninstalling;
+              ws_send(&mut ws, &lib_msg()).await;
+
+              if let Some(app) = &cmd.app {
+                if let None = uninstall_app(app) {
+                  cmd.status = AppStatus::NotSuccessful;
+                } else {
+                  cmd.status = AppStatus::UninstallSuccessful;
+                }
+              }
+              ws_send(&mut ws, &lib_msg()).await;
             }
-            _ => {}
+            /*Command::GetApp(ref_id, app_id) => {
+                      let app_data = get_app_url(ref_id, app_id).await;
+                      let x = Response::as_msg(app_data);
+                      ws_send(&mut ws, &x).await;
+
+                      send_term(ref_id).await;
+                    }
+                    Command::InstallApp(ref_id, app_id) => {
+                      if let Some(x) = download_app(ref_id, &app_id).await {
+                        between().await;
+                        ws_send(
+                          &mut ws,
+                          &Response::as_msg(Response::Installing(ref_id, app_id.clone())),
+                        )
+                        .await;
+
+                        between().await;
+                        if let None = install_app(x).await {
+                          ws_send(
+                            &mut ws,
+                            &Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, app_id))),
+                          )
+                          .await;
+                        } else {
+                          ws_send(
+                            &mut ws,
+                            &Response::as_msg(Response::Installed(ref_id, app_id)),
+                          )
+                          .await;
+                        }
+                      } else {
+                        ws_send(
+                          &mut ws,
+                          &Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, app_id))),
+                        )
+                        .await
+                      }
+                      send_term(ref_id).await;
+                    }
+                    Command::RunUpdate(ref_id) => {
+                      send_term(ref_id).await;
+                      run_update().await;
+                    }
+                    _ => {}*/
           }
 
           between().await;
         }
-        pending = vec![];
+        *pending = vec![];
+        unsafe {
+          if was_updates {
+            UPDATE_STATUS_REPORT = Some(UpdateStatusReport::UpToDate);
+          }
+        }
       }
 
       between().await;
@@ -138,18 +232,18 @@ pub async fn check_update() {
     }
   }
 
-  let total: Vec<_> = to_update.iter().map(|(_, a)| a.appId.clone()).collect();
-
+  let library = unsafe { LIBRARY.as_mut().unwrap() };
   for (id, app) in to_update {
+    library.push(Library {
+      app_id: id,
+      is_update: true,
+      progress: 0.0,
+      status: AppStatus::Pending,
+      to: ToDo::Uninstall,
+      app: Some(app)
+    });
     unsafe {
-      UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Updating(id, total.clone()));
+      UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Updating);
     }
-
-    let _ = uninstall_app(&app);
-    let _ = install_app(app).await;
-  }
-
-  unsafe {
-    UPDATE_STATUS_REPORT = Some(UpdateStatusReport::UpToDate);
   }
 }

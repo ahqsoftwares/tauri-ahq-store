@@ -12,7 +12,7 @@ use crate::windows::{
   write_log,
 };
 
-use self::daemon::UPDATE_STATUS_REPORT;
+use self::daemon::{lib_msg, LIBRARY, UPDATE_STATUS_REPORT};
 use self::service::*;
 
 mod daemon;
@@ -54,27 +54,10 @@ pub fn handle_msg(data: String) {
             let _ = GET_INSTALL_DAEMON.send(Command::InstallApp(ref_id, app_id));
           }
           Command::UninstallApp(ref_id, app_id) => {
-            let msg = Response::as_msg(Response::UninstallStarting(ref_id, app_id.clone()));
+            let msg = Response::as_msg(Response::Acknowledged(ref_id));
 
             ws_send(&mut ws, &msg).await;
-
-            let app_data = get_app(ref_id, app_id.clone()).await;
-            match app_data {
-              Response::AppData(_, id, data) => {
-                let msg = uninstall_app(&data).map_or_else(
-                  || Response::as_msg(Response::Error(ErrorType::AppUninstallError(ref_id, id))),
-                  |id| Response::as_msg(Response::Uninstalled(ref_id, id)),
-                );
-                ws_send(&mut ws, &msg).await;
-              }
-              _ => {
-                let msg = Response::as_msg(Response::Error(ErrorType::AppUninstallError(
-                  ref_id, app_id,
-                )));
-
-                ws_send(&mut ws, &msg).await;
-              }
-            }
+            let _ = GET_INSTALL_DAEMON.send(Command::UninstallApp(ref_id, app_id));
             send_term(ref_id).await;
           }
 
@@ -125,7 +108,13 @@ pub fn handle_msg(data: String) {
             .await;
             send_term(ref_id).await;
           }
-          _ => {}
+          Command::GetLibrary(ref_id) => {
+            ws_send(&mut ws, &lib_msg()).await;
+            send_term(ref_id).await;
+          }
+          Command::AddPkg(ref_id, pkg) => {
+            send_term(ref_id).await;
+          }
         }
       } else {
         let x = Response::as_msg(Response::Disconnect(Reason::UnknownData(0)));
