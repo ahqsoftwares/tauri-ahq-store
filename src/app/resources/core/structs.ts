@@ -19,7 +19,8 @@ type Methods =
   | "PrefsSet"
   | "TerminateBlock"
   | "Unknown"
-  | "SHAId";
+  | "SHAId"
+  | "Library";
 
 type ErrorType =
   | "GetAppFailed"
@@ -95,6 +96,11 @@ export async function interpret(
     case "SHAId":
       result.method = "SHAId";
       result.data = pyld as string;
+      break;
+    case "Library":
+      result.method = "Library";
+
+      console.log(pyld2);
       break;
     case "AppDataUrl":
       result.method = "AppData";

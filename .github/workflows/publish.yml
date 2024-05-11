@@ -235,17 +235,8 @@ jobs:
       - name: Build Service
         run: cargo build --release
         working-directory: src-service
-        if: matrix.platform == 'windows-latest'
 
-      - name: Upload Executable (standalone)
-        uses: actions/upload-artifact@v3
-        if: matrix.platform == 'windows-latest'
-        with:
-          name: service.exe
-          path: ./src-service/target/release/ahqstore_service.exe
-
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload Service (Windows)
         if: matrix.platform == 'windows-latest'
         uses: ahqstore/upload-release-assets@v59
         env:
@@ -256,6 +247,18 @@ jobs:
           asset_name: ahqstore_service.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
+      
+      - name: Upload Service (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        uses: ahqstore/upload-release-assets@v59
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-service/target/release/ahqstore_service
+          asset_name: ahqstore_service
+          asset_content_type: application/octet-stream
+          
       - name: Load VCPKG Page (Windows)
         if: ${{ !steps.cache.outputs.cache-hit }} && matrix.platform == 'windows-latest'
         continue-on-error: true

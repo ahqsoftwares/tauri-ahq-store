@@ -6,6 +6,7 @@ use std::{
   time::Duration,
 };
 use tokio::net::windows::named_pipe::{PipeMode, ServerOptions};
+
 use windows::Win32::{
   Foundation::HANDLE,
   Security::{
@@ -16,7 +17,7 @@ use windows::Win32::{
   System::SystemServices::SECURITY_DESCRIPTOR_REVISION,
 };
 
-use super::{
+use crate::{
   authentication::authenticate_process,
   handlers::handle_msg,
   utils::{get_iprocess, set_iprocess, write_log},

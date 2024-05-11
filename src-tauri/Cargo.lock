@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "1.4.1"
+version = "1.4.1-alpha"
 dependencies = [
  "ahqstore-types",
  "async-recursion",
@@ -48,7 +48,7 @@ dependencies = [
  "is_elevated",
  "lazy_static",
  "open",
- "reqwest 0.12.4",
+ "reqwest 0.11.27",
  "serde",
  "serde_json",
  "tauri",
@@ -1217,7 +1217,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eac8f7d7865dcb88bd4373ab671c8cf4508703796caa2b1985a9ca867b3fcb78"
 dependencies = [
  "futures-core",
- "futures-sink",
 ]
 
 [[package]]
@@ -3262,7 +3261,6 @@ dependencies = [
  "base64 0.22.1",
  "bytes",
  "encoding_rs",
- "futures-channel",
  "futures-core",
  "futures-util",
  "h2 0.4.4",

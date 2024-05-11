@@ -15,7 +15,6 @@ import { getCurrent } from "@tauri-apps/api/webviewWindow";
 
 /*Apps
  */
-import App from "./config/App";
 import Store, { AppProps } from "./app/index";
 import Login, { LoginHandlerProps } from "./Login";
 
@@ -56,6 +55,10 @@ let list = [
   [true, true, "P"], //Print
   [true, false, "U"], //Inspect Page
 ];
+
+getCurrent().listen("update", () => {
+  console.log("Got Update!");
+});
 
 window.addEventListener("keydown", (e) => {
   list.forEach(([ct, sh, key]) => {

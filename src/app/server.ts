@@ -1,3 +1,3 @@
-const server = "https://ahqstore-server.onrender.com/";
+const server = "https://astore.loophole.site/";
 
 export { server };

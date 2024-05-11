@@ -4,7 +4,7 @@ import { Downloaded, ServerResponse, interpret } from "./structs";
 import { Prefs } from ".";
 
 const appWindow = getCurrent();
-let ref_counter = 0;
+let ref_counter = 1;
 
 const WebSocketMessage = {
   GetApp: (app_id: string) => `{"GetApp":[{*ref_id},"${app_id}"]}`,
@@ -15,6 +15,7 @@ const WebSocketMessage = {
   SetPrefs: (prefs: Prefs) =>
     `{"SetPrefs":[{*ref_id}, ${JSON.stringify(prefs)}]}`,
   GetSha: () => `{"GetSha":{*ref_id}}`,
+  GetLibrary: () => `{"GetLibrary":{*ref_id}}`,
 };
 
 type u64 = Number;

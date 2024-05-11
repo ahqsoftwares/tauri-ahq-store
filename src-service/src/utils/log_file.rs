@@ -1,28 +1,47 @@
 use std::{fmt::Display, fs};
 
-use crate::windows::encryption;
+use crate::encryption;
 
+#[allow(unused)]
 use super::{get_main_drive, now};
 
 fn get_service_file() -> String {
-  format!(
+  #[cfg(windows)]
+  return format!(
     "{}\\ProgramData\\AHQ Store Applications\\service.encrypted.txt",
     &get_main_drive()
-  )
+  );
+
+  #[cfg(unix)]
+  return format!(
+    "/ahqstore/service.encrypted.txt"
+  );
 }
 
 fn get_log_file() -> String {
-  format!(
+  #[cfg(windows)]
+  return format!(
     "{}\\ProgramData\\AHQ Store Applications\\server.log.txt",
     &get_main_drive()
-  )
+  );
+
+  #[cfg(unix)]
+  return format!(
+    "/ahqstore/server.log.txt"
+  );
 }
 
 fn get_old_log_file() -> String {
-  format!(
+  #[cfg(windows)]
+  return format!(
     "{}\\ProgramData\\AHQ Store Applications\\server.old.log.txt",
     &get_main_drive()
-  )
+  );
+
+  #[cfg(unix)]
+  return format!(
+    "/ahqstore/server.old.log.txt"
+  );
 }
 
 pub fn write_service<T>(status: T) -> Option<()>

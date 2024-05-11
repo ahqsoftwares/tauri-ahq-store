@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::thread;
 use std::time::Duration;
 
-use crate::windows::utils::now;
+use crate::utils::now;
 
 struct CacheEntry {
   pub data: String,

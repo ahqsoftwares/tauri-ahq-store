@@ -1,6 +1,14 @@
+#[cfg(windows)]
 use tokio::net::windows::named_pipe::NamedPipeServer;
 
+#[cfg(unix)]
+use tokio::net::UnixStream;
+
+#[cfg(windows)]
 pub type ServiceIpc = NamedPipeServer;
+
+#[cfg(unix)]
+pub type ServiceIpc = UnixStream;
 
 static mut IPC: Option<ServiceIpc> = None;
 

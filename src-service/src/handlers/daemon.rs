@@ -6,7 +6,7 @@ use std::{
 use ahqstore_types::{AppStatus, Command, Library, Response, ToDo, UpdateStatusReport};
 use tokio::{spawn, time::sleep};
 
-use crate::windows::utils::{get_iprocess, ws_send};
+use crate::utils::{get_iprocess, ws_send};
 
 use super::{
   get_app, get_commit, get_prefs, list_apps,

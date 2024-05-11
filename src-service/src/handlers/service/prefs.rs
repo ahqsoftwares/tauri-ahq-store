@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::windows::{
+use crate::{
   encryption::{decrypt2, encrypt2},
   utils::get_main_drive,
 };

@@ -141,9 +141,9 @@ impl Serialize for AppStatus {
       AppStatus::Downloading => "Downloading...",
       AppStatus::Installing => "Installing...",
       AppStatus::Uninstalling => "Uninstalling...",
-      AppStatus::InstallSuccessful => "Successfully Installed",
-      AppStatus::UninstallSuccessful => "Successfully Uninstalled",
-      AppStatus::NotSuccessful => "Something went wrong!",
+      AppStatus::InstallSuccessful => "Installed",
+      AppStatus::UninstallSuccessful => "Uninstalled",
+      AppStatus::NotSuccessful => "Error!",
     })
   }
 }

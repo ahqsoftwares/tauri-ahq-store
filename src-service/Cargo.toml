@@ -17,14 +17,14 @@ tokio = { version = "1.37.0", default-features = false, features = [
   "time",
 ] }
 ahqstore-types = { path = "../ahqstore-types" }
+chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 
 [target.'cfg(windows)'.dependencies]
 mslnk = "0.1.8"
 windows-service = "0.7.0"
-chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 msi = "0.7.0"
-winreg = "=0.50.0"
-windows = { version = "=0.52.0", features = [
+winreg = "0.52.0"
+windows = { version = "0.56.0", features = [
   "Win32_Foundation",
   "Win32_System_SystemInformation",
   "Win32_System_Pipes",

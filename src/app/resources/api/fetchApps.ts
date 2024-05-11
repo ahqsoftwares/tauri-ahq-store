@@ -23,11 +23,11 @@ interface appData {
   downloadUrls: {
     [key: number]: {
       installerType:
-        | "WindowsZip"
+      | "WindowsZip"
       | "WindowsInstallerExe"
-        | "WindowsInstallerMsi"
-        | "WindowsUWPMsix"
-        | "LinuxAppImage";
+      | "WindowsInstallerMsi"
+      | "WindowsUWPMsix"
+      | "LinuxAppImage";
       url: Str;
     };
   };
@@ -119,13 +119,13 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
         (async () => {
           const app = await get_app(appId);
           console.log("App", appId, app.appId);
-          const authorObj = await fetchAuthor(app.authorId);
+          const AuthorObject = await fetchAuthor(app.authorId);
 
           const appData = {
             ...app,
             id: appId,
-            AuthorObject: authorObj,
-          };
+            AuthorObject,
+          } as appData;
 
           cache[appId] = appData;
 

@@ -1,6 +1,7 @@
 import { ApplicationData } from "../api/fetchApps";
 import { WebSocketMessage, sendWsRequest } from "./handler";
 import fetch from "./http";
+import { Library } from "./installer";
 import { Downloaded, ListedApps } from "./structs";
 
 let sha = "";
@@ -173,6 +174,18 @@ export function list_apps(): Promise<{ id: string; version: string }[]> {
             id,
             version,
           })),
+        );
+      }
+    });
+  });
+}
+
+export function get_library(): Promise<Library[]> {
+  return new Promise((resolve) => {
+    sendWsRequest(WebSocketMessage.GetLibrary(), (val) => {
+      if (val.method == "Library") {
+        resolve(
+          val.data as unknown as Library[],
         );
       }
     });

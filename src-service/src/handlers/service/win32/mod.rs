@@ -1,6 +1,4 @@
-mod http;
 mod msi;
-mod prefs;
 
 use ahqstore_types::{InstallerFormat, Win32Deps};
 use mslnk::ShellLink;
@@ -12,13 +10,20 @@ use std::{
   process::{Child, Command},
 };
 
-pub use http::*;
-pub use prefs::*;
-
-use crate::windows::utils::{
-  get_installer_file, get_program_folder, get_programs, get_target_lnk,
-  structs::{AHQStoreApplication, AppData},
+use crate::{
+  handlers::install_node,
+  utils::{
+    get_installer_file, get_program_folder, get_programs, get_target_lnk,
+    structs::{AHQStoreApplication, AppData},
+  }
 };
+
+pub fn run(path: &str, args: &[&str]) -> Result<Child, Error> {
+  Command::new(path)
+    .creation_flags(0x08000000)
+    .args(args)
+    .spawn()
+}
 
 pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
   Command::new("powershell")
@@ -30,13 +35,6 @@ pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
       format!("-DestinationPath \"{}\"", &dest).as_str(),
       "-Force",
     ])
-    .spawn()
-}
-
-pub fn run(path: &str, args: &[&str]) -> Result<Child, Error> {
-  Command::new(path)
-    .creation_flags(0x08000000)
-    .args(args)
     .spawn()
 }
 

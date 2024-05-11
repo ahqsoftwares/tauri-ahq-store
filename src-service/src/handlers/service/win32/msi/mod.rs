@@ -3,7 +3,7 @@ use winreg::{enums::HKEY_LOCAL_MACHINE, RegKey};
 
 use std::fs::{self, File};
 
-use crate::windows::utils::get_program_folder;
+use crate::utils::get_program_folder;
 
 use super::run;
 

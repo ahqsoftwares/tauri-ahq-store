@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 
 use chacha20poly1305::{
   aead::{generic_array::GenericArray, Aead, KeyInit},
-  ChaCha20Poly1305,
+  ChaCha20Poly1305
 };
 
 use serde_json::from_str;
@@ -13,11 +13,11 @@ use cache::*;
 
 lazy_static! {
   static ref CRYPTER: ChaCha20Poly1305 = {
-    let key = GenericArray::from_slice(include!("../../encrypt").as_bytes());
+    let key = GenericArray::from_slice(include!("../encrypt").as_bytes());
     ChaCha20Poly1305::new(&key)
   };
   static ref CRYPTER2: ChaCha20Poly1305 = {
-    let key = GenericArray::from_slice(include!("../../encrypt_2").as_bytes());
+    let key = GenericArray::from_slice(include!("../encrypt_2").as_bytes());
     ChaCha20Poly1305::new(&key)
   };
 }

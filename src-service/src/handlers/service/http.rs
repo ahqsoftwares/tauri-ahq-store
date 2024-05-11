@@ -3,17 +3,19 @@ use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, StatusCode};
 use std::{fs::File, io::Write};
 
-use crate::windows::{handlers::daemon::{lib_msg, LIBRARY}, utils::{
+#[allow(unused)]
+use crate::{handlers::daemon::lib_msg, utils::{
   get_file_on_root, get_installer_file, get_iprocess, structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response}, ws_send
 }};
 use std::time::Duration;
 
 #[cfg(debug_assertions)]
-use crate::windows::utils::write_log;
+use crate::utils::write_log;
 
+#[cfg(windows)]
 use super::unzip;
 
-static URL: &str = "https://ahqstore-server.onrender.com/";
+static URL: &str = "https://astore.loophole.site/";
 pub static mut GH_URL: Option<String> = None;
 
 lazy_static! {
@@ -93,14 +95,23 @@ pub async fn download_app(
         val.status = AppStatus::Downloading;
 
         println!(
-          "{:?} {:?} {:?}",
+          "{:?} {:?} {:?} {:?}",
           &data.downloadUrls,
           &data.install,
-          &data.get_win32_download()
+          &data.get_win32_download(),
+          &data.get_linux_download(),
         );
 
+        #[cfg(windows)]
         let mut resp = DOWNLOADER
           .get(&data.get_win32_download()?.url)
+          .send()
+          .await
+          .ok()?;
+
+        #[cfg(unix)]
+        let mut resp = DOWNLOADER
+          .get(&data.get_linux_download()?.url)
           .send()
           .await
           .ok()?;
@@ -176,6 +187,7 @@ pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
   Response::Error(ErrorType::GetAppFailed(ref_id, app_id))
 }
 
+#[cfg(windows)]
 pub async fn install_node(version: &str) -> Option<()> {
   let (f_name, url) = match &version {
     &"v20" => ("node_20.zip", NODE20.to_string()),
@@ -201,6 +213,7 @@ pub async fn install_node(version: &str) -> Option<()> {
   Some(())
 }
 
+#[cfg(windows)]
 async fn write_download(file: &mut File, url: &str) -> Option<()> {
   let mut download = DOWNLOADER.get(url).send().await.ok()?;
 

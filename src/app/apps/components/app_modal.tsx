@@ -292,21 +292,21 @@ export default function ShowModal(props: AppDataPropsModal) {
                     id={`app-desc-slide-${i}`}
                     className="dui-carousel-item relative w-full"
                   >
-                    <img src={`data:image;base64;${img}`} className="mx-auto" />
+                    <img src={`data:image;base64,${img}`} className="mx-auto rounded-lg" />
                     <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
                       <a
-                        href={i != 0 ? `#app-desc-slide-${i - 1}` : ""}
-                        className="dui-btn dui-btn-circle dui-btn-accent"
+                        href={i != 0 ? `#app-desc-slide-${i - 1}` : "#app-desc-slide-0"}
+                        className={`dui-btn dui-btn-circle ${i != 0 ? "dui-btn-accent" : "dui-btn-disabled"}`}
                       >
                         ❮
                       </a>
                       <a
                         href={
                           i + 1 != displayImages.length
-                            ? `#app-desc-slide-${i + 2}`
-                            : ""
+                            ? `#app-desc-slide-${i + 1}`
+                            : `#app-desc-slide-${displayImages.length}`
                         }
-                        className="dui-btn dui-btn-circle dui-btn-accent"
+                        className={`dui-btn dui-btn-circle  ${i + 1 != displayImages.length ? "dui-btn-accent" : "dui-btn-disabled"}`}
                       >
                         ❯
                       </a>

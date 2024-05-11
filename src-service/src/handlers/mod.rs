@@ -1,10 +1,11 @@
 use ahqstore_types::UpdateStatusReport;
 use lazy_static::lazy_static;
 use std::sync::mpsc::Sender;
-use tokio::net::windows::named_pipe::NamedPipeServer;
-use tokio::spawn;
 
-use crate::windows::{
+#[allow(unused)]
+use tokio::{io::AsyncWriteExt, spawn};
+
+use crate::{
   utils::{
     get_iprocess,
     structs::{Command, ErrorType, Reason, Response},
@@ -12,7 +13,7 @@ use crate::windows::{
   write_log,
 };
 
-use self::daemon::{lib_msg, LIBRARY, UPDATE_STATUS_REPORT};
+use self::daemon::{lib_msg, UPDATE_STATUS_REPORT};
 use self::service::*;
 
 mod daemon;
@@ -31,9 +32,6 @@ use super::utils::ws_send;
 pub fn handle_msg(data: String) {
   spawn(async move {
     if let Some(mut ws) = get_iprocess() {
-      let stop = |ws: &NamedPipeServer| {
-        let _ = ws.disconnect();
-      };
       write_log(&data);
       if let Some(x) = Command::try_from(&data) {
         match x {
@@ -112,7 +110,7 @@ pub fn handle_msg(data: String) {
             ws_send(&mut ws, &lib_msg()).await;
             send_term(ref_id).await;
           }
-          Command::AddPkg(ref_id, pkg) => {
+          Command::AddPkg(ref_id, _pkg) => {
             send_term(ref_id).await;
           }
         }
@@ -120,8 +118,11 @@ pub fn handle_msg(data: String) {
         let x = Response::as_msg(Response::Disconnect(Reason::UnknownData(0)));
         ws_send(&mut ws, &x).await;
 
+        #[cfg(windows)]
         let _ = ws.disconnect();
-        stop(&ws);
+
+        #[cfg(unix)]
+        let _ = ws.shutdown().await;
       }
     } else {
       write_log("STOPPING: Critical Error!");
