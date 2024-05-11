@@ -34,4 +34,4 @@ pub use win32::*;
 mod linux;
 
 #[cfg(unix)]
-pub use win32::*;
+pub use linux::*;
