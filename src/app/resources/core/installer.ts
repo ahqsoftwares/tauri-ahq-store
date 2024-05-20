@@ -8,20 +8,26 @@ interface Library {
   progress: number
 }
 
+type UpdateStatusReport = "Disabled" | "UpToDate" | "Checking" | "Updating";
+
 class UpdateInstallerWorker {
   library: Library[]
+  update: UpdateStatusReport
   onChange: { [key: number]: (lib: Library[]) => void }
   listId: number = 0
 
   constructor() {
     this.library = [];
     this.onChange = {};
+    this.update = "Disabled";
 
     engageWs0((resp) => {
       if (resp.method == "Library") {
         console.log("WS0 ", resp);
         this.library = resp.data as Library[];
         Object.values(this.onChange).forEach((f) => f(this.library));
+      } else if (resp.method == "UpdateStatus") {
+        this.update = resp.data as UpdateStatusReport;
       }
     });
   }
@@ -66,12 +72,21 @@ class UpdateInstallerWorker {
     return new Promise((r) => {
       // Send a request to the server to get the library
       sendWsRequest(WebSocketMessage.GetLibrary(), (_) => { });
-      r(undefined);
+      sendWsRequest(WebSocketMessage.UpdateStatus, (resp) => {
+        if (resp.method == "UpdateStatus") {
+          this.update = resp.data as UpdateStatusReport;
+          r(undefined);
+        }
+      });
     });
+  }
+
+  runUpdate() {
+    sendWsRequest(WebSocketMessage.RunUpdate, (_) => { });
   }
 }
 
 const worker = new UpdateInstallerWorker();
 
-export type { Library }
+export type { Library, UpdateStatusReport }
 export { worker }

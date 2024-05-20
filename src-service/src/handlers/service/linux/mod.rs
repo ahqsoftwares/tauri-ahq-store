@@ -3,7 +3,8 @@ use std::fs;
 use ahqstore_types::InstallerFormat;
 
 use crate::utils::{
-  chmod, get_installer_file, get_program_folder, get_programs, get_target_lnk, structs::{AHQStoreApplication, AppData}
+  chmod, get_installer_file, get_program_folder, get_programs, get_target_lnk,
+  structs::{AHQStoreApplication, AppData},
 };
 
 pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
@@ -47,7 +48,9 @@ Icon={}",
 
   fs::write(&link, contents).ok()?;
 
-  if !(chmod("a+rx", &link)? && chmod("a+rx", &new_file)?) {return None};
+  if !(chmod("a+rx", &link)? && chmod("a+rx", &new_file)?) {
+    return None;
+  };
 
   None
 }

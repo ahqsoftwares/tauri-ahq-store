@@ -26,10 +26,13 @@ fn time() -> u64 {
 
 pub fn lib_msg() -> Vec<u8> {
   Response::as_msg(Response::Library(0, unsafe {
-    LIBRARY.as_ref().unwrap().clone()
+    LIBRARY
+      .as_ref()
+      .unwrap()
+      .clone()
       .into_iter()
       .map(|mut x| {
-        x.app = None; 
+        x.app = None;
         x
       })
       .collect()
@@ -49,7 +52,9 @@ pub fn get_install_daemon() -> Sender<Command> {
     let should_autorun = get_prefs().auto_update_apps;
 
     if should_autorun {
-      unsafe { UPDATE_STATUS_REPORT = Some(UpdateStatusReport::UpToDate); }
+      unsafe {
+        UPDATE_STATUS_REPORT = Some(UpdateStatusReport::UpToDate);
+      }
     }
 
     let mut secs = time() + 600;
@@ -58,7 +63,7 @@ pub fn get_install_daemon() -> Sender<Command> {
     let run_update = || check_update();
 
     let pending = unsafe { LIBRARY.as_mut().unwrap() };
-    
+
     let mut run_update_now = false;
     loop {
       'r: loop {
@@ -73,15 +78,13 @@ pub fn get_install_daemon() -> Sender<Command> {
                 progress: 0.0,
                 app: None,
               });
-            },
+            }
             Command::UninstallApp(ref_id, app_id) => {
               if let Response::AppData(_, app_id, app) = get_app(ref_id, app_id).await {
                 pending.push(Library {
                   app_id,
                   is_update: false,
-                  app: Some(
-                    app
-                  ),
+                  app: Some(app),
                   progress: 0.0,
                   status: AppStatus::Pending,
                   to: ToDo::Uninstall,
@@ -91,8 +94,7 @@ pub fn get_install_daemon() -> Sender<Command> {
             Command::RunUpdate(_) => {
               run_update_now = true;
             }
-            _ => {
-            }
+            _ => {}
           }
         } else {
           break 'r;
@@ -100,18 +102,18 @@ pub fn get_install_daemon() -> Sender<Command> {
         between().await;
       }
 
-      if time() > secs || run_update_now {
-        run_update_now = false;
-        if 0 == get_commit().await {
-          secs = time() + 600;
+      if let Some(mut ws) = get_iprocess() {
+        if time() > secs || run_update_now {
+          run_update_now = false;
+          if 0 == get_commit().await {
+            secs = time() + 600;
 
-          if should_autorun {
-            run_update().await;
+            if should_autorun {
+              run_update().await;
+            }
           }
         }
-      }
 
-      if let Some(mut ws) = get_iprocess() {
         let mut was_updates = false;
         for cmd in pending.iter_mut() {
           let to = cmd.to.clone();
@@ -161,50 +163,6 @@ pub fn get_install_daemon() -> Sender<Command> {
               ws_send(&mut ws, &lib_msg()).await;
               between().await;
             }
-            /*Command::GetApp(ref_id, app_id) => {
-                      let app_data = get_app_url(ref_id, app_id).await;
-                      let x = Response::as_msg(app_data);
-                      ws_send(&mut ws, &x).await;
-
-                      send_term(ref_id).await;
-                    }
-                    Command::InstallApp(ref_id, app_id) => {
-                      if let Some(x) = download_app(ref_id, &app_id).await {
-                        between().await;
-                        ws_send(
-                          &mut ws,
-                          &Response::as_msg(Response::Installing(ref_id, app_id.clone())),
-                        )
-                        .await;
-
-                        between().await;
-                        if let None = install_app(x).await {
-                          ws_send(
-                            &mut ws,
-                            &Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, app_id))),
-                          )
-                          .await;
-                        } else {
-                          ws_send(
-                            &mut ws,
-                            &Response::as_msg(Response::Installed(ref_id, app_id)),
-                          )
-                          .await;
-                        }
-                      } else {
-                        ws_send(
-                          &mut ws,
-                          &Response::as_msg(Response::Error(ErrorType::AppInstallError(ref_id, app_id))),
-                        )
-                        .await
-                      }
-                      send_term(ref_id).await;
-                    }
-                    Command::RunUpdate(ref_id) => {
-                      send_term(ref_id).await;
-                      run_update().await;
-                    }
-                    _ => {}*/
           }
 
           between().await;
@@ -213,6 +171,11 @@ pub fn get_install_daemon() -> Sender<Command> {
         unsafe {
           if was_updates {
             UPDATE_STATUS_REPORT = Some(UpdateStatusReport::UpToDate);
+            let _ = ws_send(
+              &mut ws,
+              &Response::as_msg(Response::UpdateStatus(0, UpdateStatusReport::UpToDate)),
+            )
+            .await;
           }
         }
       }
@@ -227,35 +190,47 @@ pub fn get_install_daemon() -> Sender<Command> {
 pub async fn check_update() {
   let mut to_update = vec![];
 
-  unsafe {
-    UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Checking);
-  }
-  if let Some(x) = list_apps() {
-    for (id, ver) in x {
-      let app = get_app(0, id).await;
-      match app {
-        Response::AppData(_, id, app) => {
-          if &ver != &app.version {
-            to_update.push((id, app));
+  if let Some(mut ws) = get_iprocess() {
+    unsafe {
+      UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Checking);
+      let _ = ws_send(
+        &mut ws,
+        &Response::as_msg(Response::UpdateStatus(0, UpdateStatusReport::Checking)),
+      )
+      .await;
+    }
+    if let Some(x) = list_apps() {
+      for (id, ver) in x {
+        let app = get_app(0, id).await;
+        match app {
+          Response::AppData(_, id, app) => {
+            if &ver != &app.version {
+              to_update.push((id, app));
+            }
           }
+          _ => {}
         }
-        _ => {}
       }
     }
-  }
 
-  let library = unsafe { LIBRARY.as_mut().unwrap() };
-  for (id, app) in to_update {
-    library.push(Library {
-      app_id: id,
-      is_update: true,
-      progress: 0.0,
-      status: AppStatus::Pending,
-      to: ToDo::Uninstall,
-      app: Some(app)
-    });
-    unsafe {
-      UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Updating);
+    let library = unsafe { LIBRARY.as_mut().unwrap() };
+    for (id, app) in to_update {
+      library.push(Library {
+        app_id: id,
+        is_update: true,
+        progress: 0.0,
+        status: AppStatus::Pending,
+        to: ToDo::Uninstall,
+        app: Some(app),
+      });
+      unsafe {
+        UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Updating);
+        let _ = ws_send(
+          &mut ws,
+          &Response::as_msg(Response::UpdateStatus(0, UpdateStatusReport::Updating)),
+        )
+        .await;
+      }
     }
   }
 }

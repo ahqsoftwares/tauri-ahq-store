@@ -2,19 +2,29 @@ use std::{fs, io::ErrorKind};
 
 use tokio::{io::AsyncWriteExt, net::UnixListener};
 
-use crate::{authentication::authenticate_process, handlers::handle_msg, utils::{chmod, get_iprocess, set_iprocess, write_log}};
+use crate::{
+  authentication::authenticate_process,
+  handlers::handle_msg,
+  utils::{chmod, get_iprocess, set_iprocess, write_log},
+};
 
 pub async fn launch() {
   println!("STARTING UP");
-  ["/ahqstore", "/ahqstore/Installers", "/ahqstore/Programs", "/ahqstore/Updaters"].iter().for_each(|x| {
+  [
+    "/ahqstore",
+    "/ahqstore/Installers",
+    "/ahqstore/Programs",
+    "/ahqstore/Updaters",
+  ]
+  .iter()
+  .for_each(|x| {
     let _ = fs::create_dir_all(x);
   });
 
   chmod("655", "/ahqstore/").unwrap();
 
   let _ = fs::remove_file("/ahqstore/socket");
-  let socket = UnixListener::bind("/ahqstore/socket")
-    .unwrap();
+  let socket = UnixListener::bind("/ahqstore/socket").unwrap();
 
   chmod("777", "/ahqstore/socket").unwrap();
 

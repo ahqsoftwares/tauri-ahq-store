@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 
 use chacha20poly1305::{
   aead::{generic_array::GenericArray, Aead, KeyInit},
-  ChaCha20Poly1305
+  ChaCha20Poly1305,
 };
 
 use serde_json::from_str;

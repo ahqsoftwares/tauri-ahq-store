@@ -13,9 +13,7 @@ fn get_service_file() -> String {
   );
 
   #[cfg(unix)]
-  return format!(
-    "/ahqstore/service.encrypted.txt"
-  );
+  return format!("/ahqstore/service.encrypted.txt");
 }
 
 fn get_log_file() -> String {
@@ -26,9 +24,7 @@ fn get_log_file() -> String {
   );
 
   #[cfg(unix)]
-  return format!(
-    "/ahqstore/server.log.txt"
-  );
+  return format!("/ahqstore/server.log.txt");
 }
 
 fn get_old_log_file() -> String {
@@ -39,9 +35,7 @@ fn get_old_log_file() -> String {
   );
 
   #[cfg(unix)]
-  return format!(
-    "/ahqstore/server.old.log.txt"
-  );
+  return format!("/ahqstore/server.old.log.txt");
 }
 
 pub fn write_service<T>(status: T) -> Option<()>

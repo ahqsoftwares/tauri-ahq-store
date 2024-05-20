@@ -15,7 +15,7 @@ use crate::{
   utils::{
     get_installer_file, get_program_folder, get_programs, get_target_lnk,
     structs::{AHQStoreApplication, AppData},
-  }
+  },
 };
 
 pub fn run(path: &str, args: &[&str]) -> Result<Child, Error> {

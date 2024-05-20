@@ -2,28 +2,26 @@ use crate::utils::*;
 use sysinfo::{Pid, System};
 
 pub fn authenticate_process(pid: usize, time: bool) -> bool {
-  #[cfg(
-    all(not(debug_assertions), windows)
-  )]
+  #[cfg(all(not(debug_assertions), windows))]
   let exe = [format!(
     r"{}\Program Files\AHQ Store\AHQ Store.exe",
     get_main_drive()
   )];
 
-  #[cfg(
-    all(not(debug_assertions), unix)
-  )]
-  let exe = [format!(
-    "/bin/ahqstore",
-  ), format!("/usr/bin/ahqstore")];
+  #[cfg(all(not(debug_assertions), unix))]
+  let exe = [format!("/bin/ahqstore",), format!("/usr/bin/ahqstore")];
 
   #[cfg(all(debug_assertions, windows))]
-  let exe = [format!(r"E:\GitHub\ahq-store-tauri\src-tauri\target\debug\AHQ Store.exe")];
+  let exe = [format!(
+    r"E:\GitHub\ahq-store-tauri\src-tauri\target\debug\AHQ Store.exe"
+  )];
 
   #[cfg(all(debug_assertions, unix))]
   let exe = [
-    format!("/media/ahqsoftwares/AHQ_s Drive/GitHub/ahq-store-tauri/src-tauri/target/debug/ahq-store"),
-    format!("/media/ahqsoftwares/AHQ_s Drive/rust/server/target/debug/server")
+    format!(
+      "/media/ahqsoftwares/AHQ_s Drive/GitHub/ahq-store-tauri/src-tauri/target/debug/ahq-store"
+    ),
+    format!("/media/ahqsoftwares/AHQ_s Drive/rust/server/target/debug/server"),
   ];
   //let path = format!(r"E:\rust\iprocess\target\debug\iprocess.exe");
 

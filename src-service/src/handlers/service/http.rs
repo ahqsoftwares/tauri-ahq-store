@@ -4,9 +4,14 @@ use reqwest::{Client, ClientBuilder, StatusCode};
 use std::{fs::File, io::Write};
 
 #[allow(unused)]
-use crate::{handlers::daemon::lib_msg, utils::{
-  get_file_on_root, get_installer_file, get_iprocess, structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response}, ws_send
-}};
+use crate::{
+  handlers::daemon::lib_msg,
+  utils::{
+    get_file_on_root, get_installer_file, get_iprocess,
+    structs::{AHQStoreApplication, AppId, ErrorType, RefId, Response},
+    ws_send,
+  },
+};
 use std::time::Duration;
 
 #[cfg(debug_assertions)]
@@ -80,9 +85,7 @@ pub async fn keep_alive() -> bool {
   false
 }
 
-pub async fn download_app(
-  val: &mut Library,
-) -> Option<AHQStoreApplication> {
+pub async fn download_app(val: &mut Library) -> Option<AHQStoreApplication> {
   let app_id = &val.app_id;
   let app_id = app_id.to_string();
   let app_id = get_app(0, app_id).await;
@@ -142,10 +145,8 @@ pub async fn download_app(
               if last != perc {
                 val.progress = perc;
                 last = perc;
-                
-                ws_send(&mut get_iprocess().unwrap(), 
-                  &lib_msg()
-                ).await;
+
+                ws_send(&mut get_iprocess().unwrap(), &lib_msg()).await;
               }
             }
             None => break,

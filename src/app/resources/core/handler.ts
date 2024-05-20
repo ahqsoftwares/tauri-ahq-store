@@ -16,6 +16,8 @@ const WebSocketMessage = {
     `{"SetPrefs":[{*ref_id}, ${JSON.stringify(prefs)}]}`,
   GetSha: () => `{"GetSha":{*ref_id}}`,
   GetLibrary: () => `{"GetLibrary":{*ref_id}}`,
+  RunUpdate: `{"RunUpdate":{*ref_id}}`,
+  UpdateStatus: `{"UpdateStatus":{*ref_id}}`
 };
 
 type u64 = Number;

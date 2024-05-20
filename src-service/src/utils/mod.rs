@@ -20,10 +20,7 @@ pub fn get_program_folder(app_id: &str) -> String {
   );
 
   #[cfg(unix)]
-  return format!(
-    "/ahqstore/programs/{}",
-    &app_id
-  );
+  return format!("/ahqstore/programs/{}", &app_id);
 }
 
 pub fn get_programs() -> String {
@@ -34,9 +31,7 @@ pub fn get_programs() -> String {
   );
 
   #[cfg(unix)]
-  return format!(
-    "/ahqstore/programs"
-  );
+  return format!("/ahqstore/programs");
 }
 
 pub fn get_installer_file(app: &AHQStoreApplication) -> String {
@@ -65,9 +60,7 @@ pub fn get_file_on_root(file: &str) -> String {
   );
 
   #[cfg(unix)]
-  return format!(
-    "/ahqstore/{file}"
-  );
+  return format!("/ahqstore/{file}");
 }
 
 pub fn get_target_lnk(name: &str) -> String {
@@ -79,10 +72,7 @@ pub fn get_target_lnk(name: &str) -> String {
   );
 
   #[cfg(unix)]
-  return format!(
-    "/usr/share/applications/{}.desktop",
-    &name
-  );
+  return format!("/usr/share/applications/{}.desktop", &name);
 }
 
 pub fn now() -> u64 {

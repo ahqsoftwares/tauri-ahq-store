@@ -3,7 +3,7 @@ import { Prefs } from ".";
 import { ApplicationData } from "../api/fetchApps";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { fetch } from "@tauri-apps/plugin-http";
-import { Library } from "./installer";
+import { Library, UpdateStatusReport } from "./installer";
 
 type Methods =
   | "Error"
@@ -21,7 +21,8 @@ type Methods =
   | "TerminateBlock"
   | "Unknown"
   | "SHAId"
-  | "Library";
+  | "Library"
+  | "UpdateStatus";
 
 type ErrorType =
   | "GetAppFailed"
@@ -44,7 +45,7 @@ interface ServerResponse {
   ref: number;
   method: Methods;
   error: Error[];
-  data: ListedApps | ApplicationData | Prefs | Downloaded | Library[] | string;
+  data: ListedApps | ApplicationData | Prefs | Downloaded | Library[] | UpdateStatusReport | string;
 }
 
 export type {
@@ -102,6 +103,11 @@ export async function interpret(
       result.method = "Library";
 
       result.data = pyld as Library[];
+      break;
+    case "UpdateStatus":
+      result.method = "UpdateStatus";
+      result.data = pyld as UpdateStatusReport;
+
       break;
     case "AppDataUrl":
       result.method = "AppData";

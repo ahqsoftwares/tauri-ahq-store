@@ -32,9 +32,9 @@ pub use self::service::keep_alive;
 use super::utils::ws_send;
 
 pub fn handle_msg(data: String) {
-  if unsafe {DONE} == 0 {
+  if unsafe { DONE } == 0 {
     let _ = GET_INSTALL_DAEMON.send(Command::GetSha(0));
-    unsafe {DONE = 1};
+    unsafe { DONE = 1 };
   }
   spawn(async move {
     if let Some(mut ws) = get_iprocess() {

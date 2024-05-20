@@ -36,10 +36,7 @@ pub fn main() -> SResult<()> {
   #[cfg(not(feature = "no_service"))]
   service_dispatcher::start("AHQ Store Service", ffi_service_main)?;
 
-  #[cfg(any(
-    all(feature = "no_service", windows),
-    target_os="linux"
-  ))]
+  #[cfg(any(all(feature = "no_service", windows), target_os = "linux"))]
   service_runner("");
   Ok(())
 }
@@ -74,10 +71,7 @@ fn start_keep_alive() {
 }
 
 fn service_runner<T>(_: T) {
-  #[cfg(all(
-    windows,
-    not(feature = "no_service")
-  ))]
+  #[cfg(all(windows, not(feature = "no_service")))]
   {
     let handler: Arc<Mutex<Option<ServiceStatusHandle>>> = Arc::new(Mutex::new(None));
 
