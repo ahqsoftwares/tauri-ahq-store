@@ -33,8 +33,17 @@ export function sendWsRequest(
   data: string,
   result: (value: ServerResponse) => void,
 ) {
-  console.log(data);
   queueAndWait(data, result);
+}
+
+export function engageWs0(
+  result: (value: ServerResponse) => void,
+) {
+  toResolve.push({
+    data: "%worker",
+    resolve: result,
+    ref_id: 0,
+  });
 }
 
 export { WebSocketMessage };

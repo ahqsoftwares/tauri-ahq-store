@@ -13,18 +13,18 @@
     "@tauri-apps/plugin-os": "2.0.0-beta.3",
     "@tauri-apps/plugin-process": "2.0.0-beta.3",
     "autoprefixer": "^10.4.19",
-    "daisyui": "^4.10.5",
+    "daisyui": "^4.11.1",
     "minisearch": "^6.3.0",
     "postcss": "^8.4.38",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-icons": "^5.2.0",
+    "react": "19.0.0-beta-26f2496093-20240514",
+    "react-dom": "19.0.0-beta-26f2496093-20240514",
+    "react-icons": "^5.2.1",
     "react-modal": "^3.16.1",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vite-plugin-svgr": "^4.2.0",
-    "web-vitals": "^3.5.2"
+    "web-vitals": "^4.0.0"
   },
   "scripts": {
     "start": "cross-env BROWSER=none NODE_OPTIONS=--max-old-space-size=2048 vite",
@@ -52,8 +52,8 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "2.0.0-beta.11",
-    "@types/node": "^20.12.8",
-    "@types/react": "^18.3.1",
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "@types/react-modal": "^3.16.3",
     "@vitejs/plugin-react-swc": "^3.6.0",
@@ -61,7 +61,7 @@
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "cryptr": "^6.3.0",
-    "firebase-tools": "^13.8.0",
+    "firebase-tools": "^13.9.0",
     "onchange": "^7.1.0",
     "prettier": "^3.2.5",
     "terser": "^5.31.0"

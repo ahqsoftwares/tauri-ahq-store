@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 pub mod download;
 pub mod extract;
 #[macro_use]
@@ -8,6 +10,7 @@ mod ws;
 use crate::rpc;
 use tauri::menu::IconMenuItemBuilder;
 use tauri::tray::{ClickType, TrayIconBuilder, TrayIconEvent};
+use tauri::window::{ProgressBarState, ProgressBarStatus};
 use tauri::{
   image::Image,
   menu::{Menu, MenuBuilder, MenuEvent, MenuId, MenuItem},
@@ -17,21 +20,18 @@ use tauri::{
 use crate::encryption::{decrypt, encrypt};
 
 //crates
+#[cfg(windows)]
 use windows::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE};
-use windows::{
-  core::PCWSTR,
-  Win32::{
-    System::Com::{CoCreateInstance, CLSCTX_SERVER},
-    UI::{
-      Shell::{ITaskbarList4, TaskbarList, TBPFLAG},
-      WindowsAndMessaging::HICON,
-    },
-  },
-};
 
 use std::panic::catch_unwind;
+use std::process;
 use std::time::Duration;
+
+#[cfg(unix)]
+use whatadistro::identify;
+
 //std
+#[cfg(windows)]
 use std::os::windows::process::CommandExt;
 use std::{
   fs,
@@ -45,6 +45,18 @@ use std::{
 use open as open_2;
 
 use utils::{get_service_url, is_an_admin};
+
+macro_rules! platform_impl {
+  ($x:expr, $y:expr) => {
+    {
+      #[cfg(windows)]
+      return {$x};
+
+      #[cfg(unix)]
+      return {$y};
+    }
+  }
+}
 
 #[derive(Debug, Clone)]
 struct AppData {
@@ -79,23 +91,11 @@ pub fn main() {
 
         WINDOW = Some(window.clone());
 
-        {
-          let hwnd = window.clone().hwnd().unwrap();
-
-          let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
-
-          let icon = HICON(32518);
-
-          taskbar
-            .SetOverlayIcon(hwnd, icon, PCWSTR::from_raw("Test" as *const _ as _))
-            .unwrap();
-        }
-
         rpc::init_presence(&window);
 
         ws::init(&window, || {
           #[cfg(debug_assertions)]
-          println!("Reinstall AHQ Store Service Required...");
+          println!("Reinstall of AHQ Store is required...");
 
           if catch_unwind(|| {
             let mut i = 0;
@@ -115,23 +115,32 @@ pub fn main() {
             }
 
             thread::spawn(|| {
-              let url = get_service_url();
+              let url = get_service_url(
+                env!("CARGO_PKG_VERSION").contains("-alpha")
+              );
 
-              
               let sys = sys_handler();
 
-              fs::create_dir_all(format!("{}\\astore", sys)).unwrap();
+              let file: String = platform_impl!(
+                format!("{}\\ahqstore.exe", &sys),
+                format!("/ahqstore")
+              );
+
+              let _ = fs::remove_file(&file);
               download::download(
                 &url,
-                &format!("{}\\astore", sys),
-                "astore_service_installer.exe",
+                &sys,
+                &{let x: String = platform_impl!(format!("ahqstore.exe"), format!("ahqstore")); x},
                 |_c, _t| {
                   #[cfg(debug_assertions)]
                   println!("{}", _c * 100 / _t);
                 },
               );
 
-              extract::run_admin(format!("{}\\astore\\astore_service_installer.exe", sys));
+              #[cfg(unix)]
+              let _ = chmod("777", &file);
+
+              extract::run_admin(file);
           
             }).join().unwrap();
           })
@@ -144,6 +153,7 @@ pub fn main() {
         });
       }
 
+      #[cfg(windows)]
       {
         thread::sleep(Duration::from_secs(1));
         let hwnd = window.hwnd().unwrap();
@@ -226,7 +236,6 @@ pub fn main() {
       set_progress,
       is_an_admin,
       is_development,
-      set_overlay,
       check_install_update
     ])
     .menu(|handle| Menu::new(handle))
@@ -253,7 +262,9 @@ pub fn main() {
           &MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap(),
         )
         .separator()
-        .quit()
+        .item(
+          &MenuItem::with_id(&app, "quit", "Quit", true, None::<String>).unwrap(),
+        )
         .build()
         .unwrap(),
     )
@@ -277,6 +288,9 @@ pub fn main() {
           tauri::async_runtime::spawn(async {
             check_install_update().await;
           });
+        }
+        "quit" => {
+          process::exit(0);
         }
         _ => {}
       }
@@ -307,6 +321,20 @@ fn is_development() -> bool {
   cfg!(debug_assertions)
 }
 
+#[cfg(unix)]
+pub fn chmod(typ: &str, regex: &str) -> Option<bool> {
+  use std::process::Command;
+
+  Command::new("chmod")
+    .args([typ, regex])
+    .spawn()
+    .ok()?
+    .wait()
+    .ok()?
+    .success()
+    .into()
+}
+
 #[tauri::command(async)]
 fn open(url: String) -> Option<()> {
   match open_2::that(url) {
@@ -328,67 +356,70 @@ async fn check_install_update() {
       unsafe {
         let _ = WINDOW.clone().unwrap().emit("update", "installing");
       }
+      tokio::time::sleep(Duration::from_secs(4)).await;
       update(release).await;
+      process::exit(0);
     }
    }
 }
 
 #[tauri::command(async)]
 fn sys_handler() -> String {
-  std::env::var("SYSTEMROOT")
+  #[cfg(windows)]
+  return std::env::var("SYSTEMROOT")
     .unwrap()
     .to_uppercase()
     .as_str()
     .replace("\\WINDOWS", "")
-    .replace("\\Windows", "")
+    .replace("\\Windows", "");
+
+  #[cfg(unix)]
+  return "/".into();
 }
 
 #[tauri::command(async)]
-fn set_overlay(set: bool) {
-  println!("Called {}", &set);
-  unsafe {
-    let hwnd = WINDOW.clone().unwrap().hwnd().unwrap();
-
-    let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
-
-    let icon = HICON(32518);
-
-    taskbar
-      .SetOverlayIcon(hwnd, icon, PCWSTR::from_raw("Test" as *const _ as _))
-      .unwrap();
-  }
+fn set_progress(window: tauri::WebviewWindow<tauri::Wry>, state: i32, c: Option<u64>, t: Option<u64>) {
+  let progress = match (c, t) {
+    (Some(c), Some(t)) => Some((c*100)/t),
+    _ => None
+  };
+  let _ = window.set_progress_bar(ProgressBarState {
+    progress,
+    status: Some(match state {
+      0x00000001 => ProgressBarStatus::Indeterminate,
+      0x00000002 => ProgressBarStatus::Normal,
+      0x00000004 => ProgressBarStatus::Error,
+      0x00000008 => ProgressBarStatus::Paused,
+      _ => ProgressBarStatus::None
+    })
+  });
 }
 
 #[tauri::command(async)]
-fn set_progress(state: i32, c: Option<u64>, t: Option<u64>) {
-  unsafe {
-    let handle = WINDOW.clone().unwrap().hwnd().unwrap();
+fn get_linux_distro() -> Option<String> {
+  #[cfg(windows)]
+  return None;
 
-    let taskbar: ITaskbarList4 = CoCreateInstance(&TaskbarList, None, CLSCTX_SERVER).unwrap();
-
-    taskbar
-      .SetProgressState::<windows::Win32::Foundation::HWND>(handle, TBPFLAG(state))
-      .unwrap();
-
-    if let Some(c) = c {
-      if let Some(t) = t {
-        taskbar
-          .SetProgressValue::<windows::Win32::Foundation::HWND>(handle, c, t)
-          .unwrap();
-      }
-    }
-  }
+  #[cfg(unix)]
+  return Some(identify()?.name().into());
 }
 
 #[tauri::command(async)]
 fn get_windows() -> &'static str {
-  if is_windows_11() {
-    "11"
-  } else {
-    "10"
-  }
+  #[cfg(unix)]
+  return "linux";
+
+  #[cfg(windows)]
+  return {
+    if is_windows_11() {
+      "11"
+    } else {
+      "10"
+    }
+  };
 }
 
+#[cfg(windows)]
 fn is_windows_11() -> bool {
   let version = Command::new("cmd")
     .creation_flags(0x08000000)

@@ -57,7 +57,7 @@ let list = [
 ];
 
 getCurrent().listen("update", () => {
-  console.log("Got Update!");
+  loadRender(false, "Update available, updating!");
 });
 
 window.addEventListener("keydown", (e) => {

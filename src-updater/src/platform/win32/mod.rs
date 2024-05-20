@@ -1,4 +1,4 @@
-use std::{fs::remove_file, process::Command};
+use std::{fs::{remove_file, create_dir_all}, process::Command};
 
 use crate::Release;
 use dirs::cache_dir;
@@ -8,6 +8,9 @@ pub async fn platform_update(raw: Release) {
   if let Some(asset) = raw.assets.iter().find(|x| x.name.ends_with(".exe") && x.name.contains("setup")) {
     let mut local = cache_dir().unwrap();
     local.push("Temp");
+
+    let _ = create_dir_all(&local);
+
     local.push("ahqstore_updater.exe");
 
     let file = local.to_str().unwrap_or("C:\\updater.exe");

@@ -19,9 +19,8 @@ struct Asset {
 pub struct ReleaseData {
   pub msi: String,
   pub service: String,
-  pub deb: String,
-  pub app_image: String,
-  pub vc: &'static str
+  pub linux_daemon: String,
+  pub deb: String
 }
 
 pub fn fetch(install: &InstallMode) -> (Client, ReleaseData) {
@@ -55,17 +54,15 @@ pub fn fetch(install: &InstallMode) -> (Client, ReleaseData) {
 
   let mut data = ReleaseData::default();
 
-  data.vc = "https://aka.ms/vs/17/release/vc_redist.x64.exe";
-
   release.assets.into_iter().for_each(|x| {
     if x.name.ends_with(".msi") {
       data.msi = x.browser_download_url;
     } else if x.name.ends_with(".deb") {
       data.deb = x.browser_download_url;
-    } else if x.name.ends_with(".AppImage") {
-      data.app_image = x.browser_download_url;
     } else if &x.name == "ahqstore_service.exe" {
       data.service = x.browser_download_url;
+    } else if &x.name == "ahqstore_service" {
+      data.linux_daemon = x.browser_download_url;
     }
   });
 

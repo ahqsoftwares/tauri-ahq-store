@@ -11,7 +11,9 @@ lazy_static! {
 }
 
 pub async fn download(url: &str, path: &str) -> Option<()> {
-  let mut file = File::create_new(path).ok()?;
+  println!("{}", &path);
+
+  let mut file = File::create(path).ok()?;
 
   let res = CLIENT.get(url).send().await.ok()?.bytes().await.ok()?;
 

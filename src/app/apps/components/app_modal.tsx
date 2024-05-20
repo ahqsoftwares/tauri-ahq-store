@@ -15,6 +15,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { IoCheckmarkCircle, IoWarning } from "react-icons/io5";
 import { FaLinux } from "react-icons/fa6";
 import { SiWindows } from "react-icons/si";
+import { worker } from "../../resources/core/installer";
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -44,7 +45,7 @@ const defAppData: appData = {
   description: "",
   displayImages: [],
   downloadUrls: [],
-  icon: "",
+  icon: "/react.webp",
   install: {
     installType: "Both",
     linux: undefined,
@@ -78,6 +79,14 @@ export default function ShowModal(props: AppDataPropsModal) {
   const button = useRef<HTMLButtonElement>("" as any);
   const [installed, setInstalled] = useState<boolean | "hidden">(false);
   const [updating, setUpdating] = useState(true);
+
+  useEffect(() => {
+    const id = worker.listen(() => {
+
+    });
+
+    return () => worker.unlisten(id);
+  }, []);
 
   useEffect(() => {
     setAppData(defAppData);

@@ -29,6 +29,7 @@ Apps Layout
   @apply flex flex-col w-[99%] h-[auto] items-center;
   background-color: inherit;
   margin-bottom: 1rem;
+overflow-y: scroll;
 }
 
 .search-app-grid {
@@ -64,7 +65,7 @@ Apps Layout
 Layers
 */
 .layer {
-  @apply flex flex-col h-[25rem] w-[98%] bg-inherit rounded-md mt-5;
+  @apply flex flex-col min-h-[25rem] w-[98%] bg-inherit rounded-md mt-5;
   overflow-x: scroll;
 }
 
@@ -74,7 +75,7 @@ Layers
 }
 
 .layer .item {
-  @apply flex flex-row h-[23rem] w-[97%];
+  @apply flex flex-row min-h-[23rem] w-[97%];
 }
 
 /*

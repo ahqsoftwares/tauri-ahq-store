@@ -3,6 +3,7 @@ import { Prefs } from ".";
 import { ApplicationData } from "../api/fetchApps";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { fetch } from "@tauri-apps/plugin-http";
+import { Library } from "./installer";
 
 type Methods =
   | "Error"
@@ -43,7 +44,7 @@ interface ServerResponse {
   ref: number;
   method: Methods;
   error: Error[];
-  data: ListedApps | ApplicationData | Prefs | Downloaded | string;
+  data: ListedApps | ApplicationData | Prefs | Downloaded | Library[] | string;
 }
 
 export type {
@@ -100,7 +101,7 @@ export async function interpret(
     case "Library":
       result.method = "Library";
 
-      console.log(pyld2);
+      result.data = pyld as Library[];
       break;
     case "AppDataUrl":
       result.method = "AppData";

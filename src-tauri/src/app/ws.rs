@@ -1,6 +1,10 @@
 use async_recursion::async_recursion;
 
+#[cfg(windows)]
 use tokio::net::windows::named_pipe::{ClientOptions, PipeMode};
+
+#[cfg(unix)]
+use tokio::net::UnixSocket;
 use tokio::sync::Mutex;
 
 use serde_json::from_str;
@@ -66,7 +70,13 @@ impl WsConnection {
       }
     };
 
-    match ClientOptions::new().pipe_mode(PipeMode::Message).open(path) {
+    #[cfg(windows)]
+    let ipc_gen_0x68 = ClientOptions::new().pipe_mode(PipeMode::Message).open(path);
+
+    #[cfg(unix)]
+    let ipc_gen_0x68 = UnixSocket::new_stream().unwrap().connect("/ahqstore/socket").await;
+
+    match ipc_gen_0x68 {
       Ok(ipc) => {
         let mut len: [u8; 8] = [0; 8];
         loop {

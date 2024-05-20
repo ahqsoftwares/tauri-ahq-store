@@ -9,6 +9,16 @@ import AppList from "./components/AppsList";
 import { getCurrent } from "@tauri-apps/api/webviewWindow";
 import PopUp from "../resources/components/popup";
 
+// Icons
+const UpdateCheckingDark = "/update_checking_dark.png";
+const UpdateCheckingLight = "/update_checking_light.png";
+
+const UpdateLight = "/update_light.png";
+const UpdateDark = "/update_dark.png";
+
+const UpdatedLight = "/updated_light.png";
+const UpdatedDark = "/updated_dark.png";
+
 const appWindow = getCurrent();
 interface LibraryProps {
   dark: boolean;
@@ -22,6 +32,11 @@ export default function Library(props: LibraryProps) {
     [apps, setApps] = useState<string[]>([]),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     [current, setCurrent] = useState<string>("");
+
+  const icon = status
+    .replace("Check for Updates", dark ? UpdatedDark : UpdatedLight)
+    .replace("Updates Available", dark ? UpdateDark : UpdateLight)
+    .replace("Checking...", dark ? UpdateCheckingDark : UpdateCheckingLight);
 
   useEffect(() => {
     const status = {
@@ -89,7 +104,8 @@ export default function Library(props: LibraryProps) {
           className={`mt-[1rem] min-w-[98%] pt-3 rounded-lg shadow-xl bg-opacity-75 bg-base-100 flex flex-col`}
         >
           <div className="px-3 pt-1 flex flex-row text-center items-center justify-center mb-[1rem]">
-            <h1 className="text-base-content text-2xl">
+            <img src={icon} style={{ "height": "3rem" }} />
+            <h1 className="text-base-content text-2xl ml-2">
               {status === "Check for Updates"
                 ? "You are up to date!"
                 : status === "Checking..."

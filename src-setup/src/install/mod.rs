@@ -1,4 +1,5 @@
 use std::{fs, thread, time::Duration};
+#[cfg(unix)]
 use notify_rust::Notification;
 use slint::SharedString;
 

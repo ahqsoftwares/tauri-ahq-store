@@ -6,6 +6,10 @@
   user-select: none;
 }
 
+body {
+  @apply bg-base-200;
+}
+
 html[data-os="win32"],
 [data-os="win32"] body,
 [data-os="win32"] #root {
@@ -118,10 +122,18 @@ code {
 }
 
 .login-background {
-  background: transparent;
-  background-size: 100% 100%;
-  @apply h-screen w-screen flex flex-col items-center justify-center;
-  transition: all 25ms linear;
+  background: url("./bg.png") !important;
+  background-size: 100% 100% !important;
+  @apply h-screen w-screen flex flex-col items-center justify-center !important;
+  transition: all 25ms linear !important;
+}
+
+[data-os="win32"]
+.login-background {
+  background: transparent !important;
+  background-size: 100% 100% !important;
+  @apply h-screen w-screen flex flex-col items-center justify-center !important;
+  transition: all 25ms linear !important;
 }
 
 .modal {

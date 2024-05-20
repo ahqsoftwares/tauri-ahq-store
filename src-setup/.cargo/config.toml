@@ -1,0 +1,7 @@
+
+[target.'cfg(windows)']
+rustflags = ["-C", "target-feature=+crt-static"]
+
+
+[build]
+rustflags = ["-Z", "threads=2"]

@@ -36,6 +36,7 @@ import {
 } from "./resources/utilities/themes";
 import Package from "./package";
 import { Auth, logOut } from "../auth";
+import { worker } from "./resources/core/installer";
 
 interface AppProps {
   auth: Auth;
@@ -164,6 +165,7 @@ function Render(props: AppProps) {
         const home = await get_home();
         console.log(home);
 
+        await worker.init();
         setApps(home);
         setLoad(true);
       } catch (_) {

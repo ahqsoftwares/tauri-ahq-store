@@ -39,10 +39,12 @@ pub fn lib_msg() -> Vec<u8> {
 pub fn get_install_daemon() -> Sender<Command> {
   let (tx, rx) = channel();
 
+  println!("Daemon Running");
   spawn(async move {
     unsafe {
       UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Disabled);
       LIBRARY = Some(vec![]);
+      println!("LIB Setted");
     }
     let should_autorun = get_prefs().auto_update_apps;
 
@@ -90,7 +92,6 @@ pub fn get_install_daemon() -> Sender<Command> {
               run_update_now = true;
             }
             _ => {
-              panic!("");
             }
           }
         } else {
@@ -114,14 +115,22 @@ pub fn get_install_daemon() -> Sender<Command> {
         let mut was_updates = false;
         for cmd in pending.iter_mut() {
           let to = cmd.to.clone();
+          println!("{:?} {:?} {:?}", &cmd.status, &cmd.to, &cmd.app_id);
           match &to {
             ToDo::Install => {
               cmd.status = AppStatus::Downloading;
               ws_send(&mut ws, &lib_msg()).await;
+              between().await;
+
               if let Some(x) = download_app(cmd).await {
                 cmd.status = AppStatus::Installing;
 
+                println!("Sending Installing Status");
                 ws_send(&mut ws, &lib_msg()).await;
+                between().await;
+                between().await;
+                between().await;
+
                 if let Some(_) = install_app(x).await {
                   cmd.status = AppStatus::InstallSuccessful;
 
@@ -135,10 +144,12 @@ pub fn get_install_daemon() -> Sender<Command> {
                 cmd.status = AppStatus::NotSuccessful;
               }
               ws_send(&mut ws, &lib_msg()).await;
+              between().await;
             }
             ToDo::Uninstall => {
               cmd.status = AppStatus::Uninstalling;
               ws_send(&mut ws, &lib_msg()).await;
+              between().await;
 
               if let Some(app) = &cmd.app {
                 if let None = uninstall_app(app) {
@@ -148,6 +159,7 @@ pub fn get_install_daemon() -> Sender<Command> {
                 }
               }
               ws_send(&mut ws, &lib_msg()).await;
+              between().await;
             }
             /*Command::GetApp(ref_id, app_id) => {
                       let app_data = get_app_url(ref_id, app_id).await;

@@ -17,6 +17,19 @@ pub fn install_deb(child: &mut Child, path: &str) {
     let _ = stdin.write_all(data.as_bytes());
 }
 
+pub fn install_daemon(child: &mut Child) {
+    let file = format!(r"[Unit]
+Description=AHQ Store Service
+    
+[Service]
+User=root
+WorkingDirectory=/ahqstore
+ExecStart=/ahqstore/service
+    
+[Install]
+WantedBy=multi-user.target");
+}
+
 pub fn exit(mut child: Child) {
     let stdin = child.stdin.as_mut();
     let stdin = stdin.unwrap();

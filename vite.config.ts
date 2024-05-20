@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import reactRefresh from "@vitejs/plugin-react-swc";
 import svgrPlugin from "vite-plugin-svgr";
-import { cpus } from "os";
 import { normalize } from "path";
 
 export default defineConfig(({ mode }) => ({

@@ -25,11 +25,17 @@ lazy_static! {
   static ref GET_INSTALL_DAEMON: Sender<Command> = daemon::get_install_daemon();
 }
 
+static mut DONE: u8 = 0;
+
 pub use self::service::keep_alive;
 
 use super::utils::ws_send;
 
 pub fn handle_msg(data: String) {
+  if unsafe {DONE} == 0 {
+    let _ = GET_INSTALL_DAEMON.send(Command::GetSha(0));
+    unsafe {DONE = 1};
+  }
   spawn(async move {
     if let Some(mut ws) = get_iprocess() {
       write_log(&data);
@@ -107,6 +113,7 @@ pub fn handle_msg(data: String) {
             send_term(ref_id).await;
           }
           Command::GetLibrary(ref_id) => {
+            println!("Getting Library!");
             ws_send(&mut ws, &lib_msg()).await;
             send_term(ref_id).await;
           }

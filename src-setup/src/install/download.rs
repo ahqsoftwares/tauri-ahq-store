@@ -5,6 +5,7 @@ use reqwest::blocking::Client;
 pub fn download<T: FnMut(f32)>(client: &mut Client, url: &str, path: &str, mut call: T) {
   let _ = fs::remove_file(&path);
 
+  println!("Path: {}", &url);
   let response = client.get(url).send().unwrap().bytes().unwrap();
 
   let mut c = 0;

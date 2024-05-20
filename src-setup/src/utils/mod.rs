@@ -6,19 +6,29 @@ use lazy_static::lazy_static;
 lazy_static! {
   pub static ref ROOT_DIR: String = std::env::var("SystemDrive").unwrap();
   pub static ref AHQSTORE_ROOT: String =
-    format!("{}\\ProgramData\\AHQ Store Applications", &*ROOT_DIR);
+    format!("{}{}ProgramData{}AHQ Store Applications", &*ROOT_DIR, &SEP, &SEP);
+}
+
+#[cfg(unix)]
+lazy_static! {
+  pub static ROOT_DIR: String = "/".into();
+  pub static AHQSTORE_ROOT: String = "/ahqstore".into();
+}
+
+#[cfg(windows)]
+static SEP: &'static str = "\\";
+
+#[cfg(unix)]
+static SEP: &'static str = "/";
+
+lazy_static! {
   pub static ref PROGRAMS: String = format!(
-    "{}\\ProgramData\\AHQ Store Applications\\Programs",
-    &*ROOT_DIR
+    "{}{}Programs",
+    &*AHQSTORE_ROOT,
+    &SEP,
   );
-  pub static ref UPDATERS: String = format!(
-    "{}\\ProgramData\\AHQ Store Applications\\Updaters",
-    &*ROOT_DIR
-  );
-  pub static ref INSTALLERS: String = format!(
-    "{}\\ProgramData\\AHQ Store Applications\\Installers",
-    &*ROOT_DIR
-  );
+  pub static ref UPDATERS: String = format!("{}{}Updaters", &*AHQSTORE_ROOT, &SEP);
+  pub static ref INSTALLERS: String = format!("{}{}Installers", &*AHQSTORE_ROOT, &SEP);
 }
 
 pub fn get_install() -> String {
@@ -32,39 +42,37 @@ pub fn get_install() -> String {
   path.to_str().unwrap().to_string()
 }
 
-#[cfg(windows)]
-pub fn get_vc() -> String {
-  let mut path = home_dir().unwrap();
-  
-  path.push("vc.msi");
-
-  path.to_str().unwrap().to_string()
-}
-
-#[cfg(windows)]
 pub fn get_service_dir() -> String {
-  use std::{fs, os::windows::process::CommandExt, process::Command};
+  use std::fs; 
+  #[cfg(windows)]
+  {
+    use std::{os::windows::process::CommandExt, process::Command};
 
-  Command::new("sc.exe")
-    .creation_flags(0x08000000)
-    .args(["stop", "AHQ Store Service"])
-    .spawn()
-    .unwrap()
-    .wait()
-    .unwrap();
+    Command::new("sc.exe")
+      .creation_flags(0x08000000)
+      .args(["stop", "AHQ Store Service"])
+      .spawn()
+      .unwrap()
+      .wait()
+      .unwrap();
 
-  Command::new("sc.exe")
-    .creation_flags(0x08000000)
-    .args(["delete", "AHQ Store Service"])
-    .spawn()
-    .unwrap()
-    .wait()
-    .unwrap();
+    Command::new("sc.exe")
+      .creation_flags(0x08000000)
+      .args(["delete", "AHQ Store Service"])
+      .spawn()
+      .unwrap()
+      .wait()
+      .unwrap();
+  }
 
   let _ = fs::create_dir_all(&*AHQSTORE_ROOT);
   let _ = fs::create_dir_all(&*PROGRAMS);
   let _ = fs::create_dir_all(&*UPDATERS);
   let _ = fs::create_dir_all(&*INSTALLERS);
 
-  format!("{}\\service.exe", &*AHQSTORE_ROOT)
+  #[cfg(windows)]
+  return format!("{}\\service.exe", &*AHQSTORE_ROOT);
+
+  #[cfg(unix)]
+  return format!("{}\\service", &*AHQSTORE_ROOT);
 }
