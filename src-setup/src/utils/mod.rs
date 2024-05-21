@@ -10,8 +10,8 @@ lazy_static! {
 
 #[cfg(unix)]
 lazy_static! {
-  pub static ROOT_DIR: String = "/".into();
-  pub static AHQSTORE_ROOT: String = "/ahqstore".into();
+  pub static ref ROOT_DIR: String = "/".into();
+  pub static ref AHQSTORE_ROOT: String = "/ahqstore".into();
 }
 
 #[cfg(windows)]
