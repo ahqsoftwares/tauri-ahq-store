@@ -14,7 +14,7 @@
             Name="{{{product_name}}}"
             UpgradeCode="{{{upgrade_code}}}"
             Language="!(loc.TauriLanguage)"
-            Manufacturer="AHQ Softwares"
+            Manufacturer="AHQ Softwares and Contributors"
             Version="{{{version}}}">
 
         <Package Id="*"
@@ -58,7 +58,7 @@
 
         <!-- initialize with previous InstallDir -->
         <Property Id="INSTALLDIR">
-            <RegistrySearch Id="PrevInstallDirReg" Root="HKCU" Key="Software\\AHQ Softwares\\{{{product_name}}}" Name="InstallDir" Type="raw"/>
+            <RegistrySearch Id="PrevInstallDirReg" Root="HKCU" Key="Software\\{{{manufacturer}}}\\{{{product_name}}}" Name="InstallDir" Type="raw"/>
         </Property>
 
         <!-- launch app checkbox -->
@@ -92,9 +92,9 @@
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="DesktopFolder" Name="Desktop">
                 <Component Id="ApplicationShortcutDesktop" Guid="*">
-                    <Shortcut Id="ApplicationDesktopShortcut" Name="{{{product_name}}}" Description="The Open Source Store to download apps!" Target="[!Path]" WorkingDirectory="INSTALLDIR" />
+                    <Shortcut Id="ApplicationDesktopShortcut" Name="Store" Description="The Open Source Store to download apps!" Target="[!Path]" WorkingDirectory="INSTALLDIR" />
                     <RemoveFolder Id="DesktopFolder" On="uninstall" />
-                    <RegistryValue Root="HKCU" Key="Software\\AHQ Softwares\\{{{product_name}}}" Name="Desktop Shortcut" Type="integer" Value="1" KeyPath="yes" />
+                    <RegistryValue Root="HKCU" Key="Software\\{{{manufacturer}}}\\{{{product_name}}}" Name="Desktop Shortcut" Type="integer" Value="1" KeyPath="yes" />
                 </Component>
             </Directory>
             <Directory Id="$(var.PlatformProgramFilesFolder)" Name="PFiles">
@@ -107,7 +107,7 @@
 
         <DirectoryRef Id="INSTALLDIR">
             <Component Id="RegistryEntries" Guid="*">
-                <RegistryKey Root="HKCU" Key="Software\\AHQ Softwares\\{{{product_name}}}">
+                <RegistryKey Root="HKCU" Key="Software\\{{{manufacturer}}}\\{{{product_name}}}">
                     <RegistryValue Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
                 </RegistryKey>
             </Component>
@@ -144,7 +144,7 @@
 							  On="uninstall" />
 
 				<RegistryValue Root="HKCU"
-							   Key="Software\\AHQ Softwares\\{{{product_name}}}"
+							   Key="Software\\{{{manufacturer}}}\\{{{product_name}}}"
 							   Name="Uninstaller Shortcut"
 							   Type="integer"
 							   Value="1"
@@ -165,7 +165,7 @@
                     <ShortcutProperty Key="System.AppUserModel.ID" Value="{{{bundle_id}}}"/>
                 </Shortcut>
                 <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
-                <RegistryValue Root="HKCU" Key="Software\\AHQ Softwares\\{{{product_name}}}" Name="Start Menu Shortcut" Type="integer" Value="1" KeyPath="yes"/>
+                <RegistryValue Root="HKCU" Key="Software\\{{{manufacturer}}}\\{{{product_name}}}" Name="Start Menu Shortcut" Type="integer" Value="1" KeyPath="yes"/>
            </Component>
         </DirectoryRef>
 
