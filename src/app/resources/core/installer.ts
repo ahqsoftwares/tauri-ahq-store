@@ -84,7 +84,14 @@ class UpdateInstallerWorker {
     });
   }
 
+  /**
+   * Sends a request to the server to run the update.
+   * This function sends a request to the server to run the update.
+   *
+   * @returns This function does not return anything.
+   */
   runUpdate() {
+    // Send a request to the server to run the update
     sendWsRequest(WebSocketMessage.RunUpdate, (_) => { });
   }
 }
