@@ -22,23 +22,16 @@ mod service;
 pub use self::service::init;
 
 lazy_static! {
-  static ref GET_INSTALL_DAEMON: Sender<Command> = daemon::get_install_daemon();
+  pub static ref GET_INSTALL_DAEMON: Sender<Command> = daemon::get_install_daemon();
 }
-
-static mut DONE: u8 = 0;
 
 pub use self::service::keep_alive;
 
 use super::utils::ws_send;
 
 pub fn handle_msg(data: String) {
-  if unsafe { DONE } == 0 {
-    let _ = GET_INSTALL_DAEMON.send(Command::GetSha(0));
-    unsafe { DONE = 1 };
-  }
   spawn(async move {
     if let Some(mut ws) = get_iprocess() {
-      write_log(&data);
       if let Some(x) = Command::try_from(&data) {
         match x {
           Command::GetSha(ref_id) => unsafe {
@@ -100,6 +93,7 @@ pub fn handle_msg(data: String) {
             let _ = GET_INSTALL_DAEMON.send(Command::RunUpdate(ref_id));
           }
           Command::UpdateStatus(ref_id) => {
+            println!("Sending UP STATUS");
             let _ = ws_send(
               &mut ws,
               &Response::as_msg(Response::UpdateStatus(ref_id, unsafe {

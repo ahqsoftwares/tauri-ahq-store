@@ -40,12 +40,10 @@ export async function get_total() {
   }
 
   const { data } = await fetch(totalUrl.replace("{sha}", sha), {
-    method: "GET"
+    method: "GET",
   });
 
-  return Number(
-    data
-  );
+  return Number(data);
 }
 
 export async function get_home() {
@@ -56,7 +54,7 @@ export async function get_home() {
   const url = homeUrl.replace("{sha}", sha);
 
   const { data } = await fetch(url, {
-    method: "GET"
+    method: "GET",
   });
 
   return data;
@@ -74,7 +72,7 @@ export async function get_search_data<T>() {
     const url = searchUrl.replace("{sha}", sha).replace("{id}", i.toString());
 
     const val = await fetch(url, {
-      method: "GET"
+      method: "GET",
     });
 
     map.push(...val.data);
@@ -96,7 +94,7 @@ export async function get_map<T>(): Promise<T> {
     const url = mapUrl.replace("{sha}", sha).replace("{id}", i.toString());
 
     const val = await fetch(url, {
-      method: "GET"
+      method: "GET",
     });
 
     console.log(val);
@@ -124,7 +122,7 @@ export async function get_app(app: string): Promise<ApplicationData> {
   const { data } = await fetch(
     appUrl.replace("{sha}", sha).replace("{app}", app),
     {
-      method: "GET"
+      method: "GET",
     },
   );
 
@@ -184,9 +182,7 @@ export function get_library(): Promise<Library[]> {
   return new Promise((resolve) => {
     sendWsRequest(WebSocketMessage.GetLibrary(), (val) => {
       if (val.method == "Library") {
-        resolve(
-          val.data as unknown as Library[],
-        );
+        resolve(val.data as unknown as Library[]);
       }
     });
   });

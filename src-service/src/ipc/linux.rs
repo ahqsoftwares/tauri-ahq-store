@@ -2,13 +2,16 @@ use std::{fs, io::ErrorKind};
 
 use tokio::{io::AsyncWriteExt, net::UnixListener};
 
+use ahqstore_types::Command;
 use crate::{
   authentication::authenticate_process,
-  handlers::handle_msg,
+  handlers::{handle_msg, GET_INSTALL_DAEMON},
   utils::{chmod, get_iprocess, set_iprocess, write_log},
 };
 
 pub async fn launch() {
+  let _ = GET_INSTALL_DAEMON.send(Command::GetSha(0));
+
   println!("STARTING UP");
   [
     "/ahqstore",

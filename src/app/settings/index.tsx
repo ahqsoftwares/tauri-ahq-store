@@ -325,8 +325,9 @@ export default function Init(props: InitProps) {
         </div>
 
         <h1
-          className={`mt-3 text-3xl ${props.dark ? "text-white" : "text-slate-700"
-            } mr-auto ml-3`}
+          className={`mt-3 text-3xl ${
+            props.dark ? "text-white" : "text-slate-700"
+          } mr-auto ml-3`}
         >
           Toolkits
         </h1>

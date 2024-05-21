@@ -78,7 +78,9 @@ export default async function fetchPrefs(): Promise<appData> {
 
       await writeFile(
         "database/config.astore",
-        new TextEncoder().encode(`{"dark": ${dark}, "theme": "${defTheme}", "font": "def", "autoUpdate": false, "sidebar": "flex-row"}`),
+        new TextEncoder().encode(
+          `{"dark": ${dark}, "theme": "${defTheme}", "font": "def", "autoUpdate": false, "sidebar": "flex-row"}`,
+        ),
         { baseDir: BaseDirectory.AppData, append: false },
       ).catch(() => {
         sendNotification({
@@ -104,10 +106,14 @@ export function setConfig(data: appData) {
   delete data["accessPrefs"];
   delete data["isAdmin"];
 
-  writeFile("database/config.astore", new TextEncoder().encode(JSON.stringify(data)), {
-    baseDir: BaseDirectory.AppData,
-    append: false,
-  }).catch(() => {
+  writeFile(
+    "database/config.astore",
+    new TextEncoder().encode(JSON.stringify(data)),
+    {
+      baseDir: BaseDirectory.AppData,
+      append: false,
+    },
+  ).catch(() => {
     sendNotification({ title: "Error", body: "Could not save settings!" });
   });
 }

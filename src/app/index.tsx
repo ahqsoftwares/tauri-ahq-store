@@ -311,7 +311,7 @@ function Render(props: AppProps) {
           </header>
         </>
       ) : (
-          <Loading unsupported={false} text="Almost there!" />
+        <Loading unsupported={false} text="Almost there!" />
       )}
     </>
   );

@@ -17,7 +17,7 @@ const WebSocketMessage = {
   GetSha: () => `{"GetSha":{*ref_id}}`,
   GetLibrary: () => `{"GetLibrary":{*ref_id}}`,
   RunUpdate: `{"RunUpdate":{*ref_id}}`,
-  UpdateStatus: `{"UpdateStatus":{*ref_id}}`
+  UpdateStatus: `{"UpdateStatus":{*ref_id}}`,
 };
 
 type u64 = Number;
@@ -38,9 +38,7 @@ export function sendWsRequest(
   queueAndWait(data, result);
 }
 
-export function engageWs0(
-  result: (value: ServerResponse) => void,
-) {
+export function engageWs0(result: (value: ServerResponse) => void) {
   toResolve.push({
     data: "%worker",
     resolve: result,
@@ -73,6 +71,7 @@ export function runner() {
 }
 
 appWindow.listen<string[]>("ws_resp", async ({ payload: pload }) => {
+  console.log(pload);
   for (let i = 0; i < pload.length; i++) {
     const payload = pload[i];
     console.log(payload);

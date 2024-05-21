@@ -9,7 +9,9 @@ export type { betaPrefs };
 
 export default async function initDeveloperConfiguration() {
   await mkdir("", { baseDir: BaseDirectory.AppData }).catch(console.error);
-  await mkdir("database", { baseDir: BaseDirectory.AppData }).catch(console.error);
+  await mkdir("database", { baseDir: BaseDirectory.AppData }).catch(
+    console.error,
+  );
 
   let prefs: betaPrefs = await readTextFile("database/config.developer", {
     baseDir: BaseDirectory.AppData,

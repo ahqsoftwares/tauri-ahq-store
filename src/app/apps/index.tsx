@@ -120,7 +120,7 @@ export default function Apps(props: AppsProps) {
                 style={{
                   borderTopRightRadius: "0",
                   borderBottomRightRadius: "0",
-                  width: "100%"
+                  width: "100%",
                 }}
                 onChange={(e) => {
                   searchText(e.target.value);

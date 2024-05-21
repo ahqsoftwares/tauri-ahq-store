@@ -1,7 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrent } from "@tauri-apps/api/webviewWindow";
 
-const appWindow = getCurrent();
 
 let windowsVersion = "";
 let name = "";

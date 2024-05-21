@@ -84,19 +84,20 @@ export default function Developers(props: DevProps) {
                   Fetching...
                 </h1>
               ) : (
-                    publishedApps.map((value, index) => {
-                      console.log(value, index);
-                      return <App
-                        appInfo={value}
-                        dark={props.dark}
-                        toast={Toast}
-                        lastIndex={index === publishedApps.length - 1}
-                      />;
-                    })
-                )}
-                <span className="mx-auto mt-auto fix-color mb-5 dui-loading dui-loading-spinner dui-loading-lg"></span>
-              </div>
-
+                publishedApps.map((value, index) => {
+                  console.log(value, index);
+                  return (
+                    <App
+                      appInfo={value}
+                      dark={props.dark}
+                      toast={Toast}
+                      lastIndex={index === publishedApps.length - 1}
+                    />
+                  );
+                })
+              )}
+              <span className="mx-auto mt-auto fix-color mb-5 dui-loading dui-loading-spinner dui-loading-lg"></span>
+            </div>
           )
         }
       />

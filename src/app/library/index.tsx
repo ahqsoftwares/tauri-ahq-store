@@ -104,7 +104,7 @@ export default function Library(props: LibraryProps) {
           className={`mt-[1rem] min-w-[98%] pt-3 rounded-lg shadow-xl bg-opacity-75 bg-base-100 flex flex-col`}
         >
           <div className="px-3 pt-1 flex flex-row text-center items-center justify-center mb-[1rem]">
-            <img src={icon} style={{ "height": "3rem" }} />
+            <img src={icon} style={{ height: "3rem" }} />
             <h1 className="text-base-content text-2xl ml-2">
               {status === "Check for Updates"
                 ? "You are up to date!"

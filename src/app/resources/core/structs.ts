@@ -45,7 +45,14 @@ interface ServerResponse {
   ref: number;
   method: Methods;
   error: Error[];
-  data: ListedApps | ApplicationData | Prefs | Downloaded | Library[] | UpdateStatusReport | string;
+  data:
+    | ListedApps
+    | ApplicationData
+    | Prefs
+    | Downloaded
+    | Library[]
+    | UpdateStatusReport
+    | string;
 }
 
 export type {
@@ -113,7 +120,7 @@ export async function interpret(
       result.method = "AppData";
 
       const { data } = await fetch(pyld2, {
-        method: "GET"
+        method: "GET",
       }).then(async (r) => ({ ...r, data: await r.json() }));
 
       const adata: ApplicationData = {

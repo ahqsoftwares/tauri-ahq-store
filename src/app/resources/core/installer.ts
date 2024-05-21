@@ -1,20 +1,20 @@
 import { WebSocketMessage, engageWs0, sendWsRequest } from "./handler";
 
 interface Library {
-  app_id: String,
-  status: string,
-  is_update: boolean,
-  to: "Install" | "Uninstall",
-  progress: number
+  app_id: String;
+  status: string;
+  is_update: boolean;
+  to: "Install" | "Uninstall";
+  progress: number;
 }
 
 type UpdateStatusReport = "Disabled" | "UpToDate" | "Checking" | "Updating";
 
 class UpdateInstallerWorker {
-  library: Library[]
-  update: UpdateStatusReport
-  onChange: { [key: number]: (lib: Library[]) => void }
-  listId: number = 0
+  library: Library[];
+  update: UpdateStatusReport;
+  onChange: { [key: number]: (lib: Library[]) => void };
+  listId: number = 0;
 
   constructor() {
     this.library = [];
@@ -72,12 +72,15 @@ class UpdateInstallerWorker {
     return new Promise((r) => {
       // Send a request to the server to get the library
       sendWsRequest(WebSocketMessage.GetLibrary(), (_) => { });
-      sendWsRequest(WebSocketMessage.UpdateStatus, (resp) => {
-        if (resp.method == "UpdateStatus") {
-          this.update = resp.data as UpdateStatusReport;
-          r(undefined);
-        }
-      });
+
+      setTimeout(() => {
+        sendWsRequest(WebSocketMessage.UpdateStatus, (resp) => {
+          if (resp.method == "UpdateStatus") {
+            this.update = resp.data as UpdateStatusReport;
+            r(undefined);
+          }
+        });
+      }, 500);
     });
   }
 
@@ -88,5 +91,5 @@ class UpdateInstallerWorker {
 
 const worker = new UpdateInstallerWorker();
 
-export type { Library, UpdateStatusReport }
-export { worker }
+export type { Library, UpdateStatusReport };
+export { worker };

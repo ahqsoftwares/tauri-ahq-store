@@ -23,11 +23,11 @@ interface appData {
   downloadUrls: {
     [key: number]: {
       installerType:
-      | "WindowsZip"
-      | "WindowsInstallerExe"
-      | "WindowsInstallerMsi"
-      | "WindowsUWPMsix"
-      | "LinuxAppImage";
+        | "WindowsZip"
+        | "WindowsInstallerExe"
+        | "WindowsInstallerMsi"
+        | "WindowsUWPMsix"
+        | "LinuxAppImage";
       url: Str;
     };
   };
@@ -93,7 +93,7 @@ export async function fetchAuthor(uid: string) {
 
   const url = `${server}/users/${uid}`;
   const { ok, data } = await fetch(url, {
-    method: "GET"
+    method: "GET",
   });
   const author = data as AuthorObject;
 

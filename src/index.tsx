@@ -11,12 +11,16 @@ import {
   sendNotification,
 } from "@tauri-apps/plugin-notification";
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrent } from "@tauri-apps/api/webviewWindow";
+import { getCurrent, WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 /*Apps
  */
 import Store, { AppProps } from "./app/index";
 import Login, { LoginHandlerProps } from "./Login";
+
+const appWindow = (() => {
+  try { return getCurrent(); } catch (_) { }
+})() as WebviewWindow;
 
 /*
  */
@@ -35,7 +39,6 @@ import { onAuthChange, tryAutoLogin } from "./auth/login";
 import { platform } from "@tauri-apps/plugin-os";
 import { Loading } from "./config/Load";
 
-const appWindow = getCurrent();
 const auth = genAuth();
 
 const root = ReactDOM.createRoot(
@@ -54,11 +57,13 @@ let list = [
   [true, false, "P"], //Print
   [true, true, "P"], //Print
   [true, false, "U"], //Inspect Page
+  [true, true, "B"], // Favourites
+  [true, false, "S"], //Save
 ];
 
 getCurrent().listen("update", () => {
   loadRender(false, "Update available, updating!");
-});
+}).catch(() => { });
 
 window.addEventListener("keydown", (e) => {
   list.forEach(([ct, sh, key]) => {

@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import reactRefresh from "@vitejs/plugin-react-swc";
+import reactRefresh from "@vitejs/plugin-react";
 import svgrPlugin from "vite-plugin-svgr";
 import { normalize } from "path";
 
@@ -33,7 +33,11 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [
-    reactRefresh(),
+    reactRefresh({
+      babel: {
+        plugins: [["babel-plugin-react-compiler"]],
+      },
+    }),
     svgrPlugin({
       svgrOptions: {
         icon: true,

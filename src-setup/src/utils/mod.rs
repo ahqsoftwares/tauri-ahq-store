@@ -1,5 +1,4 @@
 use dirs::home_dir;
-#[cfg(windows)]
 use lazy_static::lazy_static;
 
 #[cfg(windows)]

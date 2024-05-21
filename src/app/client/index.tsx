@@ -68,7 +68,9 @@ export default function Init(props: UserProps) {
         setUser(Loading);
         setUser(auth?.currentUser?.pf_pic || GeneralUser);
         setAlt(
-          auth.currentUser?.pf_pic ? "Click to edit picture" : "Click to upload",
+          auth.currentUser?.pf_pic
+            ? "Click to edit picture"
+            : "Click to upload",
         );
       }
     })();

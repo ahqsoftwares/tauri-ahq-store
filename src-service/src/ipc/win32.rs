@@ -17,14 +17,17 @@ use windows::Win32::{
   System::SystemServices::SECURITY_DESCRIPTOR_REVISION,
 };
 
+use ahqstore_types::Command;
 use crate::{
   authentication::authenticate_process,
-  handlers::handle_msg,
+  handlers::{handle_msg, GET_INSTALL_DAEMON},
   utils::{get_iprocess, set_iprocess, write_log},
 };
 
 pub async fn launch() {
   write_log("Starting");
+  let _ = GET_INSTALL_DAEMON.send(Command::GetSha(0));
+
   let mut obj = SECURITY_DESCRIPTOR::default();
   // make it have full rights over the named pipe
   unsafe {
