@@ -24,7 +24,7 @@
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
       "timestampUrl": "",
-      "allowDowngrades": false,
+      "allowDowngrades": true,
       "wix": {
         "template": "assets/install.wxs"
       }
