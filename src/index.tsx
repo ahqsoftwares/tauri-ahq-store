@@ -90,9 +90,9 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
   initDeveloperConfiguration();
 
   (async () => {
-    const ptf = await platform();
+    const ptf = await invoke("get_windows").catch(() => "10");
     console.log(ptf, "Platform");
-    if (ptf == "windows") {
+    if (ptf == "11") {
       document.querySelector("html")?.setAttribute("data-os", "win32");
     }
     setTimeout(() => {

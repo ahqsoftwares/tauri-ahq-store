@@ -1,3 +1,3 @@
-const server = "https://astore.loophole.site/";
+const server = "https://possible-toad-preferably.ngrok-free.app/";
 
 export { server };

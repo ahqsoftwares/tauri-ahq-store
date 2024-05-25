@@ -21,7 +21,10 @@ use crate::encryption::{decrypt, encrypt};
 
 //crates
 #[cfg(windows)]
-use windows::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWINDOWATTRIBUTE};
+use windows::Win32::{
+  Foundation::BOOL,
+  Graphics::Dwm::{DWM_BLURBEHIND, DwmEnableBlurBehindWindow, DwmSetWindowAttribute, DWMWINDOWATTRIBUTE}
+};
 
 use std::panic::catch_unwind;
 use std::process;

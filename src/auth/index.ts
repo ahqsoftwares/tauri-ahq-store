@@ -53,6 +53,7 @@ export async function updateProfile(
     headers: {
       uid: String(user.currentUser?.u_id),
       pass: String(passDe),
+      "ngrok-skip-browser-warning": "true"
     },
     body: JSON.stringify(data),
   }).then(async (r) => ({ ...r, data: await r.text() }));
@@ -85,6 +86,7 @@ export async function deleteAcc(user: User) {
     headers: {
       uid: user.email,
       pass: passDe,
+      "ngrok-skip-browser-warning": "true"
     },
   });
   return ok;

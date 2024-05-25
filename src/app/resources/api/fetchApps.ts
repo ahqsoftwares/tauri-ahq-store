@@ -94,6 +94,9 @@ export async function fetchAuthor(uid: string) {
   const url = `${server}/users/${uid}`;
   const { ok, data } = await fetch(url, {
     method: "GET",
+    headers: {
+      "ngrok-skip-browser-warning": "true"
+    }
   });
   const author = data as AuthorObject;
 

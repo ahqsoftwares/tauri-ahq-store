@@ -56,23 +56,6 @@ export default function Library(props: LibraryProps) {
       setApps(status.apps || []);
       setCurrent(status.updating || "");
     }, 250);
-
-    appWindow.listen(
-      "sendUpdaterStatus",
-      ({ payload }: { payload: string }) => {
-        const status = JSON.parse(payload);
-        setStatus(
-          status.status
-            ? status.status
-                .replace("updated", "Check for Updates")
-                .replace("updating", "Updates Available")
-                .replace("checking", "Checking...")
-            : "",
-        );
-        setApps(status.totalApps || []);
-        setCurrent(status.currentlyUpdating || "");
-      },
-    );
   }, []);
 
   function darkMode(classes: Array<string>) {

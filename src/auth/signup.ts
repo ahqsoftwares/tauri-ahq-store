@@ -18,6 +18,9 @@ export async function signUp(
   const { ok, data: resp } = await fetch(`${server}/users/new`, {
     method: "POST",
     body: JSON.stringify(data),
+    headers: {
+      "ngrok-skip-browser-warning": "true"
+    }
   }).then(async (r) => ({ ...r, data: await r.json() }));
 
   return [ok, resp];

@@ -30,6 +30,7 @@ export async function login(
     headers: {
       uid: email,
       pass: password,
+      "ngrok-skip-browser-warning": "true"
     },
     connectTimeout: 100_000,
   }).then(async (d) => ({ ...d, ok: d.ok, data: await d.json() }));
@@ -55,6 +56,7 @@ export async function checkAuth(
     headers: {
       uid: email,
       pass: password,
+      "ngrok-skip-browser-warning": "true"
     },
   });
 

@@ -19,6 +19,7 @@ export default async function fetch(
       "User-Agent": navigator.userAgent,
       uid: email,
       pwd,
+      "ngrok-skip-browser-warning": "true",
       ...(config?.headers || {}),
     },
   }).then(async (data) => ({
