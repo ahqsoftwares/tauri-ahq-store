@@ -20,7 +20,7 @@ use crate::utils::write_log;
 #[cfg(windows)]
 use super::unzip;
 
-static URL: &str = "https://astore.loophole.site/";
+static URL: &str = "https://possible-toad-preferably.ngrok-free.app/";
 pub static mut GH_URL: Option<String> = None;
 
 lazy_static! {
