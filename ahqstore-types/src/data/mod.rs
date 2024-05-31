@@ -24,8 +24,20 @@ pub struct DeveloperUser {
   email: String,
 
   #[doc = "🔬 v2 Schema\n\n"]
-  support: String,
+  support: AppSupport,
 
   /// The list of apps published by the user
   apps: Vec<String>
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AppSupport {
+  /// We recommend you set a discord server
+  pub discord: Option<String>,
+
+  /// Support Site
+  pub website: Option<String>,
+
+  /// GitHub page
+  pub github: Option<String>
 }

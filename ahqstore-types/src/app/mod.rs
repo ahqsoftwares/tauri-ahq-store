@@ -52,7 +52,13 @@ pub struct AHQStoreApplication {
   /// This'll be ignored unless you're ahq_verified tag which no one except AHQ Store Team has
   /// 
   /// The general dev isn't meant to redistribute others' apps unless they own right to do so
-  pub source: Option<Str>
+  pub source: Option<Str>,
+
+  /// License type or Terms of Service Page
+  pub license_or_tos: Option<Str>,
+
+  /// Page of Application
+  pub app_page: Option<Str>,
 }
 
 impl AHQStoreApplication {
