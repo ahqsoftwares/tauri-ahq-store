@@ -38,9 +38,7 @@ export default function Developers(props: DevProps) {
         if (uid) {
           const apps = await get_devs_apps(String(uid));
 
-          console.log(apps);
           fetchApps(apps).then((apps) => {
-            console.log(apps);
             setPublishedApps(apps as appData[]);
           });
         }
@@ -84,8 +82,7 @@ export default function Developers(props: DevProps) {
                   Fetching...
                 </h1>
               ) : (
-                publishedApps.map((value, index) => {
-                  console.log(value, index);
+                    publishedApps.map((value, index) => {
                   return (
                     <App
                       appInfo={value}

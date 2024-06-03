@@ -1,0 +1,7 @@
+.app-child {
+  @apply hidden;
+}
+
+.app-parent:hover .app-child {
+  @apply block;
+}

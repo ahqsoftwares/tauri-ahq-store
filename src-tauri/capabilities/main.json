@@ -15,9 +15,6 @@
       "identifier": "fs:scope",
       "allow": [{ "path": "$APPDATA" }, { "path": "$APPDATA/**" }]
     },
-    "window:allow-create",
-    "window:allow-center",
-    "window:allow-request-user-attention",
     "window:allow-set-resizable",
     "window:allow-set-maximizable",
     "window:allow-set-minimizable",
@@ -31,29 +28,10 @@
     "window:allow-hide",
     "window:allow-close",
     "window:allow-set-decorations",
-    "window:allow-set-always-on-top",
-    "window:allow-set-content-protected",
-    "window:allow-set-size",
-    "window:allow-set-min-size",
-    "window:allow-set-max-size",
-    "window:allow-set-position",
-    "window:allow-set-fullscreen",
-    "window:allow-set-focus",
     "window:allow-set-icon",
-    "window:allow-set-skip-taskbar",
-    "window:allow-set-cursor-grab",
-    "window:allow-set-cursor-visible",
-    "window:allow-set-cursor-icon",
-    "window:allow-set-cursor-position",
     "window:allow-set-ignore-cursor-events",
-    "window:allow-start-dragging",
     "webview:allow-print",
     "webview:default",
-    "dialog:allow-open",
-    "dialog:allow-save",
-    "dialog:allow-message",
-    "dialog:allow-ask",
-    "dialog:allow-confirm",
     {
       "identifier": "http:default",
       "allow": [
@@ -77,7 +55,6 @@
         }
       ]
     },
-    "notification:default",
-    "os:allow-platform"
+    "notification:default"
   ]
 }

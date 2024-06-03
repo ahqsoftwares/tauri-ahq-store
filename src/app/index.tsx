@@ -34,7 +34,6 @@ import {
   defaultLight,
   isDarkTheme,
 } from "./resources/utilities/themes";
-import Package from "./package";
 import { Auth, logOut } from "../auth";
 import { worker } from "./resources/core/installer";
 
@@ -49,10 +48,6 @@ function Render(props: AppProps) {
   let [page, changePage] = useState("home"),
     [dev, setDev] = useState(auth.currentUser?.dev),
     [admin, setIsAdmin] = useState(false),
-    [prefs, setAccessPrefs] = useState<Prefs>({
-      install_apps: false,
-      launch_app: false,
-    }),
     [dark, setD] = useState(true),
     [theme, setTheme] = useState("synthwave"),
     [font, setFont] = useState("def"),
@@ -61,12 +56,10 @@ function Render(props: AppProps) {
     [autoUpdate, setUpdate] = useState(false),
     [debug, setDebug] = useState(false),
     [apps, setApps] = useState<any>([]),
-    [allAppsData, setData] = useState<{ map: { [key: string]: Object } }>({
-      map: {},
-    }),
     app: JSX.Element = <></>;
 
   useEffect(() => {
+    appWindow.emit("ready", "");
     const timer = setTimeout(() => {
       setLoad((loadStatus) => {
         if (!loadStatus) {
@@ -75,16 +68,16 @@ function Render(props: AppProps) {
         return loadStatus;
       });
     }, 30 * 1000);
-    appWindow.listen("app", ({ payload }: { payload: string }) => {
+    appWindow.listen("launch_app", ({ payload }: { payload: string }) => {
       if (payload.startsWith("ahqstore://")) {
         const [page] = payload.replace("ahqstore://", "").split("/");
 
         switch (page) {
-          case "app":
-            changePage("apps");
+          case "login":
+            changePage("user");
             break;
           case "update":
-            changePage("apps");
+            changePage("library");
             break;
           default:
             break;
@@ -131,8 +124,6 @@ function Render(props: AppProps) {
         },
       };
 
-      setAccessPrefs(accessPrefs || defAccess);
-
       setIsAdmin(isAdmin || false);
 
       if (debug) {
@@ -153,17 +144,11 @@ function Render(props: AppProps) {
 
       //Fetch Maps
       try {
-        console.log("Fetching Maps");
         const map = await get_map<{ [key: string]: Object }>();
-        console.log(map);
 
-        setData({
-          map,
-        });
+        window.map = map;
 
-        console.log("Home");
         const home = await get_home();
-        console.log(home);
 
         await worker.init();
         setApps(home);
@@ -282,9 +267,6 @@ function Render(props: AppProps) {
       break;
     case "library":
       app = <Library dark={dark} />;
-      break;
-    case "Dependencies":
-      app = <Package />;
       break;
   }
 

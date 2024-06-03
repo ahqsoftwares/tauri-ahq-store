@@ -19,7 +19,7 @@ pub type GHRepoCommits = Vec<GHRepoCommit>;
 static mut COMMIT_ID: Option<String> = None;
 
 pub fn update_commit(token: Option<String>) -> Option<()> {
-  let mut builder = CLIENT.get("https://api.github.com/repos/ahqstore/apps/commits/master");
+  let mut builder = CLIENT.get("https://api.github.com/repos/ahqstore/data/commits/master");
 
   if let Some(val) = token {
     builder = builder.bearer_auth(val);

@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use ahqstore_types::UpdateStatusReport;
 use lazy_static::lazy_static;
 use std::sync::mpsc::Sender;
@@ -24,8 +26,6 @@ pub use self::service::init;
 lazy_static! {
   pub static ref GET_INSTALL_DAEMON: Sender<Command> = daemon::get_install_daemon();
 }
-
-pub use self::service::keep_alive;
 
 use super::utils::ws_send;
 

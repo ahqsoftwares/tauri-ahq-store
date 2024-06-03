@@ -6,16 +6,18 @@ import { Downloaded, ListedApps } from "./structs";
 
 let sha = "";
 
-const totalUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/total";
-const homeUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/home.json";
+const totalUrl = "https://rawcdn.githack.com/ahqstore/data/{sha}/db/total";
+const homeUrl = "https://rawcdn.githack.com/ahqstore/data/{sha}/db/home.json";
 const appUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/apps/{app}.json";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/apps/{app}.json";
 const mapUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/map/{id}.json";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/map/{id}.json";
 const searchUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/search/{id}.json";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/search/{id}.json";
 const appsUserUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/dev/{dev}";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/dev/{dev}";
+const devUserUrl =
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/info/{dev}.json";
 
 export async function get_devs_apps(devId: string) {
   if (sha == "") {
@@ -24,10 +26,7 @@ export async function get_devs_apps(devId: string) {
   const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
 
   const { ok, data } = await fetch(url, {
-    method: "GET",
-    headers: {
-      "ngrok-skip-browser-warning": "true"
-    }
+    method: "GET"
   });
 
   const apps: string[] = ok ? data.split("\n") : [];
@@ -43,10 +42,7 @@ export async function get_total() {
   }
 
   const { data } = await fetch(totalUrl.replace("{sha}", sha), {
-    method: "GET",
-    headers: {
-      "ngrok-skip-browser-warning": "true"
-    }
+    method: "GET"
   });
 
   return Number(data);
@@ -106,26 +102,17 @@ export async function get_map<T>(): Promise<T> {
     const url = mapUrl.replace("{sha}", sha).replace("{id}", i.toString());
 
     const val = await fetch(url, {
-      method: "GET",
-      headers: {
-        "ngrok-skip-browser-warning": "true"
-      }
+      method: "GET"
     });
-
-    console.log(val);
   }
 
-  console.log(map);
   return map as unknown as any as T;
 }
 
 export function get_sha() {
-  console.log("Sent");
   return new Promise((resolve) => {
     sendWsRequest(WebSocketMessage.GetSha(), (val) => {
-      console.log(val);
       if (val.method == "SHAId") {
-        console.log("Got Sha", val.data);
         sha = val.data as string;
         resolve(undefined);
       }
@@ -252,3 +239,5 @@ export function un_install(app: string): Promise<void> {
     });
   });
 }
+
+export { devUserUrl };

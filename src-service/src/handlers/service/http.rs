@@ -20,7 +20,6 @@ use crate::utils::write_log;
 #[cfg(windows)]
 use super::unzip;
 
-static URL: &str = "https://possible-toad-preferably.ngrok-free.app/";
 pub static mut GH_URL: Option<String> = None;
 
 lazy_static! {
@@ -47,7 +46,7 @@ pub fn init() {
 
 pub async fn get_commit() -> u8 {
   if let Ok(resp) = CLIENT
-    .get("https://api.github.com/repos/ahqstore/apps/commits")
+    .get("https://api.github.com/repos/ahqstore/data/commits")
     .send()
     .await
   {
@@ -59,30 +58,6 @@ pub async fn get_commit() -> u8 {
     }
   }
   1
-}
-
-pub async fn keep_alive() -> bool {
-  #[cfg(debug_assertions)]
-  write_log("KeepAlive: Running KeepAlive");
-
-  if let Some(x) = CLIENT.get(URL).send().await.ok() {
-    return match x.status() {
-      StatusCode::UNAUTHORIZED => {
-        #[cfg(debug_assertions)]
-        write_log("KeepAlive: true");
-        true
-      }
-      _ => {
-        #[cfg(debug_assertions)]
-        write_log("KeepAlive: SomethingElse Came");
-        false
-      }
-    };
-  }
-
-  #[cfg(debug_assertions)]
-  write_log("KeepAlive: Error");
-  false
 }
 
 pub async fn download_app(val: &mut Library) -> Option<AHQStoreApplication> {
@@ -176,7 +151,7 @@ pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
     }
   };
   let url = format!(
-    "https://rawcdn.githack.com/ahqstore/apps/{}/db/apps/{}.json",
+    "https://rawcdn.githack.com/ahqstore/data/{}/db/apps/{}.json",
     &url, &app_id
   );
 

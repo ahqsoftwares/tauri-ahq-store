@@ -1,6 +1,6 @@
 mod msi;
 
-use ahqstore_types::{InstallerFormat, Win32Deps};
+use ahqstore_types::InstallerFormat;
 use mslnk::ShellLink;
 use serde_json::to_string_pretty;
 use std::{
@@ -40,14 +40,6 @@ pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
 
 pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
   let file = get_installer_file(&app);
-
-  for dep in app.get_platform_deps()? {
-    match dep {
-      Win32Deps::Node21 => install_node("v21").await?,
-      Win32Deps::Node18 => install_node("v18").await?,
-      _ => {}
-    }
-  }
 
   let Some(win32) = app.get_win32_download() else {
     return None;

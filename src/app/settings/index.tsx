@@ -72,35 +72,6 @@ export default function Init(props: InitProps) {
     }
   }, []);
 
-  async function Update() {
-    const toast = Toast("Please Wait...", "warn", "never");
-    try {
-      if (props.auth?.currentUser?.e_verified) {
-        setShow(true);
-        await updateProfile(props.auth, {
-          dev: !dev,
-        });
-        toast?.edit(
-          `Successfully ${!dev ? "enabled" : "disabled"} developer mode!`,
-          "success",
-        );
-        setUser(props.auth.currentUser as User);
-        setDev(!dev);
-        props.setDev(!dev);
-        setShow(false);
-      } else {
-        toast?.edit("Please verify your email!", "danger");
-      }
-    } catch (_e) {
-      toast?.edit("Failed to enable developer mode!", "danger");
-      sendNotification("Could not update data!");
-    }
-
-    setTimeout(() => {
-      toast?.unmount();
-    }, 5000);
-  }
-
   function darkMode(classes: Array<string>, dark: boolean) {
     let newClasses: string[] = [];
 
@@ -225,21 +196,6 @@ export default function Init(props: InitProps) {
         ) : (
           <></>
         )}
-
-        <CheckBox
-          dark={props.dark}
-          url={false}
-          title="Developer Mode"
-          description={
-            props.auth?.currentUser?.e_verified
-              ? "Allows you to publish windows apps"
-              : "(DISABLED, VERIFY EMAIL) Allows you to publish windows apps"
-          }
-          Icon={BsCodeSlash}
-          onClick={() => Update()}
-          disabled={!props.auth?.currentUser?.e_verified}
-          active={dev}
-        />
 
         {props.admin && os != "linux" ? (
           <CustomPopUp

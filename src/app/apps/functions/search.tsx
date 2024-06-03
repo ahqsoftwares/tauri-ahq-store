@@ -118,7 +118,6 @@ async function getMatches(query: string): Promise<Array<string>> {
 
   if (!data) {
     const raw = await fetchSearchData();
-    console.log(raw);
     const search = new SearchModule({
       fields: ["name:", "title", "id"],
       storeFields: ["name:", "title", "id"],

@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import pkg from "../../resources/package.png";
 
 //Icons
 import { MdModeEdit } from "react-icons/md";
@@ -27,7 +26,7 @@ export default function App({
   async function handleClick() {
     toast("Opened in browser", "success", 1);
     invoke("open", {
-      url: "https://github.com/ahqstore/apps",
+      url: "https://github.com/ahqstore/data",
     });
   }
 

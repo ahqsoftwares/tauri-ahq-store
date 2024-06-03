@@ -46,8 +46,6 @@ export async function updateProfile(
     encrypted: JSON.parse(pass),
   });
 
-  console.log(data);
-
   const { ok, data: reason } = await fetch(`${server}/users/@me`, {
     method: "PATCH",
     headers: {
@@ -57,8 +55,6 @@ export async function updateProfile(
     },
     body: JSON.stringify(data),
   }).then(async (r) => ({ ...r, data: await r.text() }));
-
-  console.log(ok, reason);
 
   if (ok) {
     if (data.display_name && user.currentUser) {

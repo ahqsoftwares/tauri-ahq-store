@@ -8,7 +8,6 @@ import reportWebVitals from "./reportWebVitals";
 import {
   isPermissionGranted,
   requestPermission,
-  sendNotification,
 } from "@tauri-apps/plugin-notification";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrent, WebviewWindow } from "@tauri-apps/api/webviewWindow";
@@ -16,7 +15,6 @@ import { getCurrent, WebviewWindow } from "@tauri-apps/api/webviewWindow";
 /*Apps
  */
 import Store, { AppProps } from "./app/index";
-import Login, { LoginHandlerProps } from "./Login";
 
 const appWindow = (() => {
   try { return getCurrent(); } catch (_) { }
@@ -35,8 +33,7 @@ import "./index.css";
 import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
 import { genAuth } from "./auth";
-import { onAuthChange, tryAutoLogin } from "./auth/login";
-import { platform } from "@tauri-apps/plugin-os";
+import { tryAutoLogin } from "./auth/login";
 import { Loading } from "./config/Load";
 
 const auth = genAuth();
@@ -91,12 +88,11 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
 
   (async () => {
     const ptf = await invoke("get_windows").catch(() => "10");
-    console.log(ptf, "Platform");
+    
     if (ptf == "11") {
       document.querySelector("html")?.setAttribute("data-os", "win32");
     }
     setTimeout(() => {
-      console.log("Decorations: true");
       appWindow.setDecorations(true).catch(console.log).then(console.log);
     }, 500);
   })();
@@ -114,8 +110,6 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
    */
   (async () => {
     let permissionGranted = await isPermissionGranted();
-
-    appWindow.emit("ready", "");
 
     if (!(await appWindow.isMaximized())) {
       appWindow.maximize();
@@ -150,45 +144,10 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
   });
 
   async function Manage() {
-    onAuthChange(auth, async (user) => {
-      const lastEmailSent = Number(
-        localStorage.getItem("last_email_sent") || "0",
-      );
-
-      if (
-        user &&
-        !user.e_verified &&
-        Date.now() > lastEmailSent + 24 * 60 * 60 * 1000
-      ) {
-        localStorage.setItem("last_email_sent", Date.now().toString());
-
-        sendNotification({
-          title: "Email Verification",
-          body: "Email verification link send! Please verify",
-        });
-      }
-
-      const pwd = await invoke("decrypt", {
-        encrypted: JSON.parse(
-          localStorage.getItem("password") || "[]",
-        ) as number[],
-      }).catch(() => "a");
-
-      if (!(localStorage.getItem("email") && pwd != "a")) {
-        console.log("Signing out");
-      }
-
-      user ? StoreLoad(Store, { auth }) : StoreLoad(Login as any, { auth });
-    });
-
-    await tryAutoLogin(auth).catch(() => {});
+    tryAutoLogin(auth).catch(() => { });
     loadRender(false, "Launching Store...");
     setTimeout(() => {
-      if (!auth.currentUser) {
-        StoreLoad(Login as any, { auth });
-      } else {
-        StoreLoad(Store, { auth });
-      }
+      StoreLoad(Store, { auth });
     }, 500);
   }
 
@@ -198,7 +157,7 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
    * @param prop
    */
   function StoreLoad(
-    Component: (props: LoginHandlerProps | AppProps) => any,
+    Component: (props: AppProps) => any,
     { auth }: AppProps,
   ) {
     const data = {

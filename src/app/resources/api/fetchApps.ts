@@ -1,6 +1,5 @@
 import fetch from "../core/http";
-import { get_app, get_devs_apps, get_search_data } from "../core";
-import { server } from "../../server";
+import { devUserUrl, get_app, get_devs_apps, get_search_data } from "../core";
 
 interface AuthorObject {
   u_id: number;
@@ -91,16 +90,12 @@ export async function fetchAuthor(uid: string) {
     return authorCache[uid];
   }
 
-  const url = `${server}/users/${uid}`;
+  const url = devUserUrl.replace("{dev}", uid);
   const { ok, data } = await fetch(url, {
-    method: "GET",
-    headers: {
-      "ngrok-skip-browser-warning": "true"
-    }
+    method: "GET"
   });
   const author = data as AuthorObject;
 
-  console.log(uid, ok, author, url);
   author.apps = await get_devs_apps(String(author.u_id)).catch(() => []);
   authorCache[uid] = author;
 
@@ -121,7 +116,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
       promises.push(
         (async () => {
           const app = await get_app(appId);
-          console.log("App", appId, app.appId);
+
           const AuthorObject = await fetchAuthor(app.authorId);
 
           const appData = {

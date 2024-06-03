@@ -30,10 +30,8 @@ discord-rich-presence = "0.2.3"
 tokio = "1.37.0"
 tauri-plugin-notification = "2.0.0-beta"
 tauri-plugin-http = "2.0.0-beta"
-tauri-plugin-dialog = "2.0.0-beta"
 tauri-plugin-fs = "2.0.0-beta"
 tauri-plugin-process = "2.0.0-beta"
-tauri-plugin-os = "2.0.0-beta"
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 async-recursion = "1.1.1"
 

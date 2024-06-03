@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { GiPartyPopper } from "react-icons/gi";
-import { IoIosNotifications } from "react-icons/io";
 import fetchApps, { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import listAllApps from "../../resources/utilities/listAllApps";
@@ -84,14 +83,12 @@ export default function AppsList(props: Props) {
         })}
       </div>
       <div
-        className={`flex py-auto ${
-          dark ? "text-yellow-500" : "text-yellow-900"
-        }`}
+        className={`flex py-auto`}
       >
-        <div className="my-auto">
-          <IoIosNotifications />
+        <div className={dark ? "text-purple-500" : "text-purple-900"}>
+          v
         </div>
-        <span>means that an update is available</span>
+        <span className="text-base-content ml-2">represents unique version hash</span>
       </div>
     </div>
   );

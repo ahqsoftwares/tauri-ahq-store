@@ -1,4 +1,5 @@
 #![allow(unused)]
+#![allow(non_upper_case_globals)]
 
 pub mod download;
 pub mod extract;
@@ -69,6 +70,11 @@ struct AppData {
 
 static mut WINDOW: Option<tauri::WebviewWindow<tauri::Wry>> = None;
 
+lazy_static::lazy_static! {
+  static ref ready: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
+  static ref queue: Arc<Mutex<Vec<AppData>>> = Arc::new(Mutex::new(Vec::<AppData>::new()));
+}
+
 pub fn main() {
   let context = tauri::generate_context!();
 
@@ -77,9 +83,6 @@ pub fn main() {
       let args = std::env::args();
       let buf = std::env::current_exe().unwrap().to_owned();
       let exec = buf.to_str().unwrap().to_owned();
-
-      let ready = Arc::new(Mutex::new(false));
-      let queue = Arc::new(Mutex::new(Vec::<AppData>::new()));
 
       let window = app.get_webview_window("main").unwrap();
 
@@ -207,11 +210,11 @@ pub fn main() {
         println!("Started with {}", args);
 
         if *ready.clone().lock().unwrap() {
-          window.emit("app", args.clone()).unwrap();
+          window.emit("launch_app", args.clone()).unwrap();
         } else {
           queue.clone().lock().unwrap().push(AppData {
             data: args.clone(),
-            name: String::from("app"),
+            name: String::from("launch_app"),
           });
         }
       }
@@ -220,15 +223,24 @@ pub fn main() {
     })
     .plugin(tauri_plugin_notification::init())
     .plugin(tauri_plugin_http::init())
-    .plugin(tauri_plugin_dialog::init())
     .plugin(tauri_plugin_fs::init())
     .plugin(tauri_plugin_process::init())
-    .plugin(tauri_plugin_os::init())
-    .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-      let main = app.get_webview_window("main").unwrap();
+    .plugin(tauri_plugin_single_instance::init(|app, args, _| {
+      if let Some(main) = app.get_webview_window("main") {
+        let _ = main.show();
+        let _ = main.set_focus();
 
-      main.show().unwrap();
-      main.set_focus().unwrap();
+        if args.len() == 3 {
+          if *ready.clone().lock().unwrap() {
+            main.emit("launch_app", args[2].clone()).unwrap();
+          } else {
+            queue.clone().lock().unwrap().push(AppData {
+              data: args[2].clone(),
+              name: String::from("launch_app"),
+            });
+          }
+        }
+      }
     }))
     .invoke_handler(tauri::generate_handler![
       get_windows,

@@ -2,13 +2,8 @@ import Card from "./components/Card";
 
 import { TbScript } from "react-icons/tb";
 
-import vsc from "./vsc.svg";
 import { IoMdInformationCircle } from "react-icons/io";
 import { FaCampground } from "react-icons/fa";
-
-function Vsc() {
-  return <img className="3rem" src={vsc} />;
-}
 
 export default function Package() {
   return (

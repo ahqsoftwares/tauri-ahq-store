@@ -3,12 +3,14 @@ import pkg from "../../resources/package.png";
 
 //Icons
 import { BsTrash } from "react-icons/bs";
-import { IoIosNotifications } from "react-icons/io";
 
 //API
 import { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import { unInstall } from "../../resources/api/updateInstallWorker";
+
+import "./app.css";
+import { MdBrowserUpdated } from "react-icons/md";
 
 export default function App({
   appInfo,
@@ -21,7 +23,7 @@ export default function App({
   reload: Function;
   toast: typeof Toast;
 }) {
-  const updating = false;
+  const updating = true;
   const data = useRef<HTMLDivElement>("" as any);
 
   async function handleClick() {
@@ -52,22 +54,28 @@ export default function App({
 
   return (
     <div
-      className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] bg-base-100 text-base-content rounded-md mt-2 shadow-xl pl-2 border-[1px] border-base-content`}
+      className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] bg-base-300 shadow-sm text-base-content rounded-md mt-3 pl-2`}
     >
       <img
-        width={"64px"}
+        width="60px"
+        height="60px"
         src={appInfo.icon}
         alt={appInfo.appDisplayName}
-        className={`mr-2 ${appInfo.icon === pkg ? "p-2" : ""}`}
+        className={`rounded-md my-auto mr-2 ${appInfo.icon === pkg ? "p-2" : ""}`}
         draggable={false}
-      ></img>
+        style={{
+          "width": "60px",
+          "height": "60px"
+        }}
+      />
 
       <div className="flex flex-col my-auto text-start">
         <h1 className={`flex ${dark ? "text-blue-400" : "text-blue-700"}`}>
           <span className="text-2xl">{appInfo.appDisplayName}</span>
           {updating ? (
-            <div className={`${dark ? "text-yellow-500" : "text-yellow-900"}`}>
-              <IoIosNotifications />
+            <div className="flex ml-2">
+              <span className="text-purple-500">v</span>
+              <p className="text-base-content">-{btoa(appInfo.version).substring(0, 8)}</p>
             </div>
           ) : (
             <></>
@@ -79,20 +87,27 @@ export default function App({
         </h2>
       </div>
 
-      {!updating ? (
-        <div className="ml-auto mr-3 my-auto" ref={data}>
+
+      <div className="ml-auto mr-3 my-auto flex" ref={data}>
+        {updating && <div className="ml-auto mr-3 my-auto" ref={data}>
           <button
-            className="flex min-w-[100%] p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-danger text-red-700 hover:text-white hover:bg-red-700 rounded-xl transition-all"
+            className="flex p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-success cursor-default bg-base-300 text-green-700 hover:text-white hover:bg-green-700 no-animation rounded-xl transition-all app-parent"
+          >
+            <MdBrowserUpdated size="1.5em" />
+            <p className="app-child">Updating</p>
+          </button>
+        </div>
+        }
+        {!updating && <button
+          className="flex p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-danger bg-base-300 text-red-700 hover:text-white hover:bg-red-700 rounded-xl transition-all app-parent"
             onClick={() => {
               handleClick();
             }}
           >
             <BsTrash size="1.5em" />
-          </button>
-        </div>
-      ) : (
-        <></>
-      )}
+          <p className="app-child">Uninstall</p>
+        </button>}
+      </div>
     </div>
   );
 }
