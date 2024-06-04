@@ -49,7 +49,7 @@
     ]
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.0",
     "@tauri-apps/cli": "2.0.0-beta.11",
     "@types/node": "^20.12.12",
     "@types/react": "^18.3.2",
