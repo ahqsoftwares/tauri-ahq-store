@@ -15,7 +15,7 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
 serde_json = "1.0.117"
-serde = { version = "1.0.202", features = ["derive"] }
+serde = { version = "1.0.203", features = ["derive"] }
 
 tauri = { version = "2.0.0-beta", features = ["wry", "tray-icon", "image-png"] }
 wry = "*"
@@ -27,7 +27,7 @@ lazy_static = "1.4.0"
 
 updater = { path = "../src-updater" }
 ahqstore-types = { path = "../ahqstore-types" }
-discord-rich-presence = "0.2.3"
+discord-rich-presence = "0.2.4"
 tokio = "1.37.0"
 tauri-plugin-notification = "2.0.0-beta"
 tauri-plugin-http = "2.0.0-beta"
