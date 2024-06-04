@@ -1,0 +1,12 @@
+cargo-features = ["edition2024"]
+
+[package]
+name = "updater"
+version = "1.4.0"
+edition = "2024"
+
+[dependencies]
+dirs = "*"
+lazy_static = "*"
+reqwest = { version = "*", features = ["json"] }
+serde = { version = "*", features = ["derive"] }

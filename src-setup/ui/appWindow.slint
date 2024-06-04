@@ -1,0 +1,95 @@
+import { Button, VerticalBox, HorizontalBox, ProgressIndicator, CheckBox } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    max-height: 500px;
+    min-height: 500px;
+    
+    min-width: 350px;
+    max-width: 350px;
+
+    icon: @image-url("icon.png");
+
+    title: "Install AHQ Store";
+
+    in-out property<float> counter: -1.0;
+    in-out property<string> step: "";
+    in-out property<string> msg: "Installing...";
+    in-out property<bool> preview: false;
+
+    in-out property<bool> indet: false;
+
+    callback start-install();
+
+    VerticalBox {
+        height: 500px;
+        max-height: 500px;
+        min-height: 500px;
+        
+        width: 400px;
+        min-width: 400px;
+        max-width: 400px;
+
+        padding-top: 50px;
+        padding-bottom: 50px;
+        padding-left: 5px;
+        padding-right: 5px;
+
+        HorizontalBox {
+            alignment: LayoutAlignment.center;
+            Image {
+                width: 75px;
+                height: 75px;
+                source: @image-url("icon.png");
+            }
+        }
+        Text {
+            horizontal-alignment: TextHorizontalAlignment.center;
+            font-size: 30px;
+            font-weight: 100;
+            text: "AHQ Store";
+        }
+        VerticalBox {
+            alignment: LayoutAlignment.stretch;
+            HorizontalBox {
+                alignment: LayoutAlignment.center;
+                CheckBox {
+                    checked: root.preview;
+                    text: "Install Prerelease";
+                    enabled: counter == -1.0;
+                    toggled => {
+                        root.preview = !root.preview;
+                    }
+                }
+            }
+            HorizontalBox {
+                alignment: LayoutAlignment.center;
+                Text {
+                    height: 50px;
+                    font-size: 20px;
+                    text: root.step;
+                }
+            }
+            HorizontalBox {
+                alignment: LayoutAlignment.center;
+                ProgressIndicator {
+                    width: 300px;
+                    height: 2px;
+                    progress: !root.indet ? root.counter : -1.0;
+                    indeterminate: root.indet;
+                }
+            }
+            HorizontalBox {
+                alignment: LayoutAlignment.center;
+                Button {
+                    height: 30px;
+                    width: 150px;
+                    text: counter == -1.0 ? "Install" : root.msg;
+                    enabled: counter == -1.0;
+                    clicked => {
+                        root.start-install();
+                    }
+                }
+            }
+        }
+    }
+}

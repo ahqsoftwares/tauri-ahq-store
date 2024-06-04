@@ -1,4 +1,4 @@
-Welcome to the patch update to AHQ Store.
+Welcome to the new **alpha** minor update to AHQ Store **(adding Dependencies)**.
 
 ## Changes 📈
 - Fix the service not working as expected
@@ -10,5 +10,3 @@ Welcome to the patch update to AHQ Store.
 
 ## Present issues 🪲
 - Updater currently doesn't work (to be fixed by **v1.5.0**) ⚡
-
-**Full Changelog**: 📝 https://github.com/ahqsoftwares/tauri-ahq-store/compare/1.3.4...1.3.5

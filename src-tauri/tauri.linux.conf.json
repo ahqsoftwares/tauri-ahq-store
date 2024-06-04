@@ -1,0 +1,18 @@
+{
+  "app": {
+    "windows": [
+      {
+        "center": true,
+        "height": 760,
+        "resizable": true,
+        "title": "AHQ Store",
+        "label": "main",
+        "width": 1240,
+        "minHeight": 700,
+        "minWidth": 1200,
+        "visible": false,
+        "decorations": true
+      }
+    ]
+  }
+}

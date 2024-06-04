@@ -1,6 +1,5 @@
-const server = "http://odin.forcehost.net:25643/";
+const server = "https://possible-toad-preferably.ngrok-free.app/";
+const loginId = "Ov23liU65H2gkdXeGc2G";
+const scopes = "read:user";
 
-const newServer = "https://ahqstore-server.onrender.com";
-
-export default server;
-export { newServer };
+export { server };

@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import pkg from "../../resources/package.png";
 
 //Icons
 import { MdModeEdit } from "react-icons/md";
@@ -8,6 +7,7 @@ import { IoIosNotifications } from "react-icons/io";
 //API
 import { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
+import { invoke } from "@tauri-apps/api/core";
 
 export default function App({
   appInfo,
@@ -24,7 +24,10 @@ export default function App({
   const data = useRef<HTMLDivElement>("" as any);
 
   async function handleClick() {
-    toast("Coming soon", "warn", 1);
+    toast("Opened in browser", "success", 1);
+    invoke("open", {
+      url: "https://github.com/ahqstore/data",
+    });
   }
 
   return (
@@ -34,17 +37,20 @@ export default function App({
       } ${lastIndex ? "rounded-b-md" : ""} hover:shadow-xl pl-2 cursor-default`}
     >
       <img
-        width={"64px"}
-        height={"64px"}
         src={appInfo.icon}
-        alt={appInfo.title}
+        alt={appInfo.appDisplayName}
         className={`mr-2`}
         draggable={false}
+        style={{
+          width: "60px",
+          marginTop: "auto",
+          marginBottom: "auto",
+        }}
       ></img>
 
       <div className="flex flex-col my-auto text-start">
         <h1 className={`flex ${dark ? "text-blue-400" : "text-blue-700"}`}>
-          <span className="text-2xl">{appInfo.title}</span>
+          <span className="text-2xl">{appInfo.appDisplayName}</span>
           {updating ? (
             <div className={`${dark ? "text-yellow-500" : "text-yellow-900"}`}>
               <IoIosNotifications />

@@ -11,11 +11,11 @@ interface ButtonProps {
 }
 
 export default function Button(props: ButtonProps) {
-  const { dark, Icon, title, description, onClick, no50, calibrate } = props;
+  const { Icon, title, description, onClick, no50, calibrate } = props;
 
   return (
     <div
-      className={`h-[5.5rem] w-[20.5rem] m-[1rem] bg-base-200 hover:bg-base-300 text-base-content rounded-xl hover:shadow-xl flex p-3`}
+      className={`h-[5.5rem] w-[20.5rem] m-[1rem] border-[1px] border-base-content bg-opacity-40 bg-base-100 text-base-content rounded-xl hover:shadow-xl flex p-3`}
       style={{
         cursor: "pointer",
         transition: "all 125ms linear",

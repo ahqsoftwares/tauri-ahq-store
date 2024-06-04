@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import { list_apps } from "../core";
 
 interface Apps {

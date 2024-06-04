@@ -1,2 +1,7 @@
-[target.x86_64-pc-windows-msvc]
+
+[target.'cfg(windows)']
 rustflags = ["-C", "target-feature=+crt-static"]
+
+
+[build]
+rustflags = ["-Z", "threads=2"]

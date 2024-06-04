@@ -1,6 +1,7 @@
 {
   "files.watcherExclude": {
-    "**/node_modules**": true
+    "**/node_modules**": true,
+    "**/target**": true
   },
   "files.exclude": {
     "**/node_modules**": true
@@ -17,5 +18,6 @@
   "editor.formatOnSaveMode": "modificationsIfAvailable",
   "editor.formatOnType": true,
   "editor.tabSize": 2,
+  "editor.defaultFormatter": "rust-lang.rust-analyzer",
   "rust-analyzer.linkedProjects": ["./src-tauri/Cargo.toml"]
 }

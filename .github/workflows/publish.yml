@@ -5,6 +5,8 @@ on:
       - master
       - pr_in
 
+permissions: write-all
+
 jobs:
   create-release:
     name: Create a new github release
@@ -90,60 +92,49 @@ jobs:
               return data.upload_url;
             }
 
-  make-postinstaller:
-    needs: create-release
-    name: Build & Publish Postinstaller Script
 
-    runs-on: windows-latest
+  publish-cargo:
+    name: Publish ahqstore-types to cargo
+
+    runs-on: ubuntu-latest
+
+    continue-on-error: true
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Install Rust Stable
+      - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
-      
-      - name: Cache Rust
-        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
-        uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: src-s-tools-${{ runner.os }}
-          cache-all-crates: true
-          workspaces: "src-service-tools -> target"
+          toolchain: nightly
 
-      - name: Build Service Installer
-        run: cargo build --release
-        working-directory: src-service-tools
-
-      - name: Upload Executable (standalone)
-        uses: actions/upload-artifact@v3
-        with:
-          name: postinstall.exe
-          path: "src-service-tools/target/release/store-tools-installer.exe"
-
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: ahqsoftwares-projects/upload-release-assets@v59
+      - name: Publish types to cargo
+        run: cargo publish
+        working-directory: ahqstore-types
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-service-tools/target/release/store-tools-installer.exe
-          asset_name: store-tools-installer.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
+        continue-on-error: true
 
   make-setup:
     needs: create-release
     name: Make Setup (exe)
 
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install Rust
+      - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
 
       - name: Cache Rust
         if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
@@ -157,15 +148,27 @@ jobs:
         run: cargo build --release
         working-directory: src-setup
 
-      - name: Upload Release Asset
-        uses: ahqsoftwares-projects/upload-release-assets@v59
+      - name: Upload Windows Setup
+        if: matrix.os == 'windows-latest'
+        uses: ahqstore/upload-release-assets@v59
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-setup/target/release/ahqstore_setup_x86_64.exe
-          asset_name: ahqstore_setup_x86_64.exe
+          asset_path: ./src-setup/target/release/ahqstore_setup_amd64.exe
+          asset_name: ahqstore_setup_win32_amd64.exe
           asset_content_type: application/vnd.microsoft.portable-executable
+
+      - name: Upload Linux Setup
+        if: matrix.os != 'windows-latest'
+        uses: ahqstore/upload-release-assets@v59
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-setup/target/release/ahqstore_setup_amd64
+          asset_name: ahqstore_setup_amd64_linux
+          asset_content_type: application/octet-stream
 
   publish-tauri:
     needs: create-release
@@ -176,7 +179,7 @@ jobs:
       matrix:
         platform: [windows-latest, ubuntu-latest]
 
-    runs-on: matrix.platform
+    runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -198,14 +201,16 @@ jobs:
         with:
           version: latest
 
-      - name: Install Rust Stable
+      - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+          sudo apt update
+          sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
       - name: install Vite dependencies and Build React App
         run: pnpm install; pnpm build
@@ -213,7 +218,7 @@ jobs:
           CI: "false"
 
       - name: Decrypt Key / Load Encryption Key
-        run: node encryptor.js
+        run: node encryptor.cjs
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
 
@@ -230,19 +235,10 @@ jobs:
       - name: Build Service
         run: cargo build --release
         working-directory: src-service
-        if: matrix.platform == 'windows-latest'
 
-      - name: Upload Executable (standalone)
-        uses: actions/upload-artifact@v3
+      - name: Upload Service (Windows)
         if: matrix.platform == 'windows-latest'
-        with:
-          name: service.exe
-          path: ./src-service/target/release/ahqstore_service.exe
-
-      - name: Upload Release Asset
-        id: upload-release-asset
-        if: matrix.platform == 'windows-latest'
-        uses: ahqsoftwares-projects/upload-release-assets@v59
+        uses: ahqstore/upload-release-assets@v59
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -251,12 +247,26 @@ jobs:
           asset_name: ahqstore_service.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
-      - name: Load VCPKG Page
+      
+      - name: Upload Service (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        uses: ahqstore/upload-release-assets@v59
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ./src-service/target/release/ahqstore_service
+          asset_name: ahqstore_service
+          asset_content_type: application/octet-stream
+          
+      - name: Load VCPKG Page (Windows)
         if: ${{ !steps.cache.outputs.cache-hit }} && matrix.platform == 'windows-latest'
+        continue-on-error: true
         run: git clone https://github.com/Microsoft/vcpkg.git
 
-      - name: Install OpenSSL with vcpkg
+      - name: Install OpenSSL with vcpkg (Windows)
         if: matrix.platform == 'windows-latest'
+        continue-on-error: true
         run: |
           cd vcpkg
           .\bootstrap-vcpkg.bat
@@ -265,7 +275,7 @@ jobs:
 
       - name: Build Tauri App
         id: tauri-app
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI }}
@@ -274,9 +284,10 @@ jobs:
           args: --verbose
           releaseId: ${{ needs.create-release.outputs.release_id }}
           includeRelease: true
+          includeUpdaterJson: false
 
   undraft-release:
-    needs: [create-release, publish-tauri, make-postinstaller, make-setup]
+    needs: [create-release, publish-tauri, make-setup]
     name: Publish Release
     runs-on: ubuntu-latest
 
@@ -294,33 +305,3 @@ jobs:
               release_id: process.env.R_ID,
               draft: false
             });
-
-  build_and_deploy:
-    needs: [undraft-release]
-    name: Build Docs Site
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: latest
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-
-      - name: Build
-        run: pnpm install; cd docs; pnpm install; pnpm prebuild; pnpm build; cd ..
-        env:
-          CI: false
-
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_AHQ_STORE }}"
-          channelId: live
-          projectId: ahq-store

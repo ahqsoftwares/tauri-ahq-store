@@ -1,18 +1,35 @@
+import { IconBaseProps, IconType } from "react-icons";
+import "./card.css";
+
 interface CardProps {
-  title: string,
-  Icon: JSX.Element
+  title: string;
+  body?: string;
+  installed: boolean;
+  cannotRemove?: boolean;
+  Icon: IconType | ((props: IconBaseProps) => JSX.Element);
 }
 
 export default function Card(props: CardProps) {
-  const { Icon } = props;
+  const { Icon, installed, cannotRemove } = props;
 
   return (
-    <div className="shadow-xl bg-base-200 hover:bg-base-300 dui-card w-[18rem]">
-      <div className="dui-card-body">
-        <figure className="w-[98%]">
-          {Icon}
+    <div className="p-card">
+      <div className="pc-body">
+        <figure>
+          <Icon size={"3em"} />
         </figure>
-        <h2 className="dui-card-title">{props.title}</h2>
+
+        <h1>{props.title}</h1>
+        <h2>{props.body || "<-- OPTIONAL COMPONENT -->"}</h2>
+
+        <div>
+          <button
+            className={`dui-btn ${installed ? "dui-btn-error" : "dui-btn-primary"}`}
+            disabled={cannotRemove}
+          >
+            {installed ? "Uninstall" : "Install"}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -3,8 +3,7 @@ React Native
 */
 import { useState, useEffect } from "react";
 import { FiSearch as FcSearch } from "react-icons/fi";
-import { Auth } from "firebase/auth";
-
+import { Auth } from "../../auth";
 /*
 Functions
 */
@@ -22,7 +21,7 @@ import SearchModal from "./components/search_modal";
 StyleSheets
 */
 import "./index.css";
-import { getData } from "../resources/utilities/database";
+import { FaInfoCircle } from "react-icons/fa";
 
 /*
 Interfaces
@@ -45,8 +44,9 @@ export default function Apps(props: AppsProps) {
   function Fix() {
     const element = document.querySelector("#search-result") as any;
     if (element) {
-      element.style = `width: ${document.querySelector("#get-width")
-        ?.clientWidth}px;`;
+      element.style = `width: ${
+        document.querySelector("#get-width")?.clientWidth
+      }px;`;
     }
   }
 
@@ -70,6 +70,7 @@ export default function Apps(props: AppsProps) {
     key += 1;
     return key;
   }
+  console.log(apps);
 
   return (
     <div className="menu">
@@ -94,21 +95,20 @@ export default function Apps(props: AppsProps) {
           <div
             className="w-[40%] mt-2"
             onBlur={() => {
-              let searchOnEnter = getData("enableSearchOnEnter");
-
-              if (searchOnEnter) {
-                setTimeout(() => {
-                  setEnter((enter) => {
-                    if (!enter) {
-                      searchText("");
-                    }
-                    return enter;
-                  });
-                }, 100);
-              }
+              setTimeout(() => {
+                setEnter((enter) => {
+                  if (!enter) {
+                    searchText("");
+                  }
+                  return enter;
+                });
+              }, 100);
             }}
           >
-            <div className="w-[100%] flex" id="get-width">
+            <div
+              className="w-[100%] flex border-[1px] border-base-content rounded-md"
+              id="get-width"
+            >
               <input
                 className={`search-input search-input-m-modified ${
                   dark ? "style-input-d search-input-m-modified-d" : ""
@@ -121,17 +121,15 @@ export default function Apps(props: AppsProps) {
                 style={{
                   borderTopRightRadius: "0",
                   borderBottomRightRadius: "0",
+                  width: "100%",
                 }}
                 onChange={(e) => {
                   searchText(e.target.value);
                 }}
                 onKeyUp={(e) => {
-                  let data = getData("enableSearchOnEnter");
                   if (e.key === "Enter") {
-                    if (data) {
-                      if (search.length >= 1) {
-                        setEnter(true);
-                      }
+                    if (search.length >= 1) {
+                      setEnter(true);
                     }
                   } else {
                     setEnter(false);
@@ -146,16 +144,12 @@ export default function Apps(props: AppsProps) {
                 type="submit"
                 id={"search-btn"}
                 onClick={() => {
-                  let searchBiggerBoxEnabled = getData("enableSearchOnEnter");
-
-                  if (searchBiggerBoxEnabled) {
-                    setTimeout(() => {
-                      if (search.length >= 1) {
-                        setEnter(true);
-                        searchText(search);
-                      }
-                    }, 0);
-                  }
+                  setTimeout(() => {
+                    if (search.length >= 1) {
+                      setEnter(true);
+                      searchText(search);
+                    }
+                  }, 0);
                 }}
                 style={{
                   borderColor: "rgb(96,70,255)",
@@ -194,9 +188,12 @@ export default function Apps(props: AppsProps) {
 
           <div className="appss">
             {apps.length === 0 ? (
-              <>
-                <h1 className="apps-text">Loading Your Apps...</h1>
-              </>
+              <div
+                className={`flex justify-center text-center items-center mt-9 ${dark ? "text-yellow-400" : "text-yellow-600"}`}
+              >
+                <FaInfoCircle size={"3em"} />
+                <h1 className="ml-2 apps-text">No apps!</h1>
+              </div>
             ) : (
               <></>
             )}
@@ -206,6 +203,7 @@ export default function Apps(props: AppsProps) {
                 const [alt, data] = filess;
 
                 const apps = data;
+                console.log(apps);
                 return (
                   <Layer alt={alt} key={keyGen()}>
                     {apps.map((data) => {

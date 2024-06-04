@@ -53,7 +53,7 @@ Item pallete
   border-width: 9px;
   border-style: solid;
   border-radius: 30%;
-  @apply bg-base-200;
+  @apply bg-base-100;
 }
 
 .n-item:active,
@@ -109,7 +109,7 @@ Item pallete
   w-[99%] h-[98vh] 
   bg-transparent border-base-content border-2
   rounded-lg flex-col mx-auto my-auto mt-auto;
-  transition: all 500ms linear;
+  transition: background 500ms linear;
   overflow-x: hidden;
   overflow-y: scroll;
   scroll-behavior: smooth;
@@ -264,7 +264,7 @@ User Panel
 /* Navigation Bar
 */
 .nav-h {
-  @apply absolute bg-base-100 bg-opacity-100 z-[10] !important;
+  @apply absolute bg-base-200 bg-opacity-100 z-[10] !important;
 }
 
 .nav-h .n-item-h {
@@ -281,5 +281,5 @@ User Panel
   margin-top: 0px !important;
   margin-left: 8px !important;
   margin-right: 8px !important;
-  @apply bg-base-200 !important;
+  @apply bg-base-100 !important;
 }

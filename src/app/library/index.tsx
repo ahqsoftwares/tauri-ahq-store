@@ -1,16 +1,25 @@
 //PUB libraries
 import { useEffect, useState } from "react";
-import Modal from "react-modal";
 
 //Components
 import InstalledAppsMenu from "./components/Style";
 import AppList from "./components/AppsList";
 
 //tauri and updater
-import { appWindow } from "@tauri-apps/api/window";
-import { fetch } from "@tauri-apps/api/http";
-import server from "../server";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
+import PopUp from "../resources/components/popup";
 
+// Icons
+const UpdateCheckingDark = "/update_checking_dark.png";
+const UpdateCheckingLight = "/update_checking_light.png";
+
+const UpdateLight = "/update_light.png";
+const UpdateDark = "/update_dark.png";
+
+const UpdatedLight = "/updated_light.png";
+const UpdatedDark = "/updated_dark.png";
+
+const appWindow = getCurrent();
 interface LibraryProps {
   dark: boolean;
 }
@@ -18,35 +27,16 @@ interface LibraryProps {
 export default function Library(props: LibraryProps) {
   const { dark } = props;
 
-  const customStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      width: "95%",
-      height: "90%",
-      transition: "all 500ms linear",
-      borderRadius: "20px",
-      borderWidth: "3px",
-      borderColor: "hsl(var(--bc) / 0.9)",
-      backgroundColor: "hsl(var(--b1) / 1)",
-    },
-    overlay: {
-      backgroundColor: "hsl(var(--b1) / 0.8)",
-      zIndex: 1000,
-    },
-  };
-
-  Modal.setAppElement("body");
-
   const [status, setStatus] = useState("Checking..."),
     [appList, setAppList] = useState<boolean>(false),
     [apps, setApps] = useState<string[]>([]),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     [current, setCurrent] = useState<string>("");
+
+  const icon = status
+    .replace("Check for Updates", dark ? UpdatedDark : UpdatedLight)
+    .replace("Updates Available", dark ? UpdateDark : UpdateLight)
+    .replace("Checking...", dark ? UpdateCheckingDark : UpdateCheckingLight);
 
   useEffect(() => {
     const status = {
@@ -66,23 +56,6 @@ export default function Library(props: LibraryProps) {
       setApps(status.apps || []);
       setCurrent(status.updating || "");
     }, 250);
-
-    appWindow.listen(
-      "sendUpdaterStatus",
-      ({ payload }: { payload: string }) => {
-        const status = JSON.parse(payload);
-        setStatus(
-          status.status
-            ? status.status
-                .replace("updated", "Check for Updates")
-                .replace("updating", "Updates Available")
-                .replace("checking", "Checking...")
-            : "",
-        );
-        setApps(status.totalApps || []);
-        setCurrent(status.currentlyUpdating || "");
-      },
-    );
   }, []);
 
   function darkMode(classes: Array<string>) {
@@ -100,30 +73,31 @@ export default function Library(props: LibraryProps) {
 
   return (
     <>
-      <Modal isOpen={appList} style={customStyles}>
+      <PopUp shown={appList} width="95%" height="90%">
         <AppList
           dark={props.dark}
           change={() => {
             setAppList(false);
           }}
         />
-      </Modal>
+      </PopUp>
 
       <div className={`${darkMode(["menu"])}`}>
         <div
-          className={`mt-[1rem] min-w-[98%] pt-3 rounded-lg shadow-xl bg-base-200 flex flex-col`}
+          className={`mt-[1rem] min-w-[98%] pt-3 rounded-lg shadow-xl bg-opacity-75 bg-base-100 flex flex-col`}
         >
           <div className="px-3 pt-1 flex flex-row text-center items-center justify-center mb-[1rem]">
-            <h1 className="text-base-content text-2xl">
+            <img src={icon} style={{ height: "3rem" }} />
+            <h1 className="text-base-content text-2xl ml-2">
               {status === "Check for Updates"
                 ? "You are up to date!"
                 : status === "Checking..."
-                ? "Checking for updates..."
-                : status === "none"
-                ? "Your apps may not be up to date!"
-                : `${apps.length} update${
-                    apps.length > 1 ? "s" : ""
-                  } available`}
+                  ? "Checking for updates..."
+                  : status === "none"
+                    ? "Your apps may not be up to date!"
+                    : `${apps.length} update${
+                        apps.length > 1 ? "s" : ""
+                      } available`}
             </h1>
             <button
               className="dui-btn dui-btn-primary ml-auto my-auto"

@@ -1,13 +1,14 @@
 import Modal from "react-modal";
 
 interface PasswordProps {
-  dark: boolean;
   shown: boolean;
   children: JSX.Element;
+  width?: string;
+  height?: string;
 }
 
 export default function PopUp(props: PasswordProps) {
-  const { dark, shown } = props;
+  const { width, height, shown } = props;
 
   const modalStyles = {
     content: {
@@ -17,16 +18,20 @@ export default function PopUp(props: PasswordProps) {
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      width: "30rem",
-      height: "40rem",
+      width: width || "30rem",
+      minWidth: width || "30rem",
+      maxWidth: width || "30rem",
+      height: height || "40rem",
+      maxHeight: height || "40rem",
+      minHeight: height || "40rem",
       transition: "all 500ms linear",
       borderRadius: "20px",
       borderWidth: "3px",
       borderColor: "hsl(var(--bc) / 0.9)",
-      backgroundColor: "hsl(var(--b1) / 1)",
+      backgroundColor: "var(--fallback-b1,oklch(var(--b1) / 1)",
     },
     overlay: {
-      backgroundColor: "hsl(var(--b1) / 0.8)",
+      backgroundColor: "var(--fallback-b1,oklch(var(--b1) / 0.8)",
       opacity: "1",
       zIndex: 1000,
     },
@@ -34,7 +39,7 @@ export default function PopUp(props: PasswordProps) {
   Modal.setAppElement("body");
 
   return (
-    <Modal isOpen={shown} style={modalStyles} contentLabel={"Custom PopUp"}>
+    <Modal isOpen={shown} style={modalStyles}>
       {props.children}
     </Modal>
   );

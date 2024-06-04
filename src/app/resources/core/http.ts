@@ -1,30 +1,26 @@
-import { invoke } from "@tauri-apps/api";
-import {
-  FetchOptions,
-  ResponseType,
-  fetch as tauriFetch,
-} from "@tauri-apps/api/http";
+import { ClientOptions, fetch as tauriFetch } from "@tauri-apps/plugin-http";
 
-export default async function fetch<T = any>(
+export default async function fetch(
   url: string,
-  config: FetchOptions | undefined,
+  config: (RequestInit & ClientOptions) | undefined,
 ) {
-  const email = localStorage.getItem("email") as string;
-
-  const pwd = await invoke("decrypt", {
-    encrypted: JSON.parse(localStorage.getItem("password") || "[]") as number[],
-  }).catch(() => "a");
-
-  return await tauriFetch<T>(url, {
-    responseType: ResponseType.JSON,
+  return await tauriFetch(url, {
     ...(config || {}),
     method: config?.method || "GET",
-    timeout: 100,
+    connectTimeout: 100_000,
     headers: {
       "User-Agent": navigator.userAgent,
-      uid: email,
-      pwd,
+      "ngrok-skip-browser-warning": "true",
       ...(config?.headers || {}),
     },
-  });
+  }).then(async (data) => ({
+    ...data,
+    data: await data.text().then((val) => {
+      try {
+        return JSON.parse(val);
+      } catch (_) {
+        return val;
+      }
+    }),
+  }));
 }

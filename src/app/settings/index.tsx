@@ -1,9 +1,8 @@
 //React
 import { useEffect, useState } from "react";
-import { Auth, User, updateProfile } from "firebase/auth";
+import { Auth, User, updateProfile } from "../../auth";
 
 //packages
-import Modal from "react-modal";
 import Toast from "../resources/api/toast";
 import getWindows, {
   getWindowsName,
@@ -11,15 +10,16 @@ import getWindows, {
 } from "../resources/api/os";
 
 //Tauri
-import { sendNotification } from "@tauri-apps/api/notification";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 import { getVersion } from "@tauri-apps/api/app";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 //Components
 import CheckBox from "./components/checkbox";
 import ListSelector from "./components/font";
 import SidebarSelector from "./components/sidebar";
-import PopUp from "./components/popup";
+import PopUp from "../resources/components/popup";
+import CustomPopUp from "./components/popup";
 import StartOptions from "./components/startOptions";
 import themes from "../resources/utilities/themes";
 
@@ -30,6 +30,7 @@ import { FaUsersGear } from "react-icons/fa6";
 import { HiOutlineColorSwatch } from "react-icons/hi";
 
 import "./styles.css";
+import { SiDaisyui, SiTailwindcss } from "react-icons/si";
 
 interface InitProps {
   dark: boolean;
@@ -48,47 +49,10 @@ interface InitProps {
 }
 
 export default function Init(props: InitProps) {
-  const customStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      maxWidth: "35%",
-      minWidth: "35%",
-      maxHeight: "30%",
-      minHeight: "30%",
-      transition: "all 500ms linear",
-      borderRadius: "20px",
-      borderWidth: "3px",
-      borderColor: "hsl(var(--bc) / 0.9)",
-      backgroundColor: "hsl(var(--b1) / 1)",
-    },
-    overlay: {
-      backgroundColor: "hsl(var(--b1) / 0.8)",
-      zIndex: 1000,
-    },
-  };
-
-  const customStylesx2 = {
-    ...customStyles,
-    content: {
-      ...customStyles.content,
-      maxWidth: "50%",
-      minWidth: "50%",
-      maxHeight: "25%",
-      minHeight: "25%",
-    },
-  };
-
-  Modal.setAppElement("body");
-
   const [user, setUser] = useState(props.auth.currentUser as User),
     [show, setShow] = useState(false),
     [showOtherUserOptions, setOUO] = useState(false),
-    [dev, setDev] = useState(user?.displayName?.startsWith("(dev)") as boolean);
+    [dev, setDev] = useState(user?.dev);
 
   const [ver, setVer] = useState("0.9.0");
   const [os, setOs] = useState("");
@@ -97,45 +61,16 @@ export default function Init(props: InitProps) {
   useEffect(() => {
     getVersion()
       .then(setVer)
-      .catch(() => { });
-    
+      .catch(() => {});
+
     const ver = getWindowsName();
     setOs(ver);
     if (ver == "linux") {
-      invoke<string>("get_linux_distro").then((ver) => setLinuxVer(ver.replace(/"/g, "")));
+      invoke<string>("get_linux_distro").then((ver) =>
+        setLinuxVer(ver.replace(/"/g, "")),
+      );
     }
   }, []);
-
-  async function Update() {
-    const toast = Toast("Please Wait...", "warn", "never");
-    try {
-      if (props.auth?.currentUser?.emailVerified) {
-        setShow(true);
-        await updateProfile(user, {
-          displayName: !dev
-            ? `(dev)${user?.displayName}`
-            : user?.displayName?.replace("(dev)", ""),
-        });
-        toast?.edit(
-          `Successfully ${!dev ? "enabled" : "disabled"} developer mode!`,
-          "success",
-        );
-        setUser(props.auth.currentUser as User);
-        setDev(!dev);
-        props.setDev(!dev);
-        setShow(false);
-      } else {
-        toast?.edit("Please verify your email!", "danger");
-      }
-    } catch (_e) {
-      toast?.edit("Failed to enable developer mode!", "danger");
-      sendNotification("Could not update data!");
-    }
-
-    setTimeout(() => {
-      toast?.unmount();
-    }, 5000);
-  }
 
   function darkMode(classes: Array<string>, dark: boolean) {
     let newClasses: string[] = [];
@@ -175,7 +110,7 @@ export default function Init(props: InitProps) {
 
   return (
     <>
-      <Modal isOpen={show} style={customStyles}>
+      <PopUp shown={show} height="30%" width="75%">
         <div className="flex flex-col items-center text-center justify-center">
           <div className="my-auto">
             <h1
@@ -187,10 +122,10 @@ export default function Init(props: InitProps) {
             </h1>
           </div>
         </div>
-      </Modal>
-      <Modal isOpen={showOtherUserOptions} style={customStylesx2}>
+      </PopUp>
+      <PopUp shown={showOtherUserOptions} width="50%" height="25%">
         <StartOptions setOUO={setOUO} dark={props.dark} />
-      </Modal>
+      </PopUp>
 
       <div className={darkMode(["menu"], props.dark)}>
         <h1
@@ -250,9 +185,11 @@ export default function Init(props: InitProps) {
             dark={props.dark}
             url={false}
             title="Alpha Build"
-            description="You are currently in a alpha build"
+            description="You are currently in a alpha build; Click to reload app"
             Icon={HiWrenchScrewdriver}
-            onClick={() => { }}
+            onClick={() => {
+              window.location.reload();
+            }}
             active={false}
             noCheckbox={true}
           />
@@ -260,23 +197,8 @@ export default function Init(props: InitProps) {
           <></>
         )}
 
-        <CheckBox
-          dark={props.dark}
-          url={false}
-          title="Developer Mode"
-          description={
-            props.auth?.currentUser?.emailVerified
-              ? "Allows you to publish windows apps"
-              : "(DISABLED, VERIFY EMAIL) Allows you to publish windows apps"
-          }
-          Icon={BsCodeSlash}
-          onClick={() => Update()}
-          disabled={!props.auth?.currentUser?.emailVerified}
-          active={dev}
-        />
-
         {props.admin && os != "linux" ? (
-          <PopUp
+          <CustomPopUp
             dark={props.dark}
             Icon={FaUsersGear}
             title="Access Policy"
@@ -317,13 +239,55 @@ export default function Init(props: InitProps) {
             description={`AHQ Store v${ver} (Build ${versionToBuild(ver)})`}
             Icon={"/logo192.png"}
             onClick={() => {
-              openUrl("https://ahq-store.web.app");
+              openUrl("https://ahqstore.github.io");
             }}
             disabled={true}
             active={true}
             noCheckbox={true}
           />
         </div>
+
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="Developer"
+            description={`AHQ (github.com/ahqsoftwares)`}
+            Icon={"/ahq.png"}
+            onClick={() => {
+              openUrl("https://github.com/ahqsoftwares");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+            roundedImage={true}
+          />
+
+          <div className="w-[1.2rem]"></div>
+
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="Github Repo"
+            description={`Click to open in default browser`}
+            Icon={props.dark ? "/github-dark.png" : "/github.png"}
+            onClick={() => {
+              openUrl("https://github.com/ahqsoftwares/tauri-ahq-store");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+        </div>
+
+        <h1
+          className={`mt-3 text-3xl ${
+            props.dark ? "text-white" : "text-slate-700"
+          } mr-auto ml-3`}
+        >
+          Toolkits
+        </h1>
+
         <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
           <CheckBox
             dark={props.dark}
@@ -355,15 +319,15 @@ export default function Init(props: InitProps) {
             noCheckbox={true}
           />
         </div>
-        <div className="flex mx-auto w-[98%] h-auto items-center justify-center mb-5">
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center">
           <CheckBox
             dark={props.dark}
             url={true}
-            title="Developer"
-            description={`AHQ (github.com/ahqsoftwares)`}
-            Icon={"/ahq.png"}
+            title="CSS Framework"
+            description={`Tailwindcss`}
+            Icon={(o) => SiTailwindcss({ ...o, color: "#39bcf8" })}
             onClick={() => {
-              openUrl("https://github.com/ahqsoftwares");
+              openUrl("https://tailwindcss.com/");
             }}
             disabled={true}
             active={true}
@@ -376,11 +340,45 @@ export default function Init(props: InitProps) {
           <CheckBox
             dark={props.dark}
             url={true}
-            title="Github Repo"
-            description={`Click to open in default browser`}
-            Icon={props.dark ? "/github-dark.png" : "/github.png"}
+            title="CSS Framework"
+            description={`Daisyui`}
+            Icon={(s) => SiDaisyui({ ...s, color: "white" })}
             onClick={() => {
-              openUrl("https://github.com/ahqsoftwares/tauri-ahq-store");
+              openUrl("https://daisyui.com");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+          />
+        </div>
+        <div className="flex mx-auto w-[98%] h-auto items-center justify-center mb-5">
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="React Icons"
+            description={`Thanks for the icons to make it possible`}
+            Icon={"/ri.svg"}
+            onClick={() => {
+              openUrl("https://react-icons.github.io/react-icons/");
+            }}
+            disabled={true}
+            active={true}
+            noCheckbox={true}
+            roundedImage={true}
+          />
+
+          <div className="w-[1.2rem]"></div>
+
+          <CheckBox
+            dark={props.dark}
+            url={true}
+            title="Icons8"
+            description={`Thanks for some of the icons 😇`}
+            Icon={
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAABuklEQVR4nO2Y204CQQyG9z2ko4K36hMoLSSoib6Tp5dRYTv7Ch6QB1G883QlwYDpeohRCQtbmI3pn2zmajr5Zjrdzh9FJpNpIoHHK+dpqPhdjFprqUXrwHjkmDrgqQsee+nIdA0eDxeS2lo0rZQh0u/nGqWkugKM8di5TANgbEFMlcKBQEwN8PQwyXxgegau7RUGZDGu7TiPr1PFYeqXGLeCg6Tp5PExTxyQk2zWy0FBnCfWiAVMZ8FApDrJxVWJxzQo8eZqEBDHdKwZD5gOQoF0VEE8toOAANOd7sbgbRgQjz3djcGXQCDUVT6RG7sjLl9qHeqmFu0HORHpYv/FfySSZpGxpRMPT8ZCzBQkpkreXssx3btkYzkoiKiUVLeli50Soi9PgEwQswb5OJlGurMTzAfGJxdXdzNDzAMkXaNZL0sXO7YAMA0c42nmdJo3yKek+kgDKL2TtB0gHcD72JYSm6k6FQHEzIeiXHYzH9jMB1JLLTMf/O9/i5kPLm96mflAIzbGzAfKlVpmPviiGXRmPtBfFdDMh6FGi2Lmg/9KKTMfhrN4WM3NfACmS93yi+dBzAeTyRR91xuOT9XMkoUR3gAAAABJRU5ErkJggg=="
+            }
+            onClick={() => {
+              openUrl("https://icons8.com");
             }}
             disabled={true}
             active={true}

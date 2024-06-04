@@ -1,4 +1,4 @@
-import { BaseDirectory, createDir, readTextFile } from "@tauri-apps/api/fs";
+import { BaseDirectory, mkdir, readTextFile } from "@tauri-apps/plugin-fs";
 import { setData } from "./database";
 
 interface betaPrefs {
@@ -8,11 +8,13 @@ interface betaPrefs {
 export type { betaPrefs };
 
 export default async function initDeveloperConfiguration() {
-  await createDir("", { dir: BaseDirectory.App }).catch(console.error);
-  await createDir("database", { dir: BaseDirectory.App }).catch(console.error);
+  await mkdir("", { baseDir: BaseDirectory.AppData }).catch(console.error);
+  await mkdir("database", { baseDir: BaseDirectory.AppData }).catch(
+    console.error,
+  );
 
   let prefs: betaPrefs = await readTextFile("database/config.developer", {
-    dir: BaseDirectory.App,
+    baseDir: BaseDirectory.AppData,
   })
     .then((data) => JSON.parse(data) as betaPrefs)
     .catch(async (e) => {

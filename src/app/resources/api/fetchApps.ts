@@ -1,39 +1,58 @@
 import fetch from "../core/http";
-import { get_app } from "../core";
-import { newServer } from "../../server";
-
-let commit_id = "";
+import { devUserUrl, get_app, get_devs_apps, get_search_data } from "../core";
 
 interface AuthorObject {
-  displayName: string;
-  email: string;
-  apps:
-  | []
-  | {
-    apps: string[];
-    ignored: string[];
-  };
+  u_id: number;
+  username: string;
+  pub_email: string;
+  linked_acc: string[];
+  display_name: string;
+  pf_pic?: string;
+  ahq_verified: boolean;
+  apps: string[];
 }
 
+type Str = string;
+
 interface appData {
-  author: string;
-  AuthorObject?: AuthorObject;
-  description: string;
-  download: string;
-  exe: string;
-  icon: string;
-  repo: {
-    author: string;
-    repo: string;
+  appId: Str;
+  appShortcutName: Str;
+  appDisplayName: Str;
+  authorId: Str;
+  downloadUrls: {
+    [key: number]: {
+      installerType:
+        | "WindowsZip"
+        | "WindowsInstallerExe"
+        | "WindowsInstallerMsi"
+        | "WindowsUWPMsix"
+        | "LinuxAppImage";
+      url: Str;
+    };
   };
-  title: string;
-  displayName: string;
-  version: string;
-  id: string;
+  install: {
+    win32: unknown | undefined;
+    linux: unknown | undefined;
+    installType: "PerUser" | "Computer" | "Both";
+  };
+  displayImages: Str[];
+  description: Str;
+  icon: Str;
+  repo: {
+    author: Str;
+    repo: Str;
+  };
+  version: Str;
+  site?: Str;
+  source?: Str;
+  AuthorObject: AuthorObject;
 }
 
 let cache: {
   [key: string]: appData;
+} = {};
+let authorCache: {
+  [key: string]: AuthorObject;
 } = {};
 
 export default async function fetchApps(
@@ -52,47 +71,33 @@ let searchDataCache: SearchData[] = [];
 
 interface SearchData {
   name: string;
+  title: string;
   id: string;
 }
 export async function fetchSearchData() {
   if (searchDataCache.length >= 1) {
     return searchDataCache;
   } else {
-    let data = (
-      await fetch(`${newServer}/apps/search`, {
-        method: "GET",
-        responseType: 1,
-      })
-    ).data;
-    searchDataCache = data as SearchData[];
-    return data as SearchData[];
+    const data = await get_search_data<SearchData[]>();
+
+    searchDataCache = data;
+    return data;
   }
 }
 
-export async function fetchAuthor(id: string, partial = true) {
-  let author = (
-    await fetch(`${newServer}/users/${id}`, {
-      method: "GET",
-      responseType: 1,
-    })
-  ).data as AuthorObject;
-
-  if (!partial) {
-    const apps = (
-      await fetch(
-        `https://rawcdn.githack.com/ahqsoftwares/ahq-store-data/${commit_id}/database/apps_dev_${id}.json`,
-        {
-          method: "GET",
-          responseType: 1,
-        },
-      )
-    ).data as any;
-
-    author = {
-      ...author,
-      apps,
-    };
+export async function fetchAuthor(uid: string) {
+  if (authorCache[uid]) {
+    return authorCache[uid];
   }
+
+  const url = devUserUrl.replace("{dev}", uid);
+  const { ok, data } = await fetch(url, {
+    method: "GET"
+  });
+  const author = data as AuthorObject;
+
+  author.apps = await get_devs_apps(String(author.u_id)).catch(() => []);
+  authorCache[uid] = author;
 
   return author;
 }
@@ -111,13 +116,14 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
       promises.push(
         (async () => {
           const app = await get_app(appId);
-          const authorObj = await fetchAuthor(app.author);
+
+          const AuthorObject = await fetchAuthor(app.authorId);
 
           const appData = {
             ...app,
             id: appId,
-            AuthorObject: authorObj,
-          };
+            AuthorObject,
+          } as appData;
 
           cache[appId] = appData;
 

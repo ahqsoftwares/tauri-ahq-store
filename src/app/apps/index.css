@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.app-data .div {
-  @apply border-2 border-base-content;
-}
-
 /*
 General
 */
@@ -33,6 +29,7 @@ Apps Layout
   @apply flex flex-col w-[99%] h-[auto] items-center;
   background-color: inherit;
   margin-bottom: 1rem;
+overflow-y: scroll;
 }
 
 .search-app-grid {
@@ -68,7 +65,7 @@ Apps Layout
 Layers
 */
 .layer {
-  @apply flex flex-col h-[25rem] w-[98%] bg-inherit rounded-md mt-5;
+  @apply flex flex-col min-h-[25rem] w-[98%] bg-inherit rounded-md mt-5;
   overflow-x: scroll;
 }
 
@@ -78,21 +75,21 @@ Layers
 }
 
 .layer .item {
-  @apply flex flex-row h-[23rem] w-[97%];
+  @apply flex flex-row min-h-[23rem] w-[97%];
 }
 
 /*
 Cards
 */
 .card {
-  @apply flex flex-col self-center h-[21rem] w-[16rem] bg-gray-800 text-center rounded-xl px-[0.25rem] shadow-md ml-[0.5rem];
+  @apply flex flex-col self-center h-[21rem] w-[16rem] bg-opacity-70 text-center rounded-xl px-[0.25rem] shadow-md ml-[0.5rem];
   min-width: 15rem;
   min-height: 20rem;
   transition: all 250ms linear;
 }
 
 .menu .card {
-  @apply bg-base-200 hover:bg-base-300;
+  @apply bg-opacity-40 hover:bg-opacity-100 bg-base-100 border-[1px] border-base-300;
 }
 
 .card-img {

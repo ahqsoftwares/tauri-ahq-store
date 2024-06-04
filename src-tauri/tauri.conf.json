@@ -3,135 +3,62 @@
   "build": {
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
-    "devPath": "http://localhost:3000",
-    "distDir": "../build"
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:3000"
   },
-  "package": {
-    "productName": "AHQ Store",
-    "version": "../package.json"
-  },
-  "tauri": {
-    "systemTray": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
-    },
-    "allowlist": {
-      "notification": {
-        "all": true
-      },
-      "dialog": {
-        "all": true
-      },
-      "http": {
-        "all": true,
-        "scope": [
-          "https://github.com/ahqsoftwares/ahq-store-data/*",
-          "https://github.com/ahqsoftwares/tauri-ahq-store/releases/*",
-          "https://api.github.com/repos/ahqsoftwares/*",
-          "https://rawcdn.githack.com/*",
-
-          "http://odin.forcehost.net:25643/*",
-          "http://odin.forcehost.net:25643/",
-
-          "https://ahqstore-server.onrender.com/",
-          "https://ahqstore-server.onrender.com/*"
-        ]
-      },
-      "path": {
-        "all": true
-      },
-      "fs": {
-        "readFile": true,
-        "writeFile": true,
-        "createDir": true,
-        "scope": [
-          "$APP",
-          "$APP/database",
-          "$APP/database/",
-          "$APP/database/config.astore",
-          "$APP/database/config.developer"
-        ]
-      },
-      "window": {
-        "all": true
-      },
-      "globalShortcut": {
-        "all": true
-      },
-      "process": {
-        "all": false,
-        "exit": false,
-        "relaunch": true,
-        "relaunchDangerousAllowSymlinkMacos": false
+  "bundle": {
+    "active": true,
+    "category": "Business",
+    "copyright": "AHQ Softwares",
+    "targets": ["msi", "updater", "deb", "appimage"],
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "",
+      "allowDowngrades": true,
+      "wix": {
+        "template": "assets/install.wxs"
       }
     },
-    "bundle": {
-      "active": true,
-      "category": "Business",
-      "copyright": "AHQ Softwares",
+    "longDescription": "AHQ Store\nA New Store for downloading apps!",
+    "resources": ["icons/pwd_reset.png"],
+    "shortDescription": "AHQ Store",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.AHQ-Softwares.store",
-      "longDescription": "AHQ Store\nA New Store for downloading apps!",
-      "resources": ["icons/pwd_reset.png"],
-      "shortDescription": "AHQ Store",
-      "targets": ["msi", "updater", "deb", "appimage"],
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": "",
-        "allowDowngrades": false,
-        "wix": {
-          "template": "assets/install.wxs"
-        }
       }
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": true,
-      "endpoints": ["https://ahq-store.cf/api/updater"],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCNUQyRTdGQUVFN0FDQTQKUldTa3JPZXVmeTVkbTBUL0JjSnNjLytQOHlyYkRnakJ2Q3dnYW51WTJIRVVCL1psWFNLT0pLSkgK",
-      "dialog": false
-    },
+    }
+  },
+  "productName": "AHQ Store",
+  "version": "../package.json",
+  "identifier": "com.ahqstore.app",
+  "app": {
     "windows": [
       {
         "center": true,
         "height": 760,
         "resizable": true,
         "title": "AHQ Store",
+        "label": "main",
         "width": 1240,
         "minHeight": 700,
         "minWidth": 1200,
-        "visible": false
-      },
-      {
-        "center": true,
-        "height": 550,
-        "width": 400,
-        "minHeight": 550,
-        "minWidth": 400,
-        "maxHeight": 550,
-        "maxWidth": 400,
-        "title": "AHQ Store Complement",
-        "alwaysOnTop": true,
-        "decorations": false,
         "visible": false,
-        "resizable": false,
-        "label": "complement",
+        "decorations": false,
         "transparent": true
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }

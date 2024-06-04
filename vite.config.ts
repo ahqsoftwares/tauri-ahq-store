@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
-import reactRefresh from "@vitejs/plugin-react-swc";
+import reactRefresh from "@vitejs/plugin-react";
 import svgrPlugin from "vite-plugin-svgr";
-import { cpus } from "os";
 import { normalize } from "path";
 
 export default defineConfig(({ mode }) => ({
@@ -22,19 +21,23 @@ export default defineConfig(({ mode }) => ({
           const path = normalize(relativeSourcePath);
           return path.includes("node_modules") || path.includes("src-tauri");
         },
-        cache: true
-      }
-    }
+        cache: true,
+      },
+    },
   },
   server: {
     port: 3000,
     strictPort: true,
     watched: {
-      ignored: "**/target/**"
-    }
+      ignored: "**/target/**",
+    },
   },
   plugins: [
-    reactRefresh(),
+    reactRefresh({
+      babel: {
+        plugins: [["babel-plugin-react-compiler"]],
+      },
+    }),
     svgrPlugin({
       svgrOptions: {
         icon: true,

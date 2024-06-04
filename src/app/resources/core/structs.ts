@@ -1,42 +1,58 @@
+import { sendNotification } from "@tauri-apps/plugin-notification";
 import { Prefs } from ".";
 import { ApplicationData } from "../api/fetchApps";
+import { relaunch } from "@tauri-apps/plugin-process";
+import { fetch } from "@tauri-apps/plugin-http";
+import { Library, UpdateStatusReport } from "./installer";
 
-type Methods = "Error" |
-  "Disconnect" |
-  "AppData" |
-  "ListApps" |
-  "DownloadStarted" |
-  "DownloadProgress" |
-  "Installing" |
-  "Installed" |
-  "UninstallStarting" |
-  "Uninstalled" |
-  "Prefs" |
-  "PrefsSet" |
-  "TerminateBlock" |
-  "Unknown";
+type Methods =
+  | "Error"
+  | "Disconnect"
+  | "AppData"
+  | "ListApps"
+  | "DownloadStarted"
+  | "DownloadProgress"
+  | "Installing"
+  | "Installed"
+  | "UninstallStarting"
+  | "Uninstalled"
+  | "Prefs"
+  | "PrefsSet"
+  | "TerminateBlock"
+  | "Unknown"
+  | "SHAId"
+  | "Library"
+  | "UpdateStatus";
 
-type ErrorType = "GetAppFailed" |
-  "AppInstallError" |
-  "AppUninstallError" |
-  "PrefsError";
+type ErrorType =
+  | "GetAppFailed"
+  | "AppInstallError"
+  | "AppUninstallError"
+  | "PrefsError";
 
 interface Error {
-  type: ErrorType,
-  details: any[]
+  type: ErrorType;
+  details: any[];
 }
 
 type ListedApps = [string, string][];
 interface Downloaded {
-  c: number,
-  t: number
+  c: number;
+  t: number;
 }
 
 interface ServerResponse {
   ref: number;
   method: Methods;
   error: Error[];
-  data: ListedApps | ApplicationData | Prefs | Downloaded
+  data:
+    | ListedApps
+    | ApplicationData
+    | Prefs
+    | Downloaded
+    | Library[]
+    | UpdateStatusReport
+    | string;
 }
 
 export type {
@@ -45,10 +61,12 @@ export type {
   Methods,
   ServerResponse,
   ListedApps,
-  Downloaded
-}
+  Downloaded,
+};
 
-export function interpret(data: string): ServerResponse | undefined {
+export async function interpret(
+  data: string,
+): Promise<ServerResponse | undefined> {
   const into_array: { [key: string]: any } = JSON.parse(data);
 
   const [mode, valueData] = Object.entries(into_array)[0];
@@ -58,15 +76,15 @@ export function interpret(data: string): ServerResponse | undefined {
       data: [],
       error: [],
       method: "PrefsSet",
-      ref: valueData
-    }
+      ref: valueData,
+    };
   }
 
   let result: ServerResponse = {
     error: [],
     method: "Unknown",
     ref: -1,
-    data: []
+    data: [],
   };
 
   const [ref_id] = valueData;
@@ -84,14 +102,35 @@ export function interpret(data: string): ServerResponse | undefined {
       result.method = "Prefs";
       result.data = pyld as Prefs;
       break;
-    case "AppData":
+    case "SHAId":
+      result.method = "SHAId";
+      result.data = pyld as string;
+      break;
+    case "Library":
+      result.method = "Library";
+
+      result.data = pyld as Library[];
+      break;
+    case "UpdateStatus":
+      result.method = "UpdateStatus";
+      result.data = pyld as UpdateStatusReport;
+
+      break;
+    case "AppDataUrl":
       result.method = "AppData";
-      const data: ApplicationData = {
-        id: pyld,
-        ...pyld2
+
+      const { data } = await fetch(pyld2, {
+        method: "GET",
+        headers: {
+          "ngrok-skip-browser-warning": "true"
+        }
+      }).then(async (r) => ({ ...r, data: await r.json() }));
+
+      const adata: ApplicationData = {
+        ...data,
       };
 
-      result.data = data;
+      result.data = adata;
       break;
     case "DownloadStarted":
       result.method = "DownloadStarted";
@@ -100,11 +139,11 @@ export function interpret(data: string): ServerResponse | undefined {
       result.method = "DownloadProgress";
       result.data = {
         c: pyld2[0],
-        t: pyld2[1]
+        t: pyld2[1],
       } as Downloaded;
       break;
     case "Installing":
-      result.method = "Installed";
+      result.method = "Installing";
       break;
     case "Installed":
       result.method = "Installed";
@@ -118,21 +157,30 @@ export function interpret(data: string): ServerResponse | undefined {
     case "Error":
       result.method = "Error";
 
-      const [eType, eData] = Object.entries<{ [key: string]: any[] }>(ref_id)[0];
+      const [eType, eData] = Object.entries<{ [key: string]: any[] }>(
+        ref_id,
+      )[0];
 
       switch (eType) {
         case "AppInstallError":
           result.error = [
             {
               type: "AppInstallError",
-              details: eData as unknown as any[]
-            }
+              details: eData as unknown as any[],
+            },
           ];
           result.ref = Number(eData[0]);
           break;
         default:
           break;
       }
+
+      sendNotification({
+        title: "Error",
+        body: `The application had suffered an error from which it was unable to recover, relaunching app\n\n${JSON.stringify({ type: eType, data: eData })}`,
+      });
+
+      relaunch();
       break;
     default:
       return undefined;

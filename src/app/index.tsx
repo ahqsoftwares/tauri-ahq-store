@@ -2,13 +2,9 @@
 Native API
 */
 import { useEffect, useState } from "react";
-import fetch from "./resources/core/http";
-import { appWindow } from "@tauri-apps/api/window";
-/*
-Firebase
-*/
-import { Auth } from "firebase/auth";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 
+const appWindow = getCurrent();
 /*
 CSS
 */
@@ -17,7 +13,7 @@ import "./index.css";
 /*
 Components
 */
-import Loading from "../config/App";
+import { Loading } from "../config/Load";
 import Home from "./home/index";
 import Nav from "./Nav";
 import Developer from "./developer/";
@@ -31,16 +27,15 @@ import fetchPrefs, {
   setConfig,
 } from "./resources/utilities/preferences";
 import { runner } from "./resources/core/handler";
-import { notification } from "@tauri-apps/api";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 import { Prefs, get_home, get_map } from "./resources/core";
 import {
   defaultDark,
   defaultLight,
   isDarkTheme,
 } from "./resources/utilities/themes";
-import Package from "./package";
-import TLights from "../TLights";
-import { getWindowsName } from "./resources/api/os";
+import { Auth, logOut } from "../auth";
+import { worker } from "./resources/core/installer";
 
 interface AppProps {
   auth: Auth;
@@ -51,14 +46,8 @@ function Render(props: AppProps) {
 
   const { auth } = props;
   let [page, changePage] = useState("home"),
-    [dev, setDev] = useState(
-      auth.currentUser?.displayName?.startsWith("(dev)"),
-    ),
+    [dev, setDev] = useState(auth.currentUser?.dev),
     [admin, setIsAdmin] = useState(false),
-    [prefs, setAccessPrefs] = useState<Prefs>({
-      install_apps: false,
-      launch_app: false,
-    }),
     [dark, setD] = useState(true),
     [theme, setTheme] = useState("synthwave"),
     [font, setFont] = useState("def"),
@@ -67,12 +56,10 @@ function Render(props: AppProps) {
     [autoUpdate, setUpdate] = useState(false),
     [debug, setDebug] = useState(false),
     [apps, setApps] = useState<any>([]),
-    [allAppsData, setData] = useState<{ map: { [key: string]: Object } }>({
-      map: {},
-    }),
     app: JSX.Element = <></>;
 
   useEffect(() => {
+    appWindow.emit("ready", "");
     const timer = setTimeout(() => {
       setLoad((loadStatus) => {
         if (!loadStatus) {
@@ -80,17 +67,17 @@ function Render(props: AppProps) {
         }
         return loadStatus;
       });
-    }, 13 * 1000);
-    appWindow.listen("app", ({ payload }: { payload: string }) => {
+    }, 30 * 1000);
+    appWindow.listen("launch_app", ({ payload }: { payload: string }) => {
       if (payload.startsWith("ahqstore://")) {
         const [page] = payload.replace("ahqstore://", "").split("/");
 
         switch (page) {
-          case "app":
-            changePage("apps");
+          case "login":
+            changePage("user");
             break;
           case "update":
-            changePage("apps");
+            changePage("library");
             break;
           default:
             break;
@@ -100,7 +87,7 @@ function Render(props: AppProps) {
 
     return () => {
       clearTimeout(timer);
-    }
+    };
   }, []);
   /*
         Dark Mode
@@ -137,13 +124,11 @@ function Render(props: AppProps) {
         },
       };
 
-      setAccessPrefs(accessPrefs || defAccess);
-
       setIsAdmin(isAdmin || false);
 
       if (debug) {
         appWindow.listen("error", ({ payload }) => {
-          notification.sendNotification({
+          sendNotification({
             title: "Info / Error / Warn",
             body: payload as any,
           });
@@ -159,20 +144,19 @@ function Render(props: AppProps) {
 
       //Fetch Maps
       try {
-        const { data: map } = await get_map<{ [key: string]: Object }>();
+        const map = await get_map<{ [key: string]: Object }>();
 
-        setData({
-          map,
-        });
+        window.map = map;
 
-        const { data: home } = await get_home<any>();
+        const home = await get_home();
 
+        await worker.init();
         setApps(home);
         setLoad(true);
       } catch (_) {
-        auth.signOut();
+        logOut(auth);
         console.error(_);
-        window.location.reload();
+        //window.location.reload();
       }
     })();
   }, []);
@@ -284,39 +268,32 @@ function Render(props: AppProps) {
     case "library":
       app = <Library dark={dark} />;
       break;
-    case "Dependencies":
-      app = <Package />
-      break;
   }
-
-  /*
-        App renderer
-        */
 
   return (
     <>
-      {load === true ? (<>
-        <TLights useDef={true} />
-        <header
-          className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${
-            sidebar.includes("flex-row-reverse") ? "pr-2" : ""
-          } flex transition-all`}
-        >
-          <Nav
-            active={page}
-            home={(page: string) => changePage(page)}
-            dev={dev}
-            horizontal={sidebar.includes("flex-col")}
-            linux={getWindowsName() == "linux"}
-          />
-          <div className={getWindowsName() == "linux" ? "w-screen h-[95vh]" : "w-screen h-screen"}>
-            <div className="flex flex-col w-[100%] h-[100%] justify-center">
-              {app}
+      {load === true ? (
+        <>
+          <header
+            className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${
+              sidebar.includes("flex-row-reverse") ? "pr-2" : ""
+            } flex transition-all`}
+          >
+            <Nav
+              active={page}
+              home={(page: string) => changePage(page)}
+              dev={dev}
+              horizontal={sidebar.includes("flex-col")}
+            />
+            <div className="bg-transparent w-screen h-[98vh]">
+              <div className="flex flex-col w-[100%] h-[100%] justify-center">
+                {app}
+              </div>
             </div>
-          </div>
-        </header>
-      </>) : (
-        <Loading info="Almost there!" />
+          </header>
+        </>
+      ) : (
+        <Loading unsupported={false} text="Almost there!" />
       )}
     </>
   );

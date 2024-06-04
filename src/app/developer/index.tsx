@@ -5,14 +5,16 @@ import { FiExternalLink } from "react-icons/fi";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { RiApps2Line } from "react-icons/ri";
 
-import { Auth } from "firebase/auth";
+import { Auth } from "../../auth";
 
 //Components
 import Option from "./components/Options";
-import fetchApps, { appData, fetchAuthor } from "../resources/api/fetchApps";
+import fetchApps, { appData } from "../resources/api/fetchApps";
 import App from "./components/App";
 import Toast from "../resources/api/toast";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
+import { FaDiscord } from "react-icons/fa6";
+import { get_devs_apps } from "../resources/core";
 
 interface DevProps {
   auth: Auth;
@@ -24,7 +26,7 @@ export default function Developers(props: DevProps) {
     undefined,
   );
 
-  const uid = props.auth?.currentUser?.uid;
+  const uid = props.auth?.currentUser?.u_id;
 
   const { dark } = props;
 
@@ -33,13 +35,13 @@ export default function Developers(props: DevProps) {
   useEffect(() => {
     (async () => {
       try {
-        const { apps } = (await fetchAuthor(uid as string, false)).apps as {
-          apps: string[];
-        };
+        if (uid) {
+          const apps = await get_devs_apps(String(uid));
 
-        fetchApps(apps).then((apps) => {
-          setPublishedApps(apps as appData[]);
-        });
+          fetchApps(apps).then((apps) => {
+            setPublishedApps(apps as appData[]);
+          });
+        }
       } catch (e) {
         console.error(e);
         setPublishedApps([]);
@@ -80,15 +82,18 @@ export default function Developers(props: DevProps) {
                   Fetching...
                 </h1>
               ) : (
-                publishedApps.map((value, index) => (
-                  <App
-                    appInfo={value}
-                    dark={props.dark}
-                    toast={Toast}
-                    lastIndex={index === publishedApps.length - 1}
-                  />
-                ))
+                    publishedApps.map((value, index) => {
+                  return (
+                    <App
+                      appInfo={value}
+                      dark={props.dark}
+                      toast={Toast}
+                      lastIndex={index === publishedApps.length - 1}
+                    />
+                  );
+                })
               )}
+              <span className="mx-auto mt-auto fix-color mb-5 dui-loading dui-loading-spinner dui-loading-lg"></span>
             </div>
           )
         }
@@ -98,6 +103,19 @@ export default function Developers(props: DevProps) {
         ShowCaseIcon={AiOutlineAppstoreAdd}
         title={"Add"}
         description="Submit a new app to the store"
+        onClick={() => {
+          invoke("open", {
+            url: "https://ahqstore.github.io/reference/",
+          });
+          Toast("Launched docs site...", "success", 2);
+        }}
+        PopUp={FiExternalLink}
+      />
+      <Option
+        dark={dark}
+        ShowCaseIcon={FaDiscord}
+        title={"Discord"}
+        description="Get support via discord!"
         onClick={() => {
           invoke("open", {
             url: "https://discord.gg/a485NGvc4c",

@@ -9,8 +9,9 @@ declare global {
       };
     };
     os: {
-      type: "windows" | "linux",
-      version: "10" | "11" | "7" | "lin"
+      type: "windows" | "linux";
+      version: "10" | "11" | "lin";
     };
+    map: { [key: string]: Object };
   }
 }

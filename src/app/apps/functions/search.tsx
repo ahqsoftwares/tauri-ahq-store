@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import SearchModule from "fuse.js";
+import SearchModule from "minisearch";
 import fetchApps, {
   appData,
   fetchSearchData,
@@ -39,10 +39,9 @@ export default function Search(props: SearchProps) {
       <>
         {matches.map((app, index) => {
           return (
-            <>
+            <React.Fragment key={`${index}`}>
               <SearchResult
                 dark={dark}
-                key={app.id}
                 {...app}
                 set={set}
                 show={show}
@@ -57,7 +56,7 @@ export default function Search(props: SearchProps) {
               ) : (
                 <></>
               )}
-            </>
+            </React.Fragment>
           );
         })}
         {matches.length === 0 ? (
@@ -85,11 +84,11 @@ export default function Search(props: SearchProps) {
         {matches.map((app) => {
           return (
             <AppCard
-              id={app.id}
-              key={app.id}
+              id={app.appId}
+              key={app.appId}
               dark={dark}
               onClick={() => {
-                set(app.id);
+                set(app.appId);
                 show();
               }}
             />
@@ -118,13 +117,21 @@ async function getMatches(query: string): Promise<Array<string>> {
   let data = getData(query);
 
   if (!data) {
-    const search = new SearchModule(await fetchSearchData(), {
-      keys: ["name"],
+    const raw = await fetchSearchData();
+    const search = new SearchModule({
+      fields: ["name:", "title", "id"],
+      storeFields: ["name:", "title", "id"],
+      searchOptions: {
+        fuzzy: 0.25,
+        prefix: true,
+      },
     });
+    await search.addAllAsync(raw);
 
-    let result = search.search(query, { limit: 5 });
+    let result = search.search(query);
+    result.length = 30;
 
-    let finalResult = result.map(({ item: { id } }) => id);
+    let finalResult = result.filter(({ id }) => id).map(({ id }) => id);
     setData(query, finalResult);
 
     return finalResult;

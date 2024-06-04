@@ -1,33 +1,25 @@
 [package]
-name = "ahqstore_setup_x86_64"
-description = "Install AHQ Store in your computer"
-version = "1.3.6"
+name = "ahqstore_setup_amd64"
+version = "2.0.0"
 edition = "2021"
-license = "Creative Commons Attribution Non Commercial 3.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-env_logger = "0.10.0"
-iced = { version = "0.10.0", features = ["image", "debug", "tokio"] }
-iced_core = "0.10.0"
-image = "0.24.6"
-is_elevated = "0.1.2"
+dirs = "5.0.1"
 lazy_static = "1.4.0"
-reqwest = { version = "0.11.20", features = ["blocking", "json"] }
-serde = { version = "1.0.189", features = ["derive"] }
-tokio = { version = "1.33.0", default-features = false, features = ["time"] }
+reqwest = { version = "0.12.4", features = ["blocking", "json"] }
+serde = { version = "1.0.203", features = ["derive"] }
+slint = "1.6.0"
+
+[target.'cfg(unix)'.dependencies]
+notify-rust = "4.11.0"
+
+[target.'cfg(windows)'.dependencies]
+check_elevation = "0.2.4"
+winres = "0.1.12"
+winreg = "0.52.0"
+
 
 [build-dependencies]
-winres = "0.1"
-
-[package.metadata.winres]
-ProductName = "AHQ Store Installer"
-LegalCopyright = "Copyright © 2023 AHQ Store"
-
-[profile.release]
-panic = "abort"
-codegen-units = 1
-lto = true
-opt-level = "s"
-strip = true
+slint-build = "1.6.0"
