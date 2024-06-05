@@ -64,7 +64,7 @@
     "eslint-plugin-react-compiler": "0.0.0-experimental-c8b3f72-20240517",
     "firebase-tools": "^13.9.0",
     "onchange": "^7.1.0",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.1",
     "terser": "^5.31.0"
   },
   "repository": "https://github.com/ahqsoftwares/tauri-ahq-store.git",
