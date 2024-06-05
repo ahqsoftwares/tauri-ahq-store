@@ -20,7 +20,7 @@ serde = { version = "1.0.203", features = ["derive"] }
 tauri = { version = "2.0.0-beta", features = ["wry", "tray-icon", "image-png"] }
 wry = "*"
 
-open = "5.1.3"
+open = "5.1.4"
 reqwest = { version = "*", features = ["blocking", "json"] }
 chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 lazy_static = "1.4.0"
