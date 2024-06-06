@@ -92,12 +92,15 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
     if (ptf == "11") {
       document.querySelector("html")?.setAttribute("data-os", "win32");
     }
-    setTimeout(() => {
+    setTimeout(async () => {
       appWindow.setDecorations(true).catch(console.log).then(console.log);
+
+      appWindow.show();
+      if (!(await appWindow.isMaximized())) {
+        appWindow.maximize();
+      }
     }, 500);
   })();
-
-  appWindow.show();
   loadAppVersion();
   init();
 
@@ -110,10 +113,6 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
    */
   (async () => {
     let permissionGranted = await isPermissionGranted();
-
-    if (!(await appWindow.isMaximized())) {
-      appWindow.maximize();
-    }
 
     if (!permissionGranted) {
       const permission = await requestPermission();

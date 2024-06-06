@@ -49,8 +49,8 @@ export default function Home(props: HomeProps) {
   const { dark, setPage, auth } = props;
 
   useEffect(() => {
-    setData("x-icon", auth.currentUser?.pf_pic || "");
-    setUserIcon(auth.currentUser?.pf_pic || "");
+    setData("x-icon", auth.currentUser?.avatar_url || "");
+    setUserIcon(auth.currentUser?.avatar_url || "");
   }, [auth.currentUser]);
 
   const [greet, setGreet] = useState(didGreet());
@@ -138,7 +138,7 @@ export default function Home(props: HomeProps) {
             dark={dark}
             Icon={userIcon === "" ? MdAccountCircle : userIcon}
             title="Account"
-            description="Customise your account"
+            description="Your account"
             onClick={() => setPage("user")}
           />
           <Button

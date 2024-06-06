@@ -3,7 +3,8 @@
 /*
 React && Native
 */
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import React from "react";
 
 /*
 Firebase API
@@ -18,6 +19,7 @@ import Loading from "./loading.gif";
 import { BiLogOut } from "react-icons/bi";
 import { invoke } from "@tauri-apps/api/core";
 import { FaGithub } from "react-icons/fa6";
+import { startLogin } from "../../auth/github";
 
 /*
 Interfaces
@@ -25,13 +27,14 @@ Interfaces
 interface UserProps {
   auth: Auth;
   dark: boolean;
+  setPage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function Init(props: UserProps) {
-  let { auth } = props;
+  let { auth, setPage } = props;
 
-  let [user, setUser] = useState(Loading),
-    [name, setName] = useState("");
+  const user = auth.currentUser?.avatar_url || Loading;
+  const name = auth.currentUser?.name || "Guest";
 
   useEffect(() => {
     const image = document.getElementById("img") as HTMLElement,
@@ -44,7 +47,11 @@ export default function Init(props: UserProps) {
       drop.setAttribute("style", "opacity: 0.0");
     });
     image.addEventListener("click", async () => {
-
+      if (auth.currentUser) {
+        invoke("open", {
+          url: `https://github.com/${auth.currentUser.login}`
+        });
+      }
     });
   }, []);
 
@@ -57,27 +64,25 @@ export default function Init(props: UserProps) {
               src={auth.currentUser ? user : GeneralUser}
               alt="Avatar"
             />
-            {auth.currentUser &&
-              <div className={`div ${props.dark ? "" : "div-l"}`} id="drop">
-                <h1 className="text">View picture</h1>
-              </div>
-            }
+            <div className={`div ${props.dark ? "" : "div-l"} ${auth.currentUser ? "" : "hidden"}`} id="drop">
+              <h1 className="text">View profile</h1>
+            </div>
           </div>
           <div className="flex flex-col text-center mt-2 name">
             <div className="flex justify-center">
               <h1>{name || "Guest"}</h1>
             </div>
-            <h6>{auth.currentUser?.email}</h6>
+            <h6>{auth.currentUser && (auth.currentUser?.email || `@${auth.currentUser?.login}`)}</h6>
           </div>
         </div>
-        <Actions auth={auth} />
+        <Actions auth={auth} setPage={setPage} />
       </div>
     </>
   );
 }
 
-function Actions(props: { auth: Auth }) {
-  const { auth } = props;
+function Actions(props: { auth: Auth, setPage: React.Dispatch<React.SetStateAction<string>> }) {
+  const { auth, setPage } = props;
   return (
     <div className="flex flex-col">
       <div className="flex w-[100%] flex-col">
@@ -89,6 +94,7 @@ function Actions(props: { auth: Auth }) {
             minHeight: "7vh",
             maxHeight: "7vh",
           }}
+          onClick={() => startLogin(auth)}
         >
           <FaGithub size="2.5em" />
           <p className="mx-2">Login</p>
@@ -98,6 +104,7 @@ function Actions(props: { auth: Auth }) {
           onClick={() => {
             localStorage.removeItem("password");
             logOut(auth);
+            setPage("home");
           }}
           style={{
             minWidth: "30vw",

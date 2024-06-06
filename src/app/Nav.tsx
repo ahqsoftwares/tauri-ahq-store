@@ -73,7 +73,7 @@ export default function Nav(props: prop) {
 
   return (
     <div
-      className={`w-[80px] h-[90vh] my-auto ml-2 rounded-lg flex flex-col items-center nav bg-blue-super`}
+      className={`w-[80px] h-[98vh] my-auto ml-2 rounded-lg flex flex-col items-center nav bg-blue-super`}
       id={"sidebar"}
     >
       {P_H ? (

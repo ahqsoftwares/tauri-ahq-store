@@ -10,7 +10,7 @@ mod ws;
 
 use crate::rpc;
 use tauri::menu::IconMenuItemBuilder;
-use tauri::tray::{ClickType, TrayIconBuilder, TrayIconEvent};
+use tauri::tray::{TrayIconBuilder, TrayIconEvent};
 use tauri::window::{ProgressBarState, ProgressBarStatus};
 use tauri::{
   image::Image,
@@ -284,12 +284,10 @@ pub fn main() {
         .unwrap(),
     )
     .on_tray_icon_event(|app, event| match event {
-      TrayIconEvent { click_type, .. } => match click_type {
-        ClickType::Left => {
-          let _ = app.app_handle().get_webview_window("main").unwrap().show();
-        }
-        _ => {}
+      TrayIconEvent::Click { .. } => {
+        let _ = app.app_handle().get_webview_window("main").unwrap().show();
       },
+      _ => {}
     })
     .on_menu_event(|app, ev| {
       let MenuEvent { id: MenuId(id) } = ev;
