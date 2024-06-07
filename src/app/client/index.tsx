@@ -9,7 +9,7 @@ import React from "react";
 /*
 Firebase API
 */
-import { Auth, logOut } from "../../auth";
+import { Auth, logOut } from "../../auth/index";
 
 /*
 Database Refs
@@ -70,6 +70,7 @@ export default function Init(props: UserProps) {
           </div>
           <div className="flex flex-col text-center mt-2 name">
             <div className="flex justify-center">
+              <h1>{name || "Guest"}</h1>
               <h1>{name || "Guest"}</h1>
             </div>
             <h6>{auth.currentUser && (auth.currentUser?.email || `@${auth.currentUser?.login}`)}</h6>

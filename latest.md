@@ -1,4 +1,4 @@
-Welcome to the new **alpha** update to AHQ Store.
+Welcome to the patch update to AHQ Store.
 
 ## Changes 📈
 - Remove requirement for AHQ Store Account
@@ -7,4 +7,5 @@ Welcome to the new **alpha** update to AHQ Store.
 
 ## Present issues 🪲
 - Updater currently doesn't work (to be fixed by **v1.5.0**) ⚡
-- Apps can't be installed / updated
+
+**Full Changelog**: 📝 https://github.com/ahqsoftwares/tauri-ahq-store/compare/1.3.4...1.3.5

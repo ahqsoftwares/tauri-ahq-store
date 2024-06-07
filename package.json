@@ -64,9 +64,15 @@
     "eslint-plugin-react-compiler": "0.0.0-experimental-c8b3f72-20240517",
     "firebase-tools": "^13.10.2",
     "onchange": "^7.1.0",
-    "prettier": "^3.3.0",
-    "terser": "^5.31.0"
+    "prettier": "^3.3.0"
   },
-  "repository": "https://github.com/ahqsoftwares/tauri-ahq-store.git",
-  "author": "AHQ @ AHQStore"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahqsoftwares/tauri-ahq-store"
+  },
+  "author": {
+    "name": "AHQ Softwares",
+    "email": "ahqsecret@gmail.com",
+    "url": "https://github.com/ahqsoftwares"
+  }
 }
