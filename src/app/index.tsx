@@ -255,7 +255,7 @@ function Render(props: AppProps) {
       );
       break;
     case "user":
-      app = <User auth={auth} dark={dark} />;
+      app = <User auth={auth} dark={dark} setPage={changePage} />;
       break;
     case "home":
       app = (

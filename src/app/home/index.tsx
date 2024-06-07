@@ -49,8 +49,8 @@ export default function Home(props: HomeProps) {
   const { dark, setPage, auth } = props;
 
   useEffect(() => {
-    setData("x-icon", auth.currentUser?.pf_pic || "");
-    setUserIcon(auth.currentUser?.pf_pic || "");
+    setData("x-icon", auth.currentUser?.avatar_url || "");
+    setUserIcon(auth.currentUser?.avatar_url || "");
   }, [auth.currentUser]);
 
   const [greet, setGreet] = useState(didGreet());
@@ -73,9 +73,9 @@ export default function Home(props: HomeProps) {
             setTimeout(() => {
               try {
                 h1.innerHTML += d;
-              } catch (_) {}
+              } catch (_) { }
             }, 50 * i);
-          } catch (_) {}
+          } catch (_) { }
         });
       }, 1750);
     }
@@ -108,9 +108,8 @@ export default function Home(props: HomeProps) {
       </div>
       <h1
         ref={textBox}
-        className={`text-3xl ${
-          dark ? "text-slate-300" : "text-slate-600"
-        } mb-2`}
+        className={`text-3xl ${dark ? "text-slate-300" : "text-slate-600"
+          } mb-2`}
         style={{ transition: "all 125ms fade-in" }}
       >
         {!first && greet ? "What would you like to do today!" : "Welcome!"}
@@ -138,7 +137,7 @@ export default function Home(props: HomeProps) {
             dark={dark}
             Icon={userIcon === "" ? MdAccountCircle : userIcon}
             title="Account"
-            description="Customise your account"
+            description="Your account"
             onClick={() => setPage("user")}
           />
           <Button

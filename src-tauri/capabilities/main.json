@@ -42,16 +42,13 @@
           "url": "https://github.com/ahqsoftwares/tauri-ahq-store/releases/*"
         },
         {
-          "url": "https://api.github.com/repos/ahqsoftwares/*"
+          "url": "https://api.github.com/*"
         },
         {
           "url": "https://rawcdn.githack.com/*"
         },
         {
-          "url": "https://possible-toad-preferably.ngrok-free.app/"
-        },
-        {
-          "url": "https://possible-toad-preferably.ngrok-free.app/*"
+          "url": "https://github.com/login/*"
         }
       ]
     },

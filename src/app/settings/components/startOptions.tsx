@@ -18,6 +18,7 @@ export default function StartOptions({ setOUO, dark }: Props) {
   const [settings, setSettings] = useState<Prefs>({
     launch_app: true,
     install_apps: true,
+    auto_update_apps: true,
   });
   const [loading, setLoading] = useState(false);
 
@@ -103,6 +104,32 @@ export default function StartOptions({ setOUO, dark }: Props) {
                 const data = {
                   ...s,
                   install_apps: !checked,
+                };
+
+                updatePrefs(data);
+
+                return data;
+              });
+            }
+          }}
+        />
+      </div>
+      <div className="mt-2 flex justify-center items-center">
+        <h1 className="text-xl">Auto Update Applications</h1>
+
+        <input
+          type={"checkbox"}
+          className="dui-toggle dui-toggle-lg ml-auto"
+          disabled={loading}
+          checked={settings.auto_update_apps}
+          onChange={(e) => {
+            const checked = e?.currentTarget?.checked;
+
+            if (checked != null) {
+              setSettings((s) => {
+                const data = {
+                  ...s,
+                  auto_update_apps: checked,
                 };
 
                 updatePrefs(data);

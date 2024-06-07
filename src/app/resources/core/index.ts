@@ -196,6 +196,7 @@ export function get_library(): Promise<Library[]> {
 interface Prefs {
   launch_app: boolean;
   install_apps: boolean;
+  auto_update_apps: boolean;
 }
 
 export type { Prefs };
