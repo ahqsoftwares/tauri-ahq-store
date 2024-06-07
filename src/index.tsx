@@ -130,34 +130,45 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
 
     Manage();
   })();
-};
 
-async function Manage() {
-  tryAutoLogin(auth).catch(() => { });
-  loadRender(false, "Launching Store...");
-  setTimeout(() => {
-    StoreLoad(Store, { auth });
-  }, 500);
+  window.addEventListener("offline", () => {
+    loadRender(false, "Offline, waiting for network");
+  });
+
+  window.addEventListener("online", () => {
+    loadRender(false, "Back online!");
+    setTimeout(() => {
+      Manage();
+    }, 1000);
+  });
+
+  async function Manage() {
+    tryAutoLogin(auth).catch(() => { });
+    loadRender(false, "Launching Store...");
+    setTimeout(() => {
+      StoreLoad(Store, { auth });
+    }, 500);
+  }
+
+  /**
+   * Load a Store Component on the DOM
+   * @param Component
+   * @param prop
+   */
+  function StoreLoad(
+    Component: (props: AppProps) => any,
+    { auth }: AppProps,
+  ) {
+    const data = {
+      auth,
+    };
+
+    root.render(
+      <>
+        <Component {...data} />
+      </>,
+    );
+  }
+
+  reportWebVitals();
 }
-
-/**
- * Load a Store Component on the DOM
- * @param Component
- * @param prop
- */
-function StoreLoad(
-  Component: (props: AppProps) => any,
-  { auth }: AppProps,
-) {
-  const data = {
-    auth,
-  };
-
-  root.render(
-    <>
-      <Component {...data} />
-    </>,
-  );
-}
-
-reportWebVitals();

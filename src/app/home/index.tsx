@@ -48,10 +48,10 @@ export default function Home(props: HomeProps) {
 
   const { dark, setPage, auth } = props;
 
-  if (auth.currentUser?.avatar_url) {
-    setData("x-icon", auth.currentUser?.avatar_url);
-    setUserIcon(auth.currentUser?.avatar_url);
-  }
+  useEffect(() => {
+    setData("x-icon", auth.currentUser?.avatar_url || "");
+    setUserIcon(auth.currentUser?.avatar_url || "");
+  }, [auth.currentUser]);
 
   const [greet, setGreet] = useState(didGreet());
   const version = getAppVersion();

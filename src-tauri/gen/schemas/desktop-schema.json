@@ -2388,8 +2388,6 @@
           ]
         },
         {
-<<<<<<< HEAD
-=======
           "type": "string",
           "enum": [
             "dialog:default"
@@ -2466,7 +2464,6 @@
           ]
         },
         {
->>>>>>> origin/master
           "description": "event:default -> Default permissions for the plugin.",
           "type": "string",
           "enum": [
@@ -5700,7 +5697,6 @@
           ]
         },
         {
-<<<<<<< HEAD
           "description": "window:allow-monitor-from-point -> Enables the monitor_from_point command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -5708,8 +5704,6 @@
           ]
         },
         {
-=======
->>>>>>> origin/master
           "description": "window:allow-outer-position -> Enables the outer_position command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -6144,7 +6138,6 @@
           ]
         },
         {
-<<<<<<< HEAD
           "description": "window:deny-monitor-from-point -> Denies the monitor_from_point command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -6152,8 +6145,6 @@
           ]
         },
         {
-=======
->>>>>>> origin/master
           "description": "window:deny-outer-position -> Denies the outer_position command without any pre-configured scope.",
           "type": "string",
           "enum": [
