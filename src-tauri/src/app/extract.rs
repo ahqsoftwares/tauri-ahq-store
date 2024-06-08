@@ -24,9 +24,6 @@ pub fn run_admin<T: AsRef<OsStr>>(path: T) {
 
   #[cfg(unix)]
   {
-    Command::new("nohup")
-      .arg(path)
-      .spawn()
-      .unwrap();
+    Command::new("nohup").arg(path).spawn().unwrap();
   }
 }

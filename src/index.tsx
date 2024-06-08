@@ -36,6 +36,8 @@ import { genAuth } from "./auth";
 import { tryAutoLogin } from "./auth/login";
 import { Loading } from "./config/Load";
 
+document.body.setAttribute('native-scrollbar', "0");
+
 const auth = genAuth();
 
 const root = ReactDOM.createRoot(

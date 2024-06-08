@@ -114,7 +114,7 @@ function Actions(props: { auth: Auth, setPage: React.Dispatch<React.SetStateActi
           }}
         >
           <BiLogOut size="2.5em" />
-          <p className="mx-2">LogOut</p>
+          <p className="mx-2">Logout</p>
         </button>
       </div>
     </div>

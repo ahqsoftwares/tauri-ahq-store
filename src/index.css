@@ -4,6 +4,7 @@
 
 * {
   user-select: none;
+  scrollbar-color: auto !important;
 }
 
 body {

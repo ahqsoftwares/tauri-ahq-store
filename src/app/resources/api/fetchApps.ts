@@ -2,13 +2,17 @@ import fetch from "../core/http";
 import { devUserUrl, get_app, get_devs_apps, get_search_data } from "../core";
 
 interface AuthorObject {
-  u_id: number;
-  username: string;
-  pub_email: string;
-  linked_acc: string[];
-  display_name: string;
-  pf_pic?: string;
-  ahq_verified: boolean;
+  name: string;
+  description: string;
+  gh_username: string;
+  icon_base64: string;
+  ahq_official: boolean;
+  email: string;
+  support: {
+    discord: string;
+    website: string;
+    github: string;
+  };
   apps: string[];
 }
 
@@ -96,7 +100,6 @@ export async function fetchAuthor(uid: string) {
   });
   const author = data as AuthorObject;
 
-  author.apps = await get_devs_apps(String(author.u_id)).catch(() => []);
   authorCache[uid] = author;
 
   return author;

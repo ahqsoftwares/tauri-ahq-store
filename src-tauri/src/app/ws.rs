@@ -74,7 +74,10 @@ impl WsConnection {
     let ipc_gen_0x68 = ClientOptions::new().pipe_mode(PipeMode::Message).open(path);
 
     #[cfg(unix)]
-    let ipc_gen_0x68 = UnixSocket::new_stream().unwrap().connect("/ahqstore/socket").await;
+    let ipc_gen_0x68 = UnixSocket::new_stream()
+      .unwrap()
+      .connect("/ahqstore/socket")
+      .await;
 
     match ipc_gen_0x68 {
       Ok(ipc) => {

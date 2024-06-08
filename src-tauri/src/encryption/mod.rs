@@ -2,12 +2,12 @@ mod cache;
 
 use cache::*;
 
-use lazy_static::lazy_static;
-
+use bcrypt::{hash_with_salt, Version, DEFAULT_COST};
 use chacha20poly1305::{
   aead::{generic_array::GenericArray, Aead, KeyInit},
   ChaCha20Poly1305,
 };
+use lazy_static::lazy_static;
 
 lazy_static! {
   static ref CRYPTER: ChaCha20Poly1305 = {
@@ -18,7 +18,23 @@ lazy_static! {
   };
 }
 
+static SALT: [u8; 16] = [
+  0x14, 0x4b, 0x3d, 0x69, 0x1a, 0x7b, 0x4e, 0xcf, 0x39, 0xcf, 0x73, 0x5c, 0x7f, 0xa7, 0xa7, 0x9c,
+];
+
 use serde_json::to_string;
+
+#[tauri::command(async)]
+pub fn to_hash_uid(id: String) -> Option<String> {
+  Some(
+    hash_with_salt(&id, DEFAULT_COST, SALT)
+      .ok()?
+      .format_for_version(Version::TwoB)
+      .replace(".", "0")
+      .replace("/", "1")
+      .replace("$", "2"),
+  )
+}
 
 #[tauri::command(async)]
 pub fn encrypt(payload: String) -> Option<Vec<u8>> {
