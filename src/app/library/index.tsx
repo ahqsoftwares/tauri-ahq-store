@@ -2,12 +2,8 @@
 import { useEffect, useState } from "react";
 
 //Components
-import InstalledAppsMenu from "./components/Style";
 import AppList from "./components/AppsList";
-
-//tauri and updater
-import { getCurrent } from "@tauri-apps/api/webviewWindow";
-import PopUp from "../resources/components/popup";
+import { Library, worker } from "../resources/core/installer";
 
 // Icons
 const UpdateCheckingDark = "/update_checking_dark.png";
@@ -19,43 +15,43 @@ const UpdateDark = "/update_dark.png";
 const UpdatedLight = "/updated_light.png";
 const UpdatedDark = "/updated_dark.png";
 
-const appWindow = getCurrent();
 interface LibraryProps {
   dark: boolean;
 }
 
-export default function Library(props: LibraryProps) {
+export default function LibraryComponent(props: LibraryProps) {
   const { dark } = props;
 
-  const [status, setStatus] = useState("Checking..."),
-    [appList, setAppList] = useState<boolean>(false),
-    [apps, setApps] = useState<string[]>([]),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    [current, setCurrent] = useState<string>("");
+  const [apps, setApps] = useState<Library[]>(worker.library),
+    [update, setUpdate] = useState(worker.update),
+    [until, setUntil] = useState(false);
 
-  const icon = status
-    .replace("Check for Updates", dark ? UpdatedDark : UpdatedLight)
-    .replace("Updates Available", dark ? UpdateDark : UpdateLight)
-    .replace("Checking...", dark ? UpdateCheckingDark : UpdateCheckingLight);
+  console.log(apps, update);
+
+  const icon = (() => {
+    switch (update) {
+      case "Checking":
+        return dark ? UpdateCheckingDark : UpdateCheckingLight;
+
+      case "Updating":
+        return dark ? UpdateCheckingDark : UpdateCheckingLight;
+
+      case "Disabled":
+        return dark ? UpdateDark : UpdateLight;
+
+      case "UpToDate":
+        return dark ? UpdatedDark : UpdatedLight;
+    }
+  })();
 
   useEffect(() => {
-    const status = {
-      status: "updated",
-      apps: [],
-      updating: "",
-    };
-    setTimeout(() => {
-      setStatus(
-        status.status
-          ? status.status
-              .replace("updated", "Check for Updates")
-              .replace("updating", "Updates Available")
-              .replace("checking", "Checking...")
-          : "",
-      );
-      setApps(status.apps || []);
-      setCurrent(status.updating || "");
-    }, 250);
+    const id = worker.listen((lib, upd) => {
+      setApps(lib);
+      setUpdate(upd);
+      setUntil(false);
+    });
+
+    return () => worker.unlisten(id);
   }, []);
 
   function darkMode(classes: Array<string>) {
@@ -73,15 +69,6 @@ export default function Library(props: LibraryProps) {
 
   return (
     <>
-      <PopUp shown={appList} width="95%" height="90%">
-        <AppList
-          dark={props.dark}
-          change={() => {
-            setAppList(false);
-          }}
-        />
-      </PopUp>
-
       <div className={`${darkMode(["menu"])}`}>
         <div
           className={`mt-[1rem] min-w-[98%] pt-3 rounded-lg shadow-xl bg-opacity-75 bg-base-100 flex flex-col`}
@@ -89,42 +76,40 @@ export default function Library(props: LibraryProps) {
           <div className="px-3 pt-1 flex flex-row text-center items-center justify-center mb-[1rem]">
             <img src={icon} style={{ height: "3rem" }} />
             <h1 className="text-base-content text-2xl ml-2">
-              {status === "Check for Updates"
+              {update === "UpToDate"
                 ? "You are up to date!"
-                : status === "Checking..."
+                : update === "Checking"
                   ? "Checking for updates..."
-                  : status === "none"
+                  : update === "Disabled"
                     ? "Your apps may not be up to date!"
-                    : `${apps.length} update${
+                    : `${Math.round(apps.length / 2)} update${
                         apps.length > 1 ? "s" : ""
-                      } available`}
+                    } available & are installing`}
             </h1>
             <button
               className="dui-btn dui-btn-primary ml-auto my-auto"
-              disabled={false}
+              disabled={until}
               style={{
                 minWidth: "10rem",
                 maxHeight: "30px",
                 marginTop: "auto",
               }}
               onClick={() => {
-                if (status === "Check for Updates" || status === "none") {
+                if (update == "UpToDate" || update == "Disabled") {
+                  worker.runUpdate();
+                  setUntil(true);
                 }
               }}
             >
-              {status
-                .replace("none", "Check for Updates")
-                .replace("Updates Available", "Updating Apps...")}
+              {update
+                .replace("Disabled", "Check for Updates")
+                .replace("UpToDate", "Check for Updates")
+                .replace("Updating", "Updating Apps...")
+                .replace("Checking", "Checking for updates...")}
             </button>
           </div>
         </div>
-        <InstalledAppsMenu
-          dark={props.dark}
-          onClick={() => {
-            setAppList(true);
-          }}
-        />
-        <div className="mb-[1.5rem]"></div>
+        <AppList dark={props.dark} />
       </div>
     </>
   );

@@ -96,7 +96,7 @@ export async function fetchAuthor(uid: string) {
 
   const url = devUserUrl.replace("{dev}", uid);
   const { ok, data } = await fetch(url, {
-    method: "GET"
+    method: "GET",
   });
   const author = data as AuthorObject;
 

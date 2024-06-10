@@ -13,7 +13,7 @@ type UpdateStatusReport = "Disabled" | "UpToDate" | "Checking" | "Updating";
 class UpdateInstallerWorker {
   library: Library[];
   update: UpdateStatusReport;
-  onChange: { [key: number]: (lib: Library[]) => void };
+  onChange: { [key: number]: (lib: Library[], update: UpdateStatusReport) => void };
   listId: number = 0;
 
   constructor() {
@@ -22,13 +22,13 @@ class UpdateInstallerWorker {
     this.update = "Disabled";
 
     engageWs0((resp) => {
+      console.log(resp.data);
       if (resp.method == "Library") {
-        console.log("WS0 ", resp);
         this.library = resp.data as Library[];
-        Object.values(this.onChange).forEach((f) => f(this.library));
       } else if (resp.method == "UpdateStatus") {
         this.update = resp.data as UpdateStatusReport;
       }
+      Object.values(this.onChange).forEach((f) => f(this.library, this.update));
     });
   }
 
@@ -36,7 +36,7 @@ class UpdateInstallerWorker {
    * Registers a callback function to be called whenever the library changes.
    * Returns a unique id that can be used to unregister the callback.
    */
-  listen(fn: (lib: Library[]) => void) {
+  listen(fn: (lib: Library[], update: UpdateStatusReport) => void) {
     // Increment the listId and assign it to the callback function
     this.listId++;
     this.onChange[this.listId] = fn;
@@ -76,6 +76,10 @@ class UpdateInstallerWorker {
       setTimeout(() => {
         sendWsRequest(WebSocketMessage.UpdateStatus, (resp) => {
           if (resp.method == "UpdateStatus") {
+            // Update the update status
+            console.log(resp.data);
+
+
             this.update = resp.data as UpdateStatusReport;
             r(undefined);
           }

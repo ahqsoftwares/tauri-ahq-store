@@ -10,7 +10,7 @@ mod ws;
 
 use crate::rpc;
 use tauri::menu::IconMenuItemBuilder;
-use tauri::tray::{TrayIconBuilder, TrayIconEvent};
+use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButton};
 use tauri::window::{ProgressBarState, ProgressBarStatus};
 use tauri::{
   image::Image,
@@ -287,8 +287,11 @@ pub fn main() {
         .unwrap(),
     )
     .on_tray_icon_event(|app, event| match event {
-      TrayIconEvent::Click { .. } => {
-        let _ = app.app_handle().get_webview_window("main").unwrap().show();
+      TrayIconEvent::Click { button, .. } => match button {
+        MouseButton::Left => {
+          let _ = app.app_handle().get_webview_window("main").unwrap().show();
+        }
+        _ => {}
       }
       _ => {}
     })
@@ -334,7 +337,7 @@ pub fn main() {
 
 #[tauri::command(async)]
 fn is_development() -> bool {
-  cfg!(debug_assertions)
+  cfg!(debug_assertions) || env!("CARGO_PKG_VERSION").contains("-alpha")
 }
 
 #[cfg(unix)]

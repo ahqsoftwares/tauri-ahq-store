@@ -82,7 +82,7 @@ export default function Developers(props: DevProps) {
                   Fetching...
                 </h1>
               ) : (
-                    publishedApps.map((value, index) => {
+                publishedApps.map((value, index) => {
                   return (
                     <App
                       appInfo={value}

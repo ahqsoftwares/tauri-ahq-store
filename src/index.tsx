@@ -17,7 +17,9 @@ import { getCurrent, WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import Store, { AppProps } from "./app/index";
 
 const appWindow = (() => {
-  try { return getCurrent(); } catch (_) { }
+  try {
+    return getCurrent();
+  } catch (_) {}
 })() as WebviewWindow;
 
 /*
@@ -36,7 +38,7 @@ import { genAuth } from "./auth";
 import { tryAutoLogin } from "./auth/login";
 import { Loading } from "./config/Load";
 
-document.body.setAttribute('native-scrollbar', "0");
+document.body.setAttribute("native-scrollbar", "0");
 
 const auth = genAuth();
 
@@ -60,9 +62,11 @@ let list = [
   [true, false, "S"], //Save
 ];
 
-getCurrent().listen("update", () => {
-  loadRender(false, "Update available, updating!");
-}).catch(() => { });
+getCurrent()
+  .listen("update", () => {
+    loadRender(false, "Update available, updating!");
+  })
+  .catch(() => {});
 
 window.addEventListener("keydown", (e) => {
   list.forEach(([ct, sh, key]) => {
@@ -145,7 +149,7 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
   });
 
   async function Manage() {
-    tryAutoLogin(auth).catch(() => { });
+    tryAutoLogin(auth).catch(() => {});
     loadRender(false, "Launching Store...");
     setTimeout(() => {
       StoreLoad(Store, { auth });
@@ -157,10 +161,7 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
    * @param Component
    * @param prop
    */
-  function StoreLoad(
-    Component: (props: AppProps) => any,
-    { auth }: AppProps,
-  ) {
+  function StoreLoad(Component: (props: AppProps) => any, { auth }: AppProps) {
     const data = {
       auth,
     };

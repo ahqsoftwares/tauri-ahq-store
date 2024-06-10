@@ -122,8 +122,8 @@ export async function interpret(
       const { data } = await fetch(pyld2, {
         method: "GET",
         headers: {
-          "ngrok-skip-browser-warning": "true"
-        }
+          "ngrok-skip-browser-warning": "true",
+        },
       }).then(async (r) => ({ ...r, data: await r.json() }));
 
       const adata: ApplicationData = {

@@ -1,19 +1,19 @@
 //Arrow
 import { useEffect, useState } from "react";
-import { BiArrowBack } from "react-icons/bi";
 import { GiPartyPopper } from "react-icons/gi";
 import fetchApps, { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import listAllApps from "../../resources/utilities/listAllApps";
 import App from "./App";
+import { VscExtensions } from "react-icons/vsc";
+import { IoApps } from "react-icons/io5";
 
 interface Props {
   dark: boolean;
-  change: Function;
 }
 
 export default function AppsList(props: Props) {
-  const { dark, change } = props;
+  const { dark } = props;
 
   const [apps, setApps] = useState<appData[]>([]);
   const [rawApps, setRawApps] = useState(0);
@@ -32,24 +32,8 @@ export default function AppsList(props: Props) {
   }, []);
 
   return (
-    <div className="flex flex-col w-[100%] h-[100%]">
-      <div className={`flex text-base-content`}>
-        <button className="dui-btn dui-btn-square" onClick={() => change()}>
-          <BiArrowBack
-            width="2em"
-            height="2em"
-            color={dark ? "white" : "black"}
-            style={{
-              minWidth: "2em",
-              minHeight: "2em",
-            }}
-          />
-        </button>
-      </div>
-      <div
-        className="min-h-[auto] h-[100%] min-w-[100%] pb-[1rem] text-center"
-        style={{ overflowY: "scroll" }}
-      >
+    <div className="flex flex-col w-[98%] h-[100%] mx-auto">
+      <div className="min-h-[auto] h-[100%] min-w-[100%] pb-[1rem] text-center">
         {rawApps === 1 ? (
           <h1
             className={`my-2 w-[100%] flex flex-row text-center items-center justify-center ${
@@ -61,13 +45,29 @@ export default function AppsList(props: Props) {
           </h1>
         ) : apps.length === 0 ? (
           <h1
-            className={`my-2 flex items-center justify-center text-center ${dark ? "text-slate-400" : "text-slate-700"}`}
+              className={`my-2 mt-5 flex items-center justify-center text-center ${dark ? "text-slate-400" : "text-slate-700"}`}
           >
             <span className="dui-loading dui-loading-spinner mr-2"></span>
-            Loading...
+              Loading Installed Apps...
           </h1>
         ) : (
-          <></>
+              <>
+                <h1
+                  className={`my-2 text-2xl flex text-center items-center text-base-content`}
+                >
+                  <IoApps size="1.5rem" />
+                  <span className="ml-2">Installed Apps</span>
+                </h1>
+                <div className={`flex py-auto`}>
+                  {"("}
+                  <div className={dark ? "text-purple-500" : "text-purple-900"}>
+                    v
+                  </div>
+                  <span className="text-base-content ml-1">
+                    {"represents unique version hash)"}
+                  </span>
+                </div>
+              </>
         )}
 
         {apps.map((data) => {
@@ -81,14 +81,6 @@ export default function AppsList(props: Props) {
             />
           );
         })}
-      </div>
-      <div
-        className={`flex py-auto`}
-      >
-        <div className={dark ? "text-purple-500" : "text-purple-900"}>
-          v
-        </div>
-        <span className="text-base-content ml-2">represents unique version hash</span>
       </div>
     </div>
   );

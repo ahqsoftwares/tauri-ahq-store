@@ -1,4 +1,3 @@
-
 export interface Auth {
   loggedIn: boolean;
   onAuthChange: ((auth?: User) => void)[];

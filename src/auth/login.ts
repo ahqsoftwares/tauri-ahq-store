@@ -16,14 +16,11 @@ export async function tryAutoLogin(auth: Auth) {
   await login(auth, auth_tok);
 }
 
-export async function login(
-  auth: Auth,
-  auth_tok: string,
-): Promise<boolean> {
+export async function login(auth: Auth, auth_tok: string): Promise<boolean> {
   const { ok, data } = await fetch(`https://api.github.com/user`, {
     method: "GET",
     headers: {
-      "Authorization": `Bearer ${auth_tok}`
+      Authorization: `Bearer ${auth_tok}`,
     },
     connectTimeout: 100_000,
   }).then(async (d) => ({ ...d, ok: d.ok, data: await d.json() }));
@@ -33,7 +30,7 @@ export async function login(
     auth.loggedIn = true;
 
     invoke("encrypt", {
-      payload: auth_tok
+      payload: auth_tok,
     }).then((d) => localStorage.setItem("token", JSON.stringify(d)));
 
     auth.onAuthChange.forEach((cb) => cb(data));

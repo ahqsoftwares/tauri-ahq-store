@@ -49,7 +49,7 @@ export default function Init(props: UserProps) {
     image.addEventListener("click", async () => {
       if (auth.currentUser) {
         invoke("open", {
-          url: `https://github.com/${auth.currentUser.login}`
+          url: `https://github.com/${auth.currentUser.login}`,
         });
       }
     });
@@ -60,11 +60,11 @@ export default function Init(props: UserProps) {
       <div className="menu pb-2">
         <div className="user pb-2">
           <div className="img" id="img">
-            <img
-              src={auth.currentUser ? user : GeneralUser}
-              alt="Avatar"
-            />
-            <div className={`div ${props.dark ? "" : "div-l"} ${auth.currentUser ? "" : "hidden"}`} id="drop">
+            <img src={auth.currentUser ? user : GeneralUser} alt="Avatar" />
+            <div
+              className={`div ${props.dark ? "" : "div-l"} ${auth.currentUser ? "" : "hidden"}`}
+              id="drop"
+            >
               <h1 className="text">View profile</h1>
             </div>
           </div>
@@ -72,7 +72,10 @@ export default function Init(props: UserProps) {
             <div className="flex justify-center">
               <h1>{name || "Guest"}</h1>
             </div>
-            <h6>{auth.currentUser && (auth.currentUser?.email || `@${auth.currentUser?.login}`)}</h6>
+            <h6>
+              {auth.currentUser &&
+                (auth.currentUser?.email || `@${auth.currentUser?.login}`)}
+            </h6>
           </div>
         </div>
         <Actions auth={auth} setPage={setPage} />
@@ -81,13 +84,20 @@ export default function Init(props: UserProps) {
   );
 }
 
-function Actions(props: { auth: Auth, setPage: React.Dispatch<React.SetStateAction<string>> }) {
+function Actions(props: {
+  auth: Auth;
+  setPage: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const { auth, setPage } = props;
   return (
     <div className="flex flex-col">
       <div className="flex w-[100%] flex-col">
         <button
-          className={auth.currentUser ? "hidden" : "mx-auto flex items-center text-center justify-center dui-btn dui-btn-primary"}
+          className={
+            auth.currentUser
+              ? "hidden"
+              : "mx-auto flex items-center text-center justify-center dui-btn dui-btn-primary"
+          }
           style={{
             minWidth: "30vw",
             maxWidth: "30vw",
@@ -100,7 +110,11 @@ function Actions(props: { auth: Auth, setPage: React.Dispatch<React.SetStateActi
           <p className="mx-2">Login</p>
         </button>
         <button
-          className={auth.currentUser ? "mx-auto flex items-center text-center justify-center dui-btn dui-btn-error" : "hidden"}
+          className={
+            auth.currentUser
+              ? "mx-auto flex items-center text-center justify-center dui-btn dui-btn-error"
+              : "hidden"
+          }
           onClick={() => {
             localStorage.removeItem("password");
             logOut(auth);

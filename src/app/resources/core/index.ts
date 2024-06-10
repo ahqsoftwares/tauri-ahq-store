@@ -26,7 +26,7 @@ export async function get_devs_apps(devId: string) {
   const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
 
   const { ok, data } = await fetch(url, {
-    method: "GET"
+    method: "GET",
   });
 
   const apps: string[] = ok ? data.split("\n") : [];
@@ -42,7 +42,7 @@ export async function get_total() {
   }
 
   const { data } = await fetch(totalUrl.replace("{sha}", sha), {
-    method: "GET"
+    method: "GET",
   });
 
   return Number(data);
@@ -58,8 +58,8 @@ export async function get_home() {
   const { data } = await fetch(url, {
     method: "GET",
     headers: {
-      "ngrok-skip-browser-warning": "true"
-    }
+      "ngrok-skip-browser-warning": "true",
+    },
   });
 
   return data;
@@ -79,8 +79,8 @@ export async function get_search_data<T>() {
     const val = await fetch(url, {
       method: "GET",
       headers: {
-        "ngrok-skip-browser-warning": "true"
-      }
+        "ngrok-skip-browser-warning": "true",
+      },
     });
 
     map.push(...val.data);
@@ -102,7 +102,7 @@ export async function get_map<T>(): Promise<T> {
     const url = mapUrl.replace("{sha}", sha).replace("{id}", i.toString());
 
     const val = await fetch(url, {
-      method: "GET"
+      method: "GET",
     });
   }
 
@@ -126,8 +126,8 @@ export async function get_app(app: string): Promise<ApplicationData> {
     {
       method: "GET",
       headers: {
-        "ngrok-skip-browser-warning": "true"
-      }
+        "ngrok-skip-browser-warning": "true",
+      },
     },
   );
 

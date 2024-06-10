@@ -17,12 +17,12 @@ use windows::Win32::{
   System::SystemServices::SECURITY_DESCRIPTOR_REVISION,
 };
 
-use ahqstore_types::Command;
 use crate::{
   authentication::authenticate_process,
   handlers::{handle_msg, GET_INSTALL_DAEMON},
   utils::{get_iprocess, set_iprocess, write_log},
 };
+use ahqstore_types::Command;
 
 pub async fn launch() {
   write_log("Starting");

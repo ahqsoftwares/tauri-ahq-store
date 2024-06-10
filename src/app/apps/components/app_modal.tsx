@@ -92,7 +92,7 @@ export default function ShowModal(props: AppDataPropsModal) {
     (async () => {
       if ((installData || "") !== "") {
         const apps = await fetchApps(installData);
-        
+
         console.log(apps);
 
         setAppData(apps as any);

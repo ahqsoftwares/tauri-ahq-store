@@ -57,7 +57,7 @@ pub fn get_install_daemon() -> Sender<Command> {
       }
     }
 
-    let mut secs = time() + 600;
+    let mut secs = time() - 800;
 
     let between = || sleep(Duration::from_millis(100));
     let run_update = || check_update();
@@ -103,14 +103,12 @@ pub fn get_install_daemon() -> Sender<Command> {
       }
 
       if let Some(mut ws) = get_iprocess() {
-        if time() > secs || run_update_now {
+        if (should_autorun && time() > secs) || run_update_now {
           run_update_now = false;
-          if 0 == get_commit().await {
-            secs = time() + 600;
+          secs = time() + 600;
 
-            if should_autorun {
-              run_update().await;
-            }
+          if 0 == get_commit().await {
+            run_update().await;
           }
         }
 
@@ -214,22 +212,33 @@ pub async fn check_update() {
     }
 
     let library = unsafe { LIBRARY.as_mut().unwrap() };
-    for (id, app) in to_update {
-      library.push(Library {
-        app_id: id,
-        is_update: true,
-        progress: 0.0,
-        status: AppStatus::Pending,
-        to: ToDo::Uninstall,
-        app: Some(app),
-      });
+    if to_update.len() == 0 {
       unsafe {
-        UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Updating);
-        let _ = ws_send(
-          &mut ws,
-          &Response::as_msg(Response::UpdateStatus(0, UpdateStatusReport::Updating)),
-        )
-        .await;
+        UPDATE_STATUS_REPORT = Some(UpdateStatusReport::UpToDate);
+      }
+      let _ = ws_send(
+        &mut ws,
+        &Response::as_msg(Response::UpdateStatus(0, UpdateStatusReport::UpToDate)),
+      )
+      .await;
+    } else {
+      for (id, app) in to_update {
+        library.push(Library {
+          app_id: id,
+          is_update: true,
+          progress: 0.0,
+          status: AppStatus::Pending,
+          to: ToDo::Uninstall,
+          app: Some(app),
+        });
+        unsafe {
+          UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Updating);
+          let _ = ws_send(
+            &mut ws,
+            &Response::as_msg(Response::UpdateStatus(0, UpdateStatusReport::Updating)),
+          )
+          .await;
+        }
       }
     }
   }

@@ -13,7 +13,9 @@ function Loading({
 }) {
   const [version, setVersion] = useState("");
 
-  getVersion().then((value) => setVersion(value)).catch(() => setVersion("Unknown"));
+  getVersion()
+    .then((value) => setVersion(value))
+    .catch(() => setVersion("Unknown"));
 
   const splashScreens = [
     "Made with tauri, rust and react!",

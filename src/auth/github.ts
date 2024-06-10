@@ -6,11 +6,11 @@ import Toast from "../app/resources/api/toast";
 import { login } from "./login";
 
 interface DeviceCode {
-  device_code: string,
-  user_code: string,
-  verification_uri: string,
-  expires_in: number,
-  interval: number
+  device_code: string;
+  user_code: string;
+  verification_uri: string;
+  expires_in: number;
+  interval: number;
 }
 
 interface Value {
@@ -18,29 +18,35 @@ interface Value {
 }
 
 export async function startLogin(auth: Auth) {
-  const val: DeviceCode = await fetch(`https://github.com/login/device/code?client_id=${clientId}&scope=${scopes}`, {
-    headers: {
-      "Accept": "application/json"
+  const val: DeviceCode = await fetch(
+    `https://github.com/login/device/code?client_id=${clientId}&scope=${scopes}`,
+    {
+      headers: {
+        Accept: "application/json",
+      },
+      method: "POST",
     },
-    method: "POST"
-  }).then((r) => r.json());
+  ).then((r) => r.json());
 
   const t = Toast(`Opened ${val.verification_uri}`, "success", "never");
   const v = Toast(`Enter code: ${val.user_code}`, "warn", "never");
   invoke("open", {
-    url: val.verification_uri
+    url: val.verification_uri,
   });
 
   let not_done = 0;
 
   const time = setInterval(async () => {
     console.log("Request");
-    const response: Value = await fetch(`https://github.com/login/oauth/access_token?client_id=${clientId}&device_code=${val.device_code}&grant_type=urn:ietf:params:oauth:grant-type:device_code`, {
-      headers: {
-        "Accept": "application/json"
+    const response: Value = await fetch(
+      `https://github.com/login/oauth/access_token?client_id=${clientId}&device_code=${val.device_code}&grant_type=urn:ietf:params:oauth:grant-type:device_code`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+        method: "POST",
       },
-      method: "POST"
-    }).then((r) => r.json());
+    ).then((r) => r.json());
 
     not_done += 1;
 
