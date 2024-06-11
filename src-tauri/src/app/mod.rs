@@ -107,59 +107,9 @@ pub fn main() {
           #[cfg(debug_assertions)]
           println!("Reinstall of AHQ Store is required...");
 
-          if catch_unwind(|| {
-            let mut i = 0;
-
-            loop {
-              WINDOW
-                .as_mut()
-                .unwrap()
-                .emit("needs_reinstall", "None")
-                .unwrap();
-              thread::sleep(Duration::from_secs(1));
-              i += 1;
-
-              if i >= 10 {
-                break;
-              }
-            }
-
-            thread::spawn(|| {
-              let url = get_service_url(env!("CARGO_PKG_VERSION").contains("-alpha"));
-
-              let sys = sys_handler();
-
-              let file: String =
-                platform_impl!(format!("{}\\ahqstore.exe", &sys), format!("/ahqstore"));
-
-              let _ = fs::remove_file(&file);
-              download::download(
-                &url,
-                &sys,
-                &{
-                  let x: String = platform_impl!(format!("ahqstore.exe"), format!("ahqstore"));
-                  x
-                },
-                |_c, _t| {
-                  #[cfg(debug_assertions)]
-                  println!("{}", _c * 100 / _t);
-                },
-              );
-
-              #[cfg(unix)]
-              let _ = chmod("777", &file);
-
-              extract::run_admin(file);
-            })
-            .join()
-            .unwrap();
-          })
-          .is_err()
-          {
-            std::process::exit(1);
-          } else {
-            std::process::exit(0);
-          }
+          tauri::async_runtime::spawn(async {
+            update_inner(true).await;
+          });
         });
       }
 
@@ -364,9 +314,15 @@ fn open(url: String) -> Option<()> {
 
 #[tauri::command]
 async fn check_install_update() {
+  update_inner(false).await;
+}
+
+async fn update_inner(must: bool) {
   use updater::*;
   let (avail, release) = is_update_available(
-    env!("CARGO_PKG_VERSION"),
+    if must { 
+      ""
+     } else { env!("CARGO_PKG_VERSION") },
     env!("CARGO_PKG_VERSION").contains("-alpha"),
   )
   .await;

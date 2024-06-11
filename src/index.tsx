@@ -19,7 +19,7 @@ import Store, { AppProps } from "./app/index";
 const appWindow = (() => {
   try {
     return getCurrent();
-  } catch (_) {}
+  } catch (_) { }
 })() as WebviewWindow;
 
 /*
@@ -66,7 +66,7 @@ getCurrent()
   .listen("update", () => {
     loadRender(false, "Update available, updating!");
   })
-  .catch(() => {});
+  .catch(() => { });
 
 window.addEventListener("keydown", (e) => {
   list.forEach(([ct, sh, key]) => {
@@ -112,7 +112,7 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
 
   const unlisten = appWindow.listen("needs_reinstall", () => {
     unlisten.then((f) => f());
-    setInterval(() => loadRender(false, "Running PostInstall Script"), 10);
+    setInterval(() => loadRender(false, "Oops! AHQ Store needs reinstall.."), 10);
   });
 
   /*Logic
@@ -149,7 +149,7 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
   });
 
   async function Manage() {
-    tryAutoLogin(auth).catch(() => {});
+    tryAutoLogin(auth).catch(() => { });
     loadRender(false, "Launching Store...");
     setTimeout(() => {
       StoreLoad(Store, { auth });
