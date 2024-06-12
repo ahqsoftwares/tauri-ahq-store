@@ -2,8 +2,6 @@
 
 ## Supported Versions
 
-DEV BUILDS
-
 |  Version  | Supported  |
 | --------- | ---------- |
 | =< 1.0.x  | :x:        |
