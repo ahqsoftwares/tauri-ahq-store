@@ -10,6 +10,7 @@ homepage = "https://ahqstore.github.io/"
 [dependencies]
 dirs = "5.0.1"
 lazy_static = "1.4.0"
+open = "5.1.4"
 reqwest = { version = "0.12.4", features = ["blocking", "json"] }
 serde = { version = "1.0.203", features = ["derive"] }
 slint = "1.6.0"
@@ -19,9 +20,21 @@ notify-rust = "4.11.0"
 
 [target.'cfg(windows)'.dependencies]
 check_elevation = "0.2.4"
-winres = "0.1.12"
 winreg = "0.52.0"
 
+[target.'cfg(windows)'.build-dependencies]
+tauri-winres = "0.1"
 
 [build-dependencies]
 slint-build = "1.6.0"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
+
+[package.metadata.tauri-winres]
+LegalCopyright = "© AHQ Softwares | Non Profit Organization"
+OriginalFilename = "ahqstore_setup_amd64.exe"

@@ -39,6 +39,12 @@ fn main() -> Result<(), slint::PlatformError> {
     install::start_install(ui.clone_strong(), update);
   }
 
+  ui.on_tos(|| {
+    let _ = open::that("https://ahqstore.github.io/en/tos");
+  });
+  ui.on_site(|| {
+    let _ = open::that("https://ahqstore.github.io");
+  });
   ui.on_start_install({
     let ui_handle = ui.as_weak();
     move || {

@@ -15,7 +15,7 @@ pub fn download<T: FnMut(f32)>(client: &mut Client, url: &str, path: &str, mut c
 
   let mut last = 0;
 
-  for chunk in response.chunks(2048) {
+  for chunk in response.chunks(100) {
     c += chunk.len();
 
     if last != (c / t) {

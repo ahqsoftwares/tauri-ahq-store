@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => ({
     port: 3000,
     strictPort: true,
     watched: {
-      ignored: "**/target/**",
+      ignored: "**/src-*/**",
     },
   },
   plugins: [

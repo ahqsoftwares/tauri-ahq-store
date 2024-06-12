@@ -31,9 +31,7 @@ pub fn exists(app_id: &str) -> Option<bool> {
   let mut msi = open(msi).ok()?;
 
   let product_code = get_product_code(&mut msi)?;
-
-  println!("Code: {}", &product_code);
-
+  
   let reg = RegKey::predef(HKEY_LOCAL_MACHINE);
   reg
     .open_subkey(&format!(

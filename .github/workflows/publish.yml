@@ -111,7 +111,7 @@ jobs:
 
       - name: Publish types to cargo
         run: cargo publish
-        working-directory: ahqstore-types
+        working-directory: src-ahqstore-types
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
         continue-on-error: true

@@ -1,39 +1,67 @@
-import { Button, VerticalBox, HorizontalBox, ProgressIndicator, CheckBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, ProgressIndicator, CheckBox, Palette, GridBox, ListView } from "std-widgets.slint";
 
 export component AppWindow inherits Window {
     max-height: 500px;
     min-height: 500px;
-    
     min-width: 350px;
     max-width: 350px;
-
     icon: @image-url("icon.png");
-
     title: "Install AHQ Store";
-
-    in-out property<float> counter: -1.0;
-    in-out property<string> step: "";
-    in-out property<string> msg: "Installing...";
-    in-out property<bool> preview: false;
-
-    in-out property<bool> indet: false;
-
+    in-out property <float> counter: -1.0;
+    in-out property <string> step: "";
+    in-out property <string> msg: "Installing...";
+    in-out property <bool> preview: false;
+    in-out property <bool> indet: false;
     callback start-install();
+    callback tos();
+    callback site();
+    popup := PopupWindow {
+        height: 200px;
+        max-height: 200px;
+        min-height: 200px;
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
+        x: 25px;
+        y: 150px;
+        Rectangle {
+            background: Palette.alternate-background;
+            drop-shadow-blur: 10.0px;
+            border-radius: 20px;
+            border-color: Palette.border;
+            border-width: 1px;
+            VerticalBox {
+                Text {
+                    horizontal-alignment: TextHorizontalAlignment.center;
+                    text: "Credits";
+                    font-size: 25px;
+                }
+
+                ListView {
+                    for data in [
+                        " • CD Icon by icons8.com",
+                        " • Store app by AHQ & Org",
+                        " • Made with slint"
+                    ]: Text {
+                        text: data;
+                        font-size: 15px;
+                    }
+                }
+            }
+        }
+    }
 
     VerticalBox {
         height: 500px;
         max-height: 500px;
         min-height: 500px;
-        
         width: 400px;
         min-width: 400px;
         max-width: 400px;
-
-        padding-top: 50px;
+        padding-top: 25px;
         padding-bottom: 50px;
         padding-left: 5px;
         padding-right: 5px;
-
         HorizontalBox {
             alignment: LayoutAlignment.center;
             Image {
@@ -42,12 +70,14 @@ export component AppWindow inherits Window {
                 source: @image-url("icon.png");
             }
         }
+
         Text {
             horizontal-alignment: TextHorizontalAlignment.center;
             font-size: 30px;
             font-weight: 100;
             text: "AHQ Store";
         }
+
         VerticalBox {
             alignment: LayoutAlignment.stretch;
             HorizontalBox {
@@ -61,6 +91,7 @@ export component AppWindow inherits Window {
                     }
                 }
             }
+
             HorizontalBox {
                 alignment: LayoutAlignment.center;
                 Text {
@@ -69,6 +100,7 @@ export component AppWindow inherits Window {
                     text: root.step;
                 }
             }
+
             HorizontalBox {
                 alignment: LayoutAlignment.center;
                 ProgressIndicator {
@@ -78,15 +110,57 @@ export component AppWindow inherits Window {
                     indeterminate: root.indet;
                 }
             }
+
             HorizontalBox {
                 alignment: LayoutAlignment.center;
                 Button {
                     height: 30px;
-                    width: 150px;
+                    width: 240px;
+                    primary: true;
                     text: counter == -1.0 ? "Install" : root.msg;
                     enabled: counter == -1.0;
                     clicked => {
                         root.start-install();
+                    }
+                }
+            }
+
+            VerticalBox {
+                alignment: LayoutAlignment.center;
+                HorizontalBox {
+                    alignment: LayoutAlignment.center;
+                    Button {
+                        height: 30px;
+                        width: 75px;
+                        text: "Credits";
+                        clicked => {
+                            popup.show();
+                        }
+                    }
+
+                    Button {
+                        height: 30px;
+                        width: 75px;
+                        text: "TOS";
+                        clicked => {
+                            root.tos();
+                        }
+                    }
+
+                    Button {
+                        height: 30px;
+                        width: 75px;
+                        text: "Website";
+                        clicked => {
+                            root.site();
+                        }
+                    }
+                }
+
+                HorizontalBox {
+                    alignment: LayoutAlignment.center;
+                    Text {
+                        text: "By installing, you agree to our terms of service";
                     }
                 }
             }
