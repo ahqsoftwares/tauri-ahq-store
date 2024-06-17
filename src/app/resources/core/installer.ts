@@ -5,6 +5,7 @@ interface Library {
   status: string;
   is_update: boolean;
   to: "Install" | "Uninstall";
+  max: number;
   progress: number;
 }
 
@@ -22,12 +23,12 @@ class UpdateInstallerWorker {
     this.update = "Disabled";
 
     engageWs0((resp) => {
-      console.log(resp.data);
       if (resp.method == "Library") {
         this.library = resp.data as Library[];
       } else if (resp.method == "UpdateStatus") {
         this.update = resp.data as UpdateStatusReport;
       }
+
       Object.values(this.onChange).forEach((f) => f(this.library, this.update));
     });
   }
@@ -76,10 +77,6 @@ class UpdateInstallerWorker {
       setTimeout(() => {
         sendWsRequest(WebSocketMessage.UpdateStatus, (resp) => {
           if (resp.method == "UpdateStatus") {
-            // Update the update status
-            console.log(resp.data);
-
-
             this.update = resp.data as UpdateStatusReport;
             r(undefined);
           }

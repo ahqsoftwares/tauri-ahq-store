@@ -26,8 +26,6 @@ export default function LibraryComponent(props: LibraryProps) {
     [update, setUpdate] = useState(worker.update),
     [until, setUntil] = useState(false);
 
-  console.log(apps, update);
-
   const icon = (() => {
     switch (update) {
       case "Checking":
@@ -103,13 +101,11 @@ export default function LibraryComponent(props: LibraryProps) {
             >
               {update
                 .replace("Disabled", "Check for Updates")
-                .replace("UpToDate", "Check for Updates")
-                .replace("Updating", "Updating Apps...")
-                .replace("Checking", "Checking for updates...")}
+                .replace("UpToDate", "Check for Updates")}
             </button>
           </div>
         </div>
-        <AppList dark={props.dark} />
+        <AppList dark={props.dark} library={apps} />
       </div>
     </>
   );

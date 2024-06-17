@@ -1,5 +1,5 @@
 use std::{fs, io::ErrorKind};
-
+use std::time::Duration;
 use tokio::{io::AsyncWriteExt, net::UnixListener};
 
 use crate::{
@@ -114,6 +114,7 @@ pub async fn launch() {
           }
         },
       }
+      tokio::time::sleep(Duration::from_millis(100)).await;
     }
   }
 }

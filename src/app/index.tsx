@@ -46,7 +46,6 @@ function Render(props: AppProps) {
 
   const { auth } = props;
   let [page, changePage] = useState("home"),
-    [dev, setDev] = useState(auth.currentUser?.dev),
     [admin, setIsAdmin] = useState(false),
     [dark, setD] = useState(true),
     [theme, setTheme] = useState("synthwave"),
@@ -111,7 +110,6 @@ function Render(props: AppProps) {
         font,
         sidebar,
         debug,
-        accessPrefs,
         isAdmin,
         theme,
       } = fullPrefs;
@@ -239,7 +237,6 @@ function Render(props: AppProps) {
       app = (
         <Settings
           auth={auth}
-          setDev={setDev}
           dark={dark}
           setDark={setDark}
           font={font}
@@ -259,7 +256,7 @@ function Render(props: AppProps) {
       break;
     case "home":
       app = (
-        <Home auth={auth} dark={dark} dev={dev || false} setPage={changePage} />
+        <Home auth={auth} dark={dark} dev={auth.currentUser?.dev || false} setPage={changePage} />
       );
       break;
     case "developer":
@@ -282,7 +279,7 @@ function Render(props: AppProps) {
             <Nav
               active={page}
               home={(page: string) => changePage(page)}
-              dev={dev}
+              auth={auth}
               horizontal={sidebar.includes("flex-col")}
             />
             <div className="bg-transparent w-screen h-[98vh]">

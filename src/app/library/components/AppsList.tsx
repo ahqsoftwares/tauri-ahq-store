@@ -5,15 +5,16 @@ import fetchApps, { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import listAllApps from "../../resources/utilities/listAllApps";
 import App from "./App";
-import { VscExtensions } from "react-icons/vsc";
 import { IoApps } from "react-icons/io5";
+import { Library } from "../../resources/core/installer";
 
 interface Props {
   dark: boolean;
+  library: Library[]
 }
 
 export default function AppsList(props: Props) {
-  const { dark } = props;
+  const { dark, library } = props;
 
   const [apps, setApps] = useState<appData[]>([]);
   const [rawApps, setRawApps] = useState(0);
@@ -29,6 +30,9 @@ export default function AppsList(props: Props) {
 
   useEffect(() => {
     parseAppsData();
+    const timeout = setInterval(() => parseAppsData(), 5000);
+
+    return () => clearInterval(timeout);
   }, []);
 
   return (
@@ -76,8 +80,8 @@ export default function AppsList(props: Props) {
               key={data.appId}
               appInfo={data}
               dark={dark}
-              reload={parseAppsData}
               toast={Toast}
+              lib={library.find((d) => d.app_id == data.appId)}
             />
           );
         })}

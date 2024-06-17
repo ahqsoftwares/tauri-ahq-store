@@ -64,11 +64,8 @@ pub fn handle_msg(data: String) {
               let val = Response::as_msg(Response::ListApps(ref_id, x));
 
               ws_send(&mut ws, &val).await;
-
-              write_log("Acknowledged (Sent)");
             }
             send_term(ref_id).await;
-            write_log("Acknowledged (END)");
           }
 
           Command::GetPrefs(ref_id) => {
@@ -93,7 +90,6 @@ pub fn handle_msg(data: String) {
             let _ = GET_INSTALL_DAEMON.send(Command::RunUpdate(ref_id));
           }
           Command::UpdateStatus(ref_id) => {
-            println!("Sending UP STATUS");
             let _ = ws_send(
               &mut ws,
               &Response::as_msg(Response::UpdateStatus(ref_id, unsafe {
@@ -107,7 +103,6 @@ pub fn handle_msg(data: String) {
             send_term(ref_id).await;
           }
           Command::GetLibrary(ref_id) => {
-            println!("Getting Library!");
             ws_send(&mut ws, &lib_msg()).await;
             send_term(ref_id).await;
           }

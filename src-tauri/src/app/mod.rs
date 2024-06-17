@@ -101,8 +101,6 @@ pub fn main() {
 
         WINDOW = Some(window.clone());
 
-        rpc::init_presence(&window);
-
         ws::init(&window, || {
           #[cfg(debug_assertions)]
           println!("Reinstall of AHQ Store is required...");
@@ -201,6 +199,7 @@ pub fn main() {
       sys_handler,
       encrypt,
       decrypt,
+      dsc_rpc,
       to_hash_uid,
       open,
       set_progress,
@@ -283,6 +282,11 @@ pub fn main() {
     },
     _ => {}
   });
+}
+
+#[tauri::command(async)]
+fn dsc_rpc(window: tauri::WebviewWindow<tauri::Wry>,) {
+  rpc::init_presence(&window);
 }
 
 #[tauri::command(async)]

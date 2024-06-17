@@ -13,7 +13,7 @@ import {
 import PopUp from "../../resources/components/popup";
 import { invoke } from "@tauri-apps/api/core";
 import { IoCheckmarkCircle, IoWarning } from "react-icons/io5";
-import { FaLinux } from "react-icons/fa6";
+import { FaAndroid, FaLinux } from "react-icons/fa6";
 import { SiWindows } from "react-icons/si";
 import { worker } from "../../resources/core/installer";
 
@@ -47,9 +47,9 @@ const defAppData: appData = {
   downloadUrls: [],
   icon: "/react.webp",
   install: {
-    installType: "Both",
     linux: undefined,
     win32: undefined,
+    android: undefined
   },
   repo: {
     author: "",
@@ -57,13 +57,18 @@ const defAppData: appData = {
   },
   version: "",
   AuthorObject: {
-    ahq_verified: false,
-    display_name: "",
-    linked_acc: [],
-    pub_email: "",
-    u_id: 0,
-    username: "",
+    ahq_official: false,
+    name: "",
     apps: [],
+    description: "",
+    email: "",
+    gh_username: "",
+    icon_base64: "",
+    support: {
+      discord: "",
+      github: "",
+      website: ""
+    }
   },
 };
 
@@ -75,16 +80,53 @@ export default function ShowModal(props: AppDataPropsModal) {
   } = (window as any).prefs as { accessPrefs: { install_apps: boolean } };
 
   const [appData, setAppData] = useState<appData>(defAppData);
-  const [working, setWorking] = useState(false);
   const button = useRef<HTMLButtonElement>("" as any);
   const [installed, setInstalled] = useState<boolean | "hidden">(false);
-  const [updating, setUpdating] = useState(true);
+  const [updating, setUpdating] = useState(worker.update != "UpToDate" && worker.update != "Disabled");
+
+  const [cState, setCState] = useState({
+
+  });
 
   useEffect(() => {
-    const id = worker.listen(() => {});
+    const id = worker.listen((lib, update) => {
+      setUpdating(update != "UpToDate" && update != "Disabled");
+
+      const entry = lib.find((d) => d.app_id == installData);
+
+      try {
+        if (entry) {
+          if (entry.to == "Uninstall") {
+            button.current.innerHTML = entry.status;
+
+            if (entry.status == "Uninstalled" || entry.status == "Error") {
+              setTimeout(async () => {
+                setInstalled(false);
+              }, 1000);
+            }
+          } else {
+            if (entry.status == "Downloading...") {
+              button.current.innerHTML = `<div class="dui-radial-progress" style="--value: ${entry.progress}; --size: 2rem; font-size: 0.75rem;">${entry.progress.toFixed(1)}</div> (${formatBytes(
+                entry.max,
+              )})`;
+            } else {
+              button.current.innerHTML = entry.status;
+
+              if (entry.status == "Installed" || entry.status == "Error") {
+                setTimeout(async () => {
+                  setInstalled(true);
+                }, 1000);
+              }
+            }
+          }
+        }
+      } catch (_) {
+
+      }
+    });
 
     return () => worker.unlisten(id);
-  }, []);
+  }, [installData]);
 
   useEffect(() => {
     setAppData(defAppData);
@@ -92,8 +134,6 @@ export default function ShowModal(props: AppDataPropsModal) {
     (async () => {
       if ((installData || "") !== "") {
         const apps = await fetchApps(installData);
-
-        console.log(apps);
 
         setAppData(apps as any);
         setInstalled(await isInstalled(installData));
@@ -116,48 +156,15 @@ export default function ShowModal(props: AppDataPropsModal) {
   } = appData;
 
   const install = async () => {
-    if (!working) {
-      setWorking(true);
 
       button.current.innerHTML = "Starting Download...";
 
-      await install_app(installData, ({ c, t }) => {
-        if (c == 10000 && t == 0) {
-          button.current.innerHTML = "Installing...";
-        } else {
-          const perc = Math.round((c * 100) / t);
+    await install_app(installData);
 
-          button.current.innerHTML = `<div class="dui-radial-progress text-base-content" style="--value: ${perc}; --size: 2rem; font-size: 0.75rem;">${perc}</div> (${formatBytes(
-            t,
-          )})`;
-        }
-      }).then(async (success) => {
-        if (!success) {
-          button.current.innerHTML = "Failed...";
-        } else {
-          button.current.innerHTML = "Installed!";
-        }
-
-        setInstalled(true);
-        setWorking(false);
-      });
-    }
   };
 
   const uninstall = async () => {
-    if (!working) {
-      setWorking(true);
-      button.current.innerHTML = "Uninstalling...";
-
-      await unInstall(installData);
-
-      button.current.innerHTML = "Uninstalled!";
-
-      setTimeout(async () => {
-        setInstalled(false);
-        setWorking(false);
-      }, 1000);
-    }
+    await unInstall(installData);
   };
 
   return (
@@ -169,9 +176,7 @@ export default function ShowModal(props: AppDataPropsModal) {
           >
             <button
               onClick={() => {
-                if (!working) {
-                  change();
-                }
+                change();
               }}
               className={`rounded-md p-1 dui-btn dui-btn-square mr-auto`}
               style={{ transition: "all 250ms linear" }}
@@ -208,7 +213,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                   dark ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                {description.substring(0, 128)}
+                {(description || "").substring(0, 128)}
                 {description.length > 128 && <>...</>}
               </h2>
             </div>
@@ -239,7 +244,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                   disabled={updating}
                   onClick={() => uninstall()}
                 >
-                  Uninstall
+                    Uninstall {updating && <>(Updating)</>}
                 </button>
               ) : (
                 <>
@@ -251,24 +256,19 @@ export default function ShowModal(props: AppDataPropsModal) {
                       className="dui-alert dui-alert-warning text-warning-content mb-2"
                     >
                       <IoWarning size={"1.5rem"} />
-                      <span>Unsupported</span>
+                          <span>Unsupported OS</span>
                     </div>
                   )}
                   <button
                     ref={button}
                     className={`dui-btn ${
-                      working
+                      updating
                         ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
                         : "dui-btn-success text-success-content"
                     } w-[60%] mb-4`}
-                    onClick={() => install()}
-                    disabled={
-                      window.os.type == "windows"
-                        ? appData.install.win32 == undefined
-                        : appData.install.linux == undefined
-                    }
+                        onClick={() => install()}
                   >
-                    Install
+                        Install {updating && <>(Updating)</>}
                   </button>
                 </>
               )
@@ -345,7 +345,7 @@ export default function ShowModal(props: AppDataPropsModal) {
               >
                 {source ? (
                   <>
-                    Destributed from {source} by {AuthorObject.display_name}
+                    Destributed from {source} by {AuthorObject.name}
                   </>
                 ) : (
                   <>
@@ -355,7 +355,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                     ) : (
                       <></>
                     )}
-                    {AuthorObject.display_name}
+                      {AuthorObject.name}
                   </>
                 )}
               </button>
@@ -365,7 +365,7 @@ export default function ShowModal(props: AppDataPropsModal) {
               </span>
               <span className="block">
                 <strong className="mr-2">Version:</strong>
-                {version.substring(0, 64)}
+                {(version || "").substring(0, 64)}
                 {version.length > 64 && <>...</>}
               </span>
               <span className="block">
@@ -408,6 +408,19 @@ export default function ShowModal(props: AppDataPropsModal) {
                     >
                       <FaLinux />
                       <span className="ml-1">Linux</span>
+                    </div>
+                  )}
+                  {appData.install.android != undefined && (
+                    <div
+                      className="cursor-pointer flex text-center items-center justify-center border-[1px] border-base-content px-1"
+                      onClick={() =>
+                        invoke("open", {
+                          url: "https://www.android.com/",
+                        })
+                      }
+                    >
+                      <FaAndroid />
+                      <span className="ml-1">Android</span>
                     </div>
                   )}
                 </span>

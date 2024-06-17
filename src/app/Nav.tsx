@@ -14,16 +14,17 @@ import { getCurrent } from "@tauri-apps/api/webviewWindow";
 
 import drag from "./drag";
 import { useEffect } from "react";
+import { Auth } from "../auth";
 
 interface prop {
   active: string;
   home: Function;
-  dev: boolean | undefined;
   horizontal: boolean;
+  auth: Auth;
 }
 
 export default function Nav(props: prop) {
-  let { active, home: changePage, dev, horizontal: P_H } = props;
+  let { active, auth, home: changePage, horizontal: P_H } = props;
 
   const horizontal = "n-item-h ";
 
@@ -112,7 +113,7 @@ export default function Nav(props: prop) {
 
       <div className={P_H ? "mx-auto" : "mt-auto mb-auto"}></div>
 
-      {dev ? (
+      {auth.currentUser?.dev && (
         <button
           className={`n-item ${e}`}
           onClick={() => changePage("developer")}
@@ -123,8 +124,6 @@ export default function Nav(props: prop) {
             <AiOutlineExperiment size={"2.5em"} />
           )}
         </button>
-      ) : (
-        <></>
       )}
 
       <button className={`n-item ${f}`} onClick={() => changePage("library")}>
@@ -136,7 +135,9 @@ export default function Nav(props: prop) {
       </button>
 
       <button className={`n-item ${d}`} onClick={() => changePage("user")}>
-        {d === "active" ? (
+        {auth.currentUser ?
+          <img className="rounded-full" style={{ "width": "2.8em" }} src={auth.currentUser.avatar_url} />
+          : d === "active" ? (
           <MdAccountCircle size={"2.8em"} />
         ) : (
           <MdOutlineAccountCircle size={"2.8em"} />

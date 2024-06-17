@@ -9,7 +9,7 @@ pub fn authenticate_process(pid: usize, time: bool) -> bool {
   )];
 
   #[cfg(all(not(debug_assertions), unix))]
-  let exe = [format!("/bin/ahqstore",), format!("/usr/bin/ahqstore")];
+  let exe = [format!("/bin/ahq-store",), format!("/usr/bin/ahq-store")];
 
   #[cfg(all(debug_assertions, windows))]
   let exe = [format!(
@@ -42,7 +42,7 @@ pub fn authenticate_process(pid: usize, time: bool) -> bool {
 
     let running_for_secs = now() - process.start_time();
 
-    write_log(format!("{:?} {} {}", &exe, &exe_path, &running_for_secs));
+    write_log(format!("{:?} {} {} {}", &exe, &exe_path, &running_for_secs, exe.contains(&exe_path)));
 
     if exe.contains(&exe_path) {
       if time && running_for_secs > 20 {

@@ -2,7 +2,7 @@ import { ApplicationData } from "../api/fetchApps";
 import { WebSocketMessage, sendWsRequest } from "./handler";
 import fetch from "./http";
 import { Library } from "./installer";
-import { Downloaded, ListedApps } from "./structs";
+import { ListedApps } from "./structs";
 
 let sha = "";
 
@@ -30,8 +30,6 @@ export async function get_devs_apps(devId: string) {
   });
 
   const apps: string[] = ok ? data.split("\n") : [];
-
-  console.log(apps);
 
   return apps;
 }
@@ -85,8 +83,6 @@ export async function get_search_data<T>() {
 
     map.push(...val.data);
   }
-
-  console.log(map);
   return map as unknown as any as T;
 }
 
@@ -140,31 +136,11 @@ export async function get_app(app: string): Promise<ApplicationData> {
 }
 
 export function install_app(
-  app: string,
-  status_update: (data: Downloaded) => void,
-): Promise<boolean> {
+  app: string
+): Promise<undefined> {
   return new Promise((resolve) => {
-    sendWsRequest(WebSocketMessage.InstallApp(app), (val) => {
-      switch (val.method) {
-        case "DownloadProgress":
-          status_update(val.data as Downloaded);
-          break;
-        case "Installing":
-          status_update({
-            c: 10000,
-            t: 0,
-          });
-          break;
-        case "Installed":
-          resolve(true);
-          break;
-        case "Error":
-          resolve(false);
-          break;
-        default:
-          break;
-      }
-    });
+    sendWsRequest(WebSocketMessage.InstallApp(app), () => { });
+    resolve(undefined);
   });
 }
 
@@ -241,4 +217,4 @@ export function un_install(app: string): Promise<void> {
   });
 }
 
-export { devUserUrl };
+export { devUserUrl, sha };

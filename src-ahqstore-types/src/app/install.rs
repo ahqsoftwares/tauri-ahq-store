@@ -5,8 +5,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct InstallerOptions {
   pub win32: Option<InstallerOptionsWin32>,
-  #[doc = "🔬 Planned\n\n"]
+  #[doc = "🔬 Under Development\n\n"]
   pub linux: Option<InstallerOptionsLinux>,
+  #[doc = "🔬 Planned\n\n"]
+  pub android: Option<InstallerOptionsAndroid>,
 }
 
 #[allow(non_snake_case)]
@@ -23,6 +25,15 @@ pub struct InstallerOptionsWin32 {
   /// [^1]: Only if you choose WindowsInstallerExe 
   pub installerArgs: Option<Vec<Str>>
 }
+
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[doc = "🔬 Planned\n\n"]
+pub struct InstallerOptionsAndroid {
+  pub assetId: u8
+}
+
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]

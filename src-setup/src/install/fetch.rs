@@ -1,5 +1,5 @@
 use crate::InstallMode;
-use reqwest::blocking::{Client, ClientBuilder};
+use reqwest::{Client, ClientBuilder};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -20,10 +20,10 @@ pub struct ReleaseData {
   pub msi: String,
   pub service: String,
   pub linux_daemon: String,
-  pub deb: String
+  pub deb: String,
 }
 
-pub fn fetch(install: &InstallMode) -> (Client, ReleaseData) {
+pub async fn fetch(install: &InstallMode) -> (Client, ReleaseData) {
   let client: Client = ClientBuilder::new()
     .user_agent("AHQ Store / Installer")
     .build()
@@ -42,13 +42,22 @@ pub fn fetch(install: &InstallMode) -> (Client, ReleaseData) {
       let release = client
         .get(url)
         .send()
+        .await
         .unwrap()
         .json::<Vec<Release>>()
+        .await
         .unwrap();
 
       release.into_iter().find(|x| x.prerelease).unwrap()
     } else {
-      client.get(url).send().unwrap().json::<Release>().unwrap()
+      client
+        .get(url)
+        .send()
+        .await
+        .unwrap()
+        .json::<Release>()
+        .await
+        .unwrap()
     }
   };
 

@@ -1,22 +1,22 @@
-use std::{fs, thread, time::Duration};
 #[cfg(unix)]
 use notify_rust::Notification;
 use slint::SharedString;
+use std::{fs, thread, time::Duration};
 
 use self::fetch::fetch;
 use self::fetch::ReleaseData;
 use crate::{utils::get_install, AppWindow, InstallMode};
-use reqwest::blocking::Client;
+use reqwest::Client;
 
 mod download;
 mod fetch;
 
+#[cfg(not(windows))]
+mod deb;
 #[cfg(windows)]
 mod msi;
 #[cfg(windows)]
 mod regedit;
-#[cfg(not(windows))]
-mod deb;
 
 use download::download;
 
@@ -32,19 +32,27 @@ pub fn start_install(win: AppWindow, install: InstallMode) {
 
     thread::sleep(Duration::from_secs(3));
 
-    let (mut client, files) = fetch(&install);
+    let mut runtime = tokio::runtime::Builder::new_current_thread();
+    let runtime = runtime.enable_all().build().unwrap();
 
-    println!("{:?}", &files);
+    runtime.block_on(async {
+      let (mut client, files) = fetch(&install).await;
 
-    plt_install(&win, &mut client, &files);
+      println!("{:?}", &files);
+
+      plt_install(&win, &mut client, &files).await;
+    });
   });
 }
 
 #[cfg(not(windows))]
-fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
+async fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
   use std::process;
 
-  use crate::install::deb::{exit, get_sudo, install_deb};
+  use crate::{
+    install::deb::{exit, get_sudo, install_daemon, install_deb},
+    utils::get_temp_service_dir,
+  };
 
   if &files.deb == "" {
     Notification::new()
@@ -52,7 +60,7 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
       .body("We were unable to find the linux build files, try toggling the Pre-Release Option")
       .show()
       .unwrap();
-    
+
     win.set_counter(-1.0);
     win.set_msg("Install".into());
     return;
@@ -62,12 +70,23 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
 
   let mut sudo = get_sudo();
   let installer = get_install();
+  let service = get_temp_service_dir();
 
   let _ = fs::remove_file(&installer);
 
   download(client, &files.deb, &installer, |perc| {
     win.set_counter(perc);
-  });
+  })
+  .await;
+
+  thread::sleep(Duration::from_secs(1));
+  win.set_counter(0.0);
+  thread::sleep(Duration::from_secs(3));
+
+  download(client, &files.linux_daemon, &service, |perc| {
+    win.set_counter(perc);
+  })
+  .await;
 
   thread::sleep(Duration::from_secs(2));
   win.set_indet(true);
@@ -75,6 +94,7 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
   win.set_msg("Installing...".into());
 
   install_deb(&mut sudo, &installer);
+  install_daemon(&mut sudo, service);
   exit(sudo);
 
   thread::sleep(Duration::from_secs(1));
@@ -88,7 +108,7 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
 }
 
 #[cfg(windows)]
-fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
+async fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
   use std::process;
 
   use crate::{
@@ -105,14 +125,17 @@ fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) {
 
   download(client, &files.msi, &installer, |perc| {
     win.set_counter(perc);
-  });
+  })
+  .await;
 
+  thread::sleep(Duration::from_secs(1));
   win.set_counter(0.0);
   thread::sleep(Duration::from_secs(3));
 
   download(client, &files.service, &service, |perc| {
     win.set_counter(perc);
-  });
+  })
+  .await;
 
   win.set_indet(true);
 

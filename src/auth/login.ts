@@ -13,10 +13,10 @@ export async function tryAutoLogin(auth: Auth) {
     encrypted: token,
   }).catch(() => "");
 
-  await login(auth, auth_tok);
+  await login(auth, auth_tok, true);
 }
 
-export async function login(auth: Auth, auth_tok: string): Promise<boolean> {
+export async function login(auth: Auth, auth_tok: string, auto = false): Promise<boolean> {
   const { ok, data } = await fetch(`https://api.github.com/user`, {
     method: "GET",
     headers: {
@@ -33,7 +33,11 @@ export async function login(auth: Auth, auth_tok: string): Promise<boolean> {
       payload: auth_tok,
     }).then((d) => localStorage.setItem("token", JSON.stringify(d)));
 
-    auth.onAuthChange.forEach((cb) => cb(data));
+    if (auto) {
+      auth.onAuthChange.forEach((cb) => cb(data));
+    } else {
+      window.location.reload();
+    }
   } else {
     auth.onAuthChange.forEach((cb) => cb(undefined));
   }

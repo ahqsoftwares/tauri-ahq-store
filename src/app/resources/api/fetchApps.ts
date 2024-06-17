@@ -1,5 +1,5 @@
 import fetch from "../core/http";
-import { devUserUrl, get_app, get_devs_apps, get_search_data } from "../core";
+import { devUserUrl, get_app, get_devs_apps, get_search_data, sha } from "../core";
 
 interface AuthorObject {
   name: string;
@@ -37,7 +37,7 @@ interface appData {
   install: {
     win32: unknown | undefined;
     linux: unknown | undefined;
-    installType: "PerUser" | "Computer" | "Both";
+    android: unknown | undefined;
   };
   displayImages: Str[];
   description: Str;
@@ -94,7 +94,7 @@ export async function fetchAuthor(uid: string) {
     return authorCache[uid];
   }
 
-  const url = devUserUrl.replace("{dev}", uid);
+  const url = devUserUrl.replace("{sha}", sha).replace("{dev}", uid);
   const { ok, data } = await fetch(url, {
     method: "GET",
   });

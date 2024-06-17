@@ -11,9 +11,10 @@ homepage = "https://ahqstore.github.io/"
 dirs = "5.0.1"
 lazy_static = "1.4.0"
 open = "5.1.4"
-reqwest = { version = "0.12.4", features = ["blocking", "json"] }
+reqwest = { version = "0.12.4", features = ["json"] }
 serde = { version = "1.0.203", features = ["derive"] }
 slint = "1.6.0"
+tokio = { version = "1.38.0", features = ["rt"] }
 
 [target.'cfg(unix)'.dependencies]
 notify-rust = "4.11.0"

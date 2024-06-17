@@ -136,14 +136,6 @@ jobs:
         with:
           toolchain: nightly
 
-      - name: Cache Rust
-        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
-        uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: src-setup-${{ runner.os }}
-          cache-all-crates: true
-          workspaces: "src-setup -> target"
-
       - name: Build Setup
         run: cargo build --release
         working-directory: src-setup
@@ -221,16 +213,6 @@ jobs:
         run: node encryptor.cjs
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
-
-      - name: Cache Rust
-        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
-        uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: src-tauriapp-${{ runner.os }}
-          cache-all-crates: true
-          workspaces: |
-            src-service -> target
-            src-tauri -> target
 
       - name: Build Service
         run: cargo build --release

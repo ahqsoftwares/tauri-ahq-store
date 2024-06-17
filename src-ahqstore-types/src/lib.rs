@@ -113,6 +113,7 @@ pub struct Library {
   pub is_update: bool,
   pub to: ToDo,
   pub progress: f64,
+  pub max: u64,
   pub app: Option<AHQStoreApplication>
 }
 

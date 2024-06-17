@@ -20,7 +20,6 @@ pub fn relaunch_if_needed(update: &InstallMode) {
   let exe = exe.to_string_lossy();
   let exe: &str = &format!("{exe}");
 
-  
   if !is_elevated().unwrap_or(false) {
     let mut cmd = Command::new("powershell");
     let cmd = cmd.creation_flags(0x08000000);

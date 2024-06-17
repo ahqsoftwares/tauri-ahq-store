@@ -42,12 +42,10 @@ pub fn lib_msg() -> Vec<u8> {
 pub fn get_install_daemon() -> Sender<Command> {
   let (tx, rx) = channel();
 
-  println!("Daemon Running");
   spawn(async move {
     unsafe {
       UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Disabled);
       LIBRARY = Some(vec![]);
-      println!("LIB Setted");
     }
     let should_autorun = get_prefs().auto_update_apps;
 
@@ -76,6 +74,7 @@ pub fn get_install_daemon() -> Sender<Command> {
                 status: AppStatus::Pending,
                 to: ToDo::Install,
                 progress: 0.0,
+                max: 0,
                 app: None,
               });
             }
@@ -86,6 +85,7 @@ pub fn get_install_daemon() -> Sender<Command> {
                   is_update: false,
                   app: Some(app),
                   progress: 0.0,
+                  max:0,
                   status: AppStatus::Pending,
                   to: ToDo::Uninstall,
                 });
@@ -115,7 +115,6 @@ pub fn get_install_daemon() -> Sender<Command> {
         let mut was_updates = false;
         for cmd in pending.iter_mut() {
           let to = cmd.to.clone();
-          println!("{:?} {:?} {:?}", &cmd.status, &cmd.to, &cmd.app_id);
           match &to {
             ToDo::Install => {
               cmd.status = AppStatus::Downloading;
@@ -125,7 +124,6 @@ pub fn get_install_daemon() -> Sender<Command> {
               if let Some(x) = download_app(cmd).await {
                 cmd.status = AppStatus::Installing;
 
-                println!("Sending Installing Status");
                 ws_send(&mut ws, &lib_msg()).await;
                 between().await;
                 between().await;
@@ -224,12 +222,22 @@ pub async fn check_update() {
     } else {
       for (id, app) in to_update {
         library.push(Library {
-          app_id: id,
+          app_id: id.clone(),
           is_update: true,
           progress: 0.0,
           status: AppStatus::Pending,
           to: ToDo::Uninstall,
+          max: 0,
+          app: Some(app.clone()),
+        });
+        library.push(Library {
+          app_id: id,
+          is_update: true,
+          progress: 0.0,
+          status: AppStatus::Pending,
+          to: ToDo::Install,
           app: Some(app),
+          max: 0,
         });
         unsafe {
           UPDATE_STATUS_REPORT = Some(UpdateStatusReport::Updating);

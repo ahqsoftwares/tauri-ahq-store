@@ -15,10 +15,10 @@ pub enum InstallerFormat {
   #[doc = "🎯 Stable as of v1"]
   WindowsZip,
 
-  #[doc = "🎯 Stable as of v1.5\n\n"]
+  #[doc = "🎯 Stable as of v2\n\n"]
   WindowsInstallerMsi,
 
-  #[doc = "🔬 Unstable; AHQ Store vNext\n\n"]
+  #[doc = "🔬 Planned\n\n"]
   /// **Doesn't work**
   /// **⚠️ AHQ Store will act just like downloading from the web and running it ONCE[^1]**
   ///
@@ -31,8 +31,11 @@ pub enum InstallerFormat {
   /// [^1]: You'll need to provide app's final location
   WindowsUWPMsix,
 
-  #[doc = "🔬 Planned"]
+  #[doc = "🔬 Under Development"]
   LinuxAppImage,
+
+  #[doc = "🔬 Planned"]
+  AndroidApkZip,
 }
 
 impl Display for InstallerFormat {
@@ -46,6 +49,7 @@ impl Display for InstallerFormat {
         InstallerFormat::WindowsInstallerMsi => "64-Bit Windows Installer Msi",
         InstallerFormat::WindowsUWPMsix => "UWP Windows Msix Package",
         InstallerFormat::LinuxAppImage => "64-Bit Linux App Image",
+        InstallerFormat::AndroidApkZip => "Universal Android Apk Zip Package"
       }
     )
   }

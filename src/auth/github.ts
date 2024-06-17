@@ -37,7 +37,6 @@ export async function startLogin(auth: Auth) {
   let not_done = 0;
 
   const time = setInterval(async () => {
-    console.log("Request");
     const response: Value = await fetch(
       `https://github.com/login/oauth/access_token?client_id=${clientId}&device_code=${val.device_code}&grant_type=urn:ietf:params:oauth:grant-type:device_code`,
       {
@@ -50,7 +49,6 @@ export async function startLogin(auth: Auth) {
 
     not_done += 1;
 
-    console.log(response, response.access_token != undefined);
     if (response?.access_token != undefined) {
       clearInterval(time);
       if (await login(auth, response.access_token)) {

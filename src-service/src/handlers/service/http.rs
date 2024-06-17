@@ -72,14 +72,6 @@ pub async fn download_app(val: &mut Library) -> Option<AHQStoreApplication> {
       if let None = async {
         val.status = AppStatus::Downloading;
 
-        println!(
-          "{:?} {:?} {:?} {:?}",
-          &data.downloadUrls,
-          &data.install,
-          &data.get_win32_download(),
-          &data.get_linux_download(),
-        );
-
         #[cfg(windows)]
         let mut resp = DOWNLOADER
           .get(&data.get_win32_download()?.url)
@@ -103,6 +95,8 @@ pub async fn download_app(val: &mut Library) -> Option<AHQStoreApplication> {
         write_log("File Successful");
 
         let total = resp.content_length().unwrap_or(0);
+        val.max = total as u64;
+
         let mut current = 0u64;
 
         let mut last = 0.0f64;

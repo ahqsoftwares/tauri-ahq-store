@@ -1,3 +1,4 @@
+#[cfg(windows)]
 use std::time::Duration;
 
 #[cfg(windows)]
