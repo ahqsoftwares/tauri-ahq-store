@@ -21,15 +21,9 @@ AHQ Store is a **free** and **open sourced** App Store, which allows you to publ
 - Simple, inituitive cli tool
 - [Sample Apps (Electron & Tauri)](https://github.com/ahqsoftwares/ahqstore-sample-project)
 
-## Drawbacks
-
-- Currently limited to **Windows 10 or above**[\*\*](#references)
-- Small App Base Currently
-
 ## Roadmap
 
-- Add support for linux[\*\*\*](#references)
-- Introduce more app framework examples[\*\*\*\*](#references)
+- Add support for linux
 
 ## Security
 
@@ -49,7 +43,4 @@ Although Applications are tested by the experts before supplying the apps, the s
 # References
 
 - [Terms of Service](https://github.com/ahqsoftwares/tauri-ahq-store/security/policy)
-- [\*](#ahq-store) Your app must not be a malware
-- [\*\*](#features) Might work for Windows 8.1 or 7, in our vms that didn't
-- [\*\*\*](#drawbacks) No ETA available for linux
-- [\*\*\*\*](#roadmap) Should work for all apps that can be distributed as a zip
+- [\*](#ahq-store) Your app might be screened by the maintainers AND your app will be scanned by Windows Defender on every install on every users' computer
