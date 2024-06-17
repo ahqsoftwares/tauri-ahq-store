@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "2.0.0-alpha.1"
+version = "2.0.0-alpha.2"
 dependencies = [
  "ahqstore-types",
  "async-recursion",
@@ -4142,7 +4142,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-single-instance"
 version = "2.0.0-beta.9"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#a2eb3a6e4368a8c3aab8cf6e506fa4e78a4dfb11"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#7d332ef63428475852d053cd4edc85c49a3a6faa"
 dependencies = [
  "log",
  "serde",
