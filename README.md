@@ -40,20 +40,9 @@ Although Applications are tested by the experts before supplying the apps, the s
 - **AHQ Store Framework Service**
 - **AHQ Softwares**
 
-## License
-
-### Protected with Creative Commons license
-
-You are allowed to:
-
-- [x] Share - copy and redistribute **(only as a separate product with changes involved & _NOT_ utilizing the servers/services/repos used here)**
-
-- [x] Adapt - remix and contribute back
-
-**Under the following restrictions**
-
-- You are **not** allowed to reditribute this copy to people
-- You are **not** allowed to _**reuse**_ _the copy for commercial or public purposes_
+## License under MIT
+- The software has been provided **as is** without any warnnanty of any kind
+- The developer is not responsible for any damages cause by use of this software in any way
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fahqsoftwares%2Ftauri-ahq-store?ref=badge_large)
 
