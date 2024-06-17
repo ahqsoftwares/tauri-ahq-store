@@ -20,9 +20,9 @@
     "react-modal": "^3.16.1",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.4.5",
-    "vite": "^5.2.12",
+    "vite": "^5.3.1",
     "vite-plugin-svgr": "^4.2.0",
-    "web-vitals": "^4.1.0"
+    "web-vitals": "^4.1.1"
   },
   "scripts": {
     "start": "cross-env BROWSER=none NODE_OPTIONS=--max-old-space-size=2048 vite",
@@ -54,16 +54,16 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-modal": "^3.16.3",
-    "@vitejs/plugin-react": "^4.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "babel-plugin-react-compiler": "0.0.0-experimental-938cd9a-20240601",
     "bcrypt": "^5.1.1",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "cryptr": "^6.3.0",
-    "eslint": "^9.4.0",
+    "eslint": "^9.5.0",
     "eslint-plugin-react-compiler": "0.0.0-experimental-c8b3f72-20240517",
     "onchange": "^7.1.0",
-    "prettier": "^3.3.1"
+    "prettier": "^3.3.2"
   },
   "repository": {
     "type": "git",
