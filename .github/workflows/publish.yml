@@ -22,16 +22,16 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Create Release
         id: create-release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           BRANCH: ${{ github.ref_name }}
         with:
@@ -55,7 +55,7 @@ jobs:
 
       - name: Get Release Id
         id: get-id
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           data: ${{ steps.create-release.outputs.result }}
         with:
@@ -76,7 +76,7 @@ jobs:
 
       - name: Get Upload Url
         id: get-u-url
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           data: ${{ steps.create-release.outputs.result }}
         with:
@@ -102,7 +102,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
@@ -129,7 +129,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
@@ -174,17 +174,17 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache vcpkg
         id: cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: vcpkg
           key: vcpkg-${{ runner.os }}-${{ runner.arch }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -275,7 +275,7 @@ jobs:
 
     steps:
       - name: Undraft Release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           BRANCH: ${{ github.ref_name }}
           R_ID: ${{ needs.create-release.outputs.release_id }}
