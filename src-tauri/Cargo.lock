@@ -61,7 +61,7 @@ dependencies = [
  "tokio",
  "updater",
  "whatadistro",
- "windows 0.57.0",
+ "windows 0.56.0",
  "wry 0.41.0",
 ]
 
