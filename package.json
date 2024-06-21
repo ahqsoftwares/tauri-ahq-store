@@ -22,7 +22,7 @@
     "typescript": "^5.4.5",
     "vite": "^5.2.12",
     "vite-plugin-svgr": "^4.2.0",
-    "web-vitals": "^4.0.1"
+    "web-vitals": "^4.2.0"
   },
   "scripts": {
     "start": "cross-env BROWSER=none NODE_OPTIONS=--max-old-space-size=2048 vite",
