@@ -1,5 +1,5 @@
-use std::{fs, io::ErrorKind};
 use std::time::Duration;
+use std::{fs, io::ErrorKind};
 use tokio::{io::AsyncWriteExt, net::UnixListener};
 
 use crate::{

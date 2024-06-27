@@ -1,6 +1,6 @@
 use ahqstore_types::{AppStatus, Commit, Library};
 use lazy_static::lazy_static;
-use reqwest::{Client, ClientBuilder, StatusCode};
+use reqwest::{Client, ClientBuilder, Request, StatusCode};
 use std::{fs::File, io::Write};
 
 #[allow(unused)]
@@ -60,7 +60,9 @@ pub async fn get_commit() -> u8 {
   1
 }
 
-pub async fn download_app(val: &mut Library) -> Option<AHQStoreApplication> {
+pub async fn download_app(
+  val: &mut Library,
+) -> Option<(AHQStoreApplication, File, reqwest::Response)> {
   let app_id = &val.app_id;
   let app_id = app_id.to_string();
   let app_id = get_app(0, app_id).await;
@@ -69,66 +71,58 @@ pub async fn download_app(val: &mut Library) -> Option<AHQStoreApplication> {
     Response::AppData(_, _, data) => {
       let file = get_installer_file(&data);
 
-      if let None = async {
-        val.status = AppStatus::Downloading;
+      val.status = AppStatus::Downloading;
 
-        #[cfg(windows)]
-        let mut resp = DOWNLOADER
-          .get(&data.get_win32_download()?.url)
-          .send()
-          .await
-          .ok()?;
+      #[cfg(windows)]
+      let mut resp = DOWNLOADER
+        .get(&data.get_win32_download()?.url)
+        .send()
+        .await
+        .ok()?;
 
-        #[cfg(unix)]
-        let mut resp = DOWNLOADER
-          .get(&data.get_linux_download()?.url)
-          .send()
-          .await
-          .ok()?;
+      #[cfg(unix)]
+      let mut resp = DOWNLOADER
+        .get(&data.get_linux_download()?.url)
+        .send()
+        .await
+        .ok()?;
 
-        #[cfg(debug_assertions)]
-        write_log("Response Successful");
+      #[cfg(debug_assertions)]
+      write_log("Response Successful");
 
-        let mut file = File::create(&file).ok()?;
+      let mut file = File::create(&file).ok()?;
 
-        #[cfg(debug_assertions)]
-        write_log("File Successful");
+      #[cfg(debug_assertions)]
+      write_log("File Successful");
 
-        let total = resp.content_length().unwrap_or(0);
-        val.max = total as u64;
+      let total = resp.content_length().unwrap_or(0);
+      val.max = total as u64;
 
-        let mut current = 0u64;
+      let mut current = 0u64;
 
-        let mut last = 0.0f64;
+      let mut last = 0.0f64;
 
-        loop {
-          let byte = resp.chunk().await.ok()?;
+      // loop {
+      //   let byte = resp.chunk().await.ok()?;
 
-          match byte {
-            Some(x) => {
-              current += x.len() as u64;
-              file.write(&x).ok()?;
+      //   match byte {
+      //     Some(x) => {
+      //       current += x.len() as u64;
+      //       file.write(&x).ok()?;
 
-              let perc = ((current as f64) * 100.0) / (total as f64);
+      //       let perc = ((current as f64) * 100.0) / (total as f64);
 
-              if last != perc {
-                val.progress = perc;
-                last = perc;
+      //       if last != perc {
+      //         val.progress = perc;
+      //         last = perc;
 
-                ws_send(&mut get_iprocess().unwrap(), &lib_msg()).await;
-              }
-            }
-            None => break,
-          }
-        }
-        Some(())
-      }
-      .await
-      {
-        return None;
-      }
-
-      return Some(data);
+      //         ws_send(&mut get_iprocess().unwrap(), &lib_msg()).await;
+      //       }
+      //     }
+      //     None => break,
+      //   }
+      // }
+      Some((data, file, resp))
     }
     _ => {
       return None;

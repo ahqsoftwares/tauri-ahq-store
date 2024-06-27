@@ -8,6 +8,7 @@ use std::{
   io::Error,
   os::windows::process::CommandExt,
   process::{Child, Command},
+  thread::JoinHandle,
 };
 
 use crate::{
@@ -38,7 +39,7 @@ pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
     .spawn()
 }
 
-pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
+pub async fn install_app(app: AHQStoreApplication) -> Option<Child> {
   let file = get_installer_file(&app);
 
   let Some(win32) = app.get_win32_download() else {
@@ -52,7 +53,7 @@ pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
   }
 }
 
-pub fn install_msi(msi: &str, app: &AHQStoreApplication) -> Option<()> {
+pub fn install_msi(msi: &str, app: &AHQStoreApplication) -> Option<Child> {
   let install_folder = get_program_folder(&app.appId);
 
   fs::create_dir_all(&install_folder).ok()?;
@@ -72,18 +73,10 @@ pub fn install_msi(msi: &str, app: &AHQStoreApplication) -> Option<()> {
   .ok()?;
   fs::remove_file(&msi).ok()?;
 
-  match run("msiexec", &["/norestart", "/qn", "/i", &to_exec_msi])
-    .ok()?
-    .wait()
-    .ok()?
-    .success()
-  {
-    true => Some(()),
-    false => None,
-  }
+  run("msiexec", &["/norestart", "/qn", "/i", &to_exec_msi]).ok()
 }
 
-pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<()> {
+pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<Child> {
   let install_folder = get_program_folder(&app.appId);
   let version_file = format!("{}\\ahqStoreVersion", install_folder);
 
@@ -120,28 +113,39 @@ pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<()> {
           {
             cleanup(false);
           }
-          return Some(());
+          return Command::new("whoami")
+            .creation_flags(0x08000000)
+            .spawn()
+            .ok();
         }
       }
     }
   }
   cleanup(true);
+
   None
 }
 
-pub fn uninstall_app(app: &AHQStoreApplication) -> Option<String> {
+pub enum UninstallResult {
+  Thread(JoinHandle<Option<String>>),
+  Sync(Option<String>),
+}
+
+pub fn uninstall_app(app: &AHQStoreApplication) -> UninstallResult {
   let link = get_target_lnk(&app.appShortcutName);
   let program = get_program_folder(&app.appId);
 
   if msi::is_msi(&app.appId) {
-    msi::uninstall_msi(&app.appId);
+    return UninstallResult::Thread(msi::uninstall_msi(app.appId.clone()));
+  } else {
+    let _ = fs::remove_file(&link);
+
+    if !fs::remove_dir_all(&program).is_ok() {
+      return UninstallResult::Sync(None);
+    }
   }
 
-  let _ = fs::remove_file(&link);
-
-  fs::remove_dir_all(&program).ok()?;
-
-  Some(app.appId.clone())
+  UninstallResult::Sync(Some(app.appId.clone()))
 }
 
 pub fn list_apps() -> Option<Vec<AppData>> {
@@ -162,12 +166,16 @@ pub fn list_apps() -> Option<Vec<AppData>> {
     ))
     .unwrap_or("unknown".into());
 
-    if msi::is_msi(dir) {
-      if msi::exists(dir).unwrap_or(false) {
+    if version == "unknown" {
+      let _ = fs::remove_dir_all(get_program_folder(&dir));
+    } else if version != "custom" {
+      if msi::is_msi(dir) {
+        if msi::exists(dir).unwrap_or(false) {
+          vec.push((dir.to_owned(), version));
+        }
+      } else {
         vec.push((dir.to_owned(), version));
       }
-    } else {
-      vec.push((dir.to_owned(), version));
     }
   }
 

@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, process::Command};
 
 use ahqstore_types::InstallerFormat;
 
@@ -7,7 +7,7 @@ use crate::utils::{
   structs::{AHQStoreApplication, AppData},
 };
 
-pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
+pub async fn install_app(app: AHQStoreApplication) -> Option<Child> {
   let file = get_installer_file(&app);
 
   let Some(linux) = app.get_linux_download() else {
@@ -15,7 +15,11 @@ pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
   };
 
   match linux.installerType {
-    InstallerFormat::LinuxAppImage => deploy_appimg(&file, &app),
+    InstallerFormat::LinuxAppImage => {
+      deploy_appimg(&file, &app);
+
+      Command::new("bash").arg("true").spawn().ok()
+    }
     _ => None,
   }
 }

@@ -1,7 +1,10 @@
 use msi::{open, Select};
 use winreg::{enums::HKEY_LOCAL_MACHINE, RegKey};
 
-use std::fs::{self, File};
+use std::{
+  fs::{self, File},
+  thread::{self, JoinHandle},
+};
 
 use crate::utils::get_program_folder;
 
@@ -31,7 +34,7 @@ pub fn exists(app_id: &str) -> Option<bool> {
   let mut msi = open(msi).ok()?;
 
   let product_code = get_product_code(&mut msi)?;
-  
+
   let reg = RegKey::predef(HKEY_LOCAL_MACHINE);
   reg
     .open_subkey(&format!(
@@ -43,19 +46,24 @@ pub fn exists(app_id: &str) -> Option<bool> {
   Some(true)
 }
 
-pub fn uninstall_msi(app_id: &str) -> Option<()> {
-  let msi = msi_from_id(app_id);
+pub fn uninstall_msi(app_id: String) -> JoinHandle<Option<String>> {
+  thread::spawn(move || {
+    let program = get_program_folder(&app_id);
+    let msi = msi_from_id(&app_id);
 
-  if exists(&app_id).unwrap_or(false) {
-    return match run("msiexec", &["/passive", "/qn", "/x", &msi])
-      .ok()?
-      .wait()
-      .ok()?
-      .success()
-    {
-      true => Some(()),
-      _ => None,
-    };
-  }
-  None
+    fs::remove_dir_all(&program).ok()?;
+
+    if exists(&app_id).unwrap_or(false) {
+      return match run("msiexec", &["/passive", "/qn", "/x", &msi])
+        .ok()?
+        .wait()
+        .ok()?
+        .success()
+      {
+        true => Some(app_id),
+        _ => None,
+      };
+    }
+    None
+  })
 }
