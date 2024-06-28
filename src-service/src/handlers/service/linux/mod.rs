@@ -5,6 +5,7 @@ use ahqstore_types::InstallerFormat;
 use crate::utils::{
   chmod, get_installer_file, get_program_folder, get_programs, get_target_lnk,
   structs::{AHQStoreApplication, AppData},
+  process::Child
 };
 
 pub async fn install_app(app: AHQStoreApplication) -> Option<Child> {
