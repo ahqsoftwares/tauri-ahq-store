@@ -32,9 +32,7 @@ pub async fn handle_inst(resp: &mut Library, state: &mut DaemonState) {
     match x.try_wait() {
       Ok(Some(s)) => {
         if s.success() {
-
         } else {
-
         }
       }
       Ok(None) => {}
