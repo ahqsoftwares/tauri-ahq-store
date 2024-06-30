@@ -76,6 +76,7 @@ pub async fn download_app(
     Response::AppData(_, _, data) => {
       let file = get_installer_file(&data);
 
+      val.app = Some(data.clone());
       val.status = AppStatus::Downloading;
 
       #[cfg(windows)]

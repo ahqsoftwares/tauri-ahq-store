@@ -194,14 +194,8 @@ async fn run_daemon(mut rx: Receiver<Command>) {
           UninstallResult::Sync(x) => {
             state.step = Step::Done;
             match x {
-              Some(_) => {
-                resp.status = AppStatus::UninstallSuccessful;
-                entry.status = AppStatus::UninstallSuccessful;
-              }
-              _ => {
-                resp.status = AppStatus::NotSuccessful;
-                entry.status = AppStatus::UninstallSuccessful;
-              }
+              Some(_) => resp.status = AppStatus::UninstallSuccessful,
+              _ => resp.status = AppStatus::NotSuccessful
             }
           }
           UninstallResult::Thread(x) => {
