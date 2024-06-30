@@ -2,7 +2,7 @@ use ahqstore_types::{AppStatus, Command, Library, Response, ToDo};
 use std::sync::mpsc::Receiver;
 
 use crate::{
-  handlers::get_app,
+  handlers::{get_app, get_app_local},
   utils::{ws_send, ServiceIpc},
 };
 
@@ -29,7 +29,7 @@ pub async fn recv(
           });
         }
         Command::UninstallApp(ref_id, app_id) => {
-          if let Response::AppData(_, app_id, app) = get_app(ref_id, app_id).await {
+          if let Response::AppData(_, app_id, app) = get_app_local(ref_id, app_id).await {
             pending.push(Library {
               app_id,
               is_update: false,

@@ -1,10 +1,12 @@
-use std::{fs, process::Command};
+use std::{
+  fs,
+  process::{Child, Command},
+};
 
 use ahqstore_types::InstallerFormat;
 
 use crate::utils::{
   chmod, get_installer_file, get_program_folder, get_programs, get_target_lnk,
-  process::Child,
   structs::{AHQStoreApplication, AppData},
 };
 

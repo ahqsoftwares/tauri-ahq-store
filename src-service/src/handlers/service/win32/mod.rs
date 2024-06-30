@@ -101,29 +101,30 @@ pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<Child> {
     }
   };
 
-  if let Ok(mut child) = cmd {
-    if let Ok(status) = child.wait() {
-      if status.success() {
-        if let Some(_) = fs::write(&version_file, &app.version).ok() {
-          if let Some(_) = fs::write(
-            format!("{}\\app.json", &install_folder),
-            to_string_pretty(&app).ok()?,
-          )
-          .ok()
-          {
-            cleanup(false);
-          }
-          return Command::new("whoami")
-            .creation_flags(0x08000000)
-            .spawn()
-            .ok();
-        }
-      }
-    }
-  }
-  cleanup(true);
+  let val = (|| {
+    let mut child = cmd.ok()?;
+    let status = child.wait().ok()?;
 
-  None
+    if !status.success() {
+      return None;
+    }
+    let _ = fs::write(&version_file, &app.version).ok()?;
+
+    let _ = fs::write(
+      format!("{}\\app.json", &install_folder),
+      to_string_pretty(&app).ok()?,
+    )
+    .ok()?;
+
+    return Command::new("whoami")
+      .creation_flags(0x08000000)
+      .spawn()
+      .ok();
+  })();
+
+  cleanup(val.is_none());
+
+  val
 }
 
 pub enum UninstallResult {

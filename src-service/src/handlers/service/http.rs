@@ -1,8 +1,13 @@
 use ahqstore_types::{AppStatus, Commit, Library};
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, Request, StatusCode};
-use std::{fs::File, io::Write};
+use serde_json::from_str;
+use std::{
+  fs::{self, File},
+  io::Write,
+};
 
+use crate::utils::get_program_folder;
 #[allow(unused)]
 use crate::{
   handlers::daemon::lib_msg,
@@ -102,32 +107,26 @@ pub async fn download_app(
 
       let mut last = 0.0f64;
 
-      // loop {
-      //   let byte = resp.chunk().await.ok()?;
-
-      //   match byte {
-      //     Some(x) => {
-      //       current += x.len() as u64;
-      //       file.write(&x).ok()?;
-
-      //       let perc = ((current as f64) * 100.0) / (total as f64);
-
-      //       if last != perc {
-      //         val.progress = perc;
-      //         last = perc;
-
-      //         ws_send(&mut get_iprocess().unwrap(), &lib_msg()).await;
-      //       }
-      //     }
-      //     None => break,
-      //   }
-      // }
       Some((data, file, resp))
     }
     _ => {
       return None;
     }
   }
+}
+
+pub async fn get_app_local(ref_id: RefId, app_id: AppId) -> Response {
+  let folder = get_program_folder(&app_id);
+
+  let Ok(x) = fs::read_to_string(format!("{}/app.json", &folder)) else {
+    return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
+  };
+
+  let Ok(x) = from_str(&x) else {
+    return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
+  };
+
+  Response::AppData(ref_id, app_id, x)
 }
 
 pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {

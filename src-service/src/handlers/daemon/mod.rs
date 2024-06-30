@@ -13,6 +13,7 @@ use std::{
   future::{Future, IntoFuture},
   process::Child,
   sync::mpsc::{channel, Receiver, Sender},
+  thread::JoinHandle,
   time::{Duration, SystemTime},
 };
 use tokio::{
@@ -25,7 +26,7 @@ use crate::utils::{get_iprocess, ws_send};
 use super::{
   get_app, get_commit, get_prefs, list_apps,
   service::{download_app, install_app},
-  uninstall_app,
+  uninstall_app, UninstallResult,
 };
 
 pub static mut UPDATE_STATUS_REPORT: Option<UpdateStatusReport> = None;
@@ -80,7 +81,7 @@ pub enum Step {
 pub enum DaemonData {
   Dwn(DownloadData),
   Inst(Child),
-  Unst(Child),
+  Unst(JoinHandle<Option<String>>),
   None,
 }
 
@@ -88,7 +89,6 @@ pub enum DaemonData {
 pub struct DownloadData {
   pub current: u64,
   pub total: u64,
-  pub last: f64,
   pub file: File,
   pub ext_bytes: reqwest::Response,
   pub app: AHQStoreApplication,
@@ -162,6 +162,7 @@ async fn run_daemon(mut rx: Receiver<Command>) {
       }
     } else if let Step::StartDownload = state.step {
       let entry = pending.get_mut(state.entry).unwrap();
+
       if let Some((app, file, resp)) = download_app(entry).await {
         let len = resp.content_length().unwrap_or(0);
 
@@ -175,7 +176,6 @@ async fn run_daemon(mut rx: Receiver<Command>) {
           ext_bytes: resp,
           total: len,
           current: 0,
-          last: 0.0,
         }));
       } else {
         state.step = Step::Done;
@@ -184,61 +184,45 @@ async fn run_daemon(mut rx: Receiver<Command>) {
     } else if let Step::Downloading = state.step {
       let resp = pending.get_mut(state.entry).unwrap();
       dwn::handle(resp, &mut state).await;
+    } else if let Step::StartUninstall = state.step {
+      let resp = pending.get_mut(state.entry).unwrap();
+
+      if let Some(x) = &resp.app {
+        let res = uninstall_app(&x);
+
+        match res {
+          UninstallResult::Sync(x) => {
+            state.step = Step::Done;
+            match x {
+              Some(_) => {
+                resp.status = AppStatus::UninstallSuccessful;
+                entry.status = AppStatus::UninstallSuccessful;
+              }
+              _ => {
+                resp.status = AppStatus::NotSuccessful;
+                entry.status = AppStatus::UninstallSuccessful;
+              }
+            }
+          }
+          UninstallResult::Thread(x) => {
+            resp.status = AppStatus::Uninstalling;
+            state.step = Step::Uninstalling;
+            state.data = Some(DaemonData::Unst(x));
+          }
+        }
+      }
+    } else if let Step::Installing = state.step {
+      let resp = pending.get_mut(state.entry).unwrap();
+      dwn::handle_inst(resp, &mut state).await;
+    } else if let Step::Uninstalling = state.step {
+      let resp = pending.get_mut(state.entry).unwrap();
+      dwn::handle_u_inst(resp, &mut state).await;
     }
 
     ws_send(&mut ws, &lib_msg()).await;
 
     let mut has_updated = false;
-    // for cmd in pending.iter_mut() {
-    //   let to = cmd.to.clone();
-    //   match &to {
-    //     ToDo::Install => {
-    //       cmd.status = AppStatus::Downloading;
-    //       ws_send(&mut ws, &lib_msg()).await;
-    //       BETWEEN().await;
 
-    //       if let Some(x) = download_app(cmd).await {
-    //         cmd.status = AppStatus::Installing;
-
-    //         ws_send(&mut ws, &lib_msg()).await;
-    //         BETWEEN().await;
-    //         BETWEEN().await;
-    //         BETWEEN().await;
-
-    //         if let Some(_) = install_app(x.0).await {
-    //           cmd.status = AppStatus::InstallSuccessful;
-
-    //           if cmd.is_update {
-    //             was_updates = true;
-    //           }
-    //         } else {
-    //           cmd.status = AppStatus::NotSuccessful;
-    //         }
-    //       } else {
-    //         cmd.status = AppStatus::NotSuccessful;
-    //       }
-    //       ws_send(&mut ws, &lib_msg()).await;
-    //       BETWEEN().await;
-    //     }
-    //     ToDo::Uninstall => {
-    //       cmd.status = AppStatus::Uninstalling;
-    //       ws_send(&mut ws, &lib_msg()).await;
-    //       BETWEEN().await;
-
-    //       if let Some(app) = &cmd.app {
-    //         if let None = uninstall_app(app) {
-    //           cmd.status = AppStatus::NotSuccessful;
-    //         } else {
-    //           cmd.status = AppStatus::UninstallSuccessful;
-    //         }
-    //       }
-    //       ws_send(&mut ws, &lib_msg()).await;
-    //       BETWEEN().await;
-    //     }
-    //   }
-
-    //   BETWEEN().await;
-    // }
     unsafe {
       match UPDATE_STATUS_REPORT.as_ref().unwrap() {
         UpdateStatusReport::UpToDate => {}
