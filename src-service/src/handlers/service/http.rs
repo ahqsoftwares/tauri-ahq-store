@@ -96,6 +96,7 @@ pub async fn download_app(
       #[cfg(debug_assertions)]
       write_log("Response Successful");
 
+      let _ = fs::remove_file(&file);
       let mut file = File::create(&file).ok()?;
 
       #[cfg(debug_assertions)]

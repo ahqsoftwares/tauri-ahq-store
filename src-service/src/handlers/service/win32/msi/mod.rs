@@ -51,16 +51,18 @@ pub fn uninstall_msi(app_id: String) -> JoinHandle<Option<String>> {
     let program = get_program_folder(&app_id);
     let msi = msi_from_id(&app_id);
 
-    fs::remove_dir_all(&program).ok()?;
-
     if exists(&app_id).unwrap_or(false) {
-      return match run("msiexec", &["/passive", "/qn", "/x", &msi])
+      let succ = run("msiexec", &["/passive", "/qn", "/x", &msi])
         .ok()?
         .wait()
         .ok()?
-        .success()
-      {
-        true => Some(app_id),
+        .success();
+
+      return match succ {
+        true => {
+          fs::remove_dir_all(&program).ok()?;
+          Some(app_id)
+        }
         _ => None,
       };
     }

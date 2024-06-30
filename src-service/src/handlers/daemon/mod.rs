@@ -25,8 +25,8 @@ use crate::utils::{get_iprocess, ws_send};
 
 use super::{
   get_app, get_commit, get_prefs, list_apps,
-  service::{download_app, install_app},
-  uninstall_app, UninstallResult,
+  service::{download_app, install_app, UninstallResult},
+  uninstall_app,
 };
 
 pub static mut UPDATE_STATUS_REPORT: Option<UpdateStatusReport> = None;
@@ -37,6 +37,13 @@ fn time() -> u64 {
     .duration_since(SystemTime::UNIX_EPOCH)
     .unwrap()
     .as_secs()
+}
+
+fn time_millis() -> u128 {
+  SystemTime::now()
+    .duration_since(SystemTime::UNIX_EPOCH)
+    .unwrap()
+    .as_millis()
 }
 
 pub fn lib_msg() -> Vec<u8> {
@@ -54,7 +61,7 @@ pub fn lib_msg() -> Vec<u8> {
   }))
 }
 
-pub static BETWEEN: fn() -> Sleep = || sleep(Duration::from_millis(100));
+pub static BETWEEN: fn() -> Sleep = || sleep(Duration::from_millis(20));
 
 pub fn get_install_daemon() -> Sender<Command> {
   let (tx, rx) = channel();
@@ -73,8 +80,9 @@ pub enum Step {
   Installing,
   StartUninstall,
   Uninstalling,
-  #[default]
   Done,
+  #[default]
+  None,
 }
 
 #[derive(Debug)]
@@ -123,10 +131,11 @@ async fn run_daemon(mut rx: Receiver<Command>) {
   let pending = unsafe { LIBRARY.as_mut().unwrap() };
 
   let mut run_update_now = false;
+
+  let mut lib_sent = time_millis();
   loop {
     // Get data loop
     let Some(mut ws) = get_iprocess() else {
-      BETWEEN().await;
       continue;
     };
 
@@ -143,11 +152,8 @@ async fn run_daemon(mut rx: Receiver<Command>) {
       }
     }
 
-    if let Step::Done = state.step {
-      if pending.len() > 0 {
-        pending.remove(0);
-      }
-
+    let mut state_change = false;
+    if let Step::None = state.step {
       if pending.len() > 0 {
         let data = pending.get(0).unwrap();
 
@@ -158,8 +164,15 @@ async fn run_daemon(mut rx: Receiver<Command>) {
           },
           data: None,
           entry: 0,
-        }
+        };
+        state_change = true;
       }
+    } else if let Step::Done = state.step {
+      if pending.len() > 0 {
+        pending.remove(0);
+      }
+
+      state.step = Step::None;
     } else if let Step::StartDownload = state.step {
       let entry = pending.get_mut(state.entry).unwrap();
 
@@ -181,9 +194,10 @@ async fn run_daemon(mut rx: Receiver<Command>) {
         state.step = Step::Done;
         entry.status = AppStatus::NotSuccessful;
       }
+      state_change = true;
     } else if let Step::Downloading = state.step {
       let resp = pending.get_mut(state.entry).unwrap();
-      dwn::handle(resp, &mut state).await;
+      dwn::handle(resp, &mut state, &mut state_change).await;
     } else if let Step::StartUninstall = state.step {
       let resp = pending.get_mut(state.entry).unwrap();
 
@@ -195,7 +209,7 @@ async fn run_daemon(mut rx: Receiver<Command>) {
             state.step = Step::Done;
             match x {
               Some(_) => resp.status = AppStatus::UninstallSuccessful,
-              _ => resp.status = AppStatus::NotSuccessful
+              _ => resp.status = AppStatus::NotSuccessful,
             }
           }
           UninstallResult::Thread(x) => {
@@ -204,16 +218,21 @@ async fn run_daemon(mut rx: Receiver<Command>) {
             state.data = Some(DaemonData::Unst(x));
           }
         }
+
+        state_change = true;
       }
     } else if let Step::Installing = state.step {
       let resp = pending.get_mut(state.entry).unwrap();
-      dwn::handle_inst(resp, &mut state).await;
+      dwn::handle_inst(resp, &mut state, &mut state_change).await;
     } else if let Step::Uninstalling = state.step {
       let resp = pending.get_mut(state.entry).unwrap();
-      dwn::handle_u_inst(resp, &mut state).await;
+      dwn::handle_u_inst(resp, &mut state, &mut state_change).await;
     }
 
-    ws_send(&mut ws, &lib_msg()).await;
+    if time_millis() - lib_sent >= 500 || state_change {
+      ws_send(&mut ws, &lib_msg()).await;
+      lib_sent = time_millis();
+    }
 
     let mut has_updated = false;
 
@@ -234,7 +253,10 @@ async fn run_daemon(mut rx: Receiver<Command>) {
       }
     }
 
-    BETWEEN().await;
+    match state.step {
+      Step::Downloading => {}
+      _ => BETWEEN().await,
+    };
   }
 }
 

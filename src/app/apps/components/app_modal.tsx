@@ -88,6 +88,8 @@ export default function ShowModal(props: AppDataPropsModal) {
 
   });
 
+  const progressBar = useRef<HTMLProgressElement>("" as any);
+
   useEffect(() => {
     const id = worker.listen((lib, update) => {
       setUpdating(update != "UpToDate" && update != "Disabled");
@@ -98,21 +100,29 @@ export default function ShowModal(props: AppDataPropsModal) {
         if (entry) {
           if (entry.to == "Uninstall") {
             button.current.innerHTML = entry.status;
+            progressBar.current.hidden = false;
+            progressBar.current.removeAttribute("value");
 
             if (entry.status == "Uninstalled" || entry.status == "Error") {
+              progressBar.current.hidden = true;
               setTimeout(async () => {
                 setInstalled(false);
               }, 1000);
             }
           } else {
             if (entry.status == "Downloading...") {
-              button.current.innerHTML = `<div class="dui-radial-progress" style="--value: ${entry.progress}; --size: 2rem; font-size: 0.75rem;">${entry.progress.toFixed(1)}</div> (${formatBytes(
+              button.current.innerHTML = `${entry.progress.toFixed(2)}% of ${formatBytes(
                 entry.max,
-              )})`;
+              )}`;
+              progressBar.current.hidden = false;
+              progressBar.current.value = entry.progress;
             } else {
               button.current.innerHTML = entry.status;
+              progressBar.current.hidden = false;
+              progressBar.current.removeAttribute("value");
 
               if (entry.status == "Installed" || entry.status == "Error") {
+                progressBar.current.hidden = true;
                 setTimeout(async () => {
                   setInstalled(true);
                 }, 1000);
@@ -191,12 +201,15 @@ export default function ShowModal(props: AppDataPropsModal) {
                 }}
               />
             </button>
+            {/* @ts-ignore */}
             <img
-              width={128}
-              height={128}
               src={icon}
               alt="Logo"
-              className="rounded-3xl shadow-2xl"
+              className="rounded-full shadow-2xl"
+              style={{
+                "width": "125px",
+                "height": "125px"
+              }}
             />
 
             <h1
@@ -217,6 +230,8 @@ export default function ShowModal(props: AppDataPropsModal) {
                 {description.length > 128 && <>...</>}
               </h2>
             </div>
+
+            <progress ref={progressBar} className="dui-progress w-[60%] mb-2" value={0} max="100" hidden></progress>
 
             {isAdmin || install_apps ? (
               installed == "hidden" ? (

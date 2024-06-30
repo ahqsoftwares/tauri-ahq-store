@@ -33,6 +33,7 @@ pub fn handle_msg(data: String) {
   spawn(async move {
     if let Some(mut ws) = get_iprocess() {
       if let Some(x) = Command::try_from(&data) {
+        println!("{:?}", &x);
         match x {
           Command::GetSha(ref_id) => unsafe {
             let val = if let Some(x) = GH_URL.as_ref() {

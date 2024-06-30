@@ -8,7 +8,8 @@ use std::{
   io::Error,
   os::windows::process::CommandExt,
   process::{Child, Command},
-  thread::JoinHandle,
+  thread::{sleep, JoinHandle},
+  time::Duration,
 };
 
 use crate::{
@@ -19,6 +20,8 @@ use crate::{
   },
 };
 
+use super::UninstallResult;
+
 pub fn run(path: &str, args: &[&str]) -> Result<Child, Error> {
   Command::new(path)
     .creation_flags(0x08000000)
@@ -27,14 +30,11 @@ pub fn run(path: &str, args: &[&str]) -> Result<Child, Error> {
 }
 
 pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
+  println!("{} {}", &path, &dest);
   Command::new("powershell")
-    .creation_flags(0x08000000)
-    .args(["-NoProfile", "-WindowStyle", "Minimized"])
     .args([
-      "Expand-Archive",
-      format!("-Path \"{}\"", &path).as_str(),
-      format!("-DestinationPath \"{}\"", &dest).as_str(),
-      "-Force",
+      "-Command",
+      &format!("Expand-Archive -Path '{path}' -DestinationPath '{dest}' -Force"),
     ])
     .spawn()
 }
@@ -83,7 +83,10 @@ pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<Child> {
   let _ = fs::remove_dir_all(&install_folder);
   fs::create_dir_all(&install_folder).ok()?;
 
+  sleep(Duration::from_millis(200));
   let cmd = unzip(&zip, &install_folder);
+
+  println!("Unzipped");
 
   let cleanup = |err| {
     let _ = fs::remove_file(&zip);
@@ -127,11 +130,6 @@ pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<Child> {
   val
 }
 
-pub enum UninstallResult {
-  Thread(JoinHandle<Option<String>>),
-  Sync(Option<String>),
-}
-
 pub fn uninstall_app(app: &AHQStoreApplication) -> UninstallResult {
   let link = get_target_lnk(&app.appShortcutName);
   let program = get_program_folder(&app.appId);
@@ -146,7 +144,7 @@ pub fn uninstall_app(app: &AHQStoreApplication) -> UninstallResult {
     }
   }
 
-  UninstallResult::Sync(Some(app.appId.clone()))
+  UninstallResult::Sync(None)
 }
 
 pub fn list_apps() -> Option<Vec<AppData>> {
