@@ -69,7 +69,9 @@ pub fn uninstall_app(app: &AHQStoreApplication) -> UninstallResult {
 
   let _ = fs::remove_file(&link);
 
-  fs::remove_dir_all(&program).ok()?;
+  let Ok(_) = fs::remove_dir_all(&program) else {
+    return UninstallResult::Sync(None);
+  };
 
   UninstallResult::Sync(Some(app.appId.clone()))
 }
