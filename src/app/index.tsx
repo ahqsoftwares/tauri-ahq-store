@@ -28,7 +28,7 @@ import fetchPrefs, {
 } from "./resources/utilities/preferences";
 import { runner } from "./resources/core/handler";
 import { sendNotification } from "@tauri-apps/plugin-notification";
-import { Prefs, get_home, get_map } from "./resources/core";
+import { get_home, get_map } from "./resources/core";
 import {
   defaultDark,
   defaultLight,
@@ -36,7 +36,6 @@ import {
 } from "./resources/utilities/themes";
 import { Auth, logOut } from "../auth";
 import { worker } from "./resources/core/installer";
-import fetchApps from "./resources/api/fetchApps";
 
 interface AppProps {
   auth: Auth;

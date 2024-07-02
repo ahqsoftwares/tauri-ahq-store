@@ -29,6 +29,7 @@
     "window:allow-hide",
     "window:allow-close",
     "window:allow-set-decorations",
+    "window:allow-set-fullscreen",
     "webview:allow-print",
     "webview:default",
     {

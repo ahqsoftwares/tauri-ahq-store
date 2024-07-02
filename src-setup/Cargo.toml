@@ -8,16 +8,16 @@ homepage = "https://ahqstore.github.io/"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dirs = "5.0.1"
-lazy_static = "1.4.0"
-open = "5.1.4"
+dirs = "5"
+lazy_static = "1"
+open = "5"
 reqwest = { version = "0.12.5", features = ["json"] }
 serde = { version = "1.0.203", features = ["derive"] }
-slint = "1.6.0"
-tokio = { version = "1.38.0", features = ["rt"] }
+slint = "1"
+tokio = { version = "1", features = ["rt"] }
 
 [target.'cfg(unix)'.dependencies]
-notify-rust = "4.11.0"
+notify-rust = "4"
 
 [target.'cfg(windows)'.dependencies]
 check_elevation = "0.2.4"
@@ -27,7 +27,7 @@ winreg = "0.52.0"
 tauri-winres = "0.1"
 
 [build-dependencies]
-slint-build = "1.6.0"
+slint-build = "1"
 
 [profile.release]
 panic = "abort"

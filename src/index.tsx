@@ -180,13 +180,22 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
 
     reportWebVitals();
   } else {
+    setInterval(() => {
+      appWindow.setFullscreen(false);
+    }, 2000);
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       document.querySelector("html")?.setAttribute("data-theme", "night");
     }
     document.querySelectorAll("*").forEach((v) => v.setAttribute("data-tauri-drag-region", ""))
-    root.render(<div data-tauri-drag-region className="bg-base-100 text-base-content border-base-content w-screen h-screen flex flex-col justify-center items-center text-center">
-      <h1 data-tauri-drag-region>Code</h1>
-      <h1 data-tauri-drag-region className="font-extrabold text-xl">{window.location.pathname.replace("/", "")}</h1>
+    root.render(<div data-tauri-drag-region className="bg-base-100 text-base-content border-base-content w-screen h-screen flex flex-col">
+      <div data-tauri-drag-region className="bg-base-300 py-2 flex text-neutral-content w-full items-center text-center justify-center mb-auto">
+        <img data-tauri-drag-region src="/favicon.ico" width={20} height={20} />
+        <span data-tauri-drag-region className="ml-1 font-sans  font-extrabold">AHQ Store</span>
+      </div>
+      <div className="mb-auto flex flex-col justify-center items-center text-center">
+        <h1 data-tauri-drag-region>Enter this code</h1>
+        <h1 data-tauri-drag-region className="font-extrabold text-2xl">{window.location.pathname.replace("/", "")}</h1>
+      </div>
     </div>);
   }
 }

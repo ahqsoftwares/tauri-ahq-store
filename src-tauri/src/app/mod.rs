@@ -298,9 +298,9 @@ fn show_code<R: Runtime>(app: AppHandle<R>, code: String) {
   WebviewWindowBuilder::new(&app, "code", tauri::WebviewUrl::App(PathBuf::from(&format!("/{code}"))))
     .skip_taskbar(true)
     .title("Login to GitHub")
-    .inner_size(400.0, 100.0)
-    .max_inner_size(400.0, 100.0)
-    .min_inner_size(400.0, 100.0)
+    .inner_size(400.0, 150.0)
+    .max_inner_size(400.0, 150.0)
+    .min_inner_size(400.0, 150.0)
     .decorations(false)
     .always_on_top(true)
     .fullscreen(false)
@@ -309,8 +309,7 @@ fn show_code<R: Runtime>(app: AppHandle<R>, code: String) {
     .minimizable(false)
     .closable(true)
     .focused(true)
-    .build()
-    .unwrap();
+    .build();
 }
 
 #[tauri::command(async)]
