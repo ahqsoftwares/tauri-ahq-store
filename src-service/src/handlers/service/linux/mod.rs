@@ -63,7 +63,7 @@ Icon={}",
   None
 }
 
-pub fn uninstall_app(app: &AHQStoreApplication) -> Option<UninstallResult> {
+pub fn uninstall_app(app: &AHQStoreApplication) -> UninstallResult {
   let link = get_target_lnk(&app.appShortcutName);
   let program = get_program_folder(&app.appId);
 
