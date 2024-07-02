@@ -142,7 +142,7 @@ jobs:
 
       - name: Upload Windows Setup
         if: matrix.os == 'windows-latest'
-        uses: ahqstore/upload-release-assets@v59
+        uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -153,7 +153,7 @@ jobs:
 
       - name: Upload Linux Setup
         if: matrix.os != 'windows-latest'
-        uses: ahqstore/upload-release-assets@v59
+        uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -220,7 +220,7 @@ jobs:
 
       - name: Upload Service (Windows)
         if: matrix.platform == 'windows-latest'
-        uses: ahqstore/upload-release-assets@v59
+        uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -232,7 +232,7 @@ jobs:
       
       - name: Upload Service (Linux)
         if: matrix.platform == 'ubuntu-latest'
-        uses: ahqstore/upload-release-assets@v59
+        uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
