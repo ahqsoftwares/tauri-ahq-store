@@ -10,7 +10,7 @@
     "active": true,
     "category": "Business",
     "copyright": "AHQ Softwares",
-    "targets": ["msi", "updater", "deb", "rpm", "appimage"],
+    "targets": ["msi", "deb", "rpm", "appimage"],
     "externalBin": [],
     "icon": [
       "icons/32x32.png",
