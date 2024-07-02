@@ -9,6 +9,7 @@ use crate::utils::{
   chmod, get_installer_file, get_program_folder, get_programs, get_target_lnk,
   structs::{AHQStoreApplication, AppData},
 };
+use super::UninstallResult;
 
 pub async fn install_app(app: AHQStoreApplication) -> Option<Child> {
   let file = get_installer_file(&app);
@@ -62,7 +63,7 @@ Icon={}",
   None
 }
 
-pub fn uninstall_app(app: &AHQStoreApplication) -> Option<String> {
+pub fn uninstall_app(app: &AHQStoreApplication) -> Option<UninstallResult> {
   let link = get_target_lnk(&app.appShortcutName);
   let program = get_program_folder(&app.appId);
 
@@ -70,7 +71,7 @@ pub fn uninstall_app(app: &AHQStoreApplication) -> Option<String> {
 
   fs::remove_dir_all(&program).ok()?;
 
-  Some(app.appId.clone())
+  UninstallResult::Sync(Some(app.appId.clone()))
 }
 
 pub fn list_apps() -> Option<Vec<AppData>> {

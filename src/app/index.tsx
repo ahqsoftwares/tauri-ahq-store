@@ -36,6 +36,7 @@ import {
 } from "./resources/utilities/themes";
 import { Auth, logOut } from "../auth";
 import { worker } from "./resources/core/installer";
+import fetchApps from "./resources/api/fetchApps";
 
 interface AppProps {
   auth: Auth;
@@ -150,6 +151,13 @@ function Render(props: AppProps) {
 
         await worker.init();
         setApps(home);
+
+        for (let i = 0; i < home.length; i++) {
+          const [_, apps] = home[i];
+
+          await fetchApps(apps);
+        }
+
         setLoad(true);
       } catch (_) {
         logOut(auth);

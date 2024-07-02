@@ -94,88 +94,99 @@ function loadRender(unsupported: boolean, text = "Loading") {
 if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
   loadRender(true);
 } else {
-  initDeveloperConfiguration();
+  if (appWindow.label == "main") {
+    initDeveloperConfiguration();
 
-  (async () => {
-    const ptf = await invoke("get_windows").catch(() => "10");
+    (async () => {
+      const ptf = await invoke("get_windows").catch(() => "10");
 
-    if (ptf == "11") {
-      document.querySelector("html")?.setAttribute("data-os", "win32");
-    }
-    setTimeout(async () => {
-      appWindow.setDecorations(true).catch(console.log);
-
-      appWindow.show();
-      if (!(await appWindow.isMaximized())) {
-        appWindow.maximize();
+      if (ptf == "11") {
+        document.querySelector("html")?.setAttribute("data-os", "win32");
       }
-    }, 500);
-  })();
-  loadAppVersion();
-  init();
+      setTimeout(async () => {
+        appWindow.setDecorations(true).catch(console.log);
 
-  const unlisten = appWindow.listen("needs_reinstall", () => {
-    unlisten.then((f) => f());
-    setInterval(() => loadRender(false, "Oops! AHQ Store needs reinstall.."), 10);
-  });
+        appWindow.show();
+        if (!(await appWindow.isMaximized())) {
+          appWindow.maximize();
+        }
+      }, 500);
+    })();
+    loadAppVersion();
+    init();
 
-  /*Logic
-   */
-  (async () => {
-    let permissionGranted = await isPermissionGranted();
+    const unlisten = appWindow.listen("needs_reinstall", () => {
+      unlisten.then((f) => f());
+      setInterval(() => loadRender(false, "Oops! AHQ Store needs reinstall.."), 10);
+    });
 
-    if (!permissionGranted) {
-      const permission = await requestPermission();
-      permissionGranted = permission === "granted";
-    }
-  })();
+    /*Logic
+     */
+    (async () => {
+      let permissionGranted = await isPermissionGranted();
 
-  loadRender(false);
+      if (!permissionGranted) {
+        const permission = await requestPermission();
+        permissionGranted = permission === "granted";
+      }
+    })();
 
-  (async () => {
-    const delay = (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
+    loadRender(false);
 
-    await delay(1000);
+    (async () => {
+      const delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
-    Manage();
-  })();
+      await delay(1000);
 
-  window.addEventListener("offline", () => {
-    loadRender(false, "Offline, waiting for network");
-  });
-
-  window.addEventListener("online", () => {
-    loadRender(false, "Back online!");
-    setTimeout(() => {
       Manage();
-    }, 1000);
-  });
+    })();
 
-  async function Manage() {
-    tryAutoLogin(auth).catch(() => { });
-    loadRender(false, "Launching Store...");
-    setTimeout(() => {
-      StoreLoad(Store, { auth });
-    }, 500);
+    window.addEventListener("offline", () => {
+      loadRender(false, "Offline, waiting for network");
+    });
+
+    window.addEventListener("online", () => {
+      loadRender(false, "Back online!");
+      setTimeout(() => {
+        Manage();
+      }, 1000);
+    });
+
+    async function Manage() {
+      tryAutoLogin(auth).catch(() => { });
+      loadRender(false, "Launching Store...");
+      setTimeout(() => {
+        StoreLoad(Store, { auth });
+      }, 500);
+    }
+
+    /**
+     * Load a Store Component on the DOM
+     * @param Component
+     * @param prop
+     */
+    function StoreLoad(Component: (props: AppProps) => any, { auth }: AppProps) {
+      const data = {
+        auth,
+      };
+
+      root.render(
+        <>
+          <Component {...data} />
+        </>,
+      );
+    }
+
+    reportWebVitals();
+  } else {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      document.querySelector("html")?.setAttribute("data-theme", "night");
+    }
+    document.querySelectorAll("*").forEach((v) => v.setAttribute("data-tauri-drag-region", ""))
+    root.render(<div data-tauri-drag-region className="bg-base-100 text-base-content border-base-content w-screen h-screen flex flex-col justify-center items-center text-center">
+      <h1 data-tauri-drag-region>Code</h1>
+      <h1 data-tauri-drag-region className="font-extrabold text-xl">{window.location.pathname.replace("/", "")}</h1>
+    </div>);
   }
-
-  /**
-   * Load a Store Component on the DOM
-   * @param Component
-   * @param prop
-   */
-  function StoreLoad(Component: (props: AppProps) => any, { auth }: AppProps) {
-    const data = {
-      auth,
-    };
-
-    root.render(
-      <>
-        <Component {...data} />
-      </>,
-    );
-  }
-
-  reportWebVitals();
 }

@@ -34,6 +34,10 @@ export async function startLogin(auth: Auth) {
     url: val.verification_uri,
   });
 
+  invoke("show_code", {
+    code: val.user_code
+  });
+
   let not_done = 0;
 
   const time = setInterval(async () => {
@@ -50,6 +54,7 @@ export async function startLogin(auth: Auth) {
     not_done += 1;
 
     if (response?.access_token != undefined) {
+      invoke("rem_code");
       clearInterval(time);
       if (await login(auth, response.access_token)) {
         Toast("Logged in", "success", 1);
@@ -61,6 +66,7 @@ export async function startLogin(auth: Auth) {
     }
 
     if (not_done >= 10) {
+      invoke("rem_code");
       t?.unmount();
       v?.unmount();
       Toast("Failed to login: Timed Out", "danger", 2000);

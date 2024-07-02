@@ -33,10 +33,9 @@ export async function login(auth: Auth, auth_tok: string, auto = false): Promise
       payload: auth_tok,
     }).then((d) => localStorage.setItem("token", JSON.stringify(d)));
 
-    if (auto) {
-      auth.onAuthChange.forEach((cb) => cb(data));
-    } else {
-      window.location.reload();
+    auth.onAuthChange.forEach((cb) => cb(data));
+    if (!auto) {
+      setTimeout(() => window.location.reload(), 2000);
     }
   } else {
     auth.onAuthChange.forEach((cb) => cb(undefined));

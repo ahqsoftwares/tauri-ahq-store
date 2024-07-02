@@ -122,7 +122,6 @@ impl WsConnection {
                 let stri = stri.to_string();
 
                 if let Some(win) = WINDOW.as_mut() {
-                  println!("{}", &stri);
                   win.emit("ws_resp", &[stri]).unwrap_or(());
                 }
               } else {

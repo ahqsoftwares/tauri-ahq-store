@@ -12,6 +12,7 @@ use crate::rpc;
 use tauri::menu::IconMenuItemBuilder;
 use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButton};
 use tauri::window::{ProgressBarState, ProgressBarStatus};
+use tauri::{AppHandle, Runtime, WebviewWindowBuilder};
 use tauri::{
   image::Image,
   menu::{Menu, MenuBuilder, MenuEvent, MenuId, MenuItem},
@@ -30,6 +31,7 @@ use windows::Win32::{
 };
 
 use std::panic::catch_unwind;
+use std::path::PathBuf;
 use std::process;
 use std::time::Duration;
 
@@ -205,7 +207,9 @@ pub fn main() {
       set_progress,
       is_an_admin,
       is_development,
-      check_install_update
+      check_install_update,
+      show_code,
+      rem_code
     ])
     .menu(|handle| Menu::new(handle))
     .build(context)
@@ -287,6 +291,34 @@ pub fn main() {
 #[tauri::command(async)]
 fn dsc_rpc(window: tauri::WebviewWindow<tauri::Wry>,) {
   rpc::init_presence(&window);
+}
+
+#[tauri::command(async)]
+fn show_code<R: Runtime>(app: AppHandle<R>, code: String) {
+  WebviewWindowBuilder::new(&app, "code", tauri::WebviewUrl::App(PathBuf::from(&format!("/{code}"))))
+    .skip_taskbar(true)
+    .title("Login to GitHub")
+    .inner_size(400.0, 100.0)
+    .max_inner_size(400.0, 100.0)
+    .min_inner_size(400.0, 100.0)
+    .decorations(false)
+    .always_on_top(true)
+    .fullscreen(false)
+    .content_protected(true)
+    .maximizable(false)
+    .minimizable(false)
+    .closable(true)
+    .focused(true)
+    .build()
+    .unwrap();
+}
+
+#[tauri::command(async)]
+fn rem_code<R: Runtime>(app: tauri::AppHandle<R>) {
+  app.get_webview_window("code")
+    .unwrap()
+    .destroy()
+    .unwrap()
 }
 
 #[tauri::command(async)]
