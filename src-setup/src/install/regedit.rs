@@ -19,7 +19,7 @@ pub fn create_association() -> Option<()> {
   shell
     .set_value(
       "",
-      &r"C:\Program Files\AHQ Store\AHQ Store.exe launch_app %1",
+      &r"C:\Program Files\AHQ Store\AHQ Store.exe protocol %1",
     )
     .ok()?;
 

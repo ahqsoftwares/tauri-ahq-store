@@ -30,8 +30,8 @@ pub fn run(path: &str, args: &[&str]) -> Result<Child, Error> {
 }
 
 pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
-  println!("{} {}", &path, &dest);
   Command::new("powershell")
+    .creation_flags(0x08000000)
     .args([
       "-Command",
       &format!("Expand-Archive -Path '{path}' -DestinationPath '{dest}' -Force"),

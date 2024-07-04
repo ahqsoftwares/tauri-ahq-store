@@ -20,17 +20,21 @@ pub async fn handle(resp: &mut Library, state: &mut DaemonState, imp: &mut bool)
         let _ = x.file.write_all(&chunk);
       }
       Ok(None) => {
+        println!("100 %");
         let _ = x.file.flush();
         let _ = x.file.sync_all();
         let app = x.app.clone();
 
         state.step = Step::Installing;
+
+        //Drop the File
         let mut data = replace(
           &mut state.data,
-          Some(DaemonData::Inst(install_app(app).await.unwrap())),
+          None,
         );
-
         drop(data);
+
+        state.data = Some(DaemonData::Inst(install_app(app).await.unwrap()));
         *imp = true;
       }
       _ => {}

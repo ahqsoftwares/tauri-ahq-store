@@ -29,8 +29,9 @@
         "template": "assets/install.wxs"
       }
     },
-    "longDescription": "AHQ Store\nA New Store for downloading apps!",
-    "resources": ["icons/pwd_reset.png"],
+    "publisher": "AHQ Softwares and Contributors",
+    "longDescription": "AHQ Store\nAn open sourced store for downloading applications",
+    "resources": [],
     "shortDescription": "AHQ Store",
     "linux": {
       "deb": {

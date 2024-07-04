@@ -17,11 +17,11 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 serde_json = "1.0.120"
 serde = { version = "1.0.203", features = ["derive"] }
 
-tauri = { version = "2.0.0-beta", features = ["wry", "tray-icon", "image-png"] }
+tauri = { version = "2.0.0-beta", features = ["wry", "tray-icon", "image-png", "rustls-tls"] }
 wry = "*"
 
 open = "5"
-reqwest = { version = "*", features = ["blocking", "json"] }
+reqwest = { version = "*", features = ["blocking", "json", "rustls-tls"] }
 chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 lazy_static = "1"
 
@@ -29,7 +29,7 @@ updater = { path = "../src-updater" }
 discord-rich-presence = "0.2.4"
 tokio = "1"
 tauri-plugin-notification = "2.0.0-beta"
-tauri-plugin-http = "2.0.0-beta"
+tauri-plugin-http = { version = "2.0.0-beta", features = ["rustls-tls"] }
 tauri-plugin-fs = "2.0.0-beta"
 tauri-plugin-process = "2.0.0-beta"
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
