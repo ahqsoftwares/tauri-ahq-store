@@ -350,7 +350,7 @@ jobs:
           sudo apt-get update
           sudo dpkg --add-architecture arm64
           sudo apt-get update
-          sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          sudo apt-get install gcc-aarch64-linux-gnu
           sudo apt-get install libwebkit2gtk-4.1-dev:arm64 build-essential:arm64 curl:arm64 wget:arm64 file:arm64 libssl-dev:arm64 libayatana-appindicator3-dev:arm64 librsvg2-dev:arm64
 
       - name: install Vite dependencies and Build React App
