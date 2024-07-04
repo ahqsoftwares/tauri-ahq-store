@@ -219,7 +219,7 @@ jobs:
     name: Build & Publish Tauri App & Service (x86_64)
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         platform: [windows-latest, ubuntu-latest]
 
@@ -241,9 +241,7 @@ jobs:
           node-version: 20
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
+        run: npm i -g pnpm 
 
       - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
@@ -311,7 +309,7 @@ jobs:
     name: Build & Publish Tauri App & Service (arm64)
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - platform: windows-latest
@@ -338,9 +336,7 @@ jobs:
           node-version: 20
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
+        run: npm i -g pnpm 
 
       - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
