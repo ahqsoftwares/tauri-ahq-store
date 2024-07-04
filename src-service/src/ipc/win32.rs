@@ -75,7 +75,11 @@ pub async fn launch() {
       let mut process_id = 0u32;
 
       unsafe {
-        let handle = HANDLE(handle as isize);
+        let handle = HANDLE(unsafe {
+          let mut hwn = handle as isize;
+
+          &mut hwn as *mut _ as *mut _
+        });
 
         let _ = GetNamedPipeClientProcessId(handle, &mut process_id as *mut _);
       }
