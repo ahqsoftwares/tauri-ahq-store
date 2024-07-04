@@ -173,8 +173,8 @@ jobs:
           - os: windows-latest
             target: aarch64-pc-windows-msvc
 
-          - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
+          # - os: ubuntu-latest
+            # target: aarch64-unknown-linux-gnu
       
     runs-on: ${{ matrix.os }}
         
@@ -324,8 +324,8 @@ jobs:
           - platform: windows-latest
             target: aarch64-pc-windows-msvc
           
-          - platform: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
+          # - platform: ubuntu-latest
+            #target: aarch64-unknown-linux-gnu
 
     runs-on: ${{ matrix.platform }}
     steps:
