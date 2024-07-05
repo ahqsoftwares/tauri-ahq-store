@@ -160,6 +160,8 @@ jobs:
 
       - name: Build Setup
         run: cargo build --release --target ${{ matrix.target }}
+        env:
+          RUSTFLAGS: -Z threads=32
         working-directory: src-setup
 
       - name: Upload Windows Setup
@@ -241,6 +243,8 @@ jobs:
 
       - name: Build Service
         run: cargo build --release
+        env:
+          RUSTFLAGS: -Z threads=32
         working-directory: src-service
 
       - name: Upload Service (Windows)
@@ -273,6 +277,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI }}
           TAURI_KEY_PASSWORD: ${{ secrets.KEYPASS }}
+          RUSTFLAGS: -Z threads=32
         with:
           args: --verbose --target ${{ matrix.target }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
@@ -342,6 +347,7 @@ jobs:
             apt-get install -y nodejs
 
             cd src-service
+            export RUSTFLAGS="-Z threads=32"
             cargo build --release
             cd ..
 
