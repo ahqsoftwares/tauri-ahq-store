@@ -1,4 +1,4 @@
-name: "Build & Publish App, Service, Scripts"
+name: "Build & Release App, Service, Scripts"
 on:
   push:
     branches:
@@ -186,7 +186,7 @@ jobs:
 
   publish-tauri:
     needs: create-release
-    name: Build & Publish Tauri App & Service (x86_64)
+    name: Build Tauri App & Service (x86_64)
 
     strategy:
       fail-fast: false
@@ -298,6 +298,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+
+      - name: Install
+        run: |
+          npm i -g pnpm
+          pnpm install
+
+      - name: Build encryptor.cjs
+        run: node encryptor.cjs
+        env:
+          KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
+
+      - name: Remove modules
+        run: |
+          rm -rf node_modules
+
       - name: Arm Runner
         uses: pguyot/arm-runner-action@v2
         with:
@@ -321,11 +338,26 @@ jobs:
             curl -fsSL https://deb.nodesource.com/setup_lts.x | bash
             apt-get install -y nodejs
 
+            cd src-service
+            cargo build --release
+            cd ..
+
             npm i -g pnpm
             pnpm install
 
+            pnpm build
             pnpm tauri build -- --verbose
     
+      - name: Upload Service 
+        uses: ahqstore/upload-release-assets@v60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_name: ahqstore_service_${{ matrix.deb }}
+          asset_path: ${{ github.workspace }}/src-service/target/release/ahqstore_x64_service
+          asset_content_type: application/octet-stream
+
       - name: Get app version
         run: echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
