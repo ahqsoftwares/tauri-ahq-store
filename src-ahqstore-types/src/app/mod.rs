@@ -73,7 +73,7 @@ impl AHQStoreApplication {
 
     // If we are on aarch64, we prefer to use native arm build
     let win32 = if ARCH == "aarch64" {
-      if let Some(arm) = &self.install.winarm else {
+      if let Some(arm) = &self.install.winarm {
         arm
       } else {
         get_w32(self)?
