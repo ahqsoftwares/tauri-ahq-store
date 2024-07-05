@@ -1,7 +1,7 @@
 use crate::{ServerJSONResp, Str};
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
-use std::collections::HashMap;
+use std::{collections::HashMap, env::consts::ARCH};
 
 pub mod install;
 mod other_fields;
@@ -62,10 +62,17 @@ pub struct AHQStoreApplication {
 }
 
 impl AHQStoreApplication {
-  pub fn get_win32_download(&self) -> Option<&DownloadUrl> {
-    let Some(win32) = &self.install.win32 else {
+  pub fn get_win_download(&self) -> Option<&DownloadUrl> {
+    let Some(mut win32) = &self.install.win32 else {
       return None;
     };
+
+    // If we are on aarch64, we prefer to use native arm build
+    if (ARCH == "aarch64") {
+      if let Some(arm) = &self.install.winarm {
+        win32 = arm;
+      }
+    }
 
     let url = self.downloadUrls.get(&win32.assetId)?;
 
@@ -78,14 +85,24 @@ impl AHQStoreApplication {
     }
   }
 
-  pub fn get_win32_extension(&self) -> Option<&'static str> {
-    match self.get_win32_download()?.installerType {
+  /// Just a clone of get_win_download for backwards compatibility
+  pub fn get_win32_download(&self) -> Option<&DownloadUrl> {
+    self.get_win_download()
+  }
+
+  pub fn get_win_extension(&self) -> Option<&'static str> {
+    match self.get_win_download()?.installerType {
       InstallerFormat::WindowsZip => Some(".zip"),
       InstallerFormat::WindowsInstallerExe => Some(".exe"),
       InstallerFormat::WindowsInstallerMsi => Some(".msi"),
       InstallerFormat::WindowsUWPMsix => Some(".msix"),
       _ => None,
     }
+  }
+
+  /// Just a clone of get_win_extention for backwards compatibility
+  pub fn get_win32_extension(&self) -> Option<&'static str> {
+    self.get_win_extension()
   }
 
   pub fn get_linux_download(&self) -> Option<&DownloadUrl> {
@@ -108,6 +125,26 @@ impl AHQStoreApplication {
     }
   }
 
+  pub fn get_android_download(&self) -> Option<&DownloadUrl> {
+    let Some(android) = &self.install.android else {
+      return None;
+    };
+
+    let url = self.downloadUrls.get(&android.assetId)?;
+
+    match &url.installerType {
+      InstallerFormat::AndroidApk => Some(&url),
+      _ => None,
+    }
+  }
+
+  pub fn get_android_extension(&self) -> Option<&'static str> {
+    match self.get_android_download()?.installerType {
+      InstallerFormat::AndroidApk => Some(".apk"),
+      _ => None,
+    }
+  }
+
   pub fn has_platform(&self) -> bool {
     #[cfg(windows)]
     return self.get_win32_download().is_some();
@@ -115,7 +152,10 @@ impl AHQStoreApplication {
     #[cfg(target_os = "linux")]
     return self.get_linux_download().is_some();
 
-    #[cfg(not(any(windows, target_os = "linux")))]
+    #[cfg(target_os = "android")]
+    return self.get_android_download().is_some();
+
+    #[cfg(not(any(windows, target_os = "linux", target_os = "android")))]
     return false;
   }
 }

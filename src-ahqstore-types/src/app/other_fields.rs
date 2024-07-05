@@ -18,14 +18,16 @@ pub enum InstallerFormat {
   #[doc = "🎯 Stable as of v2\n\n"]
   WindowsInstallerMsi,
 
-  #[doc = "🔬 Planned\n\n"]
+  #[doc = "🔬 Planned as of v2.5 or v3\n\n"]
   /// **Doesn't work**
   /// **⚠️ AHQ Store will act just like downloading from the web and running it ONCE[^1]**
   ///
   /// [^1]: You'll need to provide app's final location
   WindowsInstallerExe,
 
-  #[doc = "🔬 Planned\n\n"]
+  #[doc = "🔬 Unimplemented / Unplanned\n\n"]
+  /// **Doesn't work**
+  /// **Won't be worked on, until other formats are supported**
   /// **⚠️ AHQ Store will act just like downloading from the web and running it ONCE[^1]**
   ///
   /// [^1]: You'll need to provide app's final location
@@ -44,11 +46,11 @@ impl Display for InstallerFormat {
       f,
       "{}",
       match &self {
-        InstallerFormat::WindowsZip => "64-Bit Windows Zip",
-        InstallerFormat::WindowsInstallerExe => "64-Bit Windows Installer Exe",
-        InstallerFormat::WindowsInstallerMsi => "64-Bit Windows Installer Msi",
+        InstallerFormat::WindowsZip => "Windows Zip",
+        InstallerFormat::WindowsInstallerExe => "Windows Installer Exe",
+        InstallerFormat::WindowsInstallerMsi => "Windows Installer Msi",
         InstallerFormat::WindowsUWPMsix => "UWP Windows Msix Package",
-        InstallerFormat::LinuxAppImage => "64-Bit Linux App Image",
+        InstallerFormat::LinuxAppImage => "Linux App Image",
         InstallerFormat::AndroidApkZip => "Universal Android Apk Zip Package"
       }
     )

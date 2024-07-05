@@ -12,10 +12,10 @@ pub use http::*;
 pub use prefs::*;
 
 #[cfg(windows)]
-mod win32;
+mod windows;
 
 #[cfg(windows)]
-pub use win32::*;
+pub use windows::*;
 
 #[cfg(unix)]
 mod linux;

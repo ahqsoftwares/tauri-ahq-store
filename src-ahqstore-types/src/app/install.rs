@@ -4,16 +4,19 @@ use serde::{Deserialize, Serialize};
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct InstallerOptions {
-  pub win32: Option<InstallerOptionsWin32>,
+  pub win32: Option<InstallerOptionsWindows>,
+  pub winarm: Option<InstallerOptionsWindows>,
   #[doc = "🔬 Under Development\n\n"]
   pub linux: Option<InstallerOptionsLinux>,
+  #[doc = "⚠️ Unplanned\n\n"]
+  pub linuxArm64: Option<InstallerOptionsLinux>,
   #[doc = "🔬 Planned\n\n"]
   pub android: Option<InstallerOptionsAndroid>,
 }
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct InstallerOptionsWin32 {
+pub struct InstallerOptionsWindows {
   pub assetId: u8,
   /// The exe to link as a shortcut[^1]
   /// 

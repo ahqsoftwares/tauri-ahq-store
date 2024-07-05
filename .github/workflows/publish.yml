@@ -118,12 +118,27 @@ jobs:
 
   make-setup:
     needs: create-release
-    name: Make Setup Executable (x86_64)
+    name: Make Setup Executable (${{ matrix.os }}-${{ matrix.arch }})
 
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            arch: amd64
+
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            arch: amd64
+
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            arch: arm64
+
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            arch: arm64
     
     runs-on: ${{ matrix.os }}
 
@@ -134,73 +149,21 @@ jobs:
       - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly
-
-      - name: Build Setup
-        run: cargo build --release
-        working-directory: src-setup
-
-      - name: Upload Windows Setup
-        if: matrix.os == 'windows-latest'
-        uses: ahqstore/upload-release-assets@v60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-setup/target/release/ahqstore_setup_amd64.exe
-          asset_name: ahqstore_setup_win32_amd64.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
-
-      - name: Upload Linux Setup
-        if: matrix.os != 'windows-latest'
-        uses: ahqstore/upload-release-assets@v60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-setup/target/release/ahqstore_setup_amd64
-          asset_name: ahqstore_setup_amd64_linux
-          asset_content_type: application/octet-stream
-
-  make-arm-setup:
-    needs: create-release
-    name: Make Setup Executable (arm64)
-        
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            target: aarch64-pc-windows-msvc
-
-          # - os: ubuntu-latest
-            # target: aarch64-unknown-linux-gnu
-      
-    runs-on: ${{ matrix.os }}
-        
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        
-      - name: Install Rust Nightly
-        uses: dtolnay/rust-toolchain@stable
-        with:
           targets: ${{ matrix.target }}
           toolchain: nightly
 
-  
-      - name: install dependencies (ubuntu only)
-        if: matrix.os == 'ubuntu-latest'
+      - name: Install Dependencies (arm only)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
           sudo apt-get update
           sudo dpkg --add-architecture arm64
           sudo apt-get update
           sudo apt-get install gcc-aarch64-linux-gnu
-        
+
       - name: Build Setup
         run: cargo build --release --target ${{ matrix.target }}
         working-directory: src-setup
-        
+
       - name: Upload Windows Setup
         if: matrix.os == 'windows-latest'
         uses: ahqstore/upload-release-assets@v60
@@ -209,9 +172,9 @@ jobs:
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./src-setup/target/${{ matrix.target }}/release/ahqstore_setup_amd64.exe
-          asset_name: ahqstore_setup_win32_arm64.exe
+          asset_name: ahqstore_setup_win32_${{ matrix.arch }}.exe
           asset_content_type: application/vnd.microsoft.portable-executable
-        
+
       - name: Upload Linux Setup
         if: matrix.os != 'windows-latest'
         uses: ahqstore/upload-release-assets@v60
@@ -220,7 +183,7 @@ jobs:
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./src-setup/target/${{ matrix.target }}/release/ahqstore_setup_amd64
-          asset_name: ahqstore_setup_arm64_linux
+          asset_name: ahqstore_setup_linux_${{ matrix.arch }}
           asset_content_type: application/octet-stream
 
   publish-tauri:
@@ -230,19 +193,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            arch: amd64
 
-    runs-on: ${{ matrix.platform }}
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            arch: amd64
+
+          # Will be implemented after tauri v2 gets wix arm
+          #- os: windows-latest
+          #  target: aarch64-pc-windows-msvc
+          #  arch: arm64
+
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Cache vcpkg
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: vcpkg
-          key: vcpkg-${{ runner.os }}-${{ runner.arch }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -258,7 +226,7 @@ jobs:
           toolchain: nightly
 
       - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
           sudo apt update
           sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
@@ -278,125 +246,26 @@ jobs:
         working-directory: src-service
 
       - name: Upload Service (Windows)
-        if: matrix.platform == 'windows-latest'
+        if: matrix.os == 'windows-latest'
         uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./src-service/target/release/ahqstore_x64_service.exe
-          asset_name: ahqstore_service.exe
+          asset_name: ahqstore_service_${{ matrix.arch }}.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
       
       - name: Upload Service (Linux)
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest'
         uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./src-service/target/release/ahqstore_x64_service
-          asset_name: ahqstore_service
-          asset_content_type: application/octet-stream
-
-      - name: Build Tauri App
-        id: tauri-app
-        uses: tauri-apps/tauri-action@dev
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI }}
-          TAURI_KEY_PASSWORD: ${{ secrets.KEYPASS }}
-        with:
-          args: --verbose
-          releaseId: ${{ needs.create-release.outputs.release_id }}
-          includeRelease: true
-          includeUpdaterJson: false
-
-  publish-arm-tauri:
-    needs: create-release
-    name: Build & Publish Tauri App & Service (arm64)
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: windows-latest
-            target: aarch64-pc-windows-msvc
-          
-          # - platform: ubuntu-latest
-            #target: aarch64-unknown-linux-gnu
-
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Cache vcpkg
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: vcpkg
-          key: vcpkg-${{ runner.os }}-arm
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Setup pnpm
-        run: npm i -g pnpm 
-
-      - name: Install Rust Nightly
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-          toolchain: nightly
-
-      - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo dpkg --add-architecture arm64
-          sudo apt-get update
-          sudo apt-get install gcc-aarch64-linux-gnu
-          sudo apt-get install libwebkit2gtk-4.1-dev:arm64 build-essential:arm64 curl:arm64 wget:arm64 file:arm64 libssl-dev:arm64 libayatana-appindicator3-dev:arm64 librsvg2-dev:arm64
-
-      - name: install Vite dependencies and Build React App
-        run: pnpm install; pnpm build
-        env:
-          CI: "false"
-
-      - name: Decrypt Key / Load Encryption Key
-        run: node encryptor.cjs
-        env:
-          KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
-
-      - name: Build Service
-        run: cargo build --release --target ${{ matrix.target }}
-        working-directory: src-service
-
-      - name: Upload Service (Windows)
-        if: matrix.platform == 'windows-latest'
-        uses: ahqstore/upload-release-assets@v60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-service/target/${{ matrix.target }}/release/ahqstore_arm64_service.exe
-          asset_name: ahqstore_service.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
-
-      
-      - name: Upload Service (Linux)
-        if: matrix.platform == 'ubuntu-latest'
-        uses: ahqstore/upload-release-assets@v60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-service/target/${{ matrix.target }}/release/ahqstore_arm64_service
-          asset_name: ahqstore_service
+          asset_name: ahqstore_service_${{ matrix.arch }}
           asset_content_type: application/octet-stream
 
       - name: Build Tauri App
@@ -412,8 +281,91 @@ jobs:
           includeRelease: true
           includeUpdaterJson: false
 
+  publish-arm-linux-tauri:
+    needs: create-release
+    name: Build Tauri App & Service (aarch64 linux)
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - img: dietpi:rpi_armv8_bookworm
+            cpu: cortex-a72
+            deb: arm64
+            rpm: aarch64
+            appimage: aarch64
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Arm Runner
+        uses: pguyot/arm-runner-action@v2
+        with:
+          base_image: ${{ matrix.img }}
+          cpu: ${{ matrix.cpu }}
+          bind_mount_repository: false
+          image_additional_mb: 10240
+          optimize_image: no
+          exit_on_fail: true
+          commands: |
+            # Prevent Rust from complaining about $HOME not matching eid home
+            export HOME=/root
+            export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
+
+            apt-get update -y --allow-releaseinfo-change
+            apt-get autoremove -y
+            apt-get install -y --no-install-recommends --no-install-suggests curl libwebkit2gtk-4.1-dev build-essential libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev patchelf libfuse2 file
+
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            . "$HOME/.cargo/env"
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | bash
+            
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+            nvm install 22
+            nvm use 22
+
+            npm i -g pnpm
+            pnpm install
+
+            pnpm tauri build -- --verbose
+    
+      - name: Get app version
+        run: echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+
+      - name: Upload .deb Bundle
+        uses: ahqstore/upload-release-assets@v60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
+          asset_path: ${{ github.workspace }}/src-tauri/target/release/bundle/deb/ahq-store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
+          asset_content_type: application/octet-stream
+
+      - name: Upload .rpm Bundle
+        uses: ahqstore/upload-release-assets@v60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.rpm }}.rpm
+          asset_path: ${{ github.workspace }}/src-tauri/target/release/bundle/rpm/ahq-store-${{ env.APP_VERSION }}-1.${{ matrix.rpm }}.rpm
+          asset_content_type: application/octet-stream
+
+      - name: Upload .AppImage bundle
+        uses: ahqstore/upload-release-assets@v60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
+          asset_path: ${{ github.workspace }}/src-tauri/target/release/bundle/appimage/ahq-store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
+          asset_content_type: application/octet-stream
+
   undraft-release:
-    needs: [create-release, publish-tauri, make-setup, make-arm-setup, publish-arm-tauri]
+    needs: [create-release, publish-tauri, make-setup, publish-arm-linux-tauri]
     name: Publish Release
     runs-on: ubuntu-latest
 
