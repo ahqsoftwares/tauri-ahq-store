@@ -321,10 +321,7 @@ jobs:
             curl https://sh.rustup.rs -sSf | sh -s -- -y
             . "$HOME/.cargo/env"
             curl -fsSL https://deb.nodesource.com/setup_lts.x | bash
-            
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-            nvm install 22
-            nvm use 22
+            apt-get install -y nodejs
 
             npm i -g pnpm
             pnpm install
