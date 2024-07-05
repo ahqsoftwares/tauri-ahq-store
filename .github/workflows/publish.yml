@@ -311,6 +311,9 @@ jobs:
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
 
+      - name: Build frontend
+        run: pnpm build
+
       - name: Remove modules
         run: |
           rm -rf node_modules
@@ -345,7 +348,6 @@ jobs:
             npm i -g pnpm
             pnpm install
 
-            pnpm build
             pnpm tauri build -- --verbose
     
       - name: Upload Service 
