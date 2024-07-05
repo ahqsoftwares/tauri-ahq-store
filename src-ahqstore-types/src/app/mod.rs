@@ -64,11 +64,15 @@ pub struct AHQStoreApplication {
 impl AHQStoreApplication {
   pub fn get_win_download(&self) -> Option<&DownloadUrl> {
     let get_w32 = |app: &AHQStoreApplication| {
-      &self.install.win32
+      let Some(x) = &self.install.win32 else {
+        return None;
+      };
+
+      Some(x)
     };
 
     // If we are on aarch64, we prefer to use native arm build
-    let win32 = if (ARCH == "aarch64") {
+    let win32 = if ARCH == "aarch64" {
       let Some(arm) = &self.install.winarm else {
         return get_w32(self)?;
       };
@@ -136,14 +140,14 @@ impl AHQStoreApplication {
     let url = self.downloadUrls.get(&android.assetId)?;
 
     match &url.installerType {
-      InstallerFormat::AndroidApk => Some(&url),
+      InstallerFormat::AndroidApkZip => Some(&url),
       _ => None,
     }
   }
 
   pub fn get_android_extension(&self) -> Option<&'static str> {
     match self.get_android_download()?.installerType {
-      InstallerFormat::AndroidApk => Some(".apk"),
+      InstallerFormat::AndroidApkZip => Some(".apk"),
       _ => None,
     }
   }
