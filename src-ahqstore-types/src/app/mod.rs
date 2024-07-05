@@ -63,16 +63,19 @@ pub struct AHQStoreApplication {
 
 impl AHQStoreApplication {
   pub fn get_win_download(&self) -> Option<&DownloadUrl> {
-    let Some(mut win32) = &self.install.win32 else {
-      return None;
+    let get_w32 = |app: &AHQStoreApplication| {
+      &self.install.win32
     };
 
     // If we are on aarch64, we prefer to use native arm build
-    if (ARCH == "aarch64") {
-      if let Some(arm) = &self.install.winarm {
-        win32 = arm;
-      }
-    }
+    let win32 = if (ARCH == "aarch64") {
+      let Some(arm) = &self.install.winarm else {
+        return get_w32(self)?;
+      };
+      arm
+    } else {
+      get_w32(self)?
+    };
 
     let url = self.downloadUrls.get(&win32.assetId)?;
 
