@@ -294,7 +294,7 @@ jobs:
       matrix:
         include:
           - img: dietpi:rpi_armv8_bookworm
-            cpu: cortex-a72
+            cpu: cortex-a76
             deb: arm64
             rpm: aarch64
             appimage: aarch64
@@ -354,7 +354,7 @@ jobs:
             . "$HOME/.cargo/env"
             rustup toolchain install nightly
             rustup default nightly
-            
+
             curl -fsSL https://deb.nodesource.com/setup_lts.x | bash
             apt-get install -y nodejs
 
