@@ -287,6 +287,7 @@ jobs:
   publish-arm-linux-tauri:
     needs: create-release
     name: Build Tauri App & Service (aarch64 linux)
+    continue-on-error: true
 
     strategy:
       fail-fast: false
@@ -302,6 +303,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Cache Rust to save lives
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: cpu-${{ matrix.cpu }}
+          workspaces: src-tauri
+          cache-on-failure: true
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
@@ -344,11 +352,14 @@ jobs:
 
             curl https://sh.rustup.rs -sSf | sh -s -- -y
             . "$HOME/.cargo/env"
+            rustup toolchain install nightly
+            rustup toolchain default nightly
             curl -fsSL https://deb.nodesource.com/setup_lts.x | bash
             apt-get install -y nodejs
 
+            export RUSTFLAGS="-Z threads=4"
+
             cd src-service
-            export RUSTFLAGS="-Z threads=32"
             cargo build --release
             cd ..
 
