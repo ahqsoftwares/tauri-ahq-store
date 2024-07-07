@@ -353,7 +353,8 @@ jobs:
             curl https://sh.rustup.rs -sSf | sh -s -- -y
             . "$HOME/.cargo/env"
             rustup toolchain install nightly
-            rustup toolchain default nightly
+            rustup default nightly
+            
             curl -fsSL https://deb.nodesource.com/setup_lts.x | bash
             apt-get install -y nodejs
 
