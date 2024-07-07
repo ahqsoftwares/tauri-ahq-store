@@ -14,7 +14,7 @@ jobs:
     permissions:
       contents: write
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     outputs:
       upload_url: ${{ steps.get-u-url.outputs.result }}
@@ -96,7 +96,7 @@ jobs:
   publish-cargo:
     name: Publish ahqstore-types to cargo
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     continue-on-error: true
 
@@ -128,7 +128,7 @@ jobs:
             target: x86_64-pc-windows-msvc
             arch: amd64
 
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             arch: amd64
 
@@ -136,7 +136,7 @@ jobs:
             target: aarch64-pc-windows-msvc
             arch: arm64
 
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             arch: arm64
     
@@ -198,7 +198,7 @@ jobs:
             target: x86_64-pc-windows-msvc
             arch: amd64
 
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             arch: amd64
 
@@ -260,7 +260,7 @@ jobs:
 
       
       - name: Upload Service (Linux)
-        if: matrix.os == 'ubuntu-24.04'
+        if: matrix.os == 'ubuntu-latest'
         uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -294,12 +294,12 @@ jobs:
       matrix:
         include:
           - img: dietpi:rpi_armv8_bookworm
-            cpu: cortex-a76
+            cpu: cortex-a72
             deb: arm64
             rpm: aarch64
             appimage: aarch64
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -384,7 +384,7 @@ jobs:
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_name: ahqstore_service_${{ matrix.deb }}
-          asset_path: ./src-service/target/release/ahqstore_x64_service
+          asset_path: ./src-service/target/release/ahqstore_service
           asset_content_type: application/octet-stream
 
       - name: Get app version
@@ -423,7 +423,7 @@ jobs:
   undraft-release:
     needs: [create-release, publish-tauri, make-setup, publish-arm-linux-tauri]
     name: Publish Release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Undraft Release
