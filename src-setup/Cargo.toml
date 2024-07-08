@@ -9,7 +9,7 @@ edition = "2021"
 dirs = "5.0.1"
 lazy_static = "1.4.0"
 reqwest = { version = "0.12.4", features = ["blocking", "json"] }
-serde = { version = "1.0.203", features = ["derive"] }
+serde = { version = "1.0.204", features = ["derive"] }
 slint = "1.6.0"
 
 [target.'cfg(unix)'.dependencies]
