@@ -166,7 +166,7 @@ jobs:
         if: matrix.target == 'armv7-unknown-linux-gnueabihf'
         run: |
           sudo apt-get update
-          sudo apt-get install arm-linux-gnueabihf-gcc
+          sudo apt-get install gcc-arm-linux-gnueabihf
 
       - name: Build Setup
         run: cargo build --release --target ${{ matrix.target }}
