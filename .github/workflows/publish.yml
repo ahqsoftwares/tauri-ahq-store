@@ -156,8 +156,14 @@ jobs:
           targets: ${{ matrix.target }}
           toolchain: nightly
 
-      - name: Install Dependencies (arm only)
+      - name: Install Dependencies (arm v8 only)
         if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-aarch64-linux-gnu
+      
+      - name: Install Dependencies (arm v7 only)
+        if: matrix.target == 'armv7-unknown-linux-gnueabihf'
         run: |
           sudo apt-get update
           sudo apt-get install gcc-aarch64-linux-gnu
