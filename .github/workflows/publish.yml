@@ -254,7 +254,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-service/target/release/ahqstore_x64_service.exe
+          asset_path: ./src-service/target/release/ahqstore_service.exe
           asset_name: ahqstore_service_${{ matrix.arch }}.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
@@ -266,7 +266,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-service/target/release/ahqstore_x64_service
+          asset_path: ./src-service/target/release/ahqstore_service
           asset_name: ahqstore_service_${{ matrix.arch }}
           asset_content_type: application/octet-stream
 
