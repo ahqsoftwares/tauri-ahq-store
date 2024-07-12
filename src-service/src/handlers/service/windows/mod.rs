@@ -42,7 +42,7 @@ pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
 pub async fn install_app(app: AHQStoreApplication) -> Option<Child> {
   let file = get_installer_file(&app);
 
-  let Some(win32) = app.get_win32_download() else {
+  let Some(win32) = app.get_win_download() else {
     return None;
   };
 

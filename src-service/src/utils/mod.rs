@@ -40,7 +40,7 @@ pub fn get_installer_file(app: &AHQStoreApplication) -> String {
     "{}\\ProgramData\\AHQ Store Applications\\Installers\\{}{}",
     &get_main_drive(),
     &app.appId,
-    &app.get_win32_extension().unwrap_or(".unknown")
+    &app.get_win_extension().unwrap_or(".unknown")
   );
 
   #[cfg(unix)]

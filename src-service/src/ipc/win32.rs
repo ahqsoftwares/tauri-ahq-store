@@ -75,16 +75,13 @@ pub async fn launch() {
       let mut process_id = 0u32;
 
       unsafe {
-        let handle = HANDLE(unsafe {
-          let mut hwn = handle as isize;
-
-          &mut hwn as *mut _ as *mut _
-        });
+        let handle = HANDLE(handle);
 
         let _ = GetNamedPipeClientProcessId(handle, &mut process_id as *mut _);
       }
 
-      if !authenticate_process(process_id as usize, true) {
+      let (auth, admin) = authenticate_process(process_id as usize, true);
+      if !auth {
         println!("Unauthenticated");
         let _ = pipe.disconnect();
       } else {
@@ -96,7 +93,8 @@ pub async fn launch() {
           ext += 1;
           if ext >= 20 {
             ext = 0;
-            if !authenticate_process(process_id as usize, false) {
+            let (auth, _) = authenticate_process(process_id as usize, false);
+            if !auth {
               println!("Unauthenticated");
               let _ = pipe.disconnect();
               break 'a;
@@ -130,7 +128,7 @@ pub async fn launch() {
                   },
                 }
               }
-              handle_msg(String::from_utf8_lossy(&buf).to_string());
+              handle_msg(admin, String::from_utf8_lossy(&buf).to_string());
             }
             Err(e) => match e.kind() {
               ErrorKind::WouldBlock => {}

@@ -29,7 +29,7 @@ lazy_static! {
 
 use super::utils::ws_send;
 
-pub fn handle_msg(data: String) {
+pub fn handle_msg(admin: bool, data: String) {
   spawn(async move {
     if let Some(mut ws) = get_iprocess() {
       if let Some(x) = Command::try_from(&data) {

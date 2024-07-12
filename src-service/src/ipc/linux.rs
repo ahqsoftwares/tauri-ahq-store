@@ -50,7 +50,7 @@ pub async fn launch() {
       continue;
     }
 
-    if !authenticate_process(pid as usize, true) {
+    if !authenticate_process(pid as usize, true).0 {
       println!("FAILED CHECK");
       let _ = pipe.shutdown().await;
       println!("DISCONNECT");
@@ -62,7 +62,7 @@ pub async fn launch() {
       ext += 1;
       if ext > 20 {
         ext = 0;
-        if !authenticate_process(pid as usize, false) {
+        if !authenticate_process(pid as usize, false).0 {
           let _ = pipe.shutdown().await;
           println!("DISCONNECT");
           break 'a;
