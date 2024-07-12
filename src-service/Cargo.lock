@@ -30,7 +30,7 @@ dependencies = [
 
 [[package]]
 name = "ahqstore-types"
-version = "2.2.0"
+version = "2.3.0"
 dependencies = [
  "lazy_static",
  "reqwest",

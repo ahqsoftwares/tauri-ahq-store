@@ -11,7 +11,7 @@ pub use other_fields::*;
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[doc = "Use the official ahqstore (https://crates.io/crates/ahqstore_cli_rs) cli"]
+#[doc = "Use the official ahqstore (https://crates.io/crates/ahqstore_cli_rs) cli\n🎯 Introduced in v1, Revamped in v2"]
 pub struct AHQStoreApplication {
   /// The ID of the application
   pub appId: Str,
@@ -62,8 +62,21 @@ pub struct AHQStoreApplication {
 }
 
 impl AHQStoreApplication {
+  pub fn list_os_arch(&self) -> Vec<&'static str> {
+    self.install.list_os_arch()
+  }
+
+  pub fn is_supported(&self) -> bool {
+    self.install.is_supported()
+  }
+
+  pub fn has_platform(&self) -> bool {
+    self.install.has_platform()
+  }
+
+  #[doc = "🎯 Introduced in v2"]
   pub fn get_win_download(&self) -> Option<&DownloadUrl> {
-    let get_w32 = |app: &AHQStoreApplication| {
+    let get_w32 = || {
       let Some(x) = &self.install.win32 else {
         return None;
       };
@@ -76,10 +89,10 @@ impl AHQStoreApplication {
       if let Some(arm) = &self.install.winarm {
         arm
       } else {
-        get_w32(self)?
+        get_w32()?
       }
     } else {
-      get_w32(self)?
+      get_w32()?
     };
 
     let url = self.downloadUrls.get(&win32.assetId)?;
@@ -93,11 +106,13 @@ impl AHQStoreApplication {
     }
   }
 
+  #[doc = "🎯 Introduced in v2"]
   /// Just a clone of get_win_download for backwards compatibility
   pub fn get_win32_download(&self) -> Option<&DownloadUrl> {
     self.get_win_download()
   }
 
+  #[doc = "🎯 Introduced in v2"]
   pub fn get_win_extension(&self) -> Option<&'static str> {
     match self.get_win_download()?.installerType {
       InstallerFormat::WindowsZip => Some(".zip"),
@@ -108,14 +123,21 @@ impl AHQStoreApplication {
     }
   }
 
+  #[doc = "🎯 Introduced in v2"]
   /// Just a clone of get_win_extention for backwards compatibility
   pub fn get_win32_extension(&self) -> Option<&'static str> {
     self.get_win_extension()
   }
 
+  #[doc = "🎯 Introduced in v2"]
   pub fn get_linux_download(&self) -> Option<&DownloadUrl> {
-    let Some(linux) = &self.install.linux else {
-      return None;
+    let linux = match ARCH {
+      "x86_64" => self.install.linux.as_ref()?,
+      "aarch64" => self.install.linuxArm64.as_ref()?,
+      "arm" => self.install.linuxArm7.as_ref()?,
+      _ => {
+        return None;
+      }
     };
 
     let url = self.downloadUrls.get(&linux.assetId)?;
@@ -126,6 +148,7 @@ impl AHQStoreApplication {
     }
   }
 
+  #[doc = "🎯 Introduced in v2"]
   pub fn get_linux_extension(&self) -> Option<&'static str> {
     match self.get_linux_download()?.installerType {
       InstallerFormat::LinuxAppImage => Some(".AppImage"),
@@ -133,6 +156,7 @@ impl AHQStoreApplication {
     }
   }
 
+  #[doc = "🎯 Introduced in v2"]
   pub fn get_android_download(&self) -> Option<&DownloadUrl> {
     let Some(android) = &self.install.android else {
       return None;
@@ -146,25 +170,12 @@ impl AHQStoreApplication {
     }
   }
 
+  #[doc = "🎯 Introduced in v2"]
   pub fn get_android_extension(&self) -> Option<&'static str> {
     match self.get_android_download()?.installerType {
       InstallerFormat::AndroidApkZip => Some(".apk"),
       _ => None,
     }
-  }
-
-  pub fn has_platform(&self) -> bool {
-    #[cfg(windows)]
-    return self.get_win32_download().is_some();
-
-    #[cfg(target_os = "linux")]
-    return self.get_linux_download().is_some();
-
-    #[cfg(target_os = "android")]
-    return self.get_android_download().is_some();
-
-    #[cfg(not(any(windows, target_os = "linux", target_os = "android")))]
-    return false;
   }
 }
 

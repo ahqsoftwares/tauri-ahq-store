@@ -22,7 +22,7 @@ pub use data::*;
 /// or visit app / api sub module
 /// 
 /// This Module:
-/// This module lists the standard commands that AHQ Store sends to AHQ Store Service
+/// This module lists the standard commands & types that AHQ Store sends to AHQ Store Service
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Commit {
