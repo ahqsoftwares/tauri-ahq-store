@@ -20,7 +20,7 @@ pub fn get_program_folder(app_id: &str) -> String {
   );
 
   #[cfg(unix)]
-  return format!("/ahqstore/programs/{}", &app_id);
+  return format!("/ahqstore/Programs/{}", &app_id);
 }
 
 pub fn get_programs() -> String {
@@ -31,7 +31,7 @@ pub fn get_programs() -> String {
   );
 
   #[cfg(unix)]
-  return format!("/ahqstore/programs");
+  return format!("/ahqstore/Programs");
 }
 
 pub fn get_installer_file(app: &AHQStoreApplication) -> String {
@@ -40,7 +40,7 @@ pub fn get_installer_file(app: &AHQStoreApplication) -> String {
     "{}\\ProgramData\\AHQ Store Applications\\Installers\\{}{}",
     &get_main_drive(),
     &app.appId,
-    &app.get_win32_extension().unwrap_or(".unknown")
+    &app.get_win_extension().unwrap_or(".unknown")
   );
 
   #[cfg(unix)]

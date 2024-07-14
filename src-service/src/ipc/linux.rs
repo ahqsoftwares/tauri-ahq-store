@@ -1,13 +1,13 @@
+use std::time::Duration;
 use std::{fs, io::ErrorKind};
-
 use tokio::{io::AsyncWriteExt, net::UnixListener};
 
-use ahqstore_types::Command;
 use crate::{
   authentication::authenticate_process,
   handlers::{handle_msg, GET_INSTALL_DAEMON},
   utils::{chmod, get_iprocess, set_iprocess, write_log},
 };
+use ahqstore_types::Command;
 
 pub async fn launch() {
   let _ = GET_INSTALL_DAEMON.send(Command::GetSha(0));
@@ -50,7 +50,8 @@ pub async fn launch() {
       continue;
     }
 
-    if !authenticate_process(pid as usize, true) {
+    let (auth, sudoer) = authenticate_process(pid as usize, true);
+    if !auth {
       println!("FAILED CHECK");
       let _ = pipe.shutdown().await;
       println!("DISCONNECT");
@@ -62,7 +63,7 @@ pub async fn launch() {
       ext += 1;
       if ext > 20 {
         ext = 0;
-        if !authenticate_process(pid as usize, false) {
+        if !authenticate_process(pid as usize, false).0 {
           let _ = pipe.shutdown().await;
           println!("DISCONNECT");
           break 'a;
@@ -98,7 +99,7 @@ pub async fn launch() {
               },
             }
           }
-          handle_msg(String::from_utf8_lossy(&buf).to_string());
+          handle_msg(sudoer, String::from_utf8_lossy(&buf).to_string());
         }
         Err(e) => match e.kind() {
           ErrorKind::WouldBlock => {}
@@ -114,6 +115,7 @@ pub async fn launch() {
           }
         },
       }
+      tokio::time::sleep(Duration::from_millis(100)).await;
     }
   }
 }

@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+.dui-radial-progress:after {
+  @apply bg-transparent !important;
+}
 /*
 General
 */

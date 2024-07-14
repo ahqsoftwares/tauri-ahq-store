@@ -1,4 +1,4 @@
-name: "Build & Publish App, Service, Scripts"
+name: "Build & Release App, Service, Scripts"
 on:
   push:
     branches:
@@ -22,16 +22,16 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Create Release
         id: create-release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           BRANCH: ${{ github.ref_name }}
         with:
@@ -55,7 +55,7 @@ jobs:
 
       - name: Get Release Id
         id: get-id
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           data: ${{ steps.create-release.outputs.result }}
         with:
@@ -76,7 +76,7 @@ jobs:
 
       - name: Get Upload Url
         id: get-u-url
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           data: ${{ steps.create-release.outputs.result }}
         with:
@@ -102,7 +102,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
@@ -111,103 +111,122 @@ jobs:
 
       - name: Publish types to cargo
         run: cargo publish
-        working-directory: ahqstore-types
+        working-directory: src-ahqstore-types
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
         continue-on-error: true
 
   make-setup:
     needs: create-release
-    name: Make Setup (exe)
+    name: Make Setup Executable (${{ matrix.os }}-${{ matrix.arch }})
 
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            arch: amd64
+
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            arch: amd64
+
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            arch: arm64
+
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            arch: arm64
     
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
         with:
+          targets: ${{ matrix.target }}
           toolchain: nightly
 
-      - name: Cache Rust
-        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
-        uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: src-setup-${{ runner.os }}
-          cache-all-crates: true
-          workspaces: "src-setup -> target"
+      - name: Install Dependencies (arm v8 only)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-aarch64-linux-gnu
 
       - name: Build Setup
-        run: cargo build --release
+        run: cargo build --release --target ${{ matrix.target }}
+        env:
+          RUSTFLAGS: -Z threads=32
         working-directory: src-setup
 
       - name: Upload Windows Setup
         if: matrix.os == 'windows-latest'
-        uses: ahqstore/upload-release-assets@v59
+        uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-setup/target/release/ahqstore_setup_amd64.exe
-          asset_name: ahqstore_setup_win32_amd64.exe
+          asset_path: ./src-setup/target/${{ matrix.target }}/release/ahqstore_setup_amd64.exe
+          asset_name: ahqstore_setup_win32_${{ matrix.arch }}.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
       - name: Upload Linux Setup
         if: matrix.os != 'windows-latest'
-        uses: ahqstore/upload-release-assets@v59
+        uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./src-setup/target/release/ahqstore_setup_amd64
-          asset_name: ahqstore_setup_amd64_linux
+          asset_path: ./src-setup/target/${{ matrix.target }}/release/ahqstore_setup_amd64
+          asset_name: ahqstore_setup_linux_${{ matrix.arch }}
           asset_content_type: application/octet-stream
 
   publish-tauri:
     needs: create-release
-    name: Build & Publish Tauri App & Service
+    name: Build Tauri App & Service (x86_64)
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            arch: amd64
 
-    runs-on: ${{ matrix.platform }}
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            arch: amd64
+
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            arch: arm64
+
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Cache vcpkg
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: vcpkg
-          key: vcpkg-${{ runner.os }}-${{ runner.arch }}
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
+        run: npm i -g pnpm 
 
       - name: Install Rust Nightly
         uses: dtolnay/rust-toolchain@stable
         with:
+          targets: ${{ matrix.target }}
           toolchain: nightly
 
       - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
           sudo apt update
           sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
@@ -222,56 +241,34 @@ jobs:
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
 
-      - name: Cache Rust
-        if: ${{ github.event_name }} == "push" && ${{ github.ref_name }} == "master"
-        uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: src-tauriapp-${{ runner.os }}
-          cache-all-crates: true
-          workspaces: |
-            src-service -> target
-            src-tauri -> target
-
       - name: Build Service
         run: cargo build --release
+        env:
+          RUSTFLAGS: -Z threads=32
         working-directory: src-service
 
       - name: Upload Service (Windows)
-        if: matrix.platform == 'windows-latest'
-        uses: ahqstore/upload-release-assets@v59
+        if: matrix.os == 'windows-latest'
+        uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./src-service/target/release/ahqstore_service.exe
-          asset_name: ahqstore_service.exe
+          asset_name: ahqstore_service_${{ matrix.arch }}.exe
           asset_content_type: application/vnd.microsoft.portable-executable
 
       
       - name: Upload Service (Linux)
-        if: matrix.platform == 'ubuntu-latest'
-        uses: ahqstore/upload-release-assets@v59
+        if: matrix.os == 'ubuntu-latest'
+        uses: ahqstore/upload-release-assets@v60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: ./src-service/target/release/ahqstore_service
-          asset_name: ahqstore_service
+          asset_name: ahqstore_service_${{ matrix.arch }}
           asset_content_type: application/octet-stream
-          
-      - name: Load VCPKG Page (Windows)
-        if: ${{ !steps.cache.outputs.cache-hit }} && matrix.platform == 'windows-latest'
-        continue-on-error: true
-        run: git clone https://github.com/Microsoft/vcpkg.git
-
-      - name: Install OpenSSL with vcpkg (Windows)
-        if: matrix.platform == 'windows-latest'
-        continue-on-error: true
-        run: |
-          cd vcpkg
-          .\bootstrap-vcpkg.bat
-          .\vcpkg install openssl --triplet x64-windows-static-md
-          .\vcpkg integrate install
 
       - name: Build Tauri App
         id: tauri-app
@@ -280,20 +277,157 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI }}
           TAURI_KEY_PASSWORD: ${{ secrets.KEYPASS }}
+          RUSTFLAGS: -Z threads=32
         with:
-          args: --verbose
+          args: --verbose --target ${{ matrix.target }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
           includeRelease: true
           includeUpdaterJson: false
 
+  publish-arm-linux-tauri:
+    needs: create-release
+    name: Build Tauri App & Service (${{ matrix.deb }})
+    continue-on-error: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - img: dietpi:rpi_armv8_bookworm
+            cpu: cortex-a72
+            deb: arm64
+            rpm: aarch64
+            appimage: aarch64
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Rust to save lives
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: cpu-${{ matrix.cpu }}
+          workspaces: src-tauri
+          cache-on-failure: true
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+
+      - name: Install
+        run: |
+          npm i -g pnpm
+          pnpm install
+
+      - name: Build encryptor.cjs
+        run: node encryptor.cjs
+        env:
+          KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
+
+      - name: Build frontend
+        run: pnpm build
+
+      - name: Remove modules
+        run: |
+          rm -rf node_modules
+
+      - name: Arm Runner
+        uses: pguyot/arm-runner-action@v2.6.5
+        with:
+          base_image: ${{ matrix.img }}
+          cpu: ${{ matrix.cpu }}
+          bind_mount_repository: false
+          image_additional_mb: 10240
+          optimize_image: no
+          exit_on_fail: true
+          copy_artifact_path: .
+          commands: |
+            # Prevent Rust from complaining about $HOME not matching eid home
+            export HOME=/root
+            export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
+
+            apt-get update -y --allow-releaseinfo-change
+            apt-get autoremove -y
+            apt-get install -y --no-install-recommends --no-install-suggests curl libwebkit2gtk-4.1-dev build-essential libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev patchelf libfuse2 file
+
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            . "$HOME/.cargo/env"
+            rustup toolchain install nightly
+            rustup default nightly
+
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | bash
+            apt-get install -y nodejs
+
+            export RUSTFLAGS="-Z threads=4"
+
+            cd src-service
+            cargo build --release
+            cd ..
+
+            npm i -g pnpm
+            pnpm install
+
+            pnpm tauri build -- --verbose
+    
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          compression-level: 9
+          path: |
+            src-service/target/release/
+            src-tauri/target/release/
+
+      - name: Upload Service 
+        uses: ahqstore/upload-release-assets@v60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_name: ahqstore_service_${{ matrix.deb }}
+          asset_path: ./src-service/target/release/ahqstore_service
+          asset_content_type: application/octet-stream
+
+      - name: Get app version
+        run: echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+
+      - name: Upload .deb Bundle
+        uses: ahqstore/upload-release-assets@v60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
+          asset_path: ./src-tauri/target/release/bundle/deb/ahq-store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
+          asset_content_type: application/octet-stream
+
+      - name: Upload .rpm Bundle
+        uses: ahqstore/upload-release-assets@v60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.rpm }}.rpm
+          asset_path: ./src-tauri/target/release/bundle/rpm/ahq-store-${{ env.APP_VERSION }}-1.${{ matrix.rpm }}.rpm
+          asset_content_type: application/octet-stream
+
+      - name: Upload .AppImage bundle
+        uses: ahqstore/upload-release-assets@v60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
+          asset_path: ./src-tauri/target/release/bundle/appimage/ahq-store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
+          asset_content_type: application/octet-stream
+
   undraft-release:
-    needs: [create-release, publish-tauri, make-setup]
+    needs: [create-release, publish-tauri, make-setup, publish-arm-linux-tauri]
     name: Publish Release
     runs-on: ubuntu-latest
 
     steps:
       - name: Undraft Release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           BRANCH: ${{ github.ref_name }}
           R_ID: ${{ needs.create-release.outputs.release_id }}

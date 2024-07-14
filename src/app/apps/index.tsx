@@ -70,7 +70,6 @@ export default function Apps(props: AppsProps) {
     key += 1;
     return key;
   }
-  console.log(apps);
 
   return (
     <div className="menu">
@@ -203,7 +202,6 @@ export default function Apps(props: AppsProps) {
                 const [alt, data] = filess;
 
                 const apps = data;
-                console.log(apps);
                 return (
                   <Layer alt={alt} key={keyGen()}>
                     {apps.map((data) => {

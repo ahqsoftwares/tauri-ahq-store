@@ -69,14 +69,14 @@ export async function interpret(
 ): Promise<ServerResponse | undefined> {
   const into_array: { [key: string]: any } = JSON.parse(data);
 
-  const [mode, valueData] = Object.entries(into_array)[0];
+  const [mode, val] = Object.entries(into_array)[0];
 
   if (mode == "PrefsSet") {
     return {
       data: [],
       error: [],
       method: "PrefsSet",
-      ref: valueData,
+      ref: val,
     };
   }
 
@@ -86,6 +86,11 @@ export async function interpret(
     ref: -1,
     data: [],
   };
+
+  const valueData = (() => {
+    if (typeof (val) == "number") return [val];
+    else return val;
+  })();
 
   const [ref_id] = valueData;
   result.ref = Number(ref_id);
@@ -122,8 +127,8 @@ export async function interpret(
       const { data } = await fetch(pyld2, {
         method: "GET",
         headers: {
-          "ngrok-skip-browser-warning": "true"
-        }
+          "ngrok-skip-browser-warning": "true",
+        },
       }).then(async (r) => ({ ...r, data: await r.json() }));
 
       const adata: ApplicationData = {

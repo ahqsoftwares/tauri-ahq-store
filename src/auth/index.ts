@@ -1,4 +1,3 @@
-
 export interface Auth {
   loggedIn: boolean;
   onAuthChange: ((auth?: User) => void)[];
@@ -21,6 +20,7 @@ export function genAuth(): Auth {
 }
 
 export function logOut(auth: Auth) {
+  localStorage.removeItem("token");
   auth.loggedIn = false;
   auth.currentUser = undefined;
   auth.onAuthChange.forEach((cb) => cb(undefined));

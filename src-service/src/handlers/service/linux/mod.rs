@@ -1,4 +1,7 @@
-use std::fs;
+use std::{
+  fs,
+  process::{Child, Command},
+};
 
 use ahqstore_types::InstallerFormat;
 
@@ -6,8 +9,9 @@ use crate::utils::{
   chmod, get_installer_file, get_program_folder, get_programs, get_target_lnk,
   structs::{AHQStoreApplication, AppData},
 };
+use super::UninstallResult;
 
-pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
+pub async fn install_app(app: AHQStoreApplication) -> Option<Child> {
   let file = get_installer_file(&app);
 
   let Some(linux) = app.get_linux_download() else {
@@ -15,7 +19,11 @@ pub async fn install_app(app: AHQStoreApplication) -> Option<()> {
   };
 
   match linux.installerType {
-    InstallerFormat::LinuxAppImage => deploy_appimg(&file, &app),
+    InstallerFormat::LinuxAppImage => {
+      deploy_appimg(&file, &app);
+
+      Command::new("bash").arg("true").spawn().ok()
+    }
     _ => None,
   }
 }
@@ -55,15 +63,17 @@ Icon={}",
   None
 }
 
-pub fn uninstall_app(app: &AHQStoreApplication) -> Option<String> {
+pub fn uninstall_app(app: &AHQStoreApplication) -> UninstallResult {
   let link = get_target_lnk(&app.appShortcutName);
   let program = get_program_folder(&app.appId);
 
   let _ = fs::remove_file(&link);
 
-  fs::remove_dir_all(&program).ok()?;
+  let Ok(_) = fs::remove_dir_all(&program) else {
+    return UninstallResult::Sync(None);
+  };
 
-  Some(app.appId.clone())
+  UninstallResult::Sync(Some(app.appId.clone()))
 }
 
 pub fn list_apps() -> Option<Vec<AppData>> {

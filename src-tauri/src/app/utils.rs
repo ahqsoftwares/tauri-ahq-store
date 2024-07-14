@@ -42,10 +42,16 @@ pub fn get_service_url(pr: bool) -> String {
     .json::<Vec<GhRelease>>()
     .unwrap();
 
-  let get = if pr { get.swap_remove(0) } else { get.into_iter().find(|x| x.prerelease == false).unwrap() };
+  let get = if pr {
+    get.swap_remove(0)
+  } else {
+    get.into_iter().find(|x| x.prerelease == false).unwrap()
+  };
 
   for asset in get.assets {
-    if (cfg!(unix) && &asset.name == "ahqstore_setup_amd64_linux") || (cfg!(windows) && &asset.name == "ahqstore_setup_win32_amd64.exe") {
+    if (cfg!(unix) && &asset.name == "ahqstore_setup_amd64_linux")
+      || (cfg!(windows) && &asset.name == "ahqstore_setup_win32_amd64.exe")
+    {
       return asset.browser_download_url;
     }
   }
@@ -62,9 +68,7 @@ pub fn is_an_admin() -> bool {
 fn get_whoami() -> Option<String> {
   let mut whoami = None;
 
-  let command = Command::new("whomai")
-    .stdout(Stdio::piped())
-    .spawn();
+  let command = Command::new("whomai").stdout(Stdio::piped()).spawn();
 
   if let Ok(child) = command {
     if let Ok(status) = child.wait_with_output() {

@@ -68,11 +68,13 @@ export default function Home(props: HomeProps) {
           const h1 = textBox.current;
           try {
             if (i === 0) {
-              h1.innerHTML = "";
+              try {
+                h1.innerHTML = d;
+              } catch (_) { }
             }
             setTimeout(() => {
               try {
-                h1.innerHTML += d;
+                if (i != 0) h1.innerHTML += d;
               } catch (_) { }
             }, 50 * i);
           } catch (_) { }

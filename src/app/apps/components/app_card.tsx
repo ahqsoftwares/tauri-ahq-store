@@ -21,19 +21,23 @@ const def: appData = {
   appShortcutName: "",
   displayImages: [],
   install: {
-    installType: "Both",
     linux: undefined,
     win32: undefined,
+    android: undefined,
   },
   AuthorObject: {
-    ahq_verified: false,
-    display_name: "",
-    linked_acc: [],
-    pub_email: "",
-    u_id: 0,
-    username: "",
+    ahq_official: false,
+    name: "",
+    email: "",
     apps: [],
-    pf_pic: "",
+    icon_base64: "",
+    gh_username: "",
+    description: "",
+    support: {
+      discord: "",
+      github: "",
+      website: ""
+    },
   },
 };
 
@@ -87,7 +91,7 @@ export default function AppCard(props: {
 
       <div className="card-footer">
         <button className="text-blue-500 text-2xl" style={{ minWidth: "95%" }}>
-          {source || AuthorObject?.display_name}
+          {source || AuthorObject.name}
         </button>
       </div>
     </div>

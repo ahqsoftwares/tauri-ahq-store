@@ -2,7 +2,7 @@
   "identifier": "main-capability",
   "description": "Permissions",
   "local": true,
-  "windows": ["main"],
+  "windows": ["main", "code"],
   "permissions": [
     "event:default",
     "window:default",
@@ -15,6 +15,7 @@
       "identifier": "fs:scope",
       "allow": [{ "path": "$APPDATA" }, { "path": "$APPDATA/**" }]
     },
+    "window:allow-start-dragging",
     "window:allow-set-resizable",
     "window:allow-set-maximizable",
     "window:allow-set-minimizable",
@@ -28,8 +29,7 @@
     "window:allow-hide",
     "window:allow-close",
     "window:allow-set-decorations",
-    "window:allow-set-icon",
-    "window:allow-set-ignore-cursor-events",
+    "window:allow-set-fullscreen",
     "webview:allow-print",
     "webview:default",
     {

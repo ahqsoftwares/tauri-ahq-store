@@ -1,6 +1,6 @@
 //React
 import { useEffect, useState } from "react";
-import { Auth, User, updateProfile } from "../../auth";
+import { Auth, User } from "../../auth";
 
 //packages
 import Toast from "../resources/api/toast";
@@ -36,7 +36,6 @@ interface InitProps {
   dark: boolean;
   setDark: Function;
   auth: Auth;
-  setDev: Function;
   font: string;
   setFont: Function;
   autoUpdate: boolean;
@@ -51,8 +50,7 @@ interface InitProps {
 export default function Init(props: InitProps) {
   const [user, setUser] = useState(props.auth.currentUser as User),
     [show, setShow] = useState(false),
-    [showOtherUserOptions, setOUO] = useState(false),
-    [dev, setDev] = useState(user?.dev);
+    [showOtherUserOptions, setOUO] = useState(false);
 
   const [ver, setVer] = useState("0.9.0");
   const [os, setOs] = useState("");

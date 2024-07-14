@@ -9,25 +9,30 @@ pub mod utils;
 mod ws;
 
 use crate::rpc;
+use tauri::{Emitter, Listener};
 use tauri::menu::IconMenuItemBuilder;
-use tauri::tray::{TrayIconBuilder, TrayIconEvent};
+use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButton};
 use tauri::window::{ProgressBarState, ProgressBarStatus};
+use tauri::{AppHandle, Runtime, WebviewWindowBuilder};
 use tauri::{
   image::Image,
   menu::{Menu, MenuBuilder, MenuEvent, MenuId, MenuItem},
   Manager, RunEvent,
 };
 //modules
-use crate::encryption::{decrypt, encrypt};
+use crate::encryption::{decrypt, encrypt, to_hash_uid};
 
 //crates
 #[cfg(windows)]
 use windows::Win32::{
   Foundation::BOOL,
-  Graphics::Dwm::{DWM_BLURBEHIND, DwmEnableBlurBehindWindow, DwmSetWindowAttribute, DWMWINDOWATTRIBUTE}
+  Graphics::Dwm::{
+    DwmEnableBlurBehindWindow, DwmSetWindowAttribute, DWMWINDOWATTRIBUTE, DWM_BLURBEHIND,
+  },
 };
 
 use std::panic::catch_unwind;
+use std::path::PathBuf;
 use std::process;
 use std::time::Duration;
 
@@ -51,15 +56,13 @@ use open as open_2;
 use utils::{get_service_url, is_an_admin};
 
 macro_rules! platform_impl {
-  ($x:expr, $y:expr) => {
-    {
-      #[cfg(windows)]
-      return {$x};
+  ($x:expr, $y:expr) => {{
+    #[cfg(windows)]
+    return { $x };
 
-      #[cfg(unix)]
-      return {$y};
-    }
-  }
+    #[cfg(unix)]
+    return { $y };
+  }};
 }
 
 #[derive(Debug, Clone)]
@@ -80,6 +83,10 @@ pub fn main() {
 
   let app = tauri::Builder::default()
     .setup(|app| {
+      println!(
+        "Webview v{}",
+        tauri::webview_version().unwrap_or("UNKNOWN".to_string())
+      );
       let args = std::env::args();
       let buf = std::env::current_exe().unwrap().to_owned();
       let exec = buf.to_str().unwrap().to_owned();
@@ -97,65 +104,13 @@ pub fn main() {
 
         WINDOW = Some(window.clone());
 
-        rpc::init_presence(&window);
-
         ws::init(&window, || {
           #[cfg(debug_assertions)]
           println!("Reinstall of AHQ Store is required...");
 
-          if catch_unwind(|| {
-            let mut i = 0;
-
-            loop {
-              WINDOW
-                .as_mut()
-                .unwrap()
-                .emit("needs_reinstall", "None")
-                .unwrap();
-              thread::sleep(Duration::from_secs(1));
-              i += 1;
-
-              if i >= 10 {
-                break;
-              }
-            }
-
-            thread::spawn(|| {
-              let url = get_service_url(
-                env!("CARGO_PKG_VERSION").contains("-alpha")
-              );
-
-              let sys = sys_handler();
-
-              let file: String = platform_impl!(
-                format!("{}\\ahqstore.exe", &sys),
-                format!("/ahqstore")
-              );
-
-              let _ = fs::remove_file(&file);
-              download::download(
-                &url,
-                &sys,
-                &{let x: String = platform_impl!(format!("ahqstore.exe"), format!("ahqstore")); x},
-                |_c, _t| {
-                  #[cfg(debug_assertions)]
-                  println!("{}", _c * 100 / _t);
-                },
-              );
-
-              #[cfg(unix)]
-              let _ = chmod("777", &file);
-
-              extract::run_admin(file);
-          
-            }).join().unwrap();
-          })
-          .is_err()
-          {
-            std::process::exit(1);
-          } else {
-            std::process::exit(0);
-          }
+          tauri::async_runtime::spawn(async {
+            update_inner(true).await;
+          });
         });
       }
 
@@ -247,11 +202,15 @@ pub fn main() {
       sys_handler,
       encrypt,
       decrypt,
+      dsc_rpc,
+      to_hash_uid,
       open,
       set_progress,
       is_an_admin,
       is_development,
-      check_install_update
+      check_install_update,
+      show_code,
+      rem_code
     ])
     .menu(|handle| Menu::new(handle))
     .build(context)
@@ -277,16 +236,17 @@ pub fn main() {
           &MenuItem::with_id(&app, "update", "Check for Updates", true, None::<String>).unwrap(),
         )
         .separator()
-        .item(
-          &MenuItem::with_id(&app, "quit", "Quit", true, None::<String>).unwrap(),
-        )
+        .item(&MenuItem::with_id(&app, "quit", "Quit", true, None::<String>).unwrap())
         .build()
         .unwrap(),
     )
     .on_tray_icon_event(|app, event| match event {
-      TrayIconEvent::Click { .. } => {
-        let _ = app.app_handle().get_webview_window("main").unwrap().show();
-      },
+      TrayIconEvent::Click { button, .. } => match button {
+        MouseButton::Left => {
+          let _ = app.app_handle().get_webview_window("main").unwrap().show();
+        }
+        _ => {}
+      }
       _ => {}
     })
     .on_menu_event(|app, ev| {
@@ -330,8 +290,40 @@ pub fn main() {
 }
 
 #[tauri::command(async)]
+fn dsc_rpc(window: tauri::WebviewWindow<tauri::Wry>,) {
+  rpc::init_presence(&window);
+}
+
+#[tauri::command(async)]
+fn show_code<R: Runtime>(app: AppHandle<R>, code: String) {
+  WebviewWindowBuilder::new(&app, "code", tauri::WebviewUrl::App(PathBuf::from(&format!("/{code}"))))
+    .skip_taskbar(true)
+    .title("Login to GitHub")
+    .inner_size(400.0, 150.0)
+    .max_inner_size(400.0, 150.0)
+    .min_inner_size(400.0, 150.0)
+    .decorations(false)
+    .always_on_top(true)
+    .fullscreen(false)
+    .content_protected(true)
+    .maximizable(false)
+    .minimizable(false)
+    .closable(true)
+    .focused(true)
+    .build();
+}
+
+#[tauri::command(async)]
+fn rem_code<R: Runtime>(app: tauri::AppHandle<R>) {
+  app.get_webview_window("code")
+    .unwrap()
+    .destroy()
+    .unwrap()
+}
+
+#[tauri::command(async)]
 fn is_development() -> bool {
-  cfg!(debug_assertions)
+  cfg!(debug_assertions) || env!("CARGO_PKG_VERSION").contains("-alpha")
 }
 
 #[cfg(unix)]
@@ -358,13 +350,20 @@ fn open(url: String) -> Option<()> {
 
 #[tauri::command]
 async fn check_install_update() {
-  use updater::*;
-   let (avail, release) = is_update_available(
-    env!("CARGO_PKG_VERSION"),
-    env!("CARGO_PKG_VERSION").contains("-alpha")
-   ).await;
+  update_inner(false).await;
+}
 
-   if avail {
+async fn update_inner(must: bool) {
+  use updater::*;
+  let (avail, release) = is_update_available(
+    if must { 
+      ""
+     } else { env!("CARGO_PKG_VERSION") },
+    env!("CARGO_PKG_VERSION").contains("-alpha"),
+  )
+  .await;
+
+  if avail {
     if let Some(release) = release {
       unsafe {
         let _ = WINDOW.clone().unwrap().emit("update", "installing");
@@ -373,7 +372,7 @@ async fn check_install_update() {
       update(release).await;
       process::exit(0);
     }
-   }
+  }
 }
 
 #[tauri::command(async)]
@@ -391,10 +390,15 @@ fn sys_handler() -> String {
 }
 
 #[tauri::command(async)]
-fn set_progress(window: tauri::WebviewWindow<tauri::Wry>, state: i32, c: Option<u64>, t: Option<u64>) {
+fn set_progress(
+  window: tauri::WebviewWindow<tauri::Wry>,
+  state: i32,
+  c: Option<u64>,
+  t: Option<u64>,
+) {
   let progress = match (c, t) {
-    (Some(c), Some(t)) => Some((c*100)/t),
-    _ => None
+    (Some(c), Some(t)) => Some((c * 100) / t),
+    _ => None,
   };
   let _ = window.set_progress_bar(ProgressBarState {
     progress,
@@ -403,8 +407,8 @@ fn set_progress(window: tauri::WebviewWindow<tauri::Wry>, state: i32, c: Option<
       0x00000002 => ProgressBarStatus::Normal,
       0x00000004 => ProgressBarStatus::Error,
       0x00000008 => ProgressBarStatus::Paused,
-      _ => ProgressBarStatus::None
-    })
+      _ => ProgressBarStatus::None,
+    }),
   });
 }
 

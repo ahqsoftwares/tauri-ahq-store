@@ -66,7 +66,11 @@ export default function Search(props: SearchProps) {
             }`}
           >
             <span className="block">
-              {searched ? "0 Apps Found" : "Just a moment..."}
+              {searched ? <>0 Apps Found</> : <div className="flex">
+                <span className="dui-loading dui-loading-spinner" />
+                <span className="ml-2">Just a moment...</span>
+              </div>
+              }
             </span>
           </div>
         ) : (
@@ -101,7 +105,10 @@ export default function Search(props: SearchProps) {
             }`}
           >
             <span className="block">
-              {searched ? "0 Apps Found" : "Just a moment..."}
+              {searched ? "0 Apps Found" : <div className="flex w-[100%] justify-center">
+                <span className="dui-loading dui-loading-spinner dui-loading-lg" />
+                <span className="ml-2">Just a moment...</span>
+              </div>}
             </span>
           </div>
         ) : (

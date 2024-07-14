@@ -17,12 +17,12 @@ use windows::Win32::{
   System::SystemServices::SECURITY_DESCRIPTOR_REVISION,
 };
 
-use ahqstore_types::Command;
 use crate::{
   authentication::authenticate_process,
-  handlers::{handle_msg, GET_INSTALL_DAEMON},
-  utils::{get_iprocess, set_iprocess, write_log},
+  handlers::{get_prefs, handle_msg, GET_INSTALL_DAEMON},
+  utils::{get_iprocess, set_iprocess, set_perms, write_log},
 };
+use ahqstore_types::{Command, Prefs};
 
 pub async fn launch() {
   write_log("Starting");
@@ -75,25 +75,37 @@ pub async fn launch() {
       let mut process_id = 0u32;
 
       unsafe {
-        let handle = HANDLE(handle as isize);
+        let handle = HANDLE(handle);
 
         let _ = GetNamedPipeClientProcessId(handle, &mut process_id as *mut _);
       }
 
-      if !authenticate_process(process_id as usize, true) {
+      let (auth, admin) = authenticate_process(process_id as usize, true);
+
+      if !auth {
         println!("Unauthenticated");
         let _ = pipe.disconnect();
       } else {
+        set_perms((|| {
+          if admin {
+            return (true, true, true);
+          }
+          
+          let Prefs { launch_app, install_apps, .. } = get_prefs();
+
+          (admin, launch_app, install_apps)
+        })());
+
         let mut ext: u8 = 0;
         'a: loop {
           let mut val: [u8; 8] = [0u8; 8];
           //let mut buf: Box<[u8]>;
 
           ext += 1;
-          if ext >= 20 {
+          if ext >= 50 {
             ext = 0;
-            if !authenticate_process(process_id as usize, false) {
-              println!("Unauthenticated");
+            let (auth, _) = authenticate_process(process_id as usize, false);
+            if !auth {
               let _ = pipe.disconnect();
               break 'a;
             }
@@ -126,7 +138,7 @@ pub async fn launch() {
                   },
                 }
               }
-              handle_msg(String::from_utf8_lossy(&buf).to_string());
+              handle_msg(admin, String::from_utf8_lossy(&buf).to_string());
             }
             Err(e) => match e.kind() {
               ErrorKind::WouldBlock => {}

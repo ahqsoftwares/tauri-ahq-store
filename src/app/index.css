@@ -7,7 +7,7 @@
 }
 
 ::-webkit-scrollbar {
-  width: none;
+  width: 0px;
   display: none;
 }
 
