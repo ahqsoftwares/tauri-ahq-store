@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - pr_in
+      - v3-dev
 
 permissions: write-all
 
@@ -202,9 +202,9 @@ jobs:
             target: x86_64-unknown-linux-gnu
             arch: amd64
 
-          #- os: windows-latest
-          #  target: aarch64-pc-windows-msvc
-          #  arch: arm64
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            arch: arm64
 
     runs-on: ${{ matrix.os }}
     steps:
