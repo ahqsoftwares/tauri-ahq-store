@@ -9,7 +9,7 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
   )];
 
   #[cfg(all(not(debug_assertions), unix))]
-  let exe = [format!("/bin/ahq-store",), format!("/usr/bin/ahq-store")];
+  let exe = [format!("/bin/ahq-store"), format!("/usr/bin/ahq-store")];
 
   #[cfg(debug_assertions)]
   let exe: [String; 0] = [];
@@ -27,8 +27,12 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
       if !time {
         return None;
       }
+
+      println!("{:?}", &process.user_id());
       let groups = users.get_user_by_id(process.user_id()?)?.groups();
       
+      println!("{:?}", &users);
+
       #[cfg(unix)]
       return Some(true);
 

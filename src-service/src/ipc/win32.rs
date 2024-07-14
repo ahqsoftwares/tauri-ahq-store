@@ -19,10 +19,10 @@ use windows::Win32::{
 
 use crate::{
   authentication::authenticate_process,
-  handlers::{handle_msg, GET_INSTALL_DAEMON},
-  utils::{get_iprocess, set_iprocess, write_log},
+  handlers::{get_prefs, handle_msg, GET_INSTALL_DAEMON},
+  utils::{get_iprocess, set_iprocess, set_perms, write_log},
 };
-use ahqstore_types::Command;
+use ahqstore_types::{Command, Prefs};
 
 pub async fn launch() {
   write_log("Starting");
@@ -81,10 +81,21 @@ pub async fn launch() {
       }
 
       let (auth, admin) = authenticate_process(process_id as usize, true);
+
       if !auth {
         println!("Unauthenticated");
         let _ = pipe.disconnect();
       } else {
+        set_perms((|| {
+          if admin {
+            return (true, true, true);
+          }
+          
+          let Prefs { launch_app, install_apps, .. } = get_prefs();
+
+          (admin, launch_app, install_apps)
+        })());
+
         let mut ext: u8 = 0;
         'a: loop {
           let mut val: [u8; 8] = [0u8; 8];
@@ -95,7 +106,6 @@ pub async fn launch() {
             ext = 0;
             let (auth, _) = authenticate_process(process_id as usize, false);
             if !auth {
-              println!("Unauthenticated");
               let _ = pipe.disconnect();
               break 'a;
             }
