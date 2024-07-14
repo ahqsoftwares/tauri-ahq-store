@@ -49,7 +49,7 @@
     ]
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.0.0-beta.11",
+    "@tauri-apps/cli": "2.0.0-beta.22",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
