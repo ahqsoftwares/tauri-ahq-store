@@ -91,7 +91,7 @@ pub async fn launch() {
           //let mut buf: Box<[u8]>;
 
           ext += 1;
-          if ext >= 20 {
+          if ext >= 50 {
             ext = 0;
             let (auth, _) = authenticate_process(process_id as usize, false);
             if !auth {

@@ -50,7 +50,8 @@ pub async fn launch() {
       continue;
     }
 
-    if !authenticate_process(pid as usize, true).0 {
+    let (auth, sudoer) = authenticate_process(pid as usize, true);
+    if !auth {
       println!("FAILED CHECK");
       let _ = pipe.shutdown().await;
       println!("DISCONNECT");
@@ -98,7 +99,7 @@ pub async fn launch() {
               },
             }
           }
-          handle_msg(String::from_utf8_lossy(&buf).to_string());
+          handle_msg(sudoer, String::from_utf8_lossy(&buf).to_string());
         }
         Err(e) => match e.kind() {
           ErrorKind::WouldBlock => {}

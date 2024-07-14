@@ -9,6 +9,7 @@ pub mod utils;
 mod ws;
 
 use crate::rpc;
+use tauri::{Emitter, Listener};
 use tauri::menu::IconMenuItemBuilder;
 use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButton};
 use tauri::window::{ProgressBarState, ProgressBarStatus};

@@ -1,5 +1,5 @@
 use crate::utils::*;
-use sysinfo::{Pid, System, Users};
+use sysinfo::{Pid, System, Users, ProcessRefreshKind};
 
 pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
   #[cfg(all(not(debug_assertions), windows))]
@@ -11,24 +11,14 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
   #[cfg(all(not(debug_assertions), unix))]
   let exe = [format!("/bin/ahq-store",), format!("/usr/bin/ahq-store")];
 
-  #[cfg(all(debug_assertions, windows))]
-  let exe = [format!(
-    r"E:\GitHub\ahq-store-tauri\src-tauri\target\debug\AHQ Store.exe"
-  )];
-
-  #[cfg(all(debug_assertions, unix))]
-  let exe = [
-    format!(
-      "/media/ahqsoftwares/AHQ_s Drive/GitHub/ahq-store-tauri/src-tauri/target/debug/ahq-store"
-    ),
-    format!("/media/ahqsoftwares/AHQ_s Drive/rust/server/target/debug/server"),
-  ];
+  #[cfg(debug_assertions)]
+  let exe: [String; 0] = [];
   //let path = format!(r"E:\rust\iprocess\target\debug\iprocess.exe");
 
   let mut system = System::new();
   let mut users = Users::new();
   users.refresh_list();
-  system.refresh_all();
+  system.refresh_process_specifics(Pid::from(pid), ProcessRefreshKind::everything());
 
   let process = system.process(Pid::from(pid));
 
@@ -37,7 +27,13 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
       if !time {
         return None;
       }
-      Some(users.get_user_by_id(process.user_id()?)?.groups().iter().find(|x| x.name() == "Administrators").is_some())
+      let groups = users.get_user_by_id(process.user_id()?)?.groups();
+      
+      #[cfg(unix)]
+      return Some(true);
+
+      #[cfg(windows)]
+      return Some(groups.iter().find(|x| x.name() == "Administrators").is_some());
     })().unwrap_or(false);
 
     let Some(ex) = process.exe() else {

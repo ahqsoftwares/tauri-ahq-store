@@ -12,6 +12,7 @@ use std::sync::Arc;
 use std::thread;
 use std::{ffi::OsStr, io::ErrorKind, thread::spawn, time::Duration};
 
+use tauri::{Emitter, Listener};
 use tauri::Manager;
 
 static mut CONNECTION: Option<WsConnection> = None;
