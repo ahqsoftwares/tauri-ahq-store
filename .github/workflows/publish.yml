@@ -299,13 +299,6 @@ jobs:
             rpm: aarch64
             appimage: aarch64
 
-          - arch: armv7l
-            cpu: cortex-a53
-            deb: armhfp
-            rpm: arm
-            appimage: armhf
-            img: dietpi:rpi_armv7_bookworm
-
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
