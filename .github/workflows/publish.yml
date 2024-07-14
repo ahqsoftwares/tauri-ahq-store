@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - pr_in
+      - v3-dev
 
 permissions: write-all
 
