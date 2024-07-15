@@ -100,8 +100,8 @@ importers:
         specifier: ^9.7.0
         version: 9.7.0
       eslint-plugin-react-compiler:
-        specifier: 0.0.0-experimental-c8b3f72-20240517
-        version: 0.0.0-experimental-c8b3f72-20240517(eslint@9.7.0)
+        specifier: 0.0.0-experimental-0998c1e-20240625
+        version: 0.0.0-experimental-0998c1e-20240625(eslint@9.7.0)
       onchange:
         specifier: ^7.1.0
         version: 7.1.0
@@ -1223,8 +1223,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-plugin-react-compiler@0.0.0-experimental-c8b3f72-20240517:
-    resolution: {integrity: sha512-cxUTFNMEKiLX6uFaRfrr2GHnB7KUHDMYLjEGzDec82ka6WyBCHg906nGSf3JvVnQKHaBDfUk7Mmv/JMvdgQB8Q==}
+  eslint-plugin-react-compiler@0.0.0-experimental-0998c1e-20240625:
+    resolution: {integrity: sha512-npq2RomExoQI3jETs4OrifaygyJYgOcX/q74Q9OC7GmffLh5zSJaQpzjs2fi61NMNkJyIvTBD0C6sKTGGcetOw==}
     engines: {node: ^14.17.0 || ^16.0.0 || >= 18.0.0}
     peerDependencies:
       eslint: '>=7'
@@ -3669,7 +3669,7 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-plugin-react-compiler@0.0.0-experimental-c8b3f72-20240517(eslint@9.7.0):
+  eslint-plugin-react-compiler@0.0.0-experimental-0998c1e-20240625(eslint@9.7.0):
     dependencies:
       '@babel/core': 7.24.8
       '@babel/parser': 7.24.8
