@@ -36,17 +36,17 @@ importers:
         specifier: ^8.4.39
         version: 8.4.39
       react:
-        specifier: 19.0.0-beta-26f2496093-20240514
-        version: 19.0.0-beta-26f2496093-20240514
+        specifier: 19.0.0-rc.0
+        version: 19.0.0-rc.0
       react-dom:
-        specifier: 19.0.0-beta-26f2496093-20240514
-        version: 19.0.0-beta-26f2496093-20240514(react@19.0.0-beta-26f2496093-20240514)
+        specifier: 19.0.0-rc.0
+        version: 19.0.0-rc.0(react@19.0.0-rc.0)
       react-icons:
         specifier: ^5.2.1
-        version: 5.2.1(react@19.0.0-beta-26f2496093-20240514)
+        version: 5.2.1(react@19.0.0-rc.0)
       react-modal:
         specifier: ^3.16.1
-        version: 3.16.1(react-dom@19.0.0-beta-26f2496093-20240514(react@19.0.0-beta-26f2496093-20240514))(react@19.0.0-beta-26f2496093-20240514)
+        version: 3.16.1(react-dom@19.0.0-rc.0(react@19.0.0-rc.0))(react@19.0.0-rc.0)
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.4
@@ -2040,10 +2040,10 @@ packages:
     resolution: {integrity: sha512-RcSV/u+lPChcTB+A4fij0xkE204yzKdAsGUFy6+DrfUzWSawB+cu0n3WLmJcJXQ/VnmjSUlIrqmVLicRhT/gLA==}
     hasBin: true
 
-  react-dom@19.0.0-beta-26f2496093-20240514:
-    resolution: {integrity: sha512-UvQ+K1l3DFQ34LDgfFSNuUGi9EC+yfE9tS6MdpNTd5fx7qC7KLfepfC/KpxWMQZ7JfE3axD4ZO6H4cBSpAZpqw==}
+  react-dom@19.0.0-rc.0:
+    resolution: {integrity: sha512-MhgN2RMYFUkZekkFbsXg9ycwEGaMBzATpTNvGGvWNA9BZZEkdzIL4pv7iDuZKn48YoGARk8ydu4S+Ehd8Yrc4g==}
     peerDependencies:
-      react: 19.0.0-beta-26f2496093-20240514
+      react: 19.0.0-rc.0
 
   react-icons@5.2.1:
     resolution: {integrity: sha512-zdbW5GstTzXaVKvGSyTaBalt7HSfuK5ovrzlpyiWHAFXndXTdd/1hdDHI4xBM1Mn7YriT6aqESucFl9kEXzrdw==}
@@ -2067,8 +2067,8 @@ packages:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
 
-  react@19.0.0-beta-26f2496093-20240514:
-    resolution: {integrity: sha512-ZsU/WjNZ6GfzMWsq2DcGjElpV9it8JmETHm9mAJuOJNhuJcWJxt8ltCJabONFRpDFq1A/DP0d0KFj9CTJVM4VA==}
+  react@19.0.0-rc.0:
+    resolution: {integrity: sha512-8nrDCl5uE54FHeKqKrEO0TS+10bT4cxutJGb2okiJc0FHMQ6I3FeItaqly/1nbijlhSO3HmAVyPIexIQQWYAtQ==}
     engines: {node: '>=0.10.0'}
 
   read-cache@1.0.0:
@@ -2140,8 +2140,8 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  scheduler@0.25.0-beta-26f2496093-20240514:
-    resolution: {integrity: sha512-vDwOytLHFnA3SW2B1lNcbO+/qKVyLCX+KLpm+tRGNDsXpyxzRgkIaYGWmX+S70AJGchUHCtuqQ50GFeFgDbXUw==}
+  scheduler@0.25.0-rc.0:
+    resolution: {integrity: sha512-B3aSqMfoRkucM94MztZD1CyNyf68W9A3dL/TT453G6uNcxMBqGQ+rhFKyxNnWH/mfRHlGBr0tF0F472JCETH4g==}
 
   semver-compare@1.0.0:
     resolution: {integrity: sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==}
@@ -4503,31 +4503,31 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  react-dom@19.0.0-beta-26f2496093-20240514(react@19.0.0-beta-26f2496093-20240514):
+  react-dom@19.0.0-rc.0(react@19.0.0-rc.0):
     dependencies:
-      react: 19.0.0-beta-26f2496093-20240514
-      scheduler: 0.25.0-beta-26f2496093-20240514
+      react: 19.0.0-rc.0
+      scheduler: 0.25.0-rc.0
 
-  react-icons@5.2.1(react@19.0.0-beta-26f2496093-20240514):
+  react-icons@5.2.1(react@19.0.0-rc.0):
     dependencies:
-      react: 19.0.0-beta-26f2496093-20240514
+      react: 19.0.0-rc.0
 
   react-is@16.13.1: {}
 
   react-lifecycles-compat@3.0.4: {}
 
-  react-modal@3.16.1(react-dom@19.0.0-beta-26f2496093-20240514(react@19.0.0-beta-26f2496093-20240514))(react@19.0.0-beta-26f2496093-20240514):
+  react-modal@3.16.1(react-dom@19.0.0-rc.0(react@19.0.0-rc.0))(react@19.0.0-rc.0):
     dependencies:
       exenv: 1.2.2
       prop-types: 15.8.1
-      react: 19.0.0-beta-26f2496093-20240514
-      react-dom: 19.0.0-beta-26f2496093-20240514(react@19.0.0-beta-26f2496093-20240514)
+      react: 19.0.0-rc.0
+      react-dom: 19.0.0-rc.0(react@19.0.0-rc.0)
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
 
   react-refresh@0.14.2: {}
 
-  react@19.0.0-beta-26f2496093-20240514: {}
+  react@19.0.0-rc.0: {}
 
   read-cache@1.0.0:
     dependencies:
@@ -4621,7 +4621,7 @@ snapshots:
   safer-buffer@2.1.2:
     optional: true
 
-  scheduler@0.25.0-beta-26f2496093-20240514: {}
+  scheduler@0.25.0-rc.0: {}
 
   semver-compare@1.0.0:
     optional: true
