@@ -4232,7 +4232,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-single-instance"
 version = "2.0.0-beta.11"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#12b78a23c4a83ec014acbb5ee73a4ba53e09150d"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#8824a24e15df32fc873020a9cd57260f62758ebd"
 dependencies = [
  "log",
  "serde",
@@ -4791,7 +4791,7 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "updater"
-version = "2.0.0-rc.1"
+version = "2.0.0-rc.2"
 dependencies = [
  "dirs",
  "lazy_static",
