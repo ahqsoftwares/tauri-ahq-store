@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import reactRefresh from "@vitejs/plugin-react";
 import svgrPlugin from "vite-plugin-svgr";
-import { normalize } from "path";
+import path, { normalize } from "path";
 
 export default defineConfig(({ mode }) => ({
   build: {
@@ -44,4 +44,9 @@ export default defineConfig(({ mode }) => ({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 }));
