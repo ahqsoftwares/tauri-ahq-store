@@ -1,164 +1,84 @@
-import { BsGear, BsFillGearFill, BsThreeDotsVertical } from "react-icons/bs";
-import { MdAccountCircle, MdOutlineAccountCircle } from "react-icons/md";
-import {
-  AiFillExperiment,
-  AiFillHome,
-  AiOutlineExperiment,
-  AiOutlineHome,
-} from "react-icons/ai";
-import { RiApps2Fill, RiApps2Line } from "react-icons/ri";
-import { IoLibraryOutline, IoLibrarySharp } from "react-icons/io5";
-import { BiPackage, BiSolidPackage } from "react-icons/bi";
-
-import { getCurrent } from "@tauri-apps/api/webviewWindow";
-
-import drag from "./drag";
-import { useEffect } from "react";
+import { FcHome, FcSettings } from "react-icons/fc";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { Auth } from "../auth";
+import { apps, user, library, plugins, dev } from "./icons";
 
 interface prop {
   active: string;
   home: Function;
-  horizontal: boolean;
   auth: Auth;
 }
 
 export default function Nav(props: prop) {
-  let { active, auth, home: changePage, horizontal: P_H } = props;
+  let { active, auth, home: changePage } = props;
 
-  const horizontal = "n-item-h ";
-
-  useEffect(() => {
-    if (P_H) {
-      drag(document.getElementById("sidebar"));
-    }
-  }, [P_H]);
-
-  let a = P_H ? horizontal : "",
-    b = P_H ? horizontal : "",
-    c = P_H ? horizontal : "",
-    d = P_H ? horizontal : "",
-    e = P_H ? horizontal : "",
-    f = P_H ? horizontal : "",
-    g = P_H ? horizontal : "";
-  switch (active) {
-    case "home":
-      a = "active";
-      break;
-    case "apps":
-      b = "active";
-      break;
-    case "settings":
-      c = "active";
-      break;
-    case "developer":
-      e = "active";
-      break;
-    case "library":
-      f = "active";
-      break;
-    case "Dependencies":
-      g = "active";
-      break;
-    default:
-      d = "active";
-      break;
-  }
-
-  getCurrent().setTitle(
+  getCurrentWebviewWindow().setTitle(
     `${active.replace("user", "account")[0].toUpperCase()}${active
       .replace("user", "ccount")
       .replace(active[0], "")
       .toLowerCase()} - AHQ Store`,
   );
 
+  const Button = ({ text, img, on, id }: { id?: string, text: string, on: string, img: JSX.Element }) => <button className={`flex w-[98%] px-3 py-2 dui-btn dui-btn-ghost ${active == on ? "nav-selected-line" : ""} no-animation mt-1 transition-all`} id={id} onClick={() => changePage(on)}>
+    <div className="w-[5px] h-[5%] my-auto rounded-xl line" />
+    {img}
+    <span className="block text-lg mr-auto">{text}</span>
+  </button>;
+
   return (
     <div
-      className={`w-[80px] h-[98vh] my-auto ml-2 rounded-lg flex flex-col items-center nav bg-blue-super`}
+      className={`w-[12rem] h-[98vh] my-auto ml-2 px-2 rounded-lg flex flex-col items-center nav`}
       id={"sidebar"}
     >
-      {P_H ? (
-        <span id="sidebarheader" className="text-white hover:cursor-move">
-          <BsThreeDotsVertical size={"2.5em"} />
-        </span>
-      ) : (
-        <></>
-      )}
-      <button className={`n-item ${a}`} onClick={() => changePage("home")}>
-        {a === "active" ? (
-          <AiFillHome size={"2.5em"}></AiFillHome>
-        ) : (
-          <AiOutlineHome size={"2.5em"} />
-        )}
-      </button>
+      <Button
+        img={<FcHome size="1.5em" />}
+        text="Home"
+        on="home"
+      />
 
-      <button className={`n-item ${b}`} onClick={() => changePage("apps")}>
-        {b === "active" ? (
-          <RiApps2Fill size={"2.5em"} />
-        ) : (
-          <RiApps2Line size={"2.5em"} />
-        )}
-      </button>
+      <Button
+        img={<img style={{ "width": "1.5em", "height": "1.5em" }} src={apps} />}
+        text="Apps"
+        on="apps"
+      />
 
-      <button
-        className={`n-item ${g} hidden`}
-        onClick={() => changePage("Dependencies")}
-      >
-        {g === "active" ? (
-          <BiSolidPackage size={"2.5em"} />
-        ) : (
-          <BiPackage size={"2.5em"} />
-        )}
-      </button>
+      <Button
+        text="Plugins"
+        img={<img style={{ "width": "1.5em", "height": "1.5em" }} src={plugins} />}
+        on="Dependencies"
+      />
 
-      <div className={P_H ? "mx-auto" : "mt-auto mb-auto"}></div>
+      <div className={"mt-auto mb-auto"}></div>
 
       {auth.currentUser?.dev && (
-        <button
-          className={`n-item ${e}`}
-          onClick={() => changePage("developer")}
-        >
-          {e === "active" ? (
-            <AiFillExperiment size={"2.5em"} />
-          ) : (
-            <AiOutlineExperiment size={"2.5em"} />
-          )}
-        </button>
+        <Button
+          text="Developer"
+          img={<img style={{ "width": "1.5em", "height": "1.5em" }} src={dev} />}
+          on="developer"
+        />
       )}
 
-      <button className={`n-item ${f}`} onClick={() => changePage("library")}>
-        {f === "active" ? (
-          <IoLibrarySharp size="2.5em" />
-        ) : (
-          <IoLibraryOutline size="2.5em" />
-        )}
-      </button>
+      <Button
+        text="Library"
+        img={<img style={{ "width": "1.5em", "height": "1.5em" }} src={library} />}
+        on="library"
+      />
 
-      <button className={`n-item ${d}`} onClick={() => changePage("user")}>
-        {auth.currentUser ?
-          <img className="rounded-full" style={{ "width": "2.8em" }} src={auth.currentUser.avatar_url} />
-          : d === "active" ? (
-          <MdAccountCircle size={"2.8em"} />
-        ) : (
-          <MdOutlineAccountCircle size={"2.8em"} />
-        )}
-      </button>
+      <Button
+        text="Account"
+        img={
+          <img className="rounded-full" style={{ "width": "1.5em" }} src={auth.currentUser?.avatar_url || user} />
+        }
+        on="user"
+      />
 
-      <button
-        className={`n-item n-item-settings ${
-          c === "active" ? `active active-settings` : ""
-        }`}
+      <Button
+        text="Settings"
+        img={<FcSettings size="1.5em" />}
+        on="settings"
         id="settings"
-        onClick={() => changePage("settings")}
-      >
-        {c === "active" ? (
-          <BsFillGearFill size={"2.5em"} />
-        ) : (
-          <BsGear size={"2.5em"} />
-        )}
-      </button>
-
-      <div className="mb-[8px]"></div>
+      />
+      <div className="mb-1"></div>
     </div>
   );
 }

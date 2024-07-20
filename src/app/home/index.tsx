@@ -1,25 +1,20 @@
 //React
 import React, { useEffect, useRef, useState } from "react";
-import { RiApps2Line } from "react-icons/ri";
-import { BsGear } from "react-icons/bs";
-import { AiFillExperiment } from "react-icons/ai";
-import { IoLibraryOutline } from "react-icons/io5";
-import { MdAccountCircle } from "react-icons/md";
 
 //image
 import AHQStore from "./index.png";
 
 //components
 import Button from "./components/Button";
-import { server } from "../server";
 
 //API
 import { didGreet, greeted } from "../resources/utilities/greet";
-import { fetch } from "@tauri-apps/plugin-http";
 import { getData, setData } from "../resources/utilities/database";
 import { Auth } from "../../auth";
 import { getAppVersion } from "../resources/api/version";
 import getWindows from "../resources/api/os";
+import { apps, dev, library, user } from "../icons";
+import { FcSettings } from "react-icons/fc";
 
 function darkMode(classes: Array<string>, dark: boolean) {
   let newClasses: string[] = [];
@@ -120,14 +115,14 @@ export default function Home(props: HomeProps) {
         <div className="flex flex-row">
           <Button
             dark={dark}
-            Icon={RiApps2Line}
+            Icon={apps}
             title={"Apps"}
             description="Explore Apps"
             onClick={() => setPage("apps")}
           />
           <Button
             dark={dark}
-            Icon={IoLibraryOutline}
+            Icon={library}
             title="Library"
             calibrate="1.5"
             description="Check for app updates"
@@ -137,14 +132,14 @@ export default function Home(props: HomeProps) {
         <div className="flex flex-row">
           <Button
             dark={dark}
-            Icon={userIcon === "" ? MdAccountCircle : userIcon}
+            Icon={userIcon === "" ? user : userIcon}
             title="Account"
             description="Your account"
             onClick={() => setPage("user")}
           />
           <Button
             dark={dark}
-            Icon={Math.random() > 0.01 ? BsGear : getWindows()}
+            Icon={Math.random() > 0.01 ? FcSettings : getWindows()}
             no50
             title="Settings"
             calibrate="1"
@@ -158,7 +153,7 @@ export default function Home(props: HomeProps) {
           <div className="flex justify-center items-center mb-auto mt-3">
             <Button
               dark={dark}
-              Icon={AiFillExperiment}
+              Icon={dev}
               no50
               calibrate="1.5"
               title="Developer"

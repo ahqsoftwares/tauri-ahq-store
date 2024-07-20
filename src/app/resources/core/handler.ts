@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrent } from "@tauri-apps/api/webviewWindow";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { Downloaded, ServerResponse, interpret } from "./structs";
 import { Prefs } from ".";
 
-const appWindow = getCurrent();
+const appWindow = getCurrentWebviewWindow();
 let ref_counter = 1;
 
 const WebSocketMessage = {

@@ -10,7 +10,7 @@ import {
   requestPermission,
 } from "@tauri-apps/plugin-notification";
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrent, WebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { getCurrentWebviewWindow, WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 /*Apps
  */
@@ -18,7 +18,7 @@ import Store, { AppProps } from "./app/index";
 
 const appWindow = (() => {
   try {
-    return getCurrent();
+    return getCurrentWebviewWindow();
   } catch (_) { }
 })() as WebviewWindow;
 
@@ -66,7 +66,7 @@ if (localStorage.getItem("dsc-rpc") == "true") {
   invoke("dsc_rpc");
 }
 
-getCurrent()
+getCurrentWebviewWindow()
   .listen("update", () => {
     loadRender(false, "Update available, updating!");
   })

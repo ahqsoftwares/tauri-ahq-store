@@ -15,14 +15,15 @@ export default function Button(props: ButtonProps) {
 
   return (
     <div
-      className={`h-[5.5rem] w-[20.5rem] m-[1rem] border-[1px] border-base-content bg-opacity-40 bg-base-100 text-base-content rounded-xl hover:shadow-xl flex p-3`}
+      /* className={`h-[5.5rem] w-[20.5rem] m-[1rem] border-[1px] border-base-content bg-opacity-40 bg-base-100 text-base-content rounded-xl hover:shadow-xl flex p-3`} */
+      className="h-[5.5rem] w-[20.5rem] m-[1rem] dui-btn dui-btn-ghost bg-[var(--fallback-bc)] no-animation backdrop-blur-3xl"
       style={{
         cursor: "pointer",
         transition: "all 125ms linear",
       }}
       onClick={() => onClick()}
     >
-      <div className="my-auto ml-3">
+      <div className="my-auto ml-3 mr-auto">
         {typeof Icon === "string" ? (
           <img
             alt="Logo"
@@ -37,7 +38,7 @@ export default function Button(props: ButtonProps) {
           <Icon size="3em" />
         )}
       </div>
-      <div className="flex flex-col ml-3">
+      <div className="flex flex-col ml-3 mr-auto">
         <h1 className="text-3xl">{title}</h1>
         <h2 className={calibrate ? `ml-[${calibrate}px]` : ""}>
           {description}

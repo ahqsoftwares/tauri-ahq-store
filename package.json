@@ -13,7 +13,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.10",
-    "lucide-react": "^0.408.0",
+    "lucide-react": "^0.411.0",
     "minisearch": "^7.0.1",
     "postcss": "^8.4.39",
     "react": "19.0.0-beta-26f2496093-20240514",

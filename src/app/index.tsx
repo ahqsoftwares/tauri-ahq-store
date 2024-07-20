@@ -2,9 +2,9 @@
 Native API
 */
 import { useEffect, useState } from "react";
-import { getCurrent } from "@tauri-apps/api/webviewWindow";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
-const appWindow = getCurrent();
+const appWindow = getCurrentWebviewWindow();
 /*
 CSS
 */
@@ -137,7 +137,6 @@ function Render(props: AppProps) {
       setD(dark);
       setFont(font);
       setUpdate(autoUpdate);
-      setSidebar(sidebar);
       setDebug(debug);
 
       //Fetch Maps
@@ -272,7 +271,7 @@ function Render(props: AppProps) {
       {load === true ? (
         <>
           <header
-            className={`pt-1 apps${dark ? "-d" : ""} ${sidebar} ${
+            className={`pt-1 apps ${sidebar} ${
               sidebar.includes("flex-row-reverse") ? "pr-2" : ""
             } flex transition-all`}
           >
@@ -280,7 +279,6 @@ function Render(props: AppProps) {
               active={page}
               home={(page: string) => changePage(page)}
               auth={auth}
-              horizontal={sidebar.includes("flex-col")}
             />
             <div className="bg-transparent w-screen h-[98vh]">
               <div className="flex flex-col w-[100%] h-[100%] justify-center">

@@ -25,10 +25,8 @@ export default function PopUp(props: PasswordProps) {
       maxHeight: height || "40rem",
       minHeight: height || "40rem",
       transition: "all 500ms linear",
-      borderRadius: "20px",
-      borderWidth: "3px",
-      borderColor: "hsl(var(--bc) / 0.9)",
       backgroundColor: "var(--fallback-b1,oklch(var(--b1) / 1)",
+      border: "none"
     },
     overlay: {
       backgroundColor: "var(--fallback-b1,oklch(var(--b1) / 0.8)",

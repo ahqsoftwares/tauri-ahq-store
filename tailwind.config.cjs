@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -73,5 +73,24 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [require("tailwindcss-animate"), require("daisyui")],
+  daisyui: {
+    prefix: "dui-",
+    themes: [
+      "light",
+      "emerald",
+      "fantasy",
+      "wireframe",
+      "cmyk",
+      "autumn",
+
+      "synthwave",
+      "halloween",
+      "forest",
+      "luxury",
+      "dracula",
+      "business",
+      "night",
+    ],
+  },
+};

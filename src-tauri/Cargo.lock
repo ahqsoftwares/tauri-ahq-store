@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "2.0.0-rc.2"
+version = "2.0.0-alpha.3"
 dependencies = [
  "async-recursion",
  "bcrypt",
@@ -4791,7 +4791,7 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "updater"
-version = "2.0.0-rc.1"
+version = "2.0.0-rc.2"
 dependencies = [
  "dirs",
  "lazy_static",

@@ -27,52 +27,29 @@
 Navigation
 */
 .nav {
-  @apply border-base-content shadow-2xl border-2 bg-transparent bg-opacity-70 !important;
+  @apply shadow-2xl bg-transparent bg-opacity-70 !important;
+}
+
+.dummy {
+  @apply bg-none;
+}
+
+.nav-selected-line .line {
+  @apply bg-red-500 h-[75%];
+}
+
+.nav-selected-line {
+  @apply transition-all;
+  border-color: transparent !important;
+  background-color: var(--fallback-bc, oklch(var(--bc)/0.2)) !important;
 }
 
 .search-input-search-icon:focus {
   @apply rounded-br-md rounded-tr-md !important;
 }
 
-/*
-Item pallete
-*/
-.n-item {
-  @apply w-16 h-16 justify-center items-center 
-  relative flex 
-  transition-all
-  text-base-content bg-transparent;
-  border-radius: 20%;
-  border-color: transparent;
-  margin-top: 8px;
-  margin-left: 0px;
-  margin-right: 0px;
-}
-
-.n-item:hover {
-  border-width: 9px;
-  border-style: solid;
-  border-radius: 30%;
-  @apply bg-base-100;
-}
-
-.n-item:active,
-.nav .active {
-  border-width: 9px;
-  border-style: solid;
-  border-radius: 30%;
-  transition: padding 125ms linear;
-  animation: clickAnimation 250ms linear;
-  @apply bg-base-300 text-base-content shadow-2xl;
-}
-
-.n-item-settings:active svg,
-.active-settings svg {
+#settings:hover svg {
   animation: circleAnimation 0.75s linear !important;
-}
-
-.n-item-h:active {
-  animation: none;
 }
 
 @keyframes circleAnimation {
@@ -87,27 +64,12 @@ Item pallete
   }
 }
 
-@keyframes clickAnimation {
-  from {
-    padding: 0%;
-  }
-  10% {
-    padding: 10%;
-  }
-  85% {
-    padding: 10%;
-  }
-  100% {
-    padding: 0%;
-  }
-}
-
 /*
 */
 .menu {
   @apply items-center flex 
   w-[99%] h-[98vh] 
-  bg-transparent border-base-content border-2
+  bg-inherit
   rounded-lg flex-col mx-auto my-auto mt-auto;
   transition: background 500ms linear;
   overflow-x: hidden;

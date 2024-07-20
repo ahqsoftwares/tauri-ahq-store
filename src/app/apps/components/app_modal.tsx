@@ -84,10 +84,6 @@ export default function ShowModal(props: AppDataPropsModal) {
   const [installed, setInstalled] = useState<boolean | "hidden">(false);
   const [updating, setUpdating] = useState(worker.update != "UpToDate" && worker.update != "Disabled");
 
-  const [cState, setCState] = useState({
-
-  });
-
   const progressBar = useRef<HTMLProgressElement>("" as any);
 
   useEffect(() => {
