@@ -34,7 +34,7 @@ use windows::Win32::{
 use std::panic::catch_unwind;
 use std::path::PathBuf;
 use std::process;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
 #[cfg(unix)]
 use whatadistro::identify;
@@ -72,6 +72,7 @@ struct AppData {
 }
 
 static mut WINDOW: Option<tauri::WebviewWindow<tauri::Wry>> = None;
+static mut UPDATER_FILE: Option<String> = None;
 
 lazy_static::lazy_static! {
   static ref ready: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
@@ -98,7 +99,12 @@ pub fn main() {
       let ready_clone = ready.clone();
       let queue_clone = queue.clone();
 
+      let mut updater_path = app.path().app_data_dir().unwrap();
+      let _ = fs::create_dir_all(&updater_path);
+      updater_path.push("update.txt");
+
       unsafe {
+        UPDATER_FILE = Some(updater_path.to_str().unwrap().to_string());
         fs::remove_dir_all(format!("{}\\astore", sys_handler())).unwrap_or(());
         let window = app.get_webview_window("main").unwrap();
 
@@ -113,6 +119,10 @@ pub fn main() {
           });
         });
       }
+
+      tauri::async_runtime::block_on(async {
+        update_inner(false).await;
+      });
 
       #[cfg(windows)]
       {
@@ -353,8 +363,41 @@ async fn check_install_update() {
   update_inner(false).await;
 }
 
+async fn now() -> u64 {
+  use std::time::UNIX_EPOCH;
+
+  SystemTime::now()
+    .duration_since(UNIX_EPOCH)
+    .unwrap()
+    .as_secs()
+}
+
 async fn update_inner(must: bool) {
   use updater::*;
+  let now = now().await;
+
+  if !must {
+    if let Some(x) = unsafe { UPDATER_FILE.as_ref() } {
+      if let Ok(mut x) = fs::read(x) {
+        let mut bytes = [0; 8];
+
+        x.truncate(8);
+
+        if x.len() == 8 {
+          for (i, d) in x.iter().enumerate() {
+            bytes[i] = *d;
+          }
+
+          let should = u64::from_be_bytes(bytes) + (/*1 day*/ 60 * 60 * 24);
+
+          if now < should {
+            return;
+          }
+        }
+      }
+    }
+  }
+
   let (avail, release) = is_update_available(
     if must { 
       ""
@@ -368,6 +411,7 @@ async fn update_inner(must: bool) {
       unsafe {
         let _ = WINDOW.clone().unwrap().emit("update", "installing");
       }
+      let _ = fs::write(unsafe { UPDATER_FILE.as_ref().unwrap() }, now.to_be_bytes());
       tokio::time::sleep(Duration::from_secs(4)).await;
       update(release).await;
       process::exit(0);
