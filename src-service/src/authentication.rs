@@ -4,7 +4,7 @@ use sysinfo::{Pid, System, Users, ProcessRefreshKind};
 pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
   #[cfg(all(not(debug_assertions), windows))]
   let exe = [format!(
-    r"{}\Program Files\AHQ Store\AHQ Store.exe",
+    r"{}\Program Files\AHQ Store\ahq-store-app.exe",
     get_main_drive()
   )];
 
