@@ -146,7 +146,7 @@ dependencies = [
 
 [[package]]
 name = "ahqstore_setup_amd64"
-version = "2.0.0-rc.1"
+version = "2.0.0-rc.2"
 dependencies = [
  "check_elevation",
  "dirs",
@@ -3103,9 +3103,9 @@ dependencies = [
 
 [[package]]
 name = "openssl-sys"
-version = "0.9.102"
+version = "0.9.103"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c597637d56fbc83893a35eb0dd04b2b8e7a50c91e64e9493e398b5df4fb45fa2"
+checksum = "7f9e8deee91df40a943c71b917e5874b951d32a802526c85721ce3b776c929d6"
 dependencies = [
  "cc",
  "libc",
