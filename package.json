@@ -12,7 +12,7 @@
     "@tauri-apps/plugin-process": "2.0.0-beta.7",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.12.10",
-    "minisearch": "^7.0.0",
+    "minisearch": "^7.1.0",
     "postcss": "^8.4.39",
     "react": "19.0.0-beta-26f2496093-20240514",
     "react-dom": "19.0.0-beta-26f2496093-20240514",
