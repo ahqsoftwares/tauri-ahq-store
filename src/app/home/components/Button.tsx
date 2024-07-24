@@ -15,8 +15,7 @@ export default function Button(props: ButtonProps) {
 
   return (
     <div
-      /* className={`h-[5.5rem] w-[20.5rem] m-[1rem] border-[1px] border-base-content bg-opacity-40 bg-base-100 text-base-content rounded-xl hover:shadow-xl flex p-3`} */
-      className="h-[5.5rem] w-[20.5rem] m-[1rem] dui-btn dui-btn-ghost bg-[var(--fallback-bc)] no-animation backdrop-blur-3xl"
+      className="h-[5.5rem] w-[20.5rem] m-[1rem] border-[1px] border-base-content dui-btn dui-btn-ghost bg-[var(--fallback-bc)] no-animation backdrop-blur-3xl"
       style={{
         cursor: "pointer",
         transition: "all 125ms linear",

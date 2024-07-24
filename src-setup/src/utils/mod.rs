@@ -68,16 +68,8 @@ pub fn get_service_dir() -> String {
   let _ = fs::create_dir_all(&*INSTALLERS);
 
   #[cfg(windows)]
-  return format!("{}\\service.exe", &*AHQSTORE_ROOT);
+  return format!("{}\\ahqstore_service.exe", &*AHQSTORE_ROOT);
 
   #[cfg(unix)]
-  return format!("{}/service", &*AHQSTORE_ROOT);
-}
-
-#[cfg(unix)]
-pub fn get_temp_service_dir() -> String {
-  let mut path = home_dir().unwrap();
-
-  path.push("ahqstore_service");
-  path.to_str().unwrap().to_string()
+  return format!("{}/ahqstore_service", &*AHQSTORE_ROOT);
 }

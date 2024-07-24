@@ -51,7 +51,7 @@ async fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) 
 
   use crate::{
     install::deb::{exit, get_sudo, install_daemon, install_deb},
-    utils::get_temp_service_dir,
+    utils::get_service_dir,
   };
 
   if &files.deb == "" {
@@ -70,7 +70,7 @@ async fn plt_install(win: &AppWindow, client: &mut Client, files: &ReleaseData) 
 
   let mut sudo = get_sudo();
   let installer = get_install();
-  let service = get_temp_service_dir();
+  let service = get_service_dir();
 
   let _ = fs::remove_file(&installer);
 
