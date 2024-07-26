@@ -26,7 +26,7 @@ export default function Developers(props: DevProps) {
     undefined,
   );
 
-  const uid = props.auth?.currentUser?.u_id;
+  const uid = props.auth?.currentUser?.login;
 
   const { dark } = props;
 

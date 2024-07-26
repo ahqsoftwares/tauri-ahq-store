@@ -146,7 +146,7 @@ dependencies = [
 
 [[package]]
 name = "ahqstore_setup_amd64"
-version = "2.0.0-rc.1"
+version = "2.0.0-rc.2"
 dependencies = [
  "check_elevation",
  "dirs",
