@@ -1,36 +1,37 @@
-use std::{fs::{remove_file, create_dir_all}, process::Command};
+use std::{
+  fs::{create_dir_all, remove_file},
+  process::Command,
+};
 
-use crate::Release;
+use crate::{Asset, Release};
 use dirs::cache_dir;
+
 use super::download;
 
-pub async fn platform_update(raw: Release) {
-  if let Some(asset) = raw.assets.iter().find(|x| x.name.ends_with(".exe") && x.name.contains("setup")) {
-    let mut local = cache_dir().unwrap();
-    local.push("Temp");
+pub async fn platform_update(raw: &Release, asset: &Asset) {
+  let mut local = cache_dir().unwrap();
+  local.push("Temp");
 
-    let _ = create_dir_all(&local);
+  let _ = create_dir_all(&local);
 
-    local.push("ahqstore_updater.exe");
+  local.push("ahqstore_updater.exe");
 
-    let file = local.to_str().unwrap_or("C:\\updater.exe");
+  let file = local.to_str().unwrap_or("C:\\updater.exe");
 
-    let _ = remove_file(&file);
+  let _ = remove_file(&file);
 
-    if let Some(()) = download(&asset.browser_download_url, file).await {
-      let mut cmd = Command::new("powershell");
-      
-      cmd.arg("Start-Process");
-      cmd.arg(file);
+  if let Some(()) = download(&asset.browser_download_url, file).await {
+    let mut cmd = Command::new("powershell");
 
-      if raw.prerelease {
-        cmd.arg("updatepr");
-      } else {
-        cmd.arg("update");
-      }
+    cmd.arg("Start-Process");
+    cmd.arg(file);
 
-      cmd.spawn()
-        .unwrap();
+    if raw.prerelease {
+      cmd.arg("updatepr");
+    } else {
+      cmd.arg("update");
     }
+
+    cmd.spawn().unwrap();
   }
 }

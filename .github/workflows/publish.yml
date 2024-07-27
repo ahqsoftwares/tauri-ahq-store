@@ -396,8 +396,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
-          asset_path: ./src-tauri/target/release/bundle/deb/ahq-store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
+          asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
+          asset_path: ./src-tauri/target/release/bundle/deb/AHQ Store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
           asset_content_type: application/octet-stream
 
       - name: Upload .rpm Bundle
@@ -406,8 +406,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.rpm }}.rpm
-          asset_path: ./src-tauri/target/release/bundle/rpm/ahq-store-${{ env.APP_VERSION }}-1.${{ matrix.rpm }}.rpm
+          asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.rpm }}.rpm
+          asset_path: ./src-tauri/target/release/bundle/rpm/AHQ Store-${{ env.APP_VERSION }}-1.${{ matrix.rpm }}.rpm
           asset_content_type: application/octet-stream
 
       - name: Upload .AppImage bundle
@@ -416,8 +416,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_name: ahq-store-${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
-          asset_path: ./src-tauri/target/release/bundle/appimage/ahq-store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
+          asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
+          asset_path: ./src-tauri/target/release/bundle/appimage/AHQ Store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
           asset_content_type: application/octet-stream
 
   undraft-release:

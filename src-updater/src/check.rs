@@ -1,3 +1,5 @@
+use std::env::consts::{ARCH, OS};
+
 use serde::{Deserialize, Serialize};
 
 use crate::platform::{platform_update, CLIENT};
@@ -15,6 +17,31 @@ pub struct Release {
   pub assets: Vec<Asset>,
 }
 
+pub fn gen_asset_name() -> (String, String) {
+  let mut installer = String::from("ahqstore_setup");
+  let mut service = String::from("ahqstore_service");
+
+  if OS == "linux" {
+    if ARCH == "x86_64" {
+      service.push_str("_amd64");
+      installer.push_str("_linux_amd64");
+    } else if ARCH == "aarch64" {
+      service.push_str("_arm64");
+      installer.push_str("_linux_arm64");
+    }
+  } else if OS == "windows" {
+    if ARCH == "x86_64" {
+      service.push_str("_amd64.exe");
+      installer.push_str("_win32_amd64");
+    } else if ARCH == "aarch64" {
+      service.push_str("_arm64.exe");
+      installer.push_str("_win32_arm64");
+    }
+  }
+
+  (installer, service)
+}
+
 pub async fn is_update_available(version: &str, pr_in: bool) -> (bool, Option<Release>) {
   if let Ok(resp) = CLIENT
     .get("https://api.github.com/repos/ahqsoftwares/tauri-ahq-store/releases")
@@ -23,7 +50,12 @@ pub async fn is_update_available(version: &str, pr_in: bool) -> (bool, Option<Re
   {
     if let Ok(resp) = resp.json::<Vec<Release>>().await {
       if let Some(release) = resp.into_iter().find(|x| x.prerelease == pr_in) {
-        if &release.tag_name != version {
+        let (setup, service) = gen_asset_name();
+
+        let setup = release.assets.iter().find(|x| &&x.name == &&setup);
+        let service = release.assets.iter().find(|x| &&x.name == &&service);
+
+        if &release.tag_name != version && setup.is_some() && service.is_some() {
           return (true, Some(release));
         }
       }
@@ -34,5 +66,8 @@ pub async fn is_update_available(version: &str, pr_in: bool) -> (bool, Option<Re
 }
 
 pub async fn update(release: Release) {
-  platform_update(release).await;
+  let (setup, _) = gen_asset_name();
+
+  let setup = release.assets.iter().find(|x| &&x.name == &&setup).unwrap();
+  platform_update(&release, setup).await;
 }
