@@ -1,9 +1,10 @@
 /* Checkbox
 */
 .checkbox {
-  @apply bg-opacity-50 bg-base-100 hover:bg-base-300 w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
+  @apply bg-opacity-50 w-[98%] rounded-lg shadow-md p-[auto] min-h-[4rem] h-[auto] flex;
   transition: all 125ms linear;
-  cursor: pointer;
+  /*cursor: pointer;*/
+    background-color: var(--fallback-bc, oklch(var(--bc)/0.2));
 }
 
 .checkbox h6 {

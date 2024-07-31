@@ -8,7 +8,7 @@ import packageImg from "../../resources/package.png";
 
 const def: appData = {
   authorId: "",
-  description: "The component is loading...",
+  description: "Hold tight while we load app data",
   downloadUrls: [],
   appId: "%temp%",
   icon: packageImg,
@@ -16,7 +16,7 @@ const def: appData = {
     author: "",
     repo: "",
   },
-  appDisplayName: "Loading...",
+  appDisplayName: "Please Wait",
   version: "",
   appShortcutName: "",
   displayImages: [],
@@ -61,11 +61,7 @@ export default function AppCard(props: {
 
   return (
     <div
-      className={`card ${
-        props.dark
-          ? "hover:bg-gray-900 bg-opacity-50"
-          : "bg-opacity-50 hover:bg-gray-200"
-      } hover:mb-2 hover:shadow-xl ${props.id ? "" : "hidden"}`}
+      className={`card bg-transparent hover:mb-2 hover:shadow-xl ${props.id ? "" : "hidden"}`}
       style={{ cursor: "pointer" }}
       onClick={
         appData.appId == "%temp%"
@@ -73,14 +69,12 @@ export default function AppCard(props: {
           : (props.onClick as React.MouseEventHandler<HTMLDivElement>)
       }
     >
-      {appDisplayName === "Loading..." ? (
+      {appData.appId === "%temp%" ? (
         <div
-          className={`mx-auto mt-[1rem] mb-[0.75rem] ${
+          className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${
             props.dark ? "text-white" : ""
           }`}
-        >
-          <VscExtensions className="block" size="3em" />
-        </div>
+        />
       ) : (
         <img className="card-img" src={icon} alt="Logo"></img>
       )}

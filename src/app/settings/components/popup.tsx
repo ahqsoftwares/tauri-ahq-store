@@ -48,7 +48,7 @@ export default function PopUp(props: {
 
       <FiExternalLink
         color={props.dark ? "white" : "black"}
-        size="2.5em"
+        size="1em"
         className="my-auto"
       />
 

@@ -17,7 +17,7 @@ export default function CheckBox(props: {
   const { Icon, noCheckbox, roundedImage, url } = props;
 
   return (
-    <div className={`checkbox mt-3`} onClick={props.onClick}>
+    <div className={`checkbox mt-3`} onClick={props.onClick} style={{ "cursor": noCheckbox && !url ? "default" : "pointer" }}>
       <div className="ml-3"></div>
 
       <div className={`flex items-center justify-center text-base-content`}>
@@ -41,11 +41,18 @@ export default function CheckBox(props: {
       <div className="ml-3"></div>
 
       <h6>
-        {props.title}
+        <span className="flex">
+          {props.title}
+          {url && <FiExternalLink
+            size="1em"
+            className="ml-1 my-auto"
+            color={props.dark ? "white" : "black"}
+          />}
+        </span>
         <p
-          className={`${
+          className={
             props.disabled ? (props.dark ? "text-red-700" : "text-red-500") : ""
-          }`}
+          }
         >
           {props.description}
         </p>
@@ -53,19 +60,7 @@ export default function CheckBox(props: {
 
       <div className="mx-auto"></div>
 
-      {noCheckbox ? (
-        <>
-          {url ? (
-            <FiExternalLink
-              size="2.5em"
-              className="my-auto"
-              color={props.dark ? "white" : "black"}
-            />
-          ) : (
-            <></>
-          )}
-        </>
-      ) : (
+      {!noCheckbox && (
         <input
           className={`dui-toggle dui-toggle-lg dui-toggle-success my-auto`}
           type="checkbox"

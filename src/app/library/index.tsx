@@ -70,6 +70,7 @@ export default function LibraryComponent(props: LibraryProps) {
       <div className={`${darkMode(["menu"])}`}>
         <div
           className={`mt-[1rem] min-w-[98%] pt-3 rounded-lg shadow-xl bg-opacity-75 bg-base-100 flex flex-col`}
+          style={{ "backgroundColor": "var(--fallback-bc,oklch(var(--bc)/0.2))" }}
         >
           <div className="px-3 pt-1 flex flex-row text-center items-center justify-center mb-[1rem]">
             <img src={icon} style={{ height: "3rem" }} />

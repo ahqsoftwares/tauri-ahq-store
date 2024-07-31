@@ -85,14 +85,11 @@ Layers
 Cards
 */
 .card {
-  @apply flex flex-col self-center h-[21rem] w-[16rem] bg-opacity-70 text-center rounded-xl px-[0.25rem] shadow-md ml-[0.5rem];
+  @apply flex flex-col self-center text-center rounded-xl px-[3px] shadow-md ml-[0.5rem];
+    @apply dui-btn dui-btn-ghost border-[1px] border-base-content h-[21rem] w-[16rem] no-animation backdrop-blur-3xl;
   min-width: 15rem;
   min-height: 20rem;
   transition: all 250ms linear;
-}
-
-.menu .card {
-  @apply bg-opacity-40 hover:bg-opacity-100 bg-base-100;
 }
 
 .card-img {
@@ -108,10 +105,12 @@ Cards
 .card-title {
   @apply text-blue-500;
   font-size: 25px;
+    line-height: 1;
 }
 
 .card-description {
   @apply mt-1;
+  font-size: 15px;
   padding-left: 0.2rem;
   padding-right: 0.2rem;
 }

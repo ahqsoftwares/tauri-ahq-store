@@ -36,7 +36,8 @@ export default function App({
 
   return (
     <div
-      className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] bg-base-100 bg-opacity-75 shadow-sm text-base-content rounded-md mt-3 pl-2`}
+      className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] bg-opacity-75 shadow-sm text-base-content rounded-md mt-3 pl-2`}
+      style={{ "backgroundColor": "var(--fallback-bc,oklch(var(--bc)/0.2))" }}
     >
       <img
         width="60px"
@@ -74,7 +75,7 @@ export default function App({
       <div className="ml-auto mr-3 my-auto flex" ref={data}>
         {(lib && (lib.is_update || lib.to != "Install")) && (
           <div className="ml-auto mr-3 my-auto" ref={data}>
-            <button className="flex p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-success cursor-default bg-base-300 text-green-700 hover:text-white hover:bg-green-700 no-animation rounded-xl transition-all app-parent">
+            <button className="flex p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-success cursor-default bg-transparent border-none text-green-700 hover:text-white hover:bg-green-700 no-animation rounded-xl transition-all app-parent">
               {updating ? <>
                 <MdBrowserUpdated size="1.5em" />
                 <p className="app-child">Updating</p>
@@ -88,7 +89,7 @@ export default function App({
         )}
         {!updating && lib?.to != "Uninstall" && (
           <button
-            className="flex p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-danger bg-base-300 text-red-700 hover:text-white hover:bg-red-700 rounded-xl transition-all app-parent"
+            className="flex p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-danger bg-transparent border-none text-red-700 hover:text-white hover:bg-red-700 rounded-xl transition-all app-parent"
             onClick={() => {
               handleClick();
             }}

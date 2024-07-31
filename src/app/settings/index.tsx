@@ -219,7 +219,7 @@ export default function Init(props: InitProps) {
           <CheckBox
             dark={props.dark}
             url={false}
-            title={os != "linux" ? `Operation System` : "Linux Distro"}
+            title={os != "linux" ? `Operating System` : "Linux Distro"}
             description={os != "linux" ? `Windows ${os}` : linuxVer}
             Icon={getWindows()}
             onClick={() => {}}

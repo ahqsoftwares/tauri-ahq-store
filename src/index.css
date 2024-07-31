@@ -261,7 +261,7 @@ code {
 
 @layer utilities {
   .toast {
-    @apply text-white p-2 m-3 rounded-md shadow-md min-w-[20rem] min-h-[3rem] flex flex-col justify-center;
+    @apply text-neutral-content bg-neutral p-2 m-3 rounded-md shadow-md min-w-[20rem] min-h-[3rem] flex flex-col justify-center;
     transition: all 250ms linear;
     z-index: 1000;
   }
