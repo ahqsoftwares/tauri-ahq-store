@@ -3,6 +3,23 @@
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
+
+
 /*Tauri
  */
 import {
@@ -32,6 +49,7 @@ import { init } from "./app/resources/api/os";
 /*Global CSS
  */
 import "./index.css";
+import "./globals.css";
 import { loadAppVersion } from "./app/resources/api/version";
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
 import { genAuth } from "./auth";
@@ -85,9 +103,11 @@ window.addEventListener("keydown", (e) => {
  */
 function loadRender(unsupported: boolean, text = "Loading") {
   root.render(
-    <>
-      <Loading unsupported={unsupported} text={text} />
-    </>,
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <Loading unsupported={unsupported} text={text} />
+      </ContextMenuTrigger>
+    </ContextMenu>,
   );
 }
 
@@ -173,7 +193,29 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
 
       root.render(
         <>
-          <Component {...data} />
+          <ContextMenu>
+            <ContextMenuTrigger>
+              <Component {...data} />
+            </ContextMenuTrigger>
+            <ContextMenuContent className="w-64">
+              <ContextMenuItem inset onClick={() => window.location.reload()}>
+                Reload
+              </ContextMenuItem>
+              <ContextMenuSub>
+                <ContextMenuSubTrigger inset>More Tools</ContextMenuSubTrigger>
+                <ContextMenuSubContent className="w-48">
+                  <ContextMenuItem>
+                    Save Page As...
+                    <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
+                  </ContextMenuItem>
+                  <ContextMenuItem>Create Shortcut...</ContextMenuItem>
+                  <ContextMenuItem>Name Window...</ContextMenuItem>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem>Developer Tools</ContextMenuItem>
+                </ContextMenuSubContent>
+              </ContextMenuSub>
+            </ContextMenuContent>
+          </ContextMenu>
         </>,
       );
     }
@@ -187,7 +229,8 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
       document.querySelector("html")?.setAttribute("data-theme", "night");
     }
     document.querySelectorAll("*").forEach((v) => v.setAttribute("data-tauri-drag-region", ""))
-    root.render(<div data-tauri-drag-region className="bg-base-100 text-base-content border-base-content w-screen h-screen flex flex-col">
+    root.render(<ContextMenu>
+      <ContextMenuTrigger><div data-tauri-drag-region className="bg-base-100 text-base-content border-base-content w-screen h-screen flex flex-col">
       <div data-tauri-drag-region className="bg-base-300 py-2 flex text-neutral-content w-full items-center text-center justify-center mb-auto">
         <img data-tauri-drag-region src="/favicon.ico" width={20} height={20} />
         <span data-tauri-drag-region className="ml-1 font-sans  font-extrabold">AHQ Store</span>
@@ -196,6 +239,8 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
         <h1 data-tauri-drag-region>Enter this code</h1>
         <h1 data-tauri-drag-region className="font-extrabold text-2xl">{window.location.pathname.replace("/", "")}</h1>
       </div>
-    </div>);
+      </div>
+      </ContextMenuTrigger>
+    </ContextMenu>);
   }
 }
