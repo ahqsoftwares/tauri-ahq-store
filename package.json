@@ -71,7 +71,7 @@
     "onchange": "^7.1.0",
     "prettier": "^3.3.3",
     "shadcn-ui": "^0.8.0",
-    "terser": "^5.31.3"
+    "terser": "^5.31.5"
   },
   "repository": {
     "type": "git",
