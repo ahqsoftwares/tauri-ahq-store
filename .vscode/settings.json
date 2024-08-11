@@ -7,7 +7,7 @@
     "**/node_modules**": true
   },
   "editor.minimap.enabled": false,
-  "githubPullRequests.ignoredPullRequestBranches": ["master"],
+  "githubPullRequests.ignoredPullRequestBranches": ["dev"],
   "editor.hover.above": true,
   "editor.hover.enabled": true,
   "editor.hover.sticky": true,
