@@ -21,8 +21,8 @@ importers:
         specifier: 2.0.0-beta.8
         version: 2.0.0-beta.8
       '@tauri-apps/plugin-process':
-        specifier: 2.0.0-beta.8
-        version: 2.0.0-beta.8
+        specifier: 2.0.0-rc.0
+        version: 2.0.0-rc.0
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.40)
@@ -952,6 +952,10 @@ packages:
     resolution: {integrity: sha512-YGjkR9HxS/YyIoqoXDkk8o9Yy5NW6u9YxzeqEodwwOUoeS0nac6mzLTW3VYIuSelHmyUQCgbyENVY6e5CJXA4Q==}
     engines: {node: '>= 18.18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
 
+  '@tauri-apps/api@2.0.0-rc.0':
+    resolution: {integrity: sha512-v454Qs3REHc3Za59U+/eSmBsdmF+3NE5+76+lFDaitVqN4ZglDHENDaMARYKGJVZuxiSkzyqG0SeG7lLQjVkPA==}
+    engines: {node: '>= 18.18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+
   '@tauri-apps/cli-darwin-arm64@2.0.0-rc.3':
     resolution: {integrity: sha512-szYCSr/ChbCF+S6Wnr15TYpI2cZR07d+AQOiFGuScP0preM8Pbsk/sb0hfLwqzepjVFFNVWQba9sG7FEW2Y2XA==}
     engines: {node: '>= 10'}
@@ -1026,8 +1030,8 @@ packages:
   '@tauri-apps/plugin-notification@2.0.0-beta.8':
     resolution: {integrity: sha512-pnYXNnxBCu2TjeYzoGumiQuwmqeFOaDWrqhzDPe+zSg0Ca8R7M7qzQOR/sUKfFdgNaJl7Jmt9us9hVgfzUwLCA==}
 
-  '@tauri-apps/plugin-process@2.0.0-beta.8':
-    resolution: {integrity: sha512-+B25JhnBnYp58ydc4HLQJk95+lCDuZlBWzdxAwdgfCr3jq4HtucPly2Ti9yDtdlxoz0JcoX9KNextttArHBKSA==}
+  '@tauri-apps/plugin-process@2.0.0-rc.0':
+    resolution: {integrity: sha512-Z12D/kmQzG1vCVf+jLXPhPDUA0pEjFrsg4p0uwO2sotVLM9287IuTM+aIz9cuAYOxFLKcsnDG7amSCL9IfA1gw==}
 
   '@ts-morph/common@0.19.0':
     resolution: {integrity: sha512-Unz/WHmd4pGax91rdIKWi51wnVUW11QttMEPpBiBgIewnc9UQIX7UDLxr5vRlqeByXCwhkF6VabSsI0raWcyAQ==}
@@ -3354,6 +3358,8 @@ snapshots:
 
   '@tauri-apps/api@2.0.0-beta.16': {}
 
+  '@tauri-apps/api@2.0.0-rc.0': {}
+
   '@tauri-apps/cli-darwin-arm64@2.0.0-rc.3':
     optional: true
 
@@ -3409,9 +3415,9 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.0.0-beta.16
 
-  '@tauri-apps/plugin-process@2.0.0-beta.8':
+  '@tauri-apps/plugin-process@2.0.0-rc.0':
     dependencies:
-      '@tauri-apps/api': 2.0.0-beta.16
+      '@tauri-apps/api': 2.0.0-rc.0
 
   '@ts-morph/common@0.19.0':
     dependencies:
