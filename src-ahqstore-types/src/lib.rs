@@ -101,6 +101,7 @@ pub enum Reason {
 pub enum ErrorType {
   GetAppFailed(RefId, AppId),
   AppPlatformNoSupport(RefId, AppId),
+  AVBlockedApp(RefId, AppId),
   PrefsError(RefId),
   PkgError(RefId),
   GetSHAFailed(RefId),
@@ -127,11 +128,13 @@ pub enum ToDo {
 pub enum AppStatus {
   Pending,
   Downloading,
+  AVScanning,
   Installing,
   Uninstalling,
   InstallSuccessful,
   UninstallSuccessful,
   NotSuccessful,
+  AVFlagged
 }
 
 impl Serialize for AppStatus {
@@ -147,6 +150,8 @@ impl Serialize for AppStatus {
       AppStatus::InstallSuccessful => "Installed",
       AppStatus::UninstallSuccessful => "Uninstalled",
       AppStatus::NotSuccessful => "Error!",
+      AppStatus::AVScanning => "Scanning for Viruses!",
+      AppStatus::AVFlagged => "Flagged as Malicious!"
     })
   }
 }

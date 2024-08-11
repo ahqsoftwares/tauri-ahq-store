@@ -1,5 +1,5 @@
 use crate::utils::*;
-use sysinfo::{Pid, System, Users, ProcessRefreshKind};
+use sysinfo::{Pid, ProcessRefreshKind, ProcessesToUpdate, System, Users};
 
 pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
   #[cfg(all(not(debug_assertions), windows))]
@@ -18,7 +18,10 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
   let mut system = System::new();
   let mut users = Users::new();
   users.refresh_list();
-  system.refresh_process_specifics(Pid::from(pid), ProcessRefreshKind::everything());
+  system.refresh_processes_specifics(
+    ProcessesToUpdate::Some(&[Pid::from(pid)]),
+    ProcessRefreshKind::everything(),
+  );
 
   let process = system.process(Pid::from(pid));
 
@@ -30,15 +33,21 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
 
       println!("{:?}", &process.user_id());
       let groups = users.get_user_by_id(process.user_id()?)?.groups();
-      
+
       println!("{:?}", &users);
 
       #[cfg(unix)]
       return Some(true);
 
       #[cfg(windows)]
-      return Some(groups.iter().find(|x| x.name() == "Administrators").is_some());
-    })().unwrap_or(false);
+      return Some(
+        groups
+          .iter()
+          .find(|x| x.name() == "Administrators")
+          .is_some(),
+      );
+    })()
+    .unwrap_or(false);
 
     let Some(ex) = process.exe() else {
       return (false, false);

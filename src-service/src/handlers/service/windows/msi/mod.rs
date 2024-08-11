@@ -46,26 +46,33 @@ pub fn exists(app_id: &str) -> Option<bool> {
   Some(true)
 }
 
-pub fn uninstall_msi(app_id: String) -> JoinHandle<Option<String>> {
+pub fn uninstall_msi(app_id: String) -> JoinHandle<bool> {
   thread::spawn(move || {
     let program = get_program_folder(&app_id);
     let msi = msi_from_id(&app_id);
 
     if exists(&app_id).unwrap_or(false) {
-      let succ = run("msiexec", &["/passive", "/qn", "/x", &msi])
-        .ok()?
-        .wait()
-        .ok()?
-        .success();
+      let succ = (|| -> Option<bool> {
+        Some(
+          run("msiexec", &["/passive", "/qn", "/x", &msi])
+            .ok()?
+            .wait()
+            .ok()?
+            .success(),
+        )
+      })()
+      .unwrap_or(false);
 
       return match succ {
         true => {
-          fs::remove_dir_all(&program).ok()?;
-          Some(app_id)
+          let Some(_) = fs::remove_dir_all(&program).ok() else {
+            return false;
+          };
+          true
         }
-        _ => None,
+        _ => false,
       };
     }
-    None
+    false
   })
 }

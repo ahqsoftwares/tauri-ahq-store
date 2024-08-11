@@ -90,8 +90,12 @@ pub async fn launch() {
           if admin {
             return (true, true, true);
           }
-          
-          let Prefs { launch_app, install_apps, .. } = get_prefs();
+
+          let Prefs {
+            launch_app,
+            install_apps,
+            ..
+          } = get_prefs();
 
           (admin, launch_app, install_apps)
         })());

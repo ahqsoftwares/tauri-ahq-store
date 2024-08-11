@@ -2,7 +2,10 @@ use std::{io::Write, mem::replace};
 
 use ahqstore_types::{AppStatus, Library};
 
-use crate::handlers::install_app;
+use crate::{
+  handlers::{av, install_app},
+  utils::get_installer_file,
+};
 
 use super::{DaemonData, DaemonState, Step};
 
@@ -23,21 +26,52 @@ pub async fn handle(resp: &mut Library, state: &mut DaemonState, imp: &mut bool)
         println!("100 %");
         let _ = x.file.flush();
         let _ = x.file.sync_all();
-        let app = x.app.clone();
-
-        state.step = Step::Installing;
+        //let app = x.app.clone();
 
         //Drop the File
-        let mut data = replace(
-          &mut state.data,
-          None,
-        );
-        drop(data);
+        let mut data = replace(&mut state.data, None);
+        let mut data = data.expect("Impossible to be null");
+        let DaemonData::Dwn(x) = data else {
+          panic!("Impossible panic");
+        };
 
-        state.data = Some(DaemonData::Inst(install_app(app).await.unwrap()));
+        resp.status = AppStatus::AVScanning;
+
+        let inst = get_installer_file(&x.app);
+        state.data = Some(DaemonData::AVScan((x.app, av::scan::scan_threaded(&inst))));
+        state.step = Step::AVScanning;
         *imp = true;
       }
       _ => {}
+    }
+  }
+}
+
+pub async fn av_scan(resp: &mut Library, state: &mut DaemonState, imp: &mut bool) {
+  let data = state.data.as_mut().unwrap();
+
+  if let DaemonData::AVScan((app, x)) = data {
+    if x.is_finished() {
+      *imp = true;
+      let mut data = replace(&mut state.data, None);
+      let data = data.expect("Impossible to be null");
+
+      let DaemonData::AVScan((app, x)) = data else {
+        panic!("Impossible panic");
+      };
+
+      let av_flagged = x.join().expect("This cannot panic as the Thread cannot");
+
+      if !av_flagged.unwrap_or(false) {
+        resp.status = AppStatus::Installing;
+
+        state.step = Step::Installing;
+        state.data = Some(DaemonData::Inst(install_app(&app).await.unwrap()));
+      } else {
+        state.step = Step::Done;
+
+        resp.status = AppStatus::AVFlagged;
+      }
     }
   }
 }
@@ -84,14 +118,17 @@ pub async fn handle_u_inst(resp: &mut Library, state: &mut DaemonState, imp: &mu
     if x.is_finished() {
       *imp = true;
 
-      let x = replace(x, std::thread::spawn(|| None));
+      let x = replace(x, std::thread::spawn(|| false));
       let x = x.join();
 
-      match x {
-        Ok(Some(x)) => handle_exit(true, resp, state),
-        Ok(None) => handle_exit(false, resp, state),
-        Err(_) => handle_exit(false, resp, state),
-      }
+      handle_exit(
+        match x {
+          Ok(s) => s,
+          _ => false,
+        },
+        resp,
+        state,
+      )
     }
   }
 }

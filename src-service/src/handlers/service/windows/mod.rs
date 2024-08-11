@@ -1,3 +1,4 @@
+pub mod av;
 mod msi;
 
 use ahqstore_types::InstallerFormat;
@@ -8,7 +9,7 @@ use std::{
   io::Error,
   os::windows::process::CommandExt,
   process::{Child, Command},
-  thread::{sleep, JoinHandle},
+  thread::{self, sleep, JoinHandle},
   time::Duration,
 };
 
@@ -39,16 +40,16 @@ pub fn unzip(path: &str, dest: &str) -> Result<Child, Error> {
     .spawn()
 }
 
-pub async fn install_app(app: AHQStoreApplication) -> Option<Child> {
-  let file = get_installer_file(&app);
+pub async fn install_app(app: &AHQStoreApplication) -> Option<Child> {
+  let file = get_installer_file(app);
 
   let Some(win32) = app.get_win_download() else {
     return None;
   };
 
   match win32.installerType {
-    InstallerFormat::WindowsZip => load_zip(&file, &app),
-    InstallerFormat::WindowsInstallerMsi => install_msi(&file, &app),
+    InstallerFormat::WindowsZip => load_zip(&file, app),
+    InstallerFormat::WindowsInstallerMsi => install_msi(&file, app),
     _ => None,
   }
 }
@@ -135,16 +136,19 @@ pub fn uninstall_app(app: &AHQStoreApplication) -> UninstallResult {
   let program = get_program_folder(&app.appId);
 
   if msi::is_msi(&app.appId) {
-    return UninstallResult::Thread(msi::uninstall_msi(app.appId.clone()));
+    UninstallResult::Thread(msi::uninstall_msi(app.appId.clone()))
   } else {
-    let _ = fs::remove_file(&link);
+    UninstallResult::Thread(thread::spawn(move || {
+      let _ = fs::remove_file(&link);
 
-    if !fs::remove_dir_all(&program).is_ok() {
-      return UninstallResult::Sync(None);
-    }
+      if !fs::remove_dir_all(&program).is_ok() {
+        return false;
+      }
+
+      // Successful
+      true
+    }))
   }
-
-  UninstallResult::Sync(None)
 }
 
 pub fn list_apps() -> Option<Vec<AppData>> {

@@ -24,9 +24,7 @@ pub fn get_iprocess() -> Option<&'static mut ServiceIpc> {
 }
 
 pub fn set_perms(perms: (bool, bool, bool)) {
-  unsafe {
-    PREFS = perms
-  }
+  unsafe { PREFS = perms }
 }
 
 pub fn get_perms() -> (bool, bool, bool) {

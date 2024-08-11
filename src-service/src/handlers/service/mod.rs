@@ -4,7 +4,7 @@ mod http;
 mod prefs;
 
 pub enum UninstallResult {
-  Thread(JoinHandle<Option<String>>),
+  Thread(JoinHandle<bool>),
   Sync(Option<String>),
 }
 

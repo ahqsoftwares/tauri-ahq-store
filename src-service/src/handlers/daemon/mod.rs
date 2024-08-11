@@ -24,6 +24,7 @@ use tokio::{
 use crate::utils::{get_iprocess, ws_send};
 
 use super::{
+  av::{self, scan::Malicious},
   get_app, get_commit, get_prefs, list_apps,
   service::{download_app, install_app, UninstallResult},
   uninstall_app,
@@ -77,6 +78,7 @@ pub fn get_install_daemon() -> Sender<Command> {
 pub enum Step {
   StartDownload,
   Downloading,
+  AVScanning,
   Installing,
   StartUninstall,
   Uninstalling,
@@ -88,8 +90,9 @@ pub enum Step {
 #[derive(Debug)]
 pub enum DaemonData {
   Dwn(DownloadData),
+  AVScan((AHQStoreApplication, JoinHandle<Option<Malicious>>)),
   Inst(Child),
-  Unst(JoinHandle<Option<String>>),
+  Unst(JoinHandle<bool>),
   None,
 }
 
@@ -198,6 +201,9 @@ async fn run_daemon(mut rx: Receiver<Command>) {
     } else if let Step::Downloading = state.step {
       let resp = pending.get_mut(state.entry).unwrap();
       dwn::handle(resp, &mut state, &mut state_change).await;
+    } else if let Step::AVScanning = state.step {
+      let resp = pending.get_mut(state.entry).unwrap();
+      dwn::av_scan(resp, &mut state, &mut state_change).await;
     } else if let Step::StartUninstall = state.step {
       let resp = pending.get_mut(state.entry).unwrap();
 
@@ -205,6 +211,7 @@ async fn run_daemon(mut rx: Receiver<Command>) {
         let res = uninstall_app(&x);
 
         match res {
+          // No implementors
           UninstallResult::Sync(x) => {
             state.step = Step::Done;
             match x {
@@ -212,6 +219,8 @@ async fn run_daemon(mut rx: Receiver<Command>) {
               _ => resp.status = AppStatus::NotSuccessful,
             }
           }
+
+          // Only Implemented
           UninstallResult::Thread(x) => {
             resp.status = AppStatus::Uninstalling;
             state.step = Step::Uninstalling;
@@ -261,6 +270,7 @@ async fn run_daemon(mut rx: Receiver<Command>) {
 }
 
 pub async fn check_update() -> Option<bool> {
+  av::update::update_win_defender()?;
   let mut to_update = vec![];
 
   let Some(mut ws) = get_iprocess() else {

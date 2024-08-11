@@ -12,7 +12,7 @@ homepage = "https://ahqstore.github.io/"
 lazy_static = "1"
 reqwest = { version = "0.12.5", features = ["json", "rustls-tls"] }
 serde_json = "1.0.120"
-sysinfo = "0.30.13"
+sysinfo = "0.31"
 tokio = { version = "1.38.0", default-features = false, features = [
   "net",
   "rt",
@@ -24,7 +24,7 @@ chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 [target.'cfg(windows)'.dependencies]
 mslnk = "0.1.8"
 windows-service = "0.7.0"
-msi = "0.7.0"
+msi = "0.8.0"
 winreg = "0.52.0"
 windows = { version = "0.58.0", features = [
   "Win32_Foundation",

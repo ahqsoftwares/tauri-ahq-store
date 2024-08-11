@@ -9,7 +9,8 @@ use tokio::{io::AsyncWriteExt, spawn};
 
 use crate::{
   utils::{
-    get_iprocess, get_perms, structs::{Command, ErrorType, Reason, Response}
+    get_iprocess, get_perms,
+    structs::{Command, ErrorType, Reason, Response},
   },
   write_log,
 };
@@ -45,7 +46,7 @@ pub fn handle_msg(admin: bool, data: String) {
 
             ws_send(&mut ws, &val).await;
             send_term(ref_id).await;
-          }
+          },
 
           (_, _, _, Command::GetApp(ref_id, app_id)) => {
             let _ = GET_INSTALL_DAEMON.send(Command::GetApp(ref_id, app_id));
