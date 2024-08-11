@@ -2,8 +2,8 @@ name: "Build & Release App, Service, Scripts"
 on:
   push:
     branches:
-      - master
-      - v3-dev
+      - dev
+      - release
 
 permissions: write-all
 
@@ -39,7 +39,7 @@ jobs:
             const fs = require("fs");
             const version = require('./package.json').version;
 
-            const alpha = process.env.BRANCH != "master";
+            const alpha = process.env.BRANCH != "release";
             const alphaId = Date.now();
 
             const { data } = await github.rest.repos.createRelease({
