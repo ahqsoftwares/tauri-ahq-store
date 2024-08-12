@@ -90,7 +90,7 @@ pub enum Step {
 #[derive(Debug)]
 pub enum DaemonData {
   Dwn(DownloadData),
-  AVScan((AHQStoreApplication, JoinHandle<Malicious>)),
+  AVScan((AHQStoreApplication, JoinHandle<Option<Malicious>>)),
   Inst(Child),
   Unst(JoinHandle<bool>),
   None,
