@@ -62,7 +62,7 @@ pub async fn av_scan(resp: &mut Library, state: &mut DaemonState, imp: &mut bool
 
       let av_flagged = x.join().expect("This cannot panic as the Thread cannot");
 
-      if !av_flagged.unwrap_or(false) {
+      if !av_flagged {
         resp.status = AppStatus::Installing;
 
         state.step = Step::Installing;
