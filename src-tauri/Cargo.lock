@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "ahq-store-app"
-version = "2.0.0-rc.0"
+version = "2.0.0-alpha.4"
 dependencies = [
  "async-recursion",
  "bcrypt",
