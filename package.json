@@ -28,10 +28,10 @@
     "web-vitals": "^4.2.2"
   },
   "scripts": {
-    "start": "cross-env BROWSER=none NODE_OPTIONS=--max-old-space-size=2048 vite dev",
-    "build": "vite build",
-    "test": "vite test",
-    "dev": "vite dev"
+    "start": "cross-env BROWSER=none NODE_OPTIONS=--max-old-space-size=2048 rsbuild dev",
+    "build": "rsbuild build",
+    "test": "rsbuild test",
+    "dev": "rsbuild dev"
   },
   "eslintConfig": {
     "extends": [
@@ -52,13 +52,17 @@
     ]
   },
   "devDependencies": {
+    "@rsbuild/core": "1.0.1-beta.13",
+    "@rsbuild/plugin-babel": "1.0.1-beta.13",
+    "@rsbuild/plugin-react": "1.0.1-beta.13",
+    "@rsbuild/plugin-svgr": "1.0.1-beta.13",
+    "@rsdoctor/rspack-plugin": "^0.3.11",
     "@tauri-apps/api": "2.0.0-beta.15",
     "@tauri-apps/cli": "2.0.0-rc.3",
     "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-modal": "^3.16.3",
-    "@vitejs/plugin-react": "^4.3.1",
     "babel-plugin-react-compiler": "0.0.0-experimental-938cd9a-20240601",
     "bcrypt": "^5.1.1",
     "concurrently": "^8.2.2",
@@ -69,9 +73,7 @@
     "onchange": "^7.1.0",
     "prettier": "^3.3.3",
     "shadcn-ui": "^0.8.0",
-    "terser": "^5.31.5",
-    "vite": "^5.4.0",
-    "vite-plugin-svgr": "^4.2.0"
+    "terser": "^5.31.5"
   },
   "repository": {
     "type": "git",

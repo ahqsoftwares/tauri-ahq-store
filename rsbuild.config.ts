@@ -8,12 +8,7 @@ import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
 
 export default defineConfig({
   plugins: [
-    pluginReact({
-      splitChunks: {
-        react: true,
-        router: true
-      }
-    }),
+    pluginReact(),
     pluginBabel({
       include: /\.(?:jsx|tsx)$/,
       babelLoaderOptions(opts) {
