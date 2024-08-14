@@ -11,10 +11,9 @@
     "@tauri-apps/plugin-notification": "2.0.0-rc.0",
     "@tauri-apps/plugin-process": "2.0.0-rc.0",
     "autoprefixer": "^10.4.19",
-    "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.10",
-    "lucide-react": "^0.424.0",
+    "lucide-react": "^0.427.0",
     "minisearch": "^7.1.0",
     "postcss": "^8.4.40",
     "react": "19.0.0-beta-26f2496093-20240514",
@@ -25,7 +24,7 @@
     "tailwindcss": "^3.4.7",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.5.4",
-    "web-vitals": "^4.2.2"
+    "web-vitals": "^4.2.3"
   },
   "scripts": {
     "start": "cross-env BROWSER=none NODE_OPTIONS=--max-old-space-size=2048 rsbuild dev",
@@ -57,7 +56,7 @@
     "@rsbuild/plugin-react": "1.0.1-beta.13",
     "@rsbuild/plugin-svgr": "1.0.1-beta.13",
     "@rsdoctor/rspack-plugin": "^0.3.11",
-    "@tauri-apps/api": "2.0.0-beta.15",
+    "@tauri-apps/api": "2.0.0-rc.0",
     "@tauri-apps/cli": "2.0.0-rc.3",
     "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
@@ -70,10 +69,8 @@
     "cryptr": "^6.3.0",
     "eslint": "^9.8.0",
     "eslint-plugin-react-compiler": "0.0.0-experimental-c8b3f72-20240517",
-    "onchange": "^7.1.0",
     "prettier": "^3.3.3",
-    "shadcn-ui": "^0.8.0",
-    "terser": "^5.31.5"
+    "shadcn-ui": "^0.8.0"
   },
   "repository": {
     "type": "git",
