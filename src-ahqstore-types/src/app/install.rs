@@ -48,7 +48,7 @@ pub struct InstallerOptionsAndroid {
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[doc = "🔬 Planned\n\n"]
+#[doc = "🔬 Under Development\n\n"]
 pub struct InstallerOptionsLinux {
   #[doc = "🎯 Introduced in v2\n\n"]
   pub assetId: u8

@@ -1,6 +1,6 @@
 use crate::{ServerJSONResp, Str};
 use serde::{Deserialize, Serialize};
-use serde_json::from_str;
+use serde_json::{from_str, to_string};
 use std::{collections::HashMap, env::consts::ARCH};
 
 pub mod install;
@@ -31,14 +31,11 @@ pub struct AHQStoreApplication {
   /// Install options
   pub install: InstallerOptions,
 
-  /// App display images, let the cli do it
-  pub displayImages: Vec<Str>,
+  /// App display images referencing /resources, let the cli do it
+  pub displayImages: Vec<u8>,
 
   /// App description
   pub description: Str,
-
-  /// App Icon (base64), let the cli do it
-  pub icon: Str,
 
   /// Your Github Repo associated
   pub repo: AppRepo,
@@ -59,9 +56,62 @@ pub struct AHQStoreApplication {
 
   /// Page of Application
   pub app_page: Option<Str>,
+
+  /// These Resources will be passed to the installer, the size of all the Vec<u8> must not be more than 5 * 1024 * 1024 * 1024 bytes (~5MB)
+  pub resources: Option<HashMap<u8, Vec<u8>>>
 }
 
 impl AHQStoreApplication {
+  #[cfg(feature = "apps_repo")]
+  pub fn validate(&self) -> Result<String, String> {
+    let mut result = String::new();
+
+    result.push_str(&self.validate_resource());
+
+    if result.contains("❌") {
+      Err(result)
+    } else {
+      Ok(result)
+    }
+  }
+
+  #[cfg(feature = "apps_repo")]
+  pub fn validate_resource(&self) -> String {
+    let Some(x) = &self.resources else {
+      return "❌ No Resources Present".into();
+    };
+
+    let mut total = 0;
+
+    x.iter().for_each(|(_, v)| total += v.len());
+
+    let mut resp = String::new();
+
+    if total <= 5 * 1024 * 1024 * 1024 {
+      resp.push_str("❌ Resource size must not be more than 5MB\n");
+    } else if self.displayImages.len() <= 5 {
+      resp.push_str("❌ A maximum of 5 images can be set in displayImages\n");
+    } else if x.get(&0).is_none() {
+      resp.push_str("❌ Resource with id 0 must be present as it represents icon\n");
+    } else if !x.iter().all(|(id, _)| x.get(&(*id + 1)).is_some()) {
+      resp.push_str("❌ Every display images should have their resource id\n");
+    } else {
+      resp.push_str("✅ Resources are valid\n");
+    }
+    
+    resp
+  }
+
+  pub fn export(&self) -> (String, Vec<(u8, Vec<u8>)>) {
+    let mut obj = self.clone();
+    
+    let resources: Vec<(u8, Vec<u8>)> = std::mem::replace(&mut obj.resources, None).map_or(vec![], |map| 
+      map.into_iter().collect::<Vec<_>>()
+    );
+
+    (to_string(&obj).unwrap(), resources)
+  }
+
   pub fn list_os_arch(&self) -> Vec<&'static str> {
     self.install.list_os_arch()
   }
