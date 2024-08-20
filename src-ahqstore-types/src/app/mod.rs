@@ -25,6 +25,9 @@ pub struct AHQStoreApplication {
   /// Unique ID of the author
   pub authorId: Str,
 
+  /// The TagName of the release, MUST NOT BE LATEST
+  pub releaseTagName: Str,
+
   /// Download URLs that the app will address
   pub downloadUrls: HashMap<u8, DownloadUrl>,
 
@@ -68,6 +71,16 @@ impl AHQStoreApplication {
 
     result.push_str(&self.validate_resource());
 
+    if &self.authorId != "1" {
+      if &self.releaseTagName == "latest" {
+        result.push_str("❌ ReleaseTagName can't be latest\n");
+      }
+
+      if let Some(_) = self.source {
+        result.push_str("❌ Source can't be present, your application must be original\n");
+      }
+    }
+
     if result.contains("❌") {
       Err(result)
     } else {
@@ -105,6 +118,16 @@ impl AHQStoreApplication {
   pub fn export(&self) -> (String, Vec<(u8, Vec<u8>)>) {
     let mut obj = self.clone();
     
+    for val in obj.downloadUrls.values_mut() {
+      if &obj.authorId == "1" && &val.asset == "url" {
+        continue
+      }
+
+      
+      let path = format!("https://github.com/{}/{}/releases/download/{}/{}", self.repo.author, self.repo.repo, self.releaseTagName, val.asset);
+
+      val.url = path;
+    }
     let resources: Vec<(u8, Vec<u8>)> = std::mem::replace(&mut obj.resources, None).map_or(vec![], |map| 
       map.into_iter().collect::<Vec<_>>()
     );

@@ -7,6 +7,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DownloadUrl {
   pub installerType: InstallerFormat,
+  pub asset: Str,
+
+  /// This will be based on asset and releaseId
   pub url: Str,
 }
 
