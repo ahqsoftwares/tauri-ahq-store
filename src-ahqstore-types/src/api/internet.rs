@@ -50,5 +50,5 @@ pub async fn get_commit(token: Option<String>) -> Option<String> {
 pub async fn get_app_asset(commit: &str, app_id: &str, asset: &str) {}
 
 pub async fn get_app(commit: &str, app_id: &str, embed_assets: bool) -> AHQStoreApplication {
-
+  todo!()
 }
