@@ -41,7 +41,7 @@ pub async fn get_commit(token: Option<String>) -> Option<String> {
   }
 
   let val = builder.send().await.ok()?;
-  let val = val.json::<GHRepoCommits>().await.ok()?;
+  let mut val = val.json::<GHRepoCommits>().await.ok()?;
   let sha = val.remove(0).sha;
 
   Some(sha)
