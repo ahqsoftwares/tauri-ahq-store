@@ -1,5 +1,5 @@
 #[cfg(feature = "internet")]
-mod internet;
+pub mod internet;
 #[cfg(feature = "internet")]
 pub use internet::*;
 

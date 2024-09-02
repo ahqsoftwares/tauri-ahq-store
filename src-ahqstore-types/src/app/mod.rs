@@ -50,7 +50,7 @@ pub struct AHQStoreApplication {
   pub site: Option<Str>,
 
   /// This'll be ignored unless you're ahq_verified tag which no one except AHQ Store Team has
-  /// 
+  ///
   /// The general dev isn't meant to redistribute others' apps unless they own right to do so
   pub source: Option<Str>,
 
@@ -61,7 +61,7 @@ pub struct AHQStoreApplication {
   pub app_page: Option<Str>,
 
   /// These Resources will be passed to the installer, the size of all the Vec<u8> must not be more than 5 * 1024 * 1024 * 1024 bytes (~5MB)
-  pub resources: Option<HashMap<u8, Vec<u8>>>
+  pub resources: Option<HashMap<u8, Vec<u8>>>,
 }
 
 impl AHQStoreApplication {
@@ -100,8 +100,8 @@ impl AHQStoreApplication {
 
     let mut resp = String::new();
 
-    if total <= 5 * 1024 * 1024 * 1024 {
-      resp.push_str("❌ Resource size must not be more than 5MB\n");
+    if total > 5 * 1024 * 1024 * 1024 {
+      resp.push_str("❌ Total size of all resources combined must not be more than 5MB\n");
     } else if self.displayImages.len() <= 5 {
       resp.push_str("❌ A maximum of 5 images can be set in displayImages\n");
     } else if x.get(&0).is_none() {
@@ -111,26 +111,27 @@ impl AHQStoreApplication {
     } else {
       resp.push_str("✅ Resources are valid\n");
     }
-    
+
     resp
   }
 
   pub fn export(&self) -> (String, Vec<(u8, Vec<u8>)>) {
     let mut obj = self.clone();
-    
+
     for val in obj.downloadUrls.values_mut() {
       if &obj.authorId == "1" && &val.asset == "url" {
-        continue
+        continue;
       }
 
-      
-      let path = format!("https://github.com/{}/{}/releases/download/{}/{}", self.repo.author, self.repo.repo, self.releaseTagName, val.asset);
+      let path = format!(
+        "https://github.com/{}/{}/releases/download/{}/{}",
+        self.repo.author, self.repo.repo, self.releaseTagName, val.asset
+      );
 
       val.url = path;
     }
-    let resources: Vec<(u8, Vec<u8>)> = std::mem::replace(&mut obj.resources, None).map_or(vec![], |map| 
-      map.into_iter().collect::<Vec<_>>()
-    );
+    let resources: Vec<(u8, Vec<u8>)> = std::mem::replace(&mut obj.resources, None)
+      .map_or(vec![], |map| map.into_iter().collect::<Vec<_>>());
 
     (to_string(&obj).unwrap(), resources)
   }

@@ -20,20 +20,20 @@ pub use data::*;
 /// cargo install ahqstore_cli_rs
 /// ```
 /// or visit app / api sub module
-/// 
+///
 /// This Module:
 /// This module lists the standard commands & types that AHQ Store sends to AHQ Store Service
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Commit {
-  pub sha: String
+  pub sha: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Prefs {
   pub launch_app: bool,
   pub install_apps: bool,
-  pub auto_update_apps: bool
+  pub auto_update_apps: bool,
 }
 
 impl Prefs {
@@ -61,7 +61,7 @@ impl Prefs {
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Package {
   LeadLang,
-  DevCamp
+  DevCamp,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -115,7 +115,7 @@ pub struct Library {
   pub to: ToDo,
   pub progress: f64,
   pub max: u64,
-  pub app: Option<AHQStoreApplication>
+  pub app: Option<AHQStoreApplication>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -134,7 +134,7 @@ pub enum AppStatus {
   InstallSuccessful,
   UninstallSuccessful,
   NotSuccessful,
-  AVFlagged
+  AVFlagged,
 }
 
 impl Serialize for AppStatus {
@@ -151,11 +151,10 @@ impl Serialize for AppStatus {
       AppStatus::UninstallSuccessful => "Uninstalled",
       AppStatus::NotSuccessful => "Error!",
       AppStatus::AVScanning => "Scanning for Viruses!",
-      AppStatus::AVFlagged => "Flagged as Malicious!"
+      AppStatus::AVFlagged => "Flagged as Malicious!",
     })
   }
 }
-
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum UpdateStatusReport {
@@ -215,3 +214,6 @@ impl AuthPing {
     serde_json::from_str(string).ok()
   }
 }
+
+#[cfg(test)]
+mod tests;

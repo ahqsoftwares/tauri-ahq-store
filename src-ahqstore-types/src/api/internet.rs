@@ -1,37 +1,54 @@
-use reqwest::blocking::{Client, ClientBuilder};
+use std::sync::LazyLock;
 
-use lazy_static::lazy_static;
+use reqwest::{Client, ClientBuilder};
 use serde::{Deserialize, Serialize};
-lazy_static! {
-  static ref CLIENT: Client = ClientBuilder::new()
-    .user_agent("AHQ Store LIB / RUST")
+
+use crate::AHQStoreApplication;
+
+static CLIENT: LazyLock<Client> = LazyLock::new(|| {
+  ClientBuilder::new()
+    .user_agent("AHQ Store / RUST / Official / AHQ Softwares")
     .build()
-    .unwrap();
-}
+    .unwrap()
+});
 
 #[derive(Serialize, Deserialize)]
 pub struct GHRepoCommit {
   pub sha: String,
 }
 
+pub static BASE_URL: &'static str = "https://rawcdn.githack.com/ahqstore/data/{COMMIT}";
+pub static COMMIT_URL: &'static str = "https://api.github.com/repos/ahqstore/data/commits";
+
+pub static APP_URL: LazyLock<String> =
+  LazyLock::new(|| format!("{BASE_URL}/db/apps/{APP_ID}.json"));
+pub static APP_ASSET_URL: LazyLock<String> =
+  LazyLock::new(|| format!("{BASE_URL}/db/res/{APP_ID}/{ASSET}.json"));
+
+pub static TOTAL: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/total"));
+pub static HOME: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/home.json"));
+
+pub static SEARCH: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/search/{ID}.json"));
+pub static MAP: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/map/{ID}.json"));
+
 pub type GHRepoCommits = Vec<GHRepoCommit>;
 
-static mut COMMIT_ID: Option<String> = None;
-
-pub fn update_commit(token: Option<String>) -> Option<()> {
-  let mut builder = CLIENT.get("https://api.github.com/repos/ahqstore/data/commits");
+pub async fn get_commit(token: Option<String>) -> Option<String> {
+  let mut builder = CLIENT.get(COMMIT_URL);
 
   if let Some(val) = token {
     builder = builder.bearer_auth(val);
   }
 
-  let val = builder.send().ok()?;
-  let val = val.json::<GHRepoCommits>().ok()?;
-  let val = &val[0];
+  let val = builder.send().await.ok()?;
+  let val = val.json::<GHRepoCommits>().await.ok()?;
+  let sha = val.remove(0).sha;
 
-  unsafe {
-    COMMIT_ID = Some(val.sha.clone());
-  }
+  Some(sha)
+}
 
-  Some(())
+pub async fn get_app_asset(commit: &str, app_id: &str, asset: &str) {}
+
+pub async fn get_app(commit: &str, app_id: &str, embed_assets: bool) -> AHQStoreApplication {
+
 }

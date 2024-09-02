@@ -54,7 +54,7 @@ impl Display for InstallerFormat {
         InstallerFormat::WindowsInstallerMsi => "Windows Installer Msi",
         InstallerFormat::WindowsUWPMsix => "UWP Windows Msix Package",
         InstallerFormat::LinuxAppImage => "Linux App Image",
-        InstallerFormat::AndroidApkZip => "Universal Android Apk Zip Package"
+        InstallerFormat::AndroidApkZip => "Universal Android Apk Zip Package",
       }
     )
   }

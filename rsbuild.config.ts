@@ -4,8 +4,6 @@ import { pluginSvgr } from '@rsbuild/plugin-svgr';
 import { pluginBabel } from "@rsbuild/plugin-babel";
 import { pluginReact } from "@rsbuild/plugin-react";
 
-import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
-
 export default defineConfig({
   plugins: [
     pluginReact(),
@@ -40,7 +38,7 @@ export default defineConfig({
     }
   },
   dev: {
-    progressBar: false,
+    progressBar: true,
     hmr: true,
     watchFiles: {
       paths: ["./index.html", "./src/**/*"]
@@ -49,17 +47,5 @@ export default defineConfig({
   server: {
     port: 3000,
     strictPort: true,
-  },
-  tools: {
-    rspack(_, { isDev, appendPlugins }) {
-      if (isDev) {
-        appendPlugins([
-          new RsdoctorRspackPlugin({
-            disableTOSUpload: true,
-            port: 5000
-          })
-        ]);
-      }
-    }
   }
 });

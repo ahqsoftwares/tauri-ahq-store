@@ -26,39 +26,37 @@ pub struct InstallerOptionsWindows {
   #[doc = "🎯 Introduced in v2\n\n"]
   pub assetId: u8,
   /// The exe to link as a shortcut[^1]
-  /// 
+  ///
   /// [^1]: Only if you choose WindowsZip
   pub exec: Option<Str>,
   #[doc = "🔬 Planned\n\n"]
   /// Args to pass to the custom exe installer[^1]
-  /// 
-  /// [^1]: Only if you choose WindowsInstallerExe 
-  pub installerArgs: Option<Vec<Str>>
+  ///
+  /// [^1]: Only if you choose WindowsInstallerExe
+  pub installerArgs: Option<Vec<Str>>,
 }
-
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[doc = "🔬 Planned\n\n"]
 pub struct InstallerOptionsAndroid {
   #[doc = "🎯 Introduced in v2\n\n"]
-  pub assetId: u8
+  pub assetId: u8,
 }
-
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[doc = "🔬 Under Development\n\n"]
 pub struct InstallerOptionsLinux {
   #[doc = "🎯 Introduced in v2\n\n"]
-  pub assetId: u8
+  pub assetId: u8,
 }
 
 macro_rules! push_install_arch {
   ($x:ident -> $y:ident.$install: ident, $arch: literal) => {
-      if let Some(_) = &$y.$install {
-          $x.push($arch);
-      }
+    if let Some(_) = &$y.$install {
+      $x.push($arch);
+    }
   };
 }
 
@@ -91,7 +89,7 @@ impl InstallerOptions {
 
   #[doc = "🎯 Introduced in v2"]
   pub fn is_supported(&self) -> bool {
-    let os =self.list_os_arch();
+    let os = self.list_os_arch();
     if OS == "android" {
       return os.contains(&"android");
     }

@@ -1,13 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DeveloperUser {
   /// The Name of the Developer
   name: String,
 
   /// A short description of the author[^1]
-  /// 
+  ///
   /// [^1]: Maximum 128 words
   description: String,
 
@@ -27,7 +26,7 @@ pub struct DeveloperUser {
   support: AppSupport,
 
   /// The list of apps published by the user
-  apps: Vec<String>
+  apps: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -39,5 +38,5 @@ pub struct AppSupport {
   pub website: Option<String>,
 
   /// GitHub page
-  pub github: Option<String>
+  pub github: Option<String>,
 }
