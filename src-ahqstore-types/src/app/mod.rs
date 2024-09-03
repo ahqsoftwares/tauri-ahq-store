@@ -106,7 +106,7 @@ impl AHQStoreApplication {
       resp.push_str("❌ A maximum of 6 images (1 icon + 5 display images) can be set in displayImages\n");
     } else if x.get(&0).is_none() {
       resp.push_str("❌ Resource with id 0 must be present as it represents icon\n");
-    } else if !x.iter().all(|(id, _)| x.get(&(*id + 1)).is_some()) {
+    } else if !self.displayImages.iter().all(|id| x.get(&(*id + 1)).is_some()) {
       resp.push_str("❌ Every display images should have their resource id\n");
     } else {
       resp.push_str("✅ Resources are valid\n");
