@@ -82,8 +82,8 @@ importers:
         specifier: 1.0.1-rc.0
         version: 1.0.1-rc.0(@rsbuild/core@1.0.1-rc.0)(typescript@5.5.4)
       '@tauri-apps/api':
-        specifier: 2.0.0-rc.0
-        version: 2.0.0-rc.0
+        specifier: 2.0.0-rc.4
+        version: 2.0.0-rc.4
       '@tauri-apps/cli':
         specifier: 2.0.0-rc.3
         version: 2.0.0-rc.3
@@ -835,10 +835,6 @@ packages:
 
   '@swc/helpers@0.5.12':
     resolution: {integrity: sha512-KMZNXiGibsW9kvZAO1Pam2JPTDBm+KSHMMHWdsyI/1DbIZjT2A6Gy3hblVXUMEDvUAKq+e0vL0X0o54owWji7g==}
-
-  '@tauri-apps/api@2.0.0-rc.0':
-    resolution: {integrity: sha512-v454Qs3REHc3Za59U+/eSmBsdmF+3NE5+76+lFDaitVqN4ZglDHENDaMARYKGJVZuxiSkzyqG0SeG7lLQjVkPA==}
-    engines: {node: '>= 18.18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
 
   '@tauri-apps/api@2.0.0-rc.4':
     resolution: {integrity: sha512-UNiIhhKG08j4ooss2oEEVexffmWkgkYlC2M3GcX3VPtNsqFgVNL8Mcw/4Y7rO9M9S+ffAMnLOF5ypzyuyb8tyg==}
@@ -3305,8 +3301,6 @@ snapshots:
   '@swc/helpers@0.5.12':
     dependencies:
       tslib: 2.7.0
-
-  '@tauri-apps/api@2.0.0-rc.0': {}
 
   '@tauri-apps/api@2.0.0-rc.4': {}
 
