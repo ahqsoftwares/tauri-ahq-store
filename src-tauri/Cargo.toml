@@ -29,7 +29,7 @@ updater = { path = "../src-updater" }
 discord-rich-presence = "0.2.4"
 tokio = "1"
 tauri-plugin-notification = "2.0.0-rc"
-tauri-plugin-http = { version = "2.0.0-rc", features = ["rustls-tls"] }
+tauri-plugin-http = { version = "2.0.0-rc.2", features = ["rustls-tls"] }
 tauri-plugin-fs = "2.0.0-rc"
 tauri-plugin-process = "2.0.0-rc"
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
