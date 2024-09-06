@@ -148,7 +148,7 @@ jobs:
 
       - name: Publish NPM Binaries
         run: npm publish
-        working-directory: src-ahqstore-types
+        working-directory: src-ahqstore-types/pkg
         continue-on-error: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AHQSTORE_TYPES }}
