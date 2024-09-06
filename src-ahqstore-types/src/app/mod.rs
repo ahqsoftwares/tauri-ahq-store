@@ -103,10 +103,16 @@ impl AHQStoreApplication {
     if total > 5 * 1024 * 1024 * 1024 {
       resp.push_str("❌ Total size of all resources combined must not be more than 5MB\n");
     } else if self.displayImages.len() > 6 {
-      resp.push_str("❌ A maximum of 6 images (1 icon + 5 display images) can be set in displayImages\n");
+      resp.push_str(
+        "❌ A maximum of 6 images (1 icon + 5 display images) can be set in displayImages\n",
+      );
     } else if x.get(&0).is_none() {
       resp.push_str("❌ Resource with id 0 must be present as it represents icon\n");
-    } else if !self.displayImages.iter().all(|id| x.get(&(*id + 1)).is_some()) {
+    } else if !self
+      .displayImages
+      .iter()
+      .all(|id| x.get(&(*id + 1)).is_some())
+    {
       resp.push_str("❌ Every display images should have their resource id\n");
     } else {
       resp.push_str("✅ Resources are valid\n");
@@ -148,8 +154,8 @@ impl AHQStoreApplication {
     self.install.has_platform()
   }
 
-  #[doc = "🎯 Introduced in v2"]
-  pub fn get_win_download(&self) -> Option<&DownloadUrl> {
+  #[doc = "🎯 Introduced in v3"]
+  pub fn get_win_options(&self) -> Option<&InstallerOptionsWindows> {
     let get_w32 = || {
       let Some(x) = &self.install.win32 else {
         return None;
@@ -169,6 +175,12 @@ impl AHQStoreApplication {
       get_w32()?
     };
 
+    Some(win32)
+  }
+
+  #[doc = "🎯 Introduced in v2"]
+  pub fn get_win_download(&self) -> Option<&DownloadUrl> {
+    let win32 = self.get_win_options()?;
     let url = self.downloadUrls.get(&win32.assetId)?;
 
     match &url.installerType {
@@ -203,16 +215,21 @@ impl AHQStoreApplication {
     self.get_win_extension()
   }
 
-  #[doc = "🎯 Introduced in v2"]
-  pub fn get_linux_download(&self) -> Option<&DownloadUrl> {
-    let linux = match ARCH {
-      "x86_64" => self.install.linux.as_ref()?,
-      "aarch64" => self.install.linuxArm64.as_ref()?,
-      "arm" => self.install.linuxArm7.as_ref()?,
+  #[doc = "🎯 Introduced in v3"]
+  pub fn get_linux_options(&self) -> Option<&InstallerOptionsLinux> {
+    match ARCH {
+      "x86_64" => self.install.linux.as_ref(),
+      "aarch64" => self.install.linuxArm64.as_ref(),
+      "arm" => self.install.linuxArm7.as_ref(),
       _ => {
         return None;
       }
-    };
+    }
+  }
+
+  #[doc = "🎯 Introduced in v2"]
+  pub fn get_linux_download(&self) -> Option<&DownloadUrl> {
+    let linux = self.get_linux_options()?;
 
     let url = self.downloadUrls.get(&linux.assetId)?;
 

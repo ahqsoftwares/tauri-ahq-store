@@ -1,3 +1,6 @@
+#[cfg(feature = "js")]
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use std::fmt::Display;
 
 use crate::Str;
@@ -5,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct DownloadUrl {
   pub installerType: InstallerFormat,
   pub asset: Str,
@@ -14,6 +18,7 @@ pub struct DownloadUrl {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(feature = "js", wasm_bindgen)]
 pub enum InstallerFormat {
   #[doc = "🎯 Stable as of v1"]
   WindowsZip,
@@ -61,6 +66,7 @@ impl Display for InstallerFormat {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct AppRepo {
   /// author must be your GitHub username or username of an org where you're a "visible" member
   pub author: Str,

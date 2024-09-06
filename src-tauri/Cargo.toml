@@ -8,7 +8,7 @@ repository = "https://github.com/ahqsoftwares/tauri-ahq-store"
 homepage = "https://ahqstore.github.io/"
 default-run = "ahq-store-app"
 edition = "2021"
-rust-version = "1.57"
+rust-version = "1.80"
 
 [build-dependencies]
 tauri-build = { version = "2.0.0-rc", features = [] }

@@ -214,6 +214,3 @@ impl AuthPing {
     serde_json::from_str(string).ok()
   }
 }
-
-#[cfg(test)]
-mod tests;

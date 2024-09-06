@@ -1,3 +1,6 @@
+#[cfg(feature = "js")]
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use std::env::consts::{ARCH, OS};
 
 use crate::Str;
@@ -5,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct InstallerOptions {
   #[doc = "🎯 Introduced in v1\n\n"]
   pub win32: Option<InstallerOptionsWindows>,
@@ -22,6 +26,7 @@ pub struct InstallerOptions {
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct InstallerOptionsWindows {
   #[doc = "🎯 Introduced in v2\n\n"]
   pub assetId: u8,
@@ -39,6 +44,7 @@ pub struct InstallerOptionsWindows {
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[doc = "🔬 Planned\n\n"]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct InstallerOptionsAndroid {
   #[doc = "🎯 Introduced in v2\n\n"]
   pub assetId: u8,
@@ -47,6 +53,7 @@ pub struct InstallerOptionsAndroid {
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[doc = "🔬 Under Development\n\n"]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct InstallerOptionsLinux {
   #[doc = "🎯 Introduced in v2\n\n"]
   pub assetId: u8,
