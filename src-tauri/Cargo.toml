@@ -17,7 +17,7 @@ tauri-build = { version = "2.0.0-rc", features = [] }
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 
-tauri = { version = "2.0.0-rc", features = ["devtools", "wry", "tray-icon", "image-png", "rustls-tls"] }
+tauri = { version = "2.0.0-rc.10", features = ["devtools", "wry", "tray-icon", "image-png", "rustls-tls"] }
 wry = "*"
 
 open = "5"
