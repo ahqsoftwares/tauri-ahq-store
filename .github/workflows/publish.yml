@@ -139,7 +139,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install wasm-pack
-        run: cargo install wasm-pack
+        run: npm i -g wasm-pack
         working-directory: src-ahqstore-types
 
       - name: Build NPM Binaries
@@ -276,7 +276,7 @@ jobs:
 
       - name: Build ahqstore-types locally
         run: |
-          cargo install wasm-pack
+          npm i -g wasm-pack
           wasm-pack build --release -- --features js
         working-directory: src-ahqstore-types
 
@@ -360,6 +360,13 @@ jobs:
 
       - name: Install
         run: |
+          rustup toolchain install nightly
+          
+          cd src-ahqstore-types
+          npm i -g wasm-pack
+          wasm-pack build --release -- --features js
+          cd ..
+
           npm i -g pnpm
           pnpm install
 
@@ -406,11 +413,6 @@ jobs:
 
             cd src-service
             cargo build --release
-            cd ..
-
-            cd src-ahqstore-types
-            cargo install wasm-pack
-            wasm-pack build --release -- --features js
             cd ..
 
             npm i -g pnpm
