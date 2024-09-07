@@ -23,6 +23,9 @@ importers:
       '@tauri-apps/plugin-process':
         specifier: 2.0.0-rc.1
         version: 2.0.0-rc.1
+      ahqstore-types:
+        specifier: link:src-ahqstore-types\pkg
+        version: link:src-ahqstore-types/pkg
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.45)

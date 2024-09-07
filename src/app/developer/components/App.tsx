@@ -26,7 +26,7 @@ export default function App({
   async function handleClick() {
     toast("Opened in browser", "success", 1);
     invoke("open", {
-      url: "https://github.com/ahqstore/data",
+      url: "https://github.com/ahqstore/apps",
     });
   }
 

@@ -147,24 +147,13 @@ pub async fn get_app_asset(commit: &str, app_id: &str, asset: &str) -> Option<Ve
   builder.json().await.ok()
 }
 
-#[cfg(not(feature = "js"))]
-pub type RespApp = AHQStoreApplication;
-#[cfg(feature = "js")]
-pub type RespApp = JsValue;
-
 #[cfg_attr(feature = "js", wasm_bindgen)]
-pub async fn get_app(commit: &str, app_id: &str) -> Option<RespApp> {
+pub async fn get_app(commit: &str, app_id: &str) -> Option<AHQStoreApplication> {
   let url = APP_URL
     .replace("{COMMIT}", commit)
     .replace("{APP_ID}", app_id);
 
   let builder = CLIENT.get(url).send().await.ok()?;
 
-  let data: AHQStoreApplication = builder.json().await.ok()?;
-
-  #[cfg(feature = "js")]
-  return serde_wasm_bindgen::to_value(&data).ok();
-
-  #[cfg(not(feature = "js"))]
-  return Some(data);
+  builder.json().await.ok()
 }

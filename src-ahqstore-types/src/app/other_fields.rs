@@ -3,7 +3,6 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use std::fmt::Display;
 
-use crate::Str;
 use serde::{Deserialize, Serialize};
 
 #[allow(non_snake_case)]
@@ -11,10 +10,10 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct DownloadUrl {
   pub installerType: InstallerFormat,
-  pub asset: Str,
+  pub asset: String,
 
   /// This will be based on asset and releaseId
-  pub url: Str,
+  pub url: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -69,6 +68,6 @@ impl Display for InstallerFormat {
 #[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct AppRepo {
   /// author must be your GitHub username or username of an org where you're a "visible" member
-  pub author: Str,
-  pub repo: Str,
+  pub author: String,
+  pub repo: String,
 }

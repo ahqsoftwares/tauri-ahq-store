@@ -10,6 +10,7 @@
     "@tauri-apps/plugin-http": "2.0.0-rc.2",
     "@tauri-apps/plugin-notification": "2.0.0-rc.1",
     "@tauri-apps/plugin-process": "2.0.0-rc.1",
+    "ahqstore-types": "link:src-ahqstore-types\\pkg",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.10",

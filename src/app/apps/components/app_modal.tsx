@@ -45,31 +45,24 @@ const defAppData: appData = {
   description: "",
   displayImages: [],
   downloadUrls: [],
-  icon: "/react.webp",
   install: {
+    free: () => { },
     linux: undefined,
     win32: undefined,
     android: undefined
   },
   repo: {
+    free: () => { },
     author: "",
     repo: "",
   },
   version: "",
-  AuthorObject: {
-    ahq_official: false,
-    name: "",
-    apps: [],
-    description: "",
-    email: "",
-    gh_username: "",
-    icon_base64: "",
-    support: {
-      discord: "",
-      github: "",
-      website: ""
-    }
-  },
+  app_page: "",
+  license_or_tos: "",
+  releaseTagName: "",
+  resources: {},
+  site: "",
+  source: "",
 };
 
 export default function ShowModal(props: AppDataPropsModal) {
@@ -150,11 +143,9 @@ export default function ShowModal(props: AppDataPropsModal) {
   }, [installData]);
 
   const {
-    icon,
     appDisplayName,
     description,
     authorId,
-    AuthorObject,
     source,
     displayImages,
     version,
@@ -199,7 +190,7 @@ export default function ShowModal(props: AppDataPropsModal) {
             </button>
             {/* @ts-ignore */}
             <img
-              src={icon}
+              src={"icon"}
               alt="Logo"
               className="rounded-full shadow-2xl"
               style={{
@@ -356,7 +347,7 @@ export default function ShowModal(props: AppDataPropsModal) {
               >
                 {source ? (
                   <>
-                    Destributed from {source} by {AuthorObject.name}
+                    Destributed from {source} by {"AuthorObject.name"}
                   </>
                 ) : (
                   <>
@@ -366,7 +357,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                     ) : (
                       <></>
                     )}
-                      {AuthorObject.name}
+                      {"AuthorObject.name"}
                   </>
                 )}
               </button>

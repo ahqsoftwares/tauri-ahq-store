@@ -1,7 +1,7 @@
 [package]
 name = "ahqstore-types"
 description = "Standard types used by AHQ Store"
-version = "3.2.1"
+version = "3.2.2"
 edition = "2021"
 license-file = "../LICENSE.md"
 repository = "https://github.com/ahqsoftwares/tauri-ahq-store"
@@ -20,11 +20,19 @@ reqwest = { version = "0.12", features = [
 serde = { version = "1", features = ["derive"] }
 serde-wasm-bindgen = { version = "0.6.5", optional = true }
 serde_json = "1"
+tsify = { version = "0.4.5", optional = true }
 wasm-bindgen = { version = "0.2.93", optional = true }
 wasm-bindgen-futures = { version = "0.4.43", optional = true }
+js_macros = { path = "./js_macros", optional = true }
 
 [features]
 default = ["internet"]
 internet = ["dep:reqwest"]
 apps_repo = []
-js = ["dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:serde-wasm-bindgen"]
+js = [
+  "dep:wasm-bindgen",
+  "dep:wasm-bindgen-futures",
+  "dep:serde-wasm-bindgen",
+  "dep:tsify",
+  "dep:js_macros",
+]

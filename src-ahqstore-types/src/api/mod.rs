@@ -1,6 +1,9 @@
 #[cfg(feature = "js")]
 use wasm_bindgen::prelude::wasm_bindgen;
 
+#[cfg(feature = "js")]
+use tsify::declare;
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -15,6 +18,7 @@ pub struct ServerJSONResp {
   pub config: String,
 }
 
+#[cfg_attr(feature = "js", declare)]
 pub type MapData = HashMap<String, String>;
 
 #[derive(Serialize, Deserialize, Debug)]

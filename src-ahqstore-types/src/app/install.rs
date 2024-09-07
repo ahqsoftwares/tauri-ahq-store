@@ -3,7 +3,6 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use std::env::consts::{ARCH, OS};
 
-use crate::Str;
 use serde::{Deserialize, Serialize};
 
 #[allow(non_snake_case)]
@@ -33,12 +32,12 @@ pub struct InstallerOptionsWindows {
   /// The exe to link as a shortcut[^1]
   ///
   /// [^1]: Only if you choose WindowsZip
-  pub exec: Option<Str>,
+  pub exec: Option<String>,
   #[doc = "🔬 Planned\n\n"]
   /// Args to pass to the custom exe installer[^1]
   ///
   /// [^1]: Only if you choose WindowsInstallerExe
-  pub installerArgs: Option<Vec<Str>>,
+  pub installerArgs: Option<Vec<String>>,
 }
 
 #[allow(non_snake_case)]

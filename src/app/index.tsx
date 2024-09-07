@@ -108,7 +108,6 @@ function Render(props: AppProps) {
         autoUpdate,
         dark,
         font,
-        sidebar,
         debug,
         isAdmin,
         theme,
