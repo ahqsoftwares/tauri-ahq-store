@@ -1,4 +1,7 @@
-use ahqstore_types::{AppStatus, Commit, Library, internet::{get_commit as t_get_commit, get_app as t_get_app}};
+use ahqstore_types::{
+  internet::{get_app as t_get_app, get_commit as t_get_commit},
+  AppStatus, Commit, Library,
+};
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, Request, StatusCode};
 use serde_json::from_str;
@@ -45,7 +48,9 @@ pub fn init() {
 
 pub async fn get_commit() -> u8 {
   if let Some(x) = t_get_commit(None).await {
-    unsafe { COMMIT_ID = Some(x); }
+    unsafe {
+      COMMIT_ID = Some(x);
+    }
 
     0
   } else {
@@ -125,7 +130,7 @@ pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
   if let Some(x) = app {
     return Response::AppData(ref_id, app_id, x);
   }
-  
+
   Response::Error(ErrorType::GetAppFailed(ref_id, app_id))
 }
 

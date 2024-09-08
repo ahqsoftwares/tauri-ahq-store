@@ -26,11 +26,19 @@ interface appData {
 export type { appData };
 
 export default async function fetchPrefs(): Promise<appData> {
+  console.log("fetch PRefs");
   mkdir("", { baseDir: BaseDirectory.AppData }).catch((e) => e);
   mkdir("database", { baseDir: BaseDirectory.AppData }).catch((e) => e);
 
-  const is_admin = await invoke<boolean>("is_an_admin");
+  console.log("Run is_an_admin");
+  const is_admin = await invoke<boolean>("is_an_admin").catch((e) => {
+    console.log(e);
+
+    return true;
+  });
+  console.log("Done is_an_admin");
   const prefs = await get_access_perfs();
+  console.log("Done access_prefs");
 
   if (!is_admin && !prefs.launch_app) {
     sendNotification({

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { appData, getResource } from "../../resources/api/fetchApps";
+import { appData, AuthorObject, fetchAuthor, getResource } from "../../resources/api/fetchApps";
 
 import fetchApps from "../../resources/api/fetchApps";
+
+import { TbRosetteDiscountCheckFilled } from "react-icons/tb";
 
 const def: appData = {
   authorId: "",
@@ -39,6 +41,13 @@ export default function AppCard(props: {
 }) {
   const [appData, setAppData] = useState<appData>(def);
   const [icon, setIcon] = useState<string>();
+  const [author, setAuthor] = useState<AuthorObject>({
+    avatar_url: "",
+    free: () => { },
+    github: "",
+    id: "",
+    name: ""
+  });
 
   const { appDisplayName, description, source } = appData;
 
@@ -49,6 +58,7 @@ export default function AppCard(props: {
       const dta = await fetchApps(props.id);
 
       setAppData(dta as appData);
+      setAuthor(await fetchAuthor((dta as appData).authorId));
 
       getResource(props.id, "0").then(setIcon).catch((e) => {
         console.log(e);
@@ -62,7 +72,7 @@ export default function AppCard(props: {
       className={`card bg-transparent hover:mb-2 hover:shadow-xl ${props.id ? "" : "hidden"}`}
       style={{ cursor: "pointer" }}
       onClick={
-        appData.appId == "%temp%"
+        appData.appId == "%temp%" || appData.appId == undefined
           ? () => {}
           : (props.onClick as React.MouseEventHandler<HTMLDivElement>)
       }
@@ -82,8 +92,9 @@ export default function AppCard(props: {
       <div className="card-description">{(description || "Non Existent").substring(0, 64)}...</div>
 
       <div className="card-footer">
-        <button className="text-blue-500 text-2xl" style={{ minWidth: "95%" }}>
-          {source || "AuthorObject.name"}
+        <button className="text-blue-500 text-2xl flex" style={{ minWidth: "95%" }}>
+          {source || (appData?.authorId ? author.name.replace("AHQ Store (Official)", "AHQ Store") : "")}
+          {author.name == "AHQ Store (Official)" && <TbRosetteDiscountCheckFilled style={{ "marginTop": "auto", "marginBottom": "auto", "marginLeft": "3px" }} size="1em" />}
         </button>
       </div>
     </div>

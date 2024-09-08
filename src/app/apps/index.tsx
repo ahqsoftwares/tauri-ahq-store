@@ -139,7 +139,7 @@ export default function Apps(props: AppsProps) {
               <button
                 className={`search-input search-input-search-icon ${
                   dark ? "style-input-d" : ""
-                } max-w-[50px] min-w-[50px] p-0 m-0`}
+                  } max-w-[50px] min-w-[50px] p-0 m-0 flex justify-center items-center text-center`}
                 type="submit"
                 id={"search-btn"}
                 onClick={() => {

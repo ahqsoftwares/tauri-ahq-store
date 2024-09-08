@@ -15,6 +15,7 @@ import { Library } from "../../resources/core/installer";
 
 interface Props {
   appInfo: appData;
+  icon: string;
   dark: boolean;
   toast: typeof Toast;
   lib: Library | undefined
@@ -23,6 +24,7 @@ interface Props {
 export default function App({
   appInfo,
   dark,
+  icon,
   toast,
   lib
 }: Props) {
@@ -42,9 +44,9 @@ export default function App({
       <img
         width="60px"
         height="60px"
-        src={appInfo.icon}
+        src={icon}
         alt={appInfo.appDisplayName}
-        className={`rounded-md my-auto mr-2 ${appInfo.icon === pkg ? "p-2" : ""}`}
+        className={`rounded-md my-auto mr-2 ${icon === pkg ? "p-2" : ""}`}
         draggable={false}
         style={{
           width: "60px",

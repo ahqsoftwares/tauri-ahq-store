@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 //Worker
 import { BiArrowBack } from "react-icons/bi";
-import fetchApps, { appData } from "../../resources/api/fetchApps";
+import fetchApps, { appData, AuthorObject, fetchAuthor, getResource } from "../../resources/api/fetchApps";
 
 //AHQ Store Installer
 import { install_app } from "../../resources/core";
@@ -16,6 +16,14 @@ import { IoCheckmarkCircle, IoWarning } from "react-icons/io5";
 import { FaAndroid, FaLinux } from "react-icons/fa6";
 import { SiWindows } from "react-icons/si";
 import { worker } from "../../resources/core/installer";
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -73,9 +81,18 @@ export default function ShowModal(props: AppDataPropsModal) {
   } = (window as any).prefs as { accessPrefs: { install_apps: boolean } };
 
   const [appData, setAppData] = useState<appData>(defAppData);
+  const [resources, setResources] = useState<string[]>([]);
+
   const button = useRef<HTMLButtonElement>("" as any);
   const [installed, setInstalled] = useState<boolean | "hidden">(false);
   const [updating, setUpdating] = useState(worker.update != "UpToDate" && worker.update != "Disabled");
+  const [author, setAuthor] = useState<AuthorObject>({
+    avatar_url: "",
+    free: () => { },
+    github: "",
+    id: "",
+    name: ""
+  });
 
   const progressBar = useRef<HTMLProgressElement>("" as any);
 
@@ -136,11 +153,25 @@ export default function ShowModal(props: AppDataPropsModal) {
 
         setAppData(apps as any);
         setInstalled(await isInstalled(installData));
+        setAuthor(await fetchAuthor((apps as appData).authorId));
 
         setUpdating(false);
       }
     })();
   }, [installData]);
+
+  useEffect(() => {
+    setResources([]);
+
+    const data = [];
+    for (let i = 0; i <= appData.displayImages.length; i++) {
+      data.push(getResource(appData.appId, `${i}`));
+    }
+
+    (async () => {
+      setResources(await Promise.all(data));
+    })()
+  }, [appData, installData]);
 
   const {
     appDisplayName,
@@ -188,16 +219,20 @@ export default function ShowModal(props: AppDataPropsModal) {
                 }}
               />
             </button>
-            {/* @ts-ignore */}
-            <img
-              src={"icon"}
-              alt="Logo"
-              className="rounded-full shadow-2xl"
-              style={{
-                "width": "125px",
-                "height": "125px"
-              }}
-            />
+            {resources.length > 0 ?
+              <img
+                src={resources[0]}
+                alt="Logo"
+                className="rounded-full shadow-2xl"
+                style={{
+                  "width": "125px",
+                  "height": "125px"
+                }}
+              />
+              : <div
+                className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${props.dark ? "text-white" : ""
+                  }`}
+              />}
 
             <h1
               className={`mt-5 text-3xl ${
@@ -296,43 +331,84 @@ export default function ShowModal(props: AppDataPropsModal) {
               className={`mt-3 w-[100%] ${displayImages.length == 0 ? "hidden" : ""}`}
             >
               <h1 className="text-xl">Images</h1>
-              <div className="dui-carousel dui-carousel-end w-full rounded-md pl-0">
-                {displayImages.map((img, i) => (
-                  <div
-                    key={img}
-                    id={`app-desc-slide-${i}`}
-                    className="dui-carousel-item relative w-full"
+              {
+                resources.length < 2 ? <div className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${props.dark ? "text-white" : ""}`} /> :
+                  <Carousel
+                    opts={{
+                      align: "start",
+                    }}
+                    orientation="horizontal"
+                    className="w-[90%] mx-auto max-h-[400px]"
                   >
-                    <img
-                      src={`data:image;base64,${img}`}
-                      className="mx-auto rounded-lg"
-                    />
-                    <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                      <a
-                        href={
-                          i != 0
-                            ? `#app-desc-slide-${i - 1}`
-                            : "#app-desc-slide-0"
-                        }
-                        className={`dui-btn dui-btn-circle ${i != 0 ? "dui-btn-accent" : "dui-btn-disabled"}`}
-                      >
-                        ❮
-                      </a>
-                      <a
-                        href={
-                          i + 1 != displayImages.length
-                            ? `#app-desc-slide-${i + 1}`
-                            : `#app-desc-slide-${displayImages.length}`
-                        }
-                        className={`dui-btn dui-btn-circle  ${i + 1 != displayImages.length ? "dui-btn-accent" : "dui-btn-disabled"}`}
-                      >
-                        ❯
-                      </a>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    <CarouselContent>
+                      {displayImages.map((v) => (
+                        <CarouselItem>
+                          <img
+                            src={resources[v + 1]}
+                            className="mx-auto rounded-lg max-h-[350px]"
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious size="icon" />
+                    <CarouselNext size="icon" />
+                  </Carousel>
+              }
             </div>
+            {/* <div
+              className={`mt-3 w-[100%] ${displayImages.length == 0 ? "hidden" : ""}`}
+            >
+              <h1 className="text-xl">Images</h1>
+              <div className="dui-carousel dui-carousel-end w-full rounded-md pl-0">
+
+
+                {resources.length < 2 ? <div
+                  className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${props.dark ? "text-white" : ""
+                    }`}
+                /> : <Carousel>
+                  <CarouselContent>
+                    <CarouselItem>...</CarouselItem>
+                    <CarouselItem>...</CarouselItem>
+                      <CarouselItem>...</CarouselItem> {displayImages.map((img, i) => (
+                        <div
+                          key={img}
+                          id={`app-desc-slide-${i}`}
+                          className="dui-carousel-item relative w-full"
+                        >
+                          <img
+                            src={resources[i + 1]}
+                            className="mx-auto rounded-lg"
+                          />
+                          <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                            <a
+                              href={
+                                i != 0
+                                  ? `#app-desc-slide-${i - 1}`
+                                  : "#app-desc-slide-0"
+                              }
+                              className={`dui-btn dui-btn-circle ${i != 0 ? "dui-btn-accent" : "dui-btn-disabled"}`}
+                            >
+                              ❮
+                            </a>
+                            <a
+                              href={
+                                i + 1 != displayImages.length
+                                  ? `#app-desc-slide-${i + 1}`
+                                  : `#app-desc-slide-${displayImages.length}`
+                              }
+                              className={`dui-btn dui-btn-circle  ${i + 1 != displayImages.length ? "dui-btn-accent" : "dui-btn-disabled"}`}
+                            >
+                              ❯
+                            </a>
+                          </div>
+                        </div>
+                      ))}</CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>}
+
+              </div>
+            </div> */}
 
             {/* Author */}
             <div className="mt-3 w-[100%]">
@@ -347,7 +423,7 @@ export default function ShowModal(props: AppDataPropsModal) {
               >
                 {source ? (
                   <>
-                    Destributed from {source} by {"AuthorObject.name"}
+                    Destributed from {source} by {author.name}
                   </>
                 ) : (
                   <>
@@ -357,7 +433,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                     ) : (
                       <></>
                     )}
-                      {"AuthorObject.name"}
+                      {author.name}
                   </>
                 )}
               </button>
@@ -386,7 +462,7 @@ export default function ShowModal(props: AppDataPropsModal) {
               <span className="flex">
                 <strong className="mr-2">Supported Platforms:</strong>
                 <span className="flex items-center space-x-2">
-                  {appData.install.win32 != undefined && (
+                  {(appData.install.win32 != undefined || appData.install.winarm != undefined) && (
                     <div
                       className="cursor-pointer flex text-center items-center justify-center border-[1px] border-base-content px-1"
                       onClick={() =>
@@ -396,7 +472,9 @@ export default function ShowModal(props: AppDataPropsModal) {
                       }
                     >
                       <SiWindows />
-                      <span className="ml-1">Windows</span>
+                      <span className="ml-1">
+                        Windows {appData.install.win32 == undefined ? "arm64" : ""}
+                      </span>
                     </div>
                   )}
                   {appData.install.linux != undefined && (
@@ -409,7 +487,34 @@ export default function ShowModal(props: AppDataPropsModal) {
                       }
                     >
                       <FaLinux />
-                      <span className="ml-1">Linux</span>
+                      <span className="ml-1">Linux x64</span>
+                    </div>
+                  )}
+
+                  {appData.install.linuxArm64 != undefined && (
+                    <div
+                      className="cursor-pointer flex text-center items-center justify-center border-[1px] border-base-content px-1"
+                      onClick={() =>
+                        invoke("open", {
+                          url: "https://en.wikipedia.org/wiki/Linux",
+                        })
+                      }
+                    >
+                      <FaLinux />
+                      <span className="ml-1">Linux arm64</span>
+                    </div>
+                  )}
+                  {appData.install.linuxArm7 != undefined && (
+                    <div
+                      className="cursor-pointer flex text-center items-center justify-center border-[1px] border-base-content px-1"
+                      onClick={() =>
+                        invoke("open", {
+                          url: "https://en.wikipedia.org/wiki/Linux",
+                        })
+                      }
+                    >
+                      <FaLinux />
+                      <span className="ml-1">Linux armv7</span>
                     </div>
                   )}
                   {appData.install.android != undefined && (

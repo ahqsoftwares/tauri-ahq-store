@@ -80,7 +80,9 @@ export async function fetchAuthor(uid: string) {
     return authorCache[uid];
   }
 
-  const { data } = await fetch(devUserUrl.replace("{sha}", sha).replace("{user}", uid), {
+  const url = devUserUrl.replace("{sha}", sha).replace("{dev}", uid);
+  console.log(url);
+  const { data } = await fetch(url, {
     method: "GET"
   });
   const author = data as AuthorObject;
@@ -108,12 +110,9 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
 
           console.log("Got app: ", app);
 
-          const AuthorObject = await fetchAuthor(app?.authorId || "1");
-
           const appData = {
             ...app,
-            id: appId,
-            AuthorObject,
+            id: appId
           } as appData;
 
           cache[appId] = appData;

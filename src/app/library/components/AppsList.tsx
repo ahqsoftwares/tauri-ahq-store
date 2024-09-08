@@ -1,7 +1,7 @@
 //Arrow
 import { useEffect, useState } from "react";
 import { GiPartyPopper } from "react-icons/gi";
-import fetchApps, { appData } from "../../resources/api/fetchApps";
+import fetchApps, { appData, getResource } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import listAllApps from "../../resources/utilities/listAllApps";
 import App from "./App";
@@ -17,6 +17,7 @@ export default function AppsList(props: Props) {
   const { dark, library } = props;
 
   const [apps, setApps] = useState<appData[]>([]);
+  const [icons, setIcons] = useState<string[]>([]);
   const [rawApps, setRawApps] = useState(0);
 
   async function parseAppsData() {
@@ -25,6 +26,12 @@ export default function AppsList(props: Props) {
       setRawApps(1);
     }
     const resolvedApps = await fetchApps(Object.keys(apps));
+    const icons = await Promise.all(
+      (resolvedApps as appData[])
+        .map((x) => getResource(x.appId, "0"))
+    );
+
+    setIcons(icons);
     setApps(resolvedApps as appData[]);
   }
 
@@ -74,13 +81,14 @@ export default function AppsList(props: Props) {
               </>
         )}
 
-        {apps.map((data) => {
+        {apps.map((data, i) => {
           return (
             <App
               key={data.appId}
               appInfo={data}
               dark={dark}
               toast={Toast}
+              icon={icons[i]}
               lib={library.find((d) => d.app_id == data.appId)}
             />
           );

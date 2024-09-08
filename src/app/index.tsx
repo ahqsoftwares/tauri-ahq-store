@@ -97,12 +97,16 @@ function Render(props: AppProps) {
   }, [dark, theme]);
 
   useEffect(() => {
+    console.log("index.tsx /app");
     (async () => {
+      console.log("Running...");
       const defAccess = {
         install_apps: true,
         launch_app: true,
       };
       const fullPrefs = await fetchPrefs();
+
+      console.log("Got prefs");
 
       const {
         autoUpdate,
@@ -140,11 +144,10 @@ function Render(props: AppProps) {
 
       //Fetch Maps
       try {
-        const map = await get_map<{ [key: string]: Object }>();
+        console.log("Fetching maps...");
+        const [map, home]: [{ [key: string]: Object }, unknown] = (await Promise.all([get_map(), get_home()])) as any;
 
         window.map = map;
-
-        const home = await get_home();
 
         await worker.init();
         setApps(home);

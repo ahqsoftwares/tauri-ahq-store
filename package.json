@@ -6,6 +6,7 @@
   "license": "Creative Commons Attribution Non Commercial 3.0",
   "dependencies": {
     "@radix-ui/react-context-menu": "^2.2.1",
+    "@radix-ui/react-slot": "^1.1.0",
     "@tauri-apps/plugin-fs": "2.0.0-rc.2",
     "@tauri-apps/plugin-http": "2.0.0-rc.2",
     "@tauri-apps/plugin-notification": "2.0.0-rc.1",
@@ -14,6 +15,7 @@
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.10",
+    "embla-carousel-react": "^8.2.1",
     "lucide-react": "^0.439.0",
     "minisearch": "^7.1.0",
     "postcss": "^8.4.45",
@@ -64,6 +66,7 @@
     "@types/react-modal": "^3.16.3",
     "babel-plugin-react-compiler": "0.0.0-experimental-938cd9a-20240601",
     "bcrypt": "^5.1.1",
+    "class-variance-authority": "^0.7.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "cryptr": "^6.3.0",
