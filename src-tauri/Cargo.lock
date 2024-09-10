@@ -4305,7 +4305,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-single-instance"
 version = "2.0.0-rc.1"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#d4a54157f03446b1e118bf1ce80d761d76f8163d"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#a9b2a9af84c844c5e95e5676c1706ccbab5e5bd2"
 dependencies = [
  "log",
  "serde",
