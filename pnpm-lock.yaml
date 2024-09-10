@@ -82,8 +82,8 @@ importers:
         specifier: 1.0.1-rc.5
         version: 1.0.1-rc.5
       '@rsbuild/plugin-babel':
-        specifier: 1.0.1-rc.5
-        version: 1.0.1-rc.5(@rsbuild/core@1.0.1-rc.5)
+        specifier: 1.0.1
+        version: 1.0.1(@rsbuild/core@1.0.1-rc.5)
       '@rsbuild/plugin-react':
         specifier: 1.0.1-rc.5
         version: 1.0.1-rc.5(@rsbuild/core@1.0.1-rc.5)
@@ -691,10 +691,10 @@ packages:
     engines: {node: '>=16.7.0'}
     hasBin: true
 
-  '@rsbuild/plugin-babel@1.0.1-rc.5':
-    resolution: {integrity: sha512-8Tr566hx+dK5mQRqDNPCUvjPKWtmYdwKmFEuwNmCm5674VSzcTZmsPTK0df4A3ZTnvlowsQTiP6hhNW2DTi6cQ==}
+  '@rsbuild/plugin-babel@1.0.1':
+    resolution: {integrity: sha512-cdTiLDVv52r8bOa7rfzk8ADePcckyf4TSXcPv+qq0P/mCBcRmqA4BKQNYf3srXEOb7HrERFaO3pEqdrNe5QwqA==}
     peerDependencies:
-      '@rsbuild/core': ^1.0.1-rc.4
+      '@rsbuild/core': 1.x || ^1.0.1-rc.0
 
   '@rsbuild/plugin-react@1.0.1-rc.5':
     resolution: {integrity: sha512-8W/PK8l//CsGXxfo8psDttyYimdehZ6n5mm8rz5QwNnyKtuxvjUS30P7meQjJxTrZTlZU3LN6yB63tOcD9xtdQ==}
@@ -3169,7 +3169,7 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  '@rsbuild/plugin-babel@1.0.1-rc.5(@rsbuild/core@1.0.1-rc.5)':
+  '@rsbuild/plugin-babel@1.0.1(@rsbuild/core@1.0.1-rc.5)':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-proposal-decorators': 7.24.7(@babel/core@7.25.2)
