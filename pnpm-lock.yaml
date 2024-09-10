@@ -88,8 +88,8 @@ importers:
         specifier: 1.0.1-rc.5
         version: 1.0.1-rc.5(@rsbuild/core@1.0.1-rc.5)
       '@rsbuild/plugin-svgr':
-        specifier: 1.0.1-rc.5
-        version: 1.0.1-rc.5(@rsbuild/core@1.0.1-rc.5)(typescript@5.5.4)
+        specifier: 1.0.1
+        version: 1.0.1(@rsbuild/core@1.0.1-rc.5)(typescript@5.5.4)
       '@tauri-apps/api':
         specifier: 2.0.0-rc.4
         version: 2.0.0-rc.4
@@ -696,15 +696,20 @@ packages:
     peerDependencies:
       '@rsbuild/core': ^1.0.1-rc.4
 
+  '@rsbuild/plugin-react@1.0.1':
+    resolution: {integrity: sha512-JdbuM/Ycwky6XPc0YmXXcDzUYZ4JxIORcio1MB+fJNMOrs3PP1hJF5vUm5NfA7YY391fIMxD9W4oB3GQUI5c6A==}
+    peerDependencies:
+      '@rsbuild/core': 1.x || ^1.0.1-rc.0
+
   '@rsbuild/plugin-react@1.0.1-rc.5':
     resolution: {integrity: sha512-8W/PK8l//CsGXxfo8psDttyYimdehZ6n5mm8rz5QwNnyKtuxvjUS30P7meQjJxTrZTlZU3LN6yB63tOcD9xtdQ==}
     peerDependencies:
       '@rsbuild/core': ^1.0.1-rc.4
 
-  '@rsbuild/plugin-svgr@1.0.1-rc.5':
-    resolution: {integrity: sha512-6yAfQenjfusNhOWf8cJFM6XPaCrnQD5U1ED86h5g62KtqpFq1MkOuJd5OdeTFVLzMhJRKeZWsyIyQWlpXlt7/Q==}
+  '@rsbuild/plugin-svgr@1.0.1':
+    resolution: {integrity: sha512-b9UOXpi/WXI7RtSgrdJ/CY+9uyDE/U3BD9I/ItzEiyQnOumXFWC+8AJ3fmmNbgHxW3H8Ucp1buvjCJqmW+f8nQ==}
     peerDependencies:
-      '@rsbuild/core': ^1.0.1-rc.4
+      '@rsbuild/core': 1.x || ^1.0.1-rc.0
 
   '@rspack/binding-darwin-arm64@1.0.3':
     resolution: {integrity: sha512-MZlQpDRJkjIJJqmYMiziwz9vLXi1KjORYW6hemC2umDfOzUmlkRPBUF8oEqXaUQ+zYLbjhk4iTSbFdrlqUR+6w==}
@@ -3183,16 +3188,22 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@rsbuild/plugin-react@1.0.1(@rsbuild/core@1.0.1-rc.5)':
+    dependencies:
+      '@rsbuild/core': 1.0.1-rc.5
+      '@rspack/plugin-react-refresh': 1.0.0(react-refresh@0.14.2)
+      react-refresh: 0.14.2
+
   '@rsbuild/plugin-react@1.0.1-rc.5(@rsbuild/core@1.0.1-rc.5)':
     dependencies:
       '@rsbuild/core': 1.0.1-rc.5
       '@rspack/plugin-react-refresh': 1.0.0(react-refresh@0.14.2)
       react-refresh: 0.14.2
 
-  '@rsbuild/plugin-svgr@1.0.1-rc.5(@rsbuild/core@1.0.1-rc.5)(typescript@5.5.4)':
+  '@rsbuild/plugin-svgr@1.0.1(@rsbuild/core@1.0.1-rc.5)(typescript@5.5.4)':
     dependencies:
       '@rsbuild/core': 1.0.1-rc.5
-      '@rsbuild/plugin-react': 1.0.1-rc.5(@rsbuild/core@1.0.1-rc.5)
+      '@rsbuild/plugin-react': 1.0.1(@rsbuild/core@1.0.1-rc.5)
       '@svgr/core': 8.1.0(typescript@5.5.4)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.5.4))
       '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.5.4))(typescript@5.5.4)
