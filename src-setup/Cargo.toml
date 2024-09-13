@@ -1,6 +1,6 @@
 [package]
 name = "ahqstore_setup_amd64"
-version = "2.0.0-rc.2"
+version = "2.0.0"
 edition = "2021"
 repository = "https://github.com/ahqsoftwares/tauri-ahq-store"
 homepage = "https://ahqstore.github.io/"
@@ -12,7 +12,7 @@ dirs = "5"
 lazy_static = "1"
 open = "5"
 reqwest = { version = "0.12.5", features = ["json", "rustls-tls"] }
-serde = { version = "1.0.203", features = ["derive"] }
+serde = { version = "1.0.206", features = ["derive"] }
 slint = "1"
 tokio = { version = "1", features = ["rt"] }
 

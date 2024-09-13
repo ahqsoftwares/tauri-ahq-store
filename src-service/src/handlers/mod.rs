@@ -38,7 +38,7 @@ pub fn handle_msg(admin: bool, data: String) {
       if let Some(x) = Command::try_from(&data) {
         match (admin, launch, install, x) {
           (_, _, _, Command::GetSha(ref_id)) => unsafe {
-            let val = if let Some(x) = GH_URL.as_ref() {
+            let val = if let Some(x) = COMMIT_ID.as_ref() {
               Response::as_msg(Response::SHAId(ref_id, x.into()))
             } else {
               Response::as_msg(Response::Error(ErrorType::GetSHAFailed(ref_id)))

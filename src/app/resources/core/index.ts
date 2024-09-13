@@ -6,18 +6,20 @@ import { ListedApps } from "./structs";
 
 let sha = "";
 
-const totalUrl = "https://rawcdn.githack.com/ahqstore/data/{sha}/db/total";
-const homeUrl = "https://rawcdn.githack.com/ahqstore/data/{sha}/db/home.json";
+const totalUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/total";
+const homeUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/home.json";
 const appUrl =
-  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/apps/{app}.json";
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/apps/{app}.json";
+const assetUrl =
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/res/{app}/{id}";
 const mapUrl =
-  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/map/{id}.json";
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/map/{id}.json";
 const searchUrl =
-  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/search/{id}.json";
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/search/{id}.json";
 const appsUserUrl =
-  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/dev/{dev}";
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/dev/{dev}";
 const devUserUrl =
-  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/info/{dev}.json";
+  "https://rawcdn.githack.com/ahqstore/apps/{sha}/users/{dev}.json";
 
 export async function get_devs_apps(devId: string) {
   if (sha == "") {
@@ -25,11 +27,16 @@ export async function get_devs_apps(devId: string) {
   }
   const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
 
-  const { ok, data } = await fetch(url, {
+  const { data } = await fetch(url, {
     method: "GET",
   });
 
-  const apps: string[] = ok ? data.split("\n") : [];
+  const ok = data != undefined;
+
+  console.log(ok, data);
+  let apps: string[] = ok ? data.split("\n") : [];
+
+  apps = apps.filter((f) => f.trim() != "");
 
   return apps;
 }
@@ -135,11 +142,9 @@ export async function get_app(app: string): Promise<ApplicationData> {
   return appData;
 }
 
-export function install_app(
-  app: string
-): Promise<undefined> {
+export function install_app(app: string): Promise<undefined> {
   return new Promise((resolve) => {
-    sendWsRequest(WebSocketMessage.InstallApp(app), () => { });
+    sendWsRequest(WebSocketMessage.InstallApp(app), () => {});
     resolve(undefined);
   });
 }
@@ -217,4 +222,4 @@ export function un_install(app: string): Promise<void> {
   });
 }
 
-export { devUserUrl, sha };
+export { devUserUrl, sha, assetUrl };

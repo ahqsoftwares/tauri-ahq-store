@@ -116,6 +116,44 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
         continue-on-error: true
 
+  publish-types-npm:
+    name: Publish ahqstore-types to npmjs
+
+    runs-on: ubuntu-latest
+
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust Nightly
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
+      
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install wasm-pack
+        run: npm i -g wasm-pack
+        working-directory: src-ahqstore-types
+
+      - name: Build NPM Binaries
+        run: wasm-pack build --release -- --features js
+        working-directory: src-ahqstore-types
+
+      - name: Publish NPM Binaries
+        run: npm publish
+        working-directory: src-ahqstore-types/pkg
+        continue-on-error: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AHQSTORE_TYPES }}
+
+
   make-setup:
     needs: create-release
     name: Make Setup Executable (${{ matrix.os }}-${{ matrix.arch }})
@@ -160,8 +198,6 @@ jobs:
 
       - name: Build Setup
         run: cargo build --release --target ${{ matrix.target }}
-        env:
-          RUSTFLAGS: -Z threads=32
         working-directory: src-setup
 
       - name: Upload Windows Setup
@@ -236,6 +272,12 @@ jobs:
         env:
           CI: "false"
 
+      - name: Build ahqstore-types locally
+        run: |
+          npm i -g wasm-pack
+          wasm-pack build --release -- --features js
+        working-directory: src-ahqstore-types
+
       - name: Decrypt Key / Load Encryption Key
         run: node encryptor.cjs
         env:
@@ -243,8 +285,6 @@ jobs:
 
       - name: Build Service
         run: cargo build --release
-        env:
-          RUSTFLAGS: -Z threads=32
         working-directory: src-service
 
       - name: Upload Service (Windows)
@@ -277,7 +317,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI }}
           TAURI_KEY_PASSWORD: ${{ secrets.KEYPASS }}
-          RUSTFLAGS: -Z threads=32
         with:
           args: --verbose --target ${{ matrix.target }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
@@ -316,6 +355,13 @@ jobs:
 
       - name: Install
         run: |
+          rustup toolchain install nightly
+          
+          cd src-ahqstore-types
+          npm i -g wasm-pack
+          wasm-pack build --release -- --features js
+          cd ..
+
           npm i -g pnpm
           pnpm install
 
@@ -357,8 +403,6 @@ jobs:
 
             curl -fsSL https://deb.nodesource.com/setup_lts.x | bash
             apt-get install -y nodejs
-
-            export RUSTFLAGS="-Z threads=4"
 
             cd src-service
             cargo build --release

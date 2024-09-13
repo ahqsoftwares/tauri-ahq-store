@@ -97,22 +97,18 @@ function Render(props: AppProps) {
   }, [dark, theme]);
 
   useEffect(() => {
+    console.log("index.tsx /app");
     (async () => {
+      console.log("Running...");
       const defAccess = {
         install_apps: true,
         launch_app: true,
       };
       const fullPrefs = await fetchPrefs();
 
-      const {
-        autoUpdate,
-        dark,
-        font,
-        sidebar,
-        debug,
-        isAdmin,
-        theme,
-      } = fullPrefs;
+      console.log("Got prefs");
+
+      const { autoUpdate, dark, font, debug, isAdmin, theme } = fullPrefs;
 
       window.prefs = {
         ...fullPrefs,
@@ -141,11 +137,11 @@ function Render(props: AppProps) {
 
       //Fetch Maps
       try {
-        const map = await get_map<{ [key: string]: Object }>();
+        console.log("Fetching maps...");
+        const [map, home]: [{ [key: string]: Object }, unknown] =
+          (await Promise.all([get_map(), get_home()])) as any;
 
         window.map = map;
-
-        const home = await get_home();
 
         await worker.init();
         setApps(home);
@@ -255,7 +251,12 @@ function Render(props: AppProps) {
       break;
     case "home":
       app = (
-        <Home auth={auth} dark={dark} dev={auth.currentUser?.dev || false} setPage={changePage} />
+        <Home
+          auth={auth}
+          dark={dark}
+          dev={auth.currentUser?.dev || false}
+          setPage={changePage}
+        />
       );
       break;
     case "developer":

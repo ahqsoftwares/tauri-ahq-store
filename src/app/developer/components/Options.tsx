@@ -51,12 +51,14 @@ export default function SettingOption(props: {
 
         <div className="mx-auto"></div>
 
-        <LinkIcon
-          size="3em"
-          className={`my-auto ml-auto mr-1 ${
-            dark ? "text-slate-300" : "text-slate-700"
-          }`}
-        />
+        <div className="my-auto ml-auto mr-1 transition-all">
+          <LinkIcon
+            size="3em"
+            className={
+              dark ? "text-slate-300" : "text-slate-700"
+            }
+          />
+        </div>
 
         <div className="mr-3"></div>
       </div>

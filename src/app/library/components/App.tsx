@@ -15,17 +15,13 @@ import { Library } from "../../resources/core/installer";
 
 interface Props {
   appInfo: appData;
+  icon: string;
   dark: boolean;
   toast: typeof Toast;
-  lib: Library | undefined
-};
+  lib: Library | undefined;
+}
 
-export default function App({
-  appInfo,
-  dark,
-  toast,
-  lib
-}: Props) {
+export default function App({ appInfo, dark, icon, toast, lib }: Props) {
   const updating = lib?.is_update;
   const data = useRef<HTMLDivElement>("" as any);
 
@@ -37,14 +33,14 @@ export default function App({
   return (
     <div
       className={`flex min-h-[4.5rem] max-h-[4.5rem] max-w-[100%] bg-opacity-75 shadow-sm text-base-content rounded-md mt-3 pl-2`}
-      style={{ "backgroundColor": "var(--fallback-bc,oklch(var(--bc)/0.2))" }}
+      style={{ backgroundColor: "var(--fallback-bc,oklch(var(--bc)/0.2))" }}
     >
       <img
         width="60px"
         height="60px"
-        src={appInfo.icon}
+        src={icon}
         alt={appInfo.appDisplayName}
-        className={`rounded-md my-auto mr-2 ${appInfo.icon === pkg ? "p-2" : ""}`}
+        className={`rounded-md my-auto mr-2 ${icon === pkg ? "p-2" : ""}`}
         draggable={false}
         style={{
           width: "60px",
@@ -73,17 +69,20 @@ export default function App({
       </div>
 
       <div className="ml-auto mr-3 my-auto flex" ref={data}>
-        {(lib && (lib.is_update || lib.to != "Install")) && (
+        {lib && (lib.is_update || lib.to != "Install") && (
           <div className="ml-auto mr-3 my-auto" ref={data}>
             <button className="flex p-4 min-h-[3.5rem] justify-center items-center text-center dui-btn dui-btn-success cursor-default bg-transparent border-none text-green-700 hover:text-white hover:bg-green-700 no-animation rounded-xl transition-all app-parent">
-              {updating ? <>
-                <MdBrowserUpdated size="1.5em" />
-                <p className="app-child">Updating</p>
-              </> : <>
-                <BsTrash size="1.5em" />
-                <p className="app-child">Uninstalling</p>
-              </>
-              }
+              {updating ? (
+                <>
+                  <MdBrowserUpdated size="1.5em" />
+                  <p className="app-child">Updating</p>
+                </>
+              ) : (
+                <>
+                  <BsTrash size="1.5em" />
+                  <p className="app-child">Uninstalling</p>
+                </>
+              )}
             </button>
           </div>
         )}

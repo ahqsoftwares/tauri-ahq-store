@@ -95,7 +95,7 @@ pub fn load_zip(zip: &str, app: &AHQStoreApplication) -> Option<Child> {
     if err {
       let _ = fs::remove_dir_all(&install_folder);
     } else {
-      if let Some(val) = &app.install.win32 {
+      if let Some(val) = app.get_win_options() {
         if let Some(exec) = &val.exec {
           if let Ok(link) = ShellLink::new(format!("{}\\{}", &install_folder, &exec)) {
             let _ = link.create_lnk(get_target_lnk(&app.appShortcutName));
