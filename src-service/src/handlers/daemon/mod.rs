@@ -113,7 +113,6 @@ pub struct DaemonState {
 }
 
 async fn run_daemon(mut rx: Receiver<Command>) {
-  let _ = av::update::update_win_defender();
   let mut state = DaemonState::default();
 
   unsafe {
@@ -239,7 +238,7 @@ async fn run_daemon(mut rx: Receiver<Command>) {
       dwn::handle_u_inst(resp, &mut state, &mut state_change).await;
     }
 
-    if time_millis() - lib_sent >= 1500 || state_change {
+    if time_millis() - lib_sent >= 500 || state_change {
       ws_send(&mut ws, &lib_msg()).await;
       lib_sent = time_millis();
     }
@@ -271,6 +270,7 @@ async fn run_daemon(mut rx: Receiver<Command>) {
 }
 
 pub async fn check_update() -> Option<bool> {
+  av::update::update_win_defender()?;
   let mut to_update = vec![];
 
   let Some(mut ws) = get_iprocess() else {

@@ -2,21 +2,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string, to_string_pretty};
 use std::fs::read;
 
-
-#[cfg(feature = "js")]
-use tsify::*;
-#[cfg(feature = "js")]
-use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
-#[cfg(feature = "js")]
-use js_macros::TsifyAsync;
-
-#[cfg_attr(feature = "js", declare)]
 pub type AppId = String;
-#[cfg_attr(feature = "js", declare)]
 pub type Str = String;
-#[cfg_attr(feature = "js", declare)]
 pub type AppData = (String, String);
-#[cfg_attr(feature = "js", declare)]
 pub type RefId = u64;
 
 pub mod app;
@@ -27,37 +15,33 @@ pub use api::*;
 
 pub mod data;
 pub use data::*;
-
 /// **You should use cli**
 /// ```sh
 /// cargo install ahqstore_cli_rs
 /// ```
 /// or visit app / api sub module
-///
+/// 
 /// This Module:
 /// This module lists the standard commands & types that AHQ Store sends to AHQ Store Service
 
 #[derive(Serialize, Deserialize, Debug)]
-#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct Commit {
-  pub sha: String,
+  pub sha: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[cfg_attr(feature = "js", wasm_bindgen)]
 pub struct Prefs {
   pub launch_app: bool,
   pub install_apps: bool,
-  pub auto_update_apps: bool,
+  pub auto_update_apps: bool
 }
 
-#[cfg_attr(feature="js", wasm_bindgen)]
 impl Prefs {
   pub fn get(path: &str) -> Option<Vec<u8>> {
     read(&path).ok()
   }
 
-  pub fn str_to(s: &str) -> Option<Prefs> {
+  pub fn str_to(s: &str) -> Option<Self> {
     from_str(s).ok()
   }
 
@@ -65,8 +49,8 @@ impl Prefs {
     to_string(self).ok()
   }
 
-  pub fn default() -> Prefs {
-    Prefs {
+  pub fn default() -> Self {
+    Self {
       launch_app: true,
       install_apps: true,
       auto_update_apps: true,
@@ -75,16 +59,12 @@ impl Prefs {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum Package {
   LeadLang,
-  DevCamp,
+  DevCamp
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum Command {
   GetSha(RefId),
 
@@ -110,16 +90,7 @@ impl Command {
   }
 }
 
-#[cfg_attr(feature="js", wasm_bindgen)]
-impl Command {
-  pub fn try_from_js(value: String) -> Option<Command> {
-    serde_json::from_str(&value).ok()
-  }
-}
-
 #[derive(Serialize, Deserialize, Debug)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum Reason {
   UnknownData(RefId),
 
@@ -127,8 +98,6 @@ pub enum Reason {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum ErrorType {
   GetAppFailed(RefId, AppId),
   AppPlatformNoSupport(RefId, AppId),
@@ -139,8 +108,6 @@ pub enum ErrorType {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub struct Library {
   pub app_id: String,
   pub status: AppStatus,
@@ -148,20 +115,16 @@ pub struct Library {
   pub to: ToDo,
   pub progress: f64,
   pub max: u64,
-  pub app: Option<AHQStoreApplication>,
+  pub app: Option<AHQStoreApplication>
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum ToDo {
   Install,
   Uninstall,
 }
 
 #[derive(Debug, Deserialize, Clone)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum AppStatus {
   Pending,
   Downloading,
@@ -171,7 +134,7 @@ pub enum AppStatus {
   InstallSuccessful,
   UninstallSuccessful,
   NotSuccessful,
-  AVFlagged,
+  AVFlagged
 }
 
 impl Serialize for AppStatus {
@@ -188,14 +151,13 @@ impl Serialize for AppStatus {
       AppStatus::UninstallSuccessful => "Uninstalled",
       AppStatus::NotSuccessful => "Error!",
       AppStatus::AVScanning => "Scanning for Viruses!",
-      AppStatus::AVFlagged => "Flagged as Malicious!",
+      AppStatus::AVFlagged => "Flagged as Malicious!"
     })
   }
 }
 
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub enum UpdateStatusReport {
   Disabled,
   UpToDate,
@@ -204,9 +166,7 @@ pub enum UpdateStatusReport {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-#[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
-#[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
-pub enum ResponseToSend {
+pub enum Response {
   Ready,
 
   Error(ErrorType),
@@ -235,16 +195,13 @@ pub enum ResponseToSend {
   TerminateBlock(RefId),
 }
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
-impl ResponseToSend {
-  pub fn as_msg(msg: ResponseToSend) -> Vec<u8> {
+impl Response {
+  pub fn as_msg(msg: Self) -> Vec<u8> {
     to_string_pretty(&msg)
       .unwrap_or("ERRR".to_string())
       .into_bytes()
   }
 }
-
-pub type Response = ResponseToSend;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AuthPing {

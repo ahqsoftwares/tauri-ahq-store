@@ -1,20 +1,62 @@
-import { devUserUrl, assetUrl, get_app, get_search_data, sha } from "../core";
-
-import { AHQStoreApplication, DevData } from "ahqstore-types/ahqstore_types";
 import fetch from "../core/http";
+import { devUserUrl, get_app, get_devs_apps, get_search_data, sha } from "../core";
 
-type AuthorObject = DevData;
+interface AuthorObject {
+  name: string;
+  description: string;
+  gh_username: string;
+  icon_base64: string;
+  ahq_official: boolean;
+  email: string;
+  support: {
+    discord: string;
+    website: string;
+    github: string;
+  };
+  apps: string[];
+}
 
-type appData = AHQStoreApplication;
+type Str = string;
+
+interface appData {
+  appId: Str;
+  appShortcutName: Str;
+  appDisplayName: Str;
+  authorId: Str;
+  downloadUrls: {
+    [key: number]: {
+      installerType:
+        | "WindowsZip"
+        | "WindowsInstallerExe"
+        | "WindowsInstallerMsi"
+        | "WindowsUWPMsix"
+        | "LinuxAppImage";
+      url: Str;
+    };
+  };
+  install: {
+    win32: unknown | undefined;
+    linux: unknown | undefined;
+    android: unknown | undefined;
+  };
+  displayImages: Str[];
+  description: Str;
+  icon: Str;
+  repo: {
+    author: Str;
+    repo: Str;
+  };
+  version: Str;
+  site?: Str;
+  source?: Str;
+  AuthorObject: AuthorObject;
+}
 
 let cache: {
   [key: string]: appData;
 } = {};
 let authorCache: {
   [key: string]: AuthorObject;
-} = {};
-let resources: {
-  [key: string]: string;
 } = {};
 
 export default async function fetchApps(
@@ -27,38 +69,6 @@ export default async function fetchApps(
   } else {
     return [];
   }
-}
-
-export async function getResource(appId: string, uid: string) {
-  if (resources[`${appId}-${uid}`] != undefined) {
-    return resources[`${appId}-${uid}`];
-  }
-
-  const buf = await fetch(
-    assetUrl.replace("{sha}", sha).replace("{app}", appId).replace("{id}", uid),
-    {
-      method: "GET",
-    },
-    false,
-  )
-    .then(async (r) => {
-      const data = (r as any).resp as Response;
-      if (data.body == null || !data.ok) {
-        throw new Error("No body");
-      }
-
-      return await new Response(data.body).arrayBuffer();
-    })
-    .then((d) => {
-      if (d) {
-        return URL.createObjectURL(new Blob([d]));
-      }
-      throw new Error("empty array buffer");
-    });
-
-  resources[`${appId}-${uid}`] = buf;
-
-  return buf;
 }
 
 let searchDataCache: SearchData[] = [];
@@ -85,8 +95,7 @@ export async function fetchAuthor(uid: string) {
   }
 
   const url = devUserUrl.replace("{sha}", sha).replace("{dev}", uid);
-  console.log(url);
-  const { data } = await fetch(url, {
+  const { ok, data } = await fetch(url, {
     method: "GET",
   });
   const author = data as AuthorObject;
@@ -109,14 +118,14 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
     } else {
       promises.push(
         (async () => {
-          console.log("Wanting to get: ", appId);
           const app = await get_app(appId);
 
-          console.log("Got app: ", app);
+          const AuthorObject = await fetchAuthor(app.authorId);
 
           const appData = {
             ...app,
             id: appId,
+            AuthorObject,
           } as appData;
 
           cache[appId] = appData;

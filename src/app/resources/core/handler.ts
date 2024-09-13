@@ -64,7 +64,6 @@ export function runner() {
       const req = send[i];
 
       toResolve.push(req);
-      console.log("Sending ", req.data);
       appWindow.emit("ws_send", req.data);
     }
     send = [];
@@ -72,7 +71,6 @@ export function runner() {
 }
 
 appWindow.listen<string[]>("ws_resp", async ({ payload: pload }) => {
-  console.log(pload);
   for (let i = 0; i < pload.length; i++) {
     const payload = pload[i];
     const toObj = await interpret(payload);

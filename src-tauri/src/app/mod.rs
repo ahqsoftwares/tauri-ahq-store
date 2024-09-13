@@ -220,8 +220,7 @@ pub fn main() {
       is_development,
       check_install_update,
       show_code,
-      rem_code,
-      hash_username
+      rem_code
     ])
     .menu(|handle| Menu::new(handle))
     .build(context)
@@ -298,11 +297,6 @@ pub fn main() {
     },
     _ => {}
   });
-}
-
-#[tauri::command(async)]
-fn hash_username(username: String) -> String {
-  ahqstore_gh_hash::compute(username.as_str())
 }
 
 #[tauri::command(async)]
