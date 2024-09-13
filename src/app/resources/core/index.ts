@@ -27,11 +27,9 @@ export async function get_devs_apps(devId: string) {
   }
   const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
 
-  const { data } = await fetch(url, {
+  const { ok, data } = await fetch(url, {
     method: "GET",
   });
-
-  const ok = data != undefined;
 
   console.log(ok, data);
   let apps: string[] = ok ? data.split("\n") : [];
