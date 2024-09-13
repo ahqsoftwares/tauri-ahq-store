@@ -3,7 +3,7 @@ import { ClientOptions, fetch as tauriFetch } from "@tauri-apps/plugin-http";
 export default async function fetch(
   url: string,
   config: (RequestInit & ClientOptions) | undefined,
-  mutate = true
+  mutate = true,
 ) {
   return await tauriFetch(url, {
     ...(config || {}),
@@ -26,7 +26,7 @@ export default async function fetch(
             return val;
           }
         }),
-      }
+      };
     } else {
       return { ...data, resp: data, data: "" };
     }

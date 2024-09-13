@@ -2,7 +2,12 @@ import { useState, useEffect, useRef } from "react";
 
 //Worker
 import { BiArrowBack } from "react-icons/bi";
-import fetchApps, { appData, AuthorObject, fetchAuthor, getResource } from "../../resources/api/fetchApps";
+import fetchApps, {
+  appData,
+  AuthorObject,
+  fetchAuthor,
+  getResource,
+} from "../../resources/api/fetchApps";
 
 //AHQ Store Installer
 import { install_app } from "../../resources/core";
@@ -23,7 +28,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
+} from "@/components/ui/carousel";
 
 interface AppDataPropsModal {
   shown: boolean;
@@ -54,13 +59,13 @@ const defAppData: appData = {
   displayImages: [],
   downloadUrls: [],
   install: {
-    free: () => { },
+    free: () => {},
     linux: undefined,
     win32: undefined,
-    android: undefined
+    android: undefined,
   },
   repo: {
-    free: () => { },
+    free: () => {},
     author: "",
     repo: "",
   },
@@ -85,13 +90,15 @@ export default function ShowModal(props: AppDataPropsModal) {
 
   const button = useRef<HTMLButtonElement>("" as any);
   const [installed, setInstalled] = useState<boolean | "hidden">(false);
-  const [updating, setUpdating] = useState(worker.update != "UpToDate" && worker.update != "Disabled");
+  const [updating, setUpdating] = useState(
+    worker.update != "UpToDate" && worker.update != "Disabled",
+  );
   const [author, setAuthor] = useState<AuthorObject>({
     avatar_url: "",
-    free: () => { },
+    free: () => {},
     github: "",
     id: "",
-    name: ""
+    name: "",
   });
 
   const progressBar = useRef<HTMLProgressElement>("" as any);
@@ -136,9 +143,7 @@ export default function ShowModal(props: AppDataPropsModal) {
             }
           }
         }
-      } catch (_) {
-
-      }
+      } catch (_) {}
     });
 
     return () => worker.unlisten(id);
@@ -170,7 +175,7 @@ export default function ShowModal(props: AppDataPropsModal) {
 
     (async () => {
       setResources(await Promise.all(data));
-    })()
+    })();
   }, [appData, installData]);
 
   const {
@@ -184,11 +189,9 @@ export default function ShowModal(props: AppDataPropsModal) {
   } = appData;
 
   const install = async () => {
-
-      button.current.innerHTML = "Starting Download...";
+    button.current.innerHTML = "Starting Download...";
 
     await install_app(installData);
-
   };
 
   const uninstall = async () => {
@@ -219,20 +222,23 @@ export default function ShowModal(props: AppDataPropsModal) {
                 }}
               />
             </button>
-            {resources.length > 0 ?
+            {resources.length > 0 ? (
               <img
                 src={resources[0]}
                 alt="Logo"
                 className="rounded-full shadow-2xl"
                 style={{
-                  "width": "125px",
-                  "height": "125px"
+                  width: "125px",
+                  height: "125px",
                 }}
               />
-              : <div
-                className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${props.dark ? "text-white" : ""
-                  }`}
-              />}
+            ) : (
+              <div
+                className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${
+                  props.dark ? "text-white" : ""
+                }`}
+              />
+            )}
 
             <h1
               className={`mt-5 text-3xl ${
@@ -253,7 +259,13 @@ export default function ShowModal(props: AppDataPropsModal) {
               </h2>
             </div>
 
-            <progress ref={progressBar} className="dui-progress w-[60%] mb-2" value={0} max="100" hidden></progress>
+            <progress
+              ref={progressBar}
+              className="dui-progress w-[60%] mb-2"
+              value={0}
+              max="100"
+              hidden
+            ></progress>
 
             {isAdmin || install_apps ? (
               installed == "hidden" ? (
@@ -281,7 +293,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                   disabled={updating}
                   onClick={() => uninstall()}
                 >
-                    Uninstall {updating && <>(Updating)</>}
+                  Uninstall {updating && <>(Updating)</>}
                 </button>
               ) : (
                 <>
@@ -293,7 +305,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                       className="dui-alert dui-alert-warning text-warning-content mb-2"
                     >
                       <IoWarning size={"1.5rem"} />
-                          <span>Unsupported OS</span>
+                      <span>Unsupported OS</span>
                     </div>
                   )}
                   <button
@@ -303,9 +315,9 @@ export default function ShowModal(props: AppDataPropsModal) {
                         ? "bg-transparent hover:bg-transparent border-base-content hover:border-base-content text-base-content"
                         : "dui-btn-success text-success-content"
                     } w-[60%] mb-4`}
-                        onClick={() => install()}
+                    onClick={() => install()}
                   >
-                        Install {updating && <>(Updating)</>}
+                    Install {updating && <>(Updating)</>}
                   </button>
                 </>
               )
@@ -331,29 +343,32 @@ export default function ShowModal(props: AppDataPropsModal) {
               className={`mt-3 w-[100%] ${displayImages.length == 0 ? "hidden" : ""}`}
             >
               <h1 className="text-xl">Images</h1>
-              {
-                resources.length < 2 ? <div className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${props.dark ? "text-white" : ""}`} /> :
-                  <Carousel
-                    opts={{
-                      align: "start",
-                    }}
-                    orientation="horizontal"
-                    className="w-[90%] mx-auto max-h-[400px]"
-                  >
-                    <CarouselContent>
-                      {displayImages.map((v) => (
-                        <CarouselItem>
-                          <img
-                            src={resources[v + 1]}
-                            className="mx-auto rounded-lg max-h-[350px]"
-                          />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious size="icon" />
-                    <CarouselNext size="icon" />
-                  </Carousel>
-              }
+              {resources.length < 2 ? (
+                <div
+                  className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${props.dark ? "text-white" : ""}`}
+                />
+              ) : (
+                <Carousel
+                  opts={{
+                    align: "start",
+                  }}
+                  orientation="horizontal"
+                  className="w-[90%] mx-auto max-h-[400px]"
+                >
+                  <CarouselContent>
+                    {displayImages.map((v) => (
+                      <CarouselItem>
+                        <img
+                          src={resources[v + 1]}
+                          className="mx-auto rounded-lg max-h-[350px]"
+                        />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious size="icon" />
+                  <CarouselNext size="icon" />
+                </Carousel>
+              )}
             </div>
             {/* <div
               className={`mt-3 w-[100%] ${displayImages.length == 0 ? "hidden" : ""}`}
@@ -433,7 +448,7 @@ export default function ShowModal(props: AppDataPropsModal) {
                     ) : (
                       <></>
                     )}
-                      {author.name}
+                    {author.name}
                   </>
                 )}
               </button>
@@ -462,7 +477,8 @@ export default function ShowModal(props: AppDataPropsModal) {
               <span className="flex">
                 <strong className="mr-2">Supported Platforms:</strong>
                 <span className="flex items-center space-x-2">
-                  {(appData.install.win32 != undefined || appData.install.winarm != undefined) && (
+                  {(appData.install.win32 != undefined ||
+                    appData.install.winarm != undefined) && (
                     <div
                       className="cursor-pointer flex text-center items-center justify-center border-[1px] border-base-content px-1"
                       onClick={() =>
@@ -473,7 +489,8 @@ export default function ShowModal(props: AppDataPropsModal) {
                     >
                       <SiWindows />
                       <span className="ml-1">
-                        Windows {appData.install.win32 == undefined ? "arm64" : ""}
+                        Windows{" "}
+                        {appData.install.win32 == undefined ? "arm64" : ""}
                       </span>
                     </div>
                   )}

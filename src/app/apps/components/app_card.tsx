@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { appData, AuthorObject, fetchAuthor, getResource } from "../../resources/api/fetchApps";
+import {
+  appData,
+  AuthorObject,
+  fetchAuthor,
+  getResource,
+} from "../../resources/api/fetchApps";
 
 import fetchApps from "../../resources/api/fetchApps";
 
@@ -12,7 +17,7 @@ const def: appData = {
   downloadUrls: [],
   appId: "%temp%",
   repo: {
-    free: () => { },
+    free: () => {},
     author: "",
     repo: "",
   },
@@ -21,7 +26,7 @@ const def: appData = {
   appShortcutName: "",
   displayImages: [],
   install: {
-    free: () => { },
+    free: () => {},
     linux: undefined,
     win32: undefined,
     android: undefined,
@@ -31,7 +36,7 @@ const def: appData = {
   app_page: "",
   license_or_tos: "",
   site: "",
-  source: ""
+  source: "",
 };
 
 export default function AppCard(props: {
@@ -43,10 +48,10 @@ export default function AppCard(props: {
   const [icon, setIcon] = useState<string>();
   const [author, setAuthor] = useState<AuthorObject>({
     avatar_url: "",
-    free: () => { },
+    free: () => {},
     github: "",
     id: "",
-    name: ""
+    name: "",
   });
 
   const { appDisplayName, description, source } = appData;
@@ -60,10 +65,12 @@ export default function AppCard(props: {
       setAppData(dta as appData);
       setAuthor(await fetchAuthor((dta as appData).authorId));
 
-      getResource(props.id, "0").then(setIcon).catch((e) => {
-        console.log(e);
-        setIcon("/package.png");
-      });
+      getResource(props.id, "0")
+        .then(setIcon)
+        .catch((e) => {
+          console.log(e);
+          setIcon("/package.png");
+        });
     })();
   }, [props.id]);
 
@@ -84,17 +91,34 @@ export default function AppCard(props: {
           }`}
         />
       ) : (
-          <img className="card-img" src={icon} alt="Logo"></img>
+        <img className="card-img" src={icon} alt="Logo"></img>
       )}
 
       <h1 className="card-title">{appDisplayName || "Unknown"}</h1>
 
-      <div className="card-description">{(description || "Non Existent").substring(0, 64)}...</div>
+      <div className="card-description">
+        {(description || "Non Existent").substring(0, 64)}...
+      </div>
 
       <div className="card-footer">
-        <button className="text-blue-500 text-2xl flex" style={{ minWidth: "95%" }}>
-          {source || (appData?.authorId ? author.name.replace("AHQ Store (Official)", "AHQ Store") : "")}
-          {author.name == "AHQ Store (Official)" && <TbRosetteDiscountCheckFilled style={{ "marginTop": "auto", "marginBottom": "auto", "marginLeft": "3px" }} size="1em" />}
+        <button
+          className="text-blue-500 text-2xl flex"
+          style={{ minWidth: "95%" }}
+        >
+          {source ||
+            (appData?.authorId
+              ? author.name.replace("AHQ Store (Official)", "AHQ Store")
+              : "")}
+          {author.name == "AHQ Store (Official)" && (
+            <TbRosetteDiscountCheckFilled
+              style={{
+                marginTop: "auto",
+                marginBottom: "auto",
+                marginLeft: "3px",
+              }}
+              size="1em"
+            />
+          )}
         </button>
       </div>
     </div>

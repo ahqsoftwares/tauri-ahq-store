@@ -27,10 +27,13 @@ export async function get_devs_apps(devId: string) {
   }
   const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
 
-  const { ok, data } = await fetch(url, {
+  const { data } = await fetch(url, {
     method: "GET",
   });
 
+  const ok = data != undefined;
+
+  console.log(ok, data);
   let apps: string[] = ok ? data.split("\n") : [];
 
   apps = apps.filter((f) => f.trim() != "");
@@ -139,11 +142,9 @@ export async function get_app(app: string): Promise<ApplicationData> {
   return appData;
 }
 
-export function install_app(
-  app: string
-): Promise<undefined> {
+export function install_app(app: string): Promise<undefined> {
   return new Promise((resolve) => {
-    sendWsRequest(WebSocketMessage.InstallApp(app), () => { });
+    sendWsRequest(WebSocketMessage.InstallApp(app), () => {});
     resolve(undefined);
   });
 }

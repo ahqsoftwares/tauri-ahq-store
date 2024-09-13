@@ -108,14 +108,7 @@ function Render(props: AppProps) {
 
       console.log("Got prefs");
 
-      const {
-        autoUpdate,
-        dark,
-        font,
-        debug,
-        isAdmin,
-        theme,
-      } = fullPrefs;
+      const { autoUpdate, dark, font, debug, isAdmin, theme } = fullPrefs;
 
       window.prefs = {
         ...fullPrefs,
@@ -145,7 +138,8 @@ function Render(props: AppProps) {
       //Fetch Maps
       try {
         console.log("Fetching maps...");
-        const [map, home]: [{ [key: string]: Object }, unknown] = (await Promise.all([get_map(), get_home()])) as any;
+        const [map, home]: [{ [key: string]: Object }, unknown] =
+          (await Promise.all([get_map(), get_home()])) as any;
 
         window.map = map;
 
@@ -257,7 +251,12 @@ function Render(props: AppProps) {
       break;
     case "home":
       app = (
-        <Home auth={auth} dark={dark} dev={auth.currentUser?.dev || false} setPage={changePage} />
+        <Home
+          auth={auth}
+          dark={dark}
+          dev={auth.currentUser?.dev || false}
+          setPage={changePage}
+        />
       );
       break;
     case "developer":

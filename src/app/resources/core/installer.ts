@@ -14,7 +14,9 @@ type UpdateStatusReport = "Disabled" | "UpToDate" | "Checking" | "Updating";
 class UpdateInstallerWorker {
   library: Library[];
   update: UpdateStatusReport;
-  onChange: { [key: number]: (lib: Library[], update: UpdateStatusReport) => void };
+  onChange: {
+    [key: number]: (lib: Library[], update: UpdateStatusReport) => void;
+  };
   listId: number = 0;
 
   constructor() {
@@ -72,7 +74,7 @@ class UpdateInstallerWorker {
   init() {
     return new Promise((r) => {
       // Send a request to the server to get the library
-      sendWsRequest(WebSocketMessage.GetLibrary(), (_) => { });
+      sendWsRequest(WebSocketMessage.GetLibrary(), (_) => {});
 
       setTimeout(() => {
         sendWsRequest(WebSocketMessage.UpdateStatus, (resp) => {
@@ -93,7 +95,7 @@ class UpdateInstallerWorker {
    */
   runUpdate() {
     // Send a request to the server to run the update
-    sendWsRequest(WebSocketMessage.RunUpdate, (_) => { });
+    sendWsRequest(WebSocketMessage.RunUpdate, (_) => {});
   }
 }
 

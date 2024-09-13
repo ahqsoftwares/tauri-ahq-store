@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { FiExternalLink } from "react-icons/fi";
-import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
 import { RiApps2Line } from "react-icons/ri";
 
 import { Auth } from "../../auth";
@@ -15,6 +15,7 @@ import Toast from "../resources/api/toast";
 import { invoke } from "@tauri-apps/api/core";
 import { FaDiscord } from "react-icons/fa6";
 import { get_devs_apps } from "../resources/core";
+import { generateGHUserHash } from "@/auth/hash";
 
 interface DevProps {
   auth: Auth;
@@ -36,9 +37,13 @@ export default function Developers(props: DevProps) {
     (async () => {
       try {
         if (uid) {
-          const apps = await get_devs_apps(String(uid));
+          const apps = await get_devs_apps(
+            await generateGHUserHash(uid).catch(() => ""),
+          );
 
+          console.log(apps);
           fetchApps(apps).then((apps) => {
+            console.log(apps);
             setPublishedApps(apps as appData[]);
           });
         }
@@ -68,7 +73,7 @@ export default function Developers(props: DevProps) {
         ShowCaseIcon={RiApps2Line}
         title={"My Apps"}
         description="View apps published by me"
-        PopUp={Icon ? IoIosArrowForward : IoIosArrowDown}
+        PopUp={(_) => <IoIosArrowForward size="3em" className={`${dark ? "text-slate-300" : "text-slate-700"} ${Icon ? "" : "rotate-90"}`} />}
         onClick={() => {
           setIcon((value) => !value);
         }}
@@ -78,22 +83,27 @@ export default function Developers(props: DevProps) {
           ) : (
             <div className="flex flex-col">
               {publishedApps === undefined ? (
-                <h1 className={`mx-auto ${dark ? "text-white" : ""}`}>
-                  Fetching...
-                </h1>
+                  <>
+                    <h1 className={`mx-auto ${dark ? "text-white" : ""}`}>
+                      Fetching...
+                    </h1>
+                    <span className="mx-auto mt-auto fix-color mb-5 dui-loading dui-loading-spinner dui-loading-lg"></span>
+                  </>
               ) : (
-                publishedApps.map((value, index) => {
-                  return (
-                    <App
-                      appInfo={value}
-                      dark={props.dark}
-                      toast={Toast}
-                      lastIndex={index === publishedApps.length - 1}
-                    />
-                  );
-                })
-              )}
-              <span className="mx-auto mt-auto fix-color mb-5 dui-loading dui-loading-spinner dui-loading-lg"></span>
+                    <>
+                      {publishedApps.map((value, index) => {
+                        return (
+                          <App
+                            appInfo={value}
+                            dark={props.dark}
+                            toast={Toast}
+                            lastIndex={index === publishedApps.length - 1}
+                          />
+                        );
+                      })}
+                    {publishedApps.length == 0 && <span>No apps found...</span>}
+                  </>
+                )}
             </div>
           )
         }
@@ -105,7 +115,7 @@ export default function Developers(props: DevProps) {
         description="Submit a new app to the store"
         onClick={() => {
           invoke("open", {
-            url: "https://ahqstore.github.io/reference/",
+            url: "https://ahqstore.github.io/guide/",
           });
           Toast("Launched docs site...", "success", 2);
         }}

@@ -34,23 +34,27 @@ export async function getResource(appId: string, uid: string) {
     return resources[`${appId}-${uid}`];
   }
 
-  const buf = await fetch(assetUrl.replace("{sha}", sha).replace("{app}", appId).replace("{id}", uid), {
-    method: "GET"
-  }, false).then(async (r) => {
-    const data = (r as any).resp as Response;
-    if (data.body == null || !data.ok) {
-      throw new Error("No body");
-    }
+  const buf = await fetch(
+    assetUrl.replace("{sha}", sha).replace("{app}", appId).replace("{id}", uid),
+    {
+      method: "GET",
+    },
+    false,
+  )
+    .then(async (r) => {
+      const data = (r as any).resp as Response;
+      if (data.body == null || !data.ok) {
+        throw new Error("No body");
+      }
 
-    return await new Response(data.body).arrayBuffer();
-  }).then((d) => {
-    if (d) {
-      return URL.createObjectURL(
-        new Blob([d])
-      );
-    }
-    throw new Error("empty array buffer")
-  });
+      return await new Response(data.body).arrayBuffer();
+    })
+    .then((d) => {
+      if (d) {
+        return URL.createObjectURL(new Blob([d]));
+      }
+      throw new Error("empty array buffer");
+    });
 
   resources[`${appId}-${uid}`] = buf;
 
@@ -83,7 +87,7 @@ export async function fetchAuthor(uid: string) {
   const url = devUserUrl.replace("{sha}", sha).replace("{dev}", uid);
   console.log(url);
   const { data } = await fetch(url, {
-    method: "GET"
+    method: "GET",
   });
   const author = data as AuthorObject;
 
@@ -112,7 +116,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
 
           const appData = {
             ...app,
-            id: appId
+            id: appId,
           } as appData;
 
           cache[appId] = appData;

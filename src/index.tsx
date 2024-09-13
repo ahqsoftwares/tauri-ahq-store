@@ -5,20 +5,11 @@ import reportWebVitals from "./reportWebVitals";
 
 import {
   ContextMenu,
-  ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
   ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu"
-
+} from "@/components/ui/context-menu";
 
 /*Tauri
  */
@@ -27,7 +18,10 @@ import {
   requestPermission,
 } from "@tauri-apps/plugin-notification";
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWebviewWindow, WebviewWindow } from "@tauri-apps/api/webviewWindow";
+import {
+  getCurrentWebviewWindow,
+  WebviewWindow,
+} from "@tauri-apps/api/webviewWindow";
 
 /*Apps
  */
@@ -50,11 +44,19 @@ import { init } from "./app/resources/api/os";
  */
 import "./index.css";
 import "./globals.css";
-import { loadAppVersion } from "./app/resources/api/version";
+
 import initDeveloperConfiguration from "./app/resources/utilities/beta";
+
+import { getAppVersion, loadAppVersion } from "./app/resources/api/version";
 import { genAuth } from "./auth";
 import { tryAutoLogin } from "./auth/login";
 import { Loading } from "./config/Load";
+
+import { AiOutlineReload } from "react-icons/ai";
+import { TbExternalLink } from "react-icons/tb";
+import { GrUpdate } from "react-icons/gr";
+import { FaGithub } from "react-icons/fa6";
+import { MdLabelImportant } from "react-icons/md";
 
 document.body.setAttribute("native-scrollbar", "0");
 
@@ -137,7 +139,10 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
 
     const unlisten = appWindow.listen("needs_reinstall", () => {
       unlisten.then((f) => f());
-      setInterval(() => loadRender(false, "Oops! AHQ Store needs reinstall.."), 10);
+      setInterval(
+        () => loadRender(false, "Oops! AHQ Store needs reinstall.."),
+        10,
+      );
     });
 
     /*Logic
@@ -186,7 +191,10 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
      * @param Component
      * @param prop
      */
-    function StoreLoad(Component: (props: AppProps) => any, { auth }: AppProps) {
+    function StoreLoad(
+      Component: (props: AppProps) => any,
+      { auth }: AppProps,
+    ) {
       const data = {
         auth,
       };
@@ -198,22 +206,44 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
               <Component {...data} />
             </ContextMenuTrigger>
             <ContextMenuContent className="w-64">
+              <ContextMenuItem disabled inset>
+                <img src="/favicon.ico" className="mr-1" style={{ "width": "1.2em", "height": "1.2em", "filter": "grayscale()" }} />
+                <span className="font-sans font-extrabold">AHQ Store v{getAppVersion()}</span>
+              </ContextMenuItem>
+
+              <ContextMenuSeparator />
+
               <ContextMenuItem inset onClick={() => window.location.reload()}>
+                <AiOutlineReload size="1.2em" className="mr-1" />
                 Reload
               </ContextMenuItem>
-              <ContextMenuSub>
-                <ContextMenuSubTrigger inset>More Tools</ContextMenuSubTrigger>
-                <ContextMenuSubContent className="w-48">
-                  <ContextMenuItem>
-                    Save Page As...
-                    <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
-                  </ContextMenuItem>
-                  <ContextMenuItem>Create Shortcut...</ContextMenuItem>
-                  <ContextMenuItem>Name Window...</ContextMenuItem>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem>Developer Tools</ContextMenuItem>
-                </ContextMenuSubContent>
-              </ContextMenuSub>
+
+              <ContextMenuItem inset onClick={() => invoke("check_install_update")}>
+                <GrUpdate size="1em" className="mr-1" />
+                Check for Updates
+              </ContextMenuItem>
+
+              <ContextMenuSeparator />
+
+              <ContextMenuItem disabled inset>
+                <MdLabelImportant size="1.2em" className="mr-1" />
+                Important URLs
+              </ContextMenuItem>
+
+              <ContextMenuItem inset onClick={() => invoke("open", { url: "https://ahqstore.github.io" })}>
+                <TbExternalLink size="1.2em" className="mr-1" />
+                Site
+              </ContextMenuItem>
+
+              <ContextMenuItem inset onClick={() => invoke("open", { url: "https://github.com/ahqsoftwares/tauri-ahq-store" })}>
+                <FaGithub size="1.2em" className="mr-1" />
+                GitHub Repo
+              </ContextMenuItem>
+
+              <ContextMenuItem inset onClick={() => invoke("open", { url: "https://github.com/ahqstore" })}>
+                <FaGithub size="1.2em" className="mr-1" />
+                GitHub Organization
+              </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
         </>,
@@ -228,19 +258,42 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       document.querySelector("html")?.setAttribute("data-theme", "night");
     }
-    document.querySelectorAll("*").forEach((v) => v.setAttribute("data-tauri-drag-region", ""))
-    root.render(<ContextMenu>
-      <ContextMenuTrigger><div data-tauri-drag-region className="bg-base-100 text-base-content border-base-content w-screen h-screen flex flex-col">
-      <div data-tauri-drag-region className="bg-base-300 py-2 flex text-neutral-content w-full items-center text-center justify-center mb-auto">
-        <img data-tauri-drag-region src="/favicon.ico" width={20} height={20} />
-        <span data-tauri-drag-region className="ml-1 font-sans  font-extrabold">AHQ Store</span>
-      </div>
-      <div className="mb-auto flex flex-col justify-center items-center text-center">
-        <h1 data-tauri-drag-region>Enter this code</h1>
-        <h1 data-tauri-drag-region className="font-extrabold text-2xl">{window.location.pathname.replace("/", "")}</h1>
-      </div>
-      </div>
-      </ContextMenuTrigger>
-    </ContextMenu>);
+    document
+      .querySelectorAll("*")
+      .forEach((v) => v.setAttribute("data-tauri-drag-region", ""));
+    root.render(
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div
+            data-tauri-drag-region
+            className="bg-base-100 text-base-content border-base-content w-screen h-screen flex flex-col"
+          >
+            <div
+              data-tauri-drag-region
+              className="bg-base-300 py-2 flex text-neutral-content w-full items-center text-center justify-center mb-auto"
+            >
+              <img
+                data-tauri-drag-region
+                src="/favicon.ico"
+                width={20}
+                height={20}
+              />
+              <span
+                data-tauri-drag-region
+                className="ml-1 font-sans  font-extrabold"
+              >
+                AHQ Store
+              </span>
+            </div>
+            <div className="mb-auto flex flex-col justify-center items-center text-center">
+              <h1 data-tauri-drag-region>Enter this code</h1>
+              <h1 data-tauri-drag-region className="font-extrabold text-2xl">
+                {window.location.pathname.replace("/", "")}
+              </h1>
+            </div>
+          </div>
+        </ContextMenuTrigger>
+      </ContextMenu>,
+    );
   }
 }

@@ -72,7 +72,6 @@ export function runner() {
 }
 
 appWindow.listen<string[]>("ws_resp", async ({ payload: pload }) => {
-
   console.log(pload);
   for (let i = 0; i < pload.length; i++) {
     const payload = pload[i];

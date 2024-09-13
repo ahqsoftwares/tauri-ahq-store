@@ -153,7 +153,7 @@ export default function Home(props: HomeProps) {
           <div className="flex justify-center items-center mb-auto mt-3">
             <Button
               dark={dark}
-              Icon={dev}
+              Icon={() => <img src={dev} className="rotate-[40deg]" />}
               no50
               calibrate="1.5"
               title="Developer"

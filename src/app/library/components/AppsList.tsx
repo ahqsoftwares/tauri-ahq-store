@@ -10,7 +10,7 @@ import { Library } from "../../resources/core/installer";
 
 interface Props {
   dark: boolean;
-  library: Library[]
+  library: Library[];
 }
 
 export default function AppsList(props: Props) {
@@ -27,8 +27,7 @@ export default function AppsList(props: Props) {
     }
     const resolvedApps = await fetchApps(Object.keys(apps));
     const icons = await Promise.all(
-      (resolvedApps as appData[])
-        .map((x) => getResource(x.appId, "0"))
+      (resolvedApps as appData[]).map((x) => getResource(x.appId, "0")),
     );
 
     setIcons(icons);
@@ -56,29 +55,29 @@ export default function AppsList(props: Props) {
           </h1>
         ) : apps.length === 0 ? (
           <h1
-              className={`my-2 mt-5 flex items-center justify-center text-center ${dark ? "text-slate-400" : "text-slate-700"}`}
+            className={`my-2 mt-5 flex items-center justify-center text-center ${dark ? "text-slate-400" : "text-slate-700"}`}
           >
             <span className="dui-loading dui-loading-spinner mr-2"></span>
-              Loading Installed Apps...
+            Loading Installed Apps...
           </h1>
         ) : (
-              <>
-                <h1
-                  className={`my-2 text-2xl flex text-center items-center text-base-content`}
-                >
-                  <IoApps size="1.5rem" />
-                  <span className="ml-2">Installed Apps</span>
-                </h1>
-                <div className={`flex py-auto`}>
-                  {"("}
-                  <div className={dark ? "text-purple-500" : "text-purple-900"}>
-                    v
-                  </div>
-                  <span className="text-base-content ml-1">
-                    {"represents unique version hash)"}
-                  </span>
-                </div>
-              </>
+          <>
+            <h1
+              className={`my-2 text-2xl flex text-center items-center text-base-content`}
+            >
+              <IoApps size="1.5rem" />
+              <span className="ml-2">Installed Apps</span>
+            </h1>
+            <div className={`flex py-auto`}>
+              {"("}
+              <div className={dark ? "text-purple-500" : "text-purple-900"}>
+                v
+              </div>
+              <span className="text-base-content ml-1">
+                {"represents unique version hash)"}
+              </span>
+            </div>
+          </>
         )}
 
         {apps.map((data, i) => {

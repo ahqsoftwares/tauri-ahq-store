@@ -1,6 +1,5 @@
-
-import { defineConfig } from '@rsbuild/core';
-import { pluginSvgr } from '@rsbuild/plugin-svgr';
+import { defineConfig } from "@rsbuild/core";
+import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { pluginBabel } from "@rsbuild/plugin-babel";
 import { pluginReact } from "@rsbuild/plugin-react";
 
@@ -10,42 +9,42 @@ export default defineConfig({
     pluginBabel({
       include: /\.(?:jsx|tsx)$/,
       babelLoaderOptions(opts) {
-        opts.plugins?.unshift('babel-plugin-react-compiler');
+        opts.plugins?.unshift("babel-plugin-react-compiler");
       },
     }),
-    pluginSvgr()
+    pluginSvgr(),
   ],
   html: {
-    template: './index.html',
+    template: "./index.html",
   },
   source: {
     entry: {
-      index: './src/index.tsx',
+      index: "./src/index.tsx",
     },
     alias: {
       "@": "./src",
       "@lib": "./src/app/resources",
-      "@/*": "./src/*"
-    }
+      "@/*": "./src/*",
+    },
   },
   output: {
     distPath: {
-      root: "build"
+      root: "build",
     },
     minify: {
       css: true,
-      js: true
-    }
+      js: true,
+    },
   },
   dev: {
     progressBar: true,
     hmr: true,
     watchFiles: {
-      paths: ["./index.html", "./src/**/*"]
-    }
+      paths: ["./index.html", "./src/**/*"],
+    },
   },
   server: {
     port: 3000,
     strictPort: true,
-  }
+  },
 });
