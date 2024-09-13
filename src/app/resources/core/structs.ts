@@ -88,7 +88,7 @@ export async function interpret(
   };
 
   const valueData = (() => {
-    if (typeof val == "number") return [val];
+    if (typeof (val) == "number") return [val];
     else return val;
   })();
 

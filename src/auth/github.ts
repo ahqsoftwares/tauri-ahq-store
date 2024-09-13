@@ -1,5 +1,5 @@
 import { fetch } from "@tauri-apps/plugin-http";
-import { Auth } from ".";
+import { Auth, User } from ".";
 import { invoke } from "@tauri-apps/api/core";
 import { clientId, scopes } from "../app/server";
 import Toast from "../app/resources/api/toast";
@@ -35,7 +35,7 @@ export async function startLogin(auth: Auth) {
   });
 
   invoke("show_code", {
-    code: val.user_code,
+    code: val.user_code
   });
 
   let not_done = 0;

@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "2.0.0"
+version = "2.0.0-alpha.3"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "MIT"
@@ -8,16 +8,16 @@ repository = "https://github.com/ahqsoftwares/tauri-ahq-store"
 homepage = "https://ahqstore.github.io/"
 default-run = "ahq-store-app"
 edition = "2021"
-rust-version = "1.80"
+rust-version = "1.57"
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc", features = [] }
+tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
-serde_json = "1"
-serde = { version = "1", features = ["derive"] }
+serde_json = "1.0.120"
+serde = { version = "1.0.203", features = ["derive"] }
 
-tauri = { version = "2.0.0-rc", features = ["devtools", "wry", "tray-icon", "image-png", "rustls-tls"] }
+tauri = { version = "2.0.0-beta", features = ["wry", "tray-icon", "image-png", "rustls-tls"] }
 wry = "*"
 
 open = "5"
@@ -28,18 +28,17 @@ lazy_static = "1"
 updater = { path = "../src-updater" }
 discord-rich-presence = "0.2.4"
 tokio = "1"
-tauri-plugin-notification = "2.0.0-rc"
-tauri-plugin-http = { version = "2.0.0-rc", features = ["rustls-tls"] }
-tauri-plugin-fs = "2.0.0-rc"
-tauri-plugin-process = "2.0.0-rc"
+tauri-plugin-notification = "2.0.0-beta"
+tauri-plugin-http = { version = "2.0.0-beta", features = ["rustls-tls"] }
+tauri-plugin-fs = "2.0.0-beta"
+tauri-plugin-process = "2.0.0-beta"
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 async-recursion = "1"
 bcrypt = "0.15.1"
-ahqstore_gh_hash = "1.2.0"
 
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.58.0", features = [
+windows = { version = "0.57.0", features = [
   "Win32_System_Com",
   "Win32_Foundation",
   "Win32_UI_Shell",

@@ -1,7 +1,6 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import { Auth, User } from ".";
 import { invoke } from "@tauri-apps/api/core";
-import { generateGHUserHash, verifyDevExists } from "./hash";
 
 export function onAuthChange(auth: Auth, callback: (auth?: User) => void) {
   auth.onAuthChange.push(callback);
@@ -17,11 +16,7 @@ export async function tryAutoLogin(auth: Auth) {
   await login(auth, auth_tok, true);
 }
 
-export async function login(
-  auth: Auth,
-  auth_tok: string,
-  auto = false,
-): Promise<boolean> {
+export async function login(auth: Auth, auth_tok: string, auto = false): Promise<boolean> {
   const { ok, data } = await fetch(`https://api.github.com/user`, {
     method: "GET",
     headers: {
@@ -31,10 +26,7 @@ export async function login(
   }).then(async (d) => ({ ...d, ok: d.ok, data: await d.json() }));
 
   if (ok) {
-    auth.currentUser = {
-      ...data,
-      dev: await verifyDevExists(await generateGHUserHash(data.login)),
-    };
+    auth.currentUser = data;
     auth.loggedIn = true;
 
     invoke("encrypt", {
