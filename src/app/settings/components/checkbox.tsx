@@ -17,11 +17,7 @@ export default function CheckBox(props: {
   const { Icon, noCheckbox, roundedImage, url } = props;
 
   return (
-    <div
-      className={`checkbox mt-3`}
-      onClick={props.onClick}
-      style={{ cursor: noCheckbox && !url ? "default" : "pointer" }}
-    >
+    <div className={`checkbox mt-3`} onClick={props.onClick} style={{ "cursor": noCheckbox && !url ? "default" : "pointer" }}>
       <div className="ml-3"></div>
 
       <div className={`flex items-center justify-center text-base-content`}>
@@ -47,13 +43,11 @@ export default function CheckBox(props: {
       <h6>
         <span className="flex">
           {props.title}
-          {url && (
-            <FiExternalLink
-              size="1em"
-              className="ml-1 my-auto"
-              color={props.dark ? "white" : "black"}
-            />
-          )}
+          {url && <FiExternalLink
+            size="1em"
+            className="ml-1 my-auto"
+            color={props.dark ? "white" : "black"}
+          />}
         </span>
         <p
           className={

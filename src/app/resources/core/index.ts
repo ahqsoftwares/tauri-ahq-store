@@ -6,20 +6,18 @@ import { ListedApps } from "./structs";
 
 let sha = "";
 
-const totalUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/total";
-const homeUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/home.json";
+const totalUrl = "https://rawcdn.githack.com/ahqstore/data/{sha}/db/total";
+const homeUrl = "https://rawcdn.githack.com/ahqstore/data/{sha}/db/home.json";
 const appUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/apps/{app}.json";
-const assetUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/res/{app}/{id}";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/apps/{app}.json";
 const mapUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/map/{id}.json";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/map/{id}.json";
 const searchUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/search/{id}.json";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/search/{id}.json";
 const appsUserUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/dev/{dev}";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/dev/{dev}";
 const devUserUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/users/{dev}.json";
+  "https://rawcdn.githack.com/ahqstore/data/{sha}/db/info/{dev}.json";
 
 export async function get_devs_apps(devId: string) {
   if (sha == "") {
@@ -140,9 +138,11 @@ export async function get_app(app: string): Promise<ApplicationData> {
   return appData;
 }
 
-export function install_app(app: string): Promise<undefined> {
+export function install_app(
+  app: string
+): Promise<undefined> {
   return new Promise((resolve) => {
-    sendWsRequest(WebSocketMessage.InstallApp(app), () => {});
+    sendWsRequest(WebSocketMessage.InstallApp(app), () => { });
     resolve(undefined);
   });
 }
@@ -220,4 +220,4 @@ export function un_install(app: string): Promise<void> {
   });
 }
 
-export { devUserUrl, sha, assetUrl };
+export { devUserUrl, sha };

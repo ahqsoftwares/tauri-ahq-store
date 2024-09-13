@@ -71,7 +71,6 @@ module.exports = {
   plugins: [require("tailwindcss-animate"), require("daisyui")],
   daisyui: {
     prefix: "dui-",
-    logs: false,
     themes: [
       "light",
       "emerald",

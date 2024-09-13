@@ -61,14 +61,12 @@ export default function Init(props: UserProps) {
         <div className="user pb-2">
           <div className="img" id="img">
             <img src={auth.currentUser ? user : GeneralUser} alt="Avatar" />
-            {auth.currentUser && (
-              <div
-                className={`div ${props.dark ? "" : "div-l"} ${auth.currentUser ? "" : "hidden"}`}
-                id="drop"
-              >
-                <h1 className="text">View profile</h1>
-              </div>
-            )}
+            {auth.currentUser && <div
+              className={`div ${props.dark ? "" : "div-l"} ${auth.currentUser ? "" : "hidden"}`}
+              id="drop"
+            >
+              <h1 className="text">View profile</h1>
+            </div>}
           </div>
           <div className="flex flex-col text-center mt-2 name">
             <div className="flex justify-center">
@@ -85,6 +83,7 @@ export default function Init(props: UserProps) {
     </>
   );
 }
+
 
 function Actions(props: {
   auth: Auth;

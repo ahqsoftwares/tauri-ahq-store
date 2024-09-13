@@ -31,108 +31,91 @@ pub async fn launch() {
 
   chmod("777", "/ahqstore/socket").unwrap();
 
-  loop {
-    println!("Loop");
-    if let Ok((stream, _)) = socket.accept().await {
-      println!("Got Stream");
-      set_iprocess(stream);
+  while let Ok((stream, _)) = socket.accept().await {
+    set_iprocess(stream);
 
-      let pipe = get_iprocess().unwrap();
-      let Ok(cred) = pipe.peer_cred() else {
-        println!("Err 0x1");
-        let _ = pipe.shutdown().await;
-        continue;
-      };
+    let pipe = get_iprocess().unwrap();
+    let Ok(cred) = pipe.peer_cred() else {
+      let _ = pipe.shutdown().await;
+      continue;
+    };
 
-      let Some(pid) = cred.pid() else {
-        println!("Err 0x2");
-        let _ = pipe.shutdown().await;
-        continue;
-      };
+    let Some(pid) = cred.pid() else {
+      let _ = pipe.shutdown().await;
+      continue;
+    };
 
-      if pid <= 0 {
-        println!("Err 0x3");
-        let _ = pipe.shutdown().await;
-        continue;
-      }
-
-      let (auth, sudoer) = authenticate_process(pid as usize, true);
-      if !auth {
-        println!("FAILED CHECK");
-        let _ = pipe.shutdown().await;
-        println!("DISCONNECT");
-        continue;
-      }
-
-      let mut ext: u8 = 0;
-      'a: loop {
-        ext += 1;
-        if ext > 20 {
-          ext = 0;
-          if !authenticate_process(pid as usize, false).0 {
-            let _ = pipe.shutdown().await;
-            println!("DISCONNECT");
-            break 'a;
-          }
-        }
-
-        let mut val: [u8; 8] = [0u8; 8];
-
-        match pipe.try_read(&mut val) {
-          Ok(0) => {}
-          Ok(_) => {
-            let total = usize::from_be_bytes(val);
-
-            let mut buf: Vec<u8> = Vec::new();
-            let mut byte = [0u8];
-
-            println!("total: {total}");
-
-            for _ in 0..total {
-              match pipe.try_read(&mut byte) {
-                Ok(_) => {
-                  buf.push(byte[0]);
-                }
-                Err(e) => match e.kind() {
-                  ErrorKind::WouldBlock => {}
-                  e => {
-                    let err = format!("{e:?}");
-
-                    write_log(&err);
-                    if &err != "Uncategorized" {
-                      let _ = pipe.shutdown().await;
-                      break 'a;
-                    }
-                  }
-                },
-              }
-            }
-
-            let msg = String::from_utf8_lossy(&buf).to_string();
-            println!("Handling MSG");
-            println!("{msg:?}");
-            handle_msg(sudoer, msg);
-          }
-          Err(e) => match e.kind() {
-            ErrorKind::WouldBlock => {}
-            e => {
-              let err = format!("{e:?}");
-              println!("{}", &err);
-
-              write_log(&err);
-              if &err != "Uncategorized" {
-                let _ = pipe.shutdown().await;
-                break 'a;
-              }
-            }
-          },
-        }
-        tokio::time::sleep(Duration::from_millis(100)).await;
-      }
-    } else {
-      println!("socket.accept failed...");
+    if pid <= 0 {
+      let _ = pipe.shutdown().await;
+      continue;
     }
 
-    println!("Loop end");
+    let (auth, sudoer) = authenticate_process(pid as usize, true);
+    if !auth {
+      println!("FAILED CHECK");
+      let _ = pipe.shutdown().await;
+      println!("DISCONNECT");
+      continue;
+    }
+
+    let mut ext: u8 = 0;
+    'a: loop {
+      ext += 1;
+      if ext > 20 {
+        ext = 0;
+        if !authenticate_process(pid as usize, false).0 {
+          let _ = pipe.shutdown().await;
+          println!("DISCONNECT");
+          break 'a;
+        }
+      }
+
+      let mut val: [u8; 8] = [0u8; 8];
+
+      match pipe.try_read(&mut val) {
+        Ok(0) => {}
+        Ok(_) => {
+          let total = usize::from_be_bytes(val);
+
+          let mut buf: Vec<u8> = Vec::new();
+          let mut byte = [0u8];
+
+          for _ in 0..total {
+            match pipe.try_read(&mut byte) {
+              Ok(_) => {
+                buf.push(byte[0]);
+              }
+              Err(e) => match e.kind() {
+                ErrorKind::WouldBlock => {}
+                e => {
+                  let err = format!("{e:?}");
+
+                  write_log(&err);
+                  if &err != "Uncategorized" {
+                    let _ = pipe.shutdown().await;
+                    break 'a;
+                  }
+                }
+              },
+            }
+          }
+          handle_msg(sudoer, String::from_utf8_lossy(&buf).to_string());
+        }
+        Err(e) => match e.kind() {
+          ErrorKind::WouldBlock => {}
+          e => {
+            let err = format!("{e:?}");
+            println!("{}", &err);
+
+            write_log(&err);
+            if &err != "Uncategorized" {
+              let _ = pipe.shutdown().await;
+              break 'a;
+            }
+          }
+        },
+      }
+      tokio::time::sleep(Duration::from_millis(100)).await;
+    }
   }
 }

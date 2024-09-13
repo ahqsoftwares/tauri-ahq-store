@@ -1,7 +1,4 @@
-use ahqstore_types::{
-  internet::{get_app as t_get_app, get_commit as t_get_commit},
-  AppStatus, Commit, Library,
-};
+use ahqstore_types::{AppStatus, Commit, Library};
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, Request, StatusCode};
 use serde_json::from_str;
@@ -28,7 +25,7 @@ use crate::utils::write_log;
 #[cfg(windows)]
 use super::unzip;
 
-pub static mut COMMIT_ID: Option<String> = None;
+pub static mut GH_URL: Option<String> = None;
 
 lazy_static! {
   static ref DOWNLOADER: Client = ClientBuilder::new()
@@ -36,8 +33,14 @@ lazy_static! {
       .build()
       .unwrap();
 
-  static ref NODE21: &'static str = "https://nodejs.org/dist/v21.4.0/node-v21.4.0-win-x64.zip";
-  static ref NODE20: &'static str = "https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip";
+    static ref CLIENT: Client = ClientBuilder::new()
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36")
+        .timeout(Duration::from_secs(60))
+        .build()
+        .unwrap();
+
+    static ref NODE21: &'static str = "https://nodejs.org/dist/v21.4.0/node-v21.4.0-win-x64.zip";
+    static ref NODE20: &'static str = "https://nodejs.org/dist/v20.10.0/node-v20.10.0-win-x64.zip";
 }
 
 pub fn init() {
@@ -47,15 +50,19 @@ pub fn init() {
 }
 
 pub async fn get_commit() -> u8 {
-  if let Some(x) = t_get_commit(None).await {
-    unsafe {
-      COMMIT_ID = Some(x);
-    }
+  if let Ok(resp) = CLIENT
+    .get("https://api.github.com/repos/ahqstore/data/commits")
+    .send()
+    .await
+  {
+    if let Ok(mut data) = resp.json::<Vec<Commit>>().await {
+      let data = data.remove(0);
 
-    0
-  } else {
-    1
+      unsafe { GH_URL = Some(data.sha) }
+      return 0;
+    }
   }
+  1
 }
 
 pub async fn download_app(
@@ -125,12 +132,23 @@ pub async fn get_app_local(ref_id: RefId, app_id: AppId) -> Response {
 }
 
 pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
-  let app = t_get_app(unsafe { COMMIT_ID.as_ref().unwrap() }, &app_id).await;
+  let url = unsafe {
+    if let Some(x) = GH_URL.as_ref() {
+      x
+    } else {
+      return Response::Error(ErrorType::GetAppFailed(ref_id, app_id));
+    }
+  };
+  let url = format!(
+    "https://rawcdn.githack.com/ahqstore/data/{}/db/apps/{}.json",
+    &url, &app_id
+  );
 
-  if let Some(x) = app {
-    return Response::AppData(ref_id, app_id, x);
+  if let Some(x) = CLIENT.get(url).send().await.ok() {
+    if let Some(x) = x.json::<AHQStoreApplication>().await.ok() {
+      return Response::AppData(ref_id, app_id, x);
+    }
   }
-
   Response::Error(ErrorType::GetAppFailed(ref_id, app_id))
 }
 

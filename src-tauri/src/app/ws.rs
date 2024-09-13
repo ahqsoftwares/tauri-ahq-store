@@ -4,7 +4,7 @@ use async_recursion::async_recursion;
 use tokio::net::windows::named_pipe::{ClientOptions, PipeMode};
 
 #[cfg(unix)]
-use tokio::net::UnixStream;
+use tokio::net::UnixSocket;
 use tokio::sync::Mutex;
 
 use serde_json::from_str;
@@ -59,7 +59,6 @@ impl WsConnection {
 
   #[async_recursion]
   pub async unsafe fn start(&mut self, reinstall_astore: fn(), tries: u8) {
-    #[cfg(windows)]
     let path = OsStr::new(r"\\.\pipe\ahqstore-service-api-v3");
 
     let reinstall = || async {
@@ -76,13 +75,14 @@ impl WsConnection {
     let ipc_gen_0x68 = ClientOptions::new().pipe_mode(PipeMode::Message).open(path);
 
     #[cfg(unix)]
-    let ipc_gen_0x68 = UnixStream::connect("/ahqstore/socket")
+    let ipc_gen_0x68 = UnixSocket::new_stream()
+      .unwrap()
+      .connect("/ahqstore/socket")
       .await;
 
     match ipc_gen_0x68 {
       Ok(ipc) => {
         let mut len: [u8; 8] = [0; 8];
-
         loop {
           // Reading Pending Messages
           match ipc.try_read(&mut len) {
@@ -144,8 +144,9 @@ impl WsConnection {
 
           //Sending Messages
           if let Ok(ref mut x) = self.to_send.try_lock() {
-            if x.len() > 0 {
-              let msg = x.remove(0);
+            let send = x.drain(..).collect::<Vec<String>>();
+
+            for msg in send {
               let len = msg.len().to_be_bytes();
 
               let mut data = vec![];
@@ -156,17 +157,10 @@ impl WsConnection {
                 data.push(*byte);
               }
 
-              if let Err(_) = ipc.try_write(&data) {
-                println!("{data:?} resulted in error");
-              }
+              let _ = ipc.try_write(&data);
             }
           }
-
-          #[cfg(windows)]
           tokio::time::sleep(Duration::from_nanos(1)).await;
-
-          #[cfg(not(windows))]
-          tokio::time::sleep(Duration::from_nanos(100)).await;
         }
         drop(ipc);
         if reinstall().await {

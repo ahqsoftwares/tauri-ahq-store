@@ -158,7 +158,7 @@ pub async fn launch() {
               }
             },
           }
-          tokio::time::sleep(Duration::from_nanos(10)).await;
+          tokio::time::sleep(Duration::from_millis(100)).await;
         }
       }
     }

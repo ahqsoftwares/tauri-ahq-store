@@ -1,7 +1,7 @@
 //Arrow
 import { useEffect, useState } from "react";
 import { GiPartyPopper } from "react-icons/gi";
-import fetchApps, { appData, getResource } from "../../resources/api/fetchApps";
+import fetchApps, { appData } from "../../resources/api/fetchApps";
 import Toast from "../../resources/api/toast";
 import listAllApps from "../../resources/utilities/listAllApps";
 import App from "./App";
@@ -10,14 +10,13 @@ import { Library } from "../../resources/core/installer";
 
 interface Props {
   dark: boolean;
-  library: Library[];
+  library: Library[]
 }
 
 export default function AppsList(props: Props) {
   const { dark, library } = props;
 
   const [apps, setApps] = useState<appData[]>([]);
-  const [icons, setIcons] = useState<string[]>([]);
   const [rawApps, setRawApps] = useState(0);
 
   async function parseAppsData() {
@@ -26,11 +25,6 @@ export default function AppsList(props: Props) {
       setRawApps(1);
     }
     const resolvedApps = await fetchApps(Object.keys(apps));
-    const icons = await Promise.all(
-      (resolvedApps as appData[]).map((x) => getResource(x.appId, "0")),
-    );
-
-    setIcons(icons);
     setApps(resolvedApps as appData[]);
   }
 
@@ -55,39 +49,38 @@ export default function AppsList(props: Props) {
           </h1>
         ) : apps.length === 0 ? (
           <h1
-            className={`my-2 mt-5 flex items-center justify-center text-center ${dark ? "text-slate-400" : "text-slate-700"}`}
+              className={`my-2 mt-5 flex items-center justify-center text-center ${dark ? "text-slate-400" : "text-slate-700"}`}
           >
             <span className="dui-loading dui-loading-spinner mr-2"></span>
-            Loading Installed Apps...
+              Loading Installed Apps...
           </h1>
         ) : (
-          <>
-            <h1
-              className={`my-2 text-2xl flex text-center items-center text-base-content`}
-            >
-              <IoApps size="1.5rem" />
-              <span className="ml-2">Installed Apps</span>
-            </h1>
-            <div className={`flex py-auto`}>
-              {"("}
-              <div className={dark ? "text-purple-500" : "text-purple-900"}>
-                v
-              </div>
-              <span className="text-base-content ml-1">
-                {"represents unique version hash)"}
-              </span>
-            </div>
-          </>
+              <>
+                <h1
+                  className={`my-2 text-2xl flex text-center items-center text-base-content`}
+                >
+                  <IoApps size="1.5rem" />
+                  <span className="ml-2">Installed Apps</span>
+                </h1>
+                <div className={`flex py-auto`}>
+                  {"("}
+                  <div className={dark ? "text-purple-500" : "text-purple-900"}>
+                    v
+                  </div>
+                  <span className="text-base-content ml-1">
+                    {"represents unique version hash)"}
+                  </span>
+                </div>
+              </>
         )}
 
-        {apps.map((data, i) => {
+        {apps.map((data) => {
           return (
             <App
               key={data.appId}
               appInfo={data}
               dark={dark}
               toast={Toast}
-              icon={icons[i]}
               lib={library.find((d) => d.app_id == data.appId)}
             />
           );
