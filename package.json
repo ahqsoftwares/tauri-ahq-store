@@ -70,7 +70,7 @@
     "cross-env": "^7.0.3",
     "cryptr": "^6.3.0",
     "eslint": "^9.10.0",
-    "eslint-plugin-react-compiler": "0.0.0-experimental-8d8bd53-20240905",
+    "eslint-plugin-react-compiler": "0.0.0-experimental-75b9fd4-20240912",
     "prettier": "^3.3.3",
     "shadcn": "^2.0.6"
   },
