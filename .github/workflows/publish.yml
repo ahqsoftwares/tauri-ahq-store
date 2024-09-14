@@ -383,6 +383,8 @@ jobs:
 
           sudo dpkg --add-architecture aarch64
 
+          sudo sed 's/^deb http/deb [arch=aarch64] http/' -i '/etc/apt/sources.list'
+
           sudo apt-get update -y --allow-releaseinfo-change
           sudo apt-get autoremove -y
           sudo apt-get install -y --no-install-recommends --no-install-suggests curl libwebkit2gtk-4.1-dev:aarch64 build-essential libssl-dev:aarch64 libgtk-3-dev:aarch64 libayatana-appindicator3-dev:aarch64 librsvg2-dev:aarch64 patchelf libfuse2:aarch64 file
