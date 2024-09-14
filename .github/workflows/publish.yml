@@ -380,10 +380,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install gcc-aarch64-linux-gnu
-          
+
           cd src-service
           cargo build --release --target aarch64-unknown-linux-gnu
           cd ..
+
+          export PKG_CONFIG_SYSROOT_DIR=/
 
           pnpm build
           pnpm tauri build -v --target aarch64-unknown-linux-gnu
