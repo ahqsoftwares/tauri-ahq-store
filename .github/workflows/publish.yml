@@ -383,7 +383,7 @@ jobs:
 
           sudo dpkg --add-architecture aarch64
 
-          sudo sed 's/^deb http/deb [arch=aarch64] http/' -i '/etc/apt/sources.list'
+          sudo sed 's/^deb http/deb [arch=aarch64] http/' -i '/etc/apt/apt-mirrors.txt'
 
           sudo apt-get update -y --allow-releaseinfo-change
           sudo apt-get autoremove -y
