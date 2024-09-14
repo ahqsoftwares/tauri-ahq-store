@@ -267,16 +267,16 @@ jobs:
           sudo apt update
           sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
-      - name: install Vite dependencies and Build React App
-        run: pnpm install; pnpm build
-        env:
-          CI: "false"
-
       - name: Build ahqstore-types locally
         run: |
           npm i -g wasm-pack
           wasm-pack build --release -- --features js
         working-directory: src-ahqstore-types
+
+      - name: install Vite dependencies and Build React App
+        run: pnpm install; pnpm build
+        env:
+          CI: "false"
 
       - name: Decrypt Key / Load Encryption Key
         run: node encryptor.cjs
