@@ -383,7 +383,7 @@ jobs:
           cd ..
 
           pnpm build
-          pnpm tauri build -v --target aarch64-unknown-linux-gnu -r cargo-zigbuild
+          pnpm tauri build -v --target aarch64-unknown-linux-gnu
           
       - name: Arm Runner
         uses: pguyot/arm-runner-action@v2.6.5

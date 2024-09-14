@@ -52,6 +52,9 @@ is_elevated = "0.1.2"
 [target.'cfg(target_os = "linux")'.dependencies]
 whatadistro = "0.1.0"
 
+[target.'cfg(all(target_os="linux",target_arch="aarch64"))'.dependencies]
+openssl-sys = { version = "*", features = ["vendored"] }
+
 [profile.release]
 panic = "abort"
 codegen-units = 1
