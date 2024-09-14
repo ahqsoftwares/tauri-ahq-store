@@ -19,5 +19,8 @@
   "editor.formatOnType": true,
   "editor.tabSize": 2,
   "editor.defaultFormatter": "rust-lang.rust-analyzer",
-  "rust-analyzer.linkedProjects": ["./src-tauri/Cargo.toml"]
+  "rust-analyzer.linkedProjects": ["./src-tauri/Cargo.toml"],
+  "[github-actions-workflow]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
