@@ -361,6 +361,7 @@ jobs:
           pip install cargo-zigbuild
 
           rustup toolchain install nightly
+          rustup target install aarch64-linux-unknown-gnu
           
           cd src-ahqstore-types
           npm i -g wasm-pack
