@@ -353,8 +353,13 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+
       - name: Install
         run: |
+          pip install cargo-zigbuild
+
           rustup toolchain install nightly
           
           cd src-ahqstore-types
@@ -370,15 +375,18 @@ jobs:
         env:
           KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
 
-      - name: Build frontend
-        run: pnpm build
-
-      - name: Remove modules
+      - name: Build
         run: |
-          rm -rf node_modules
+          cd src-service
+          cargo build --release
+          cd ..
 
+          pnpm build
+          pnpm tauri build -v --target aarch64-unknown-linux-gnu -r cargo-zigbuild
+          
       - name: Arm Runner
         uses: pguyot/arm-runner-action@v2.6.5
+        if: strategy.fail-fast == 'true'
         with:
           base_image: ${{ matrix.img }}
           cpu: ${{ matrix.cpu }}
