@@ -17,10 +17,7 @@ pub fn scan_threaded(path: &str) -> JoinHandle<Option<Malicious>> {
   let okay = format!("Scanning {} found no threats", &path);
 
   thread::spawn(move || {
-    let out = child.ok()?
-      .wait_with_output()
-      .ok()?
-      .stdout;
+    let out = child.ok()?.wait_with_output().ok()?.stdout;
 
     let out = String::from_utf8_lossy(&out);
 

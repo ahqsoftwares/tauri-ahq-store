@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
-import { VscExtensions } from "react-icons/vsc";
 
-import { appData } from "../../resources/api/fetchApps";
+import {
+  appData,
+  AuthorObject,
+  fetchAuthor,
+  getResource,
+} from "../../resources/api/fetchApps";
 
 import fetchApps from "../../resources/api/fetchApps";
-import packageImg from "../../resources/package.png";
+
+import { TbRosetteDiscountCheckFilled } from "react-icons/tb";
 
 const def: appData = {
   authorId: "",
   description: "Hold tight while we load app data",
   downloadUrls: [],
   appId: "%temp%",
-  icon: packageImg,
   repo: {
+    free: () => {},
     author: "",
     repo: "",
   },
@@ -21,24 +26,17 @@ const def: appData = {
   appShortcutName: "",
   displayImages: [],
   install: {
+    free: () => {},
     linux: undefined,
     win32: undefined,
     android: undefined,
   },
-  AuthorObject: {
-    ahq_official: false,
-    name: "",
-    email: "",
-    apps: [],
-    icon_base64: "",
-    gh_username: "",
-    description: "",
-    support: {
-      discord: "",
-      github: "",
-      website: ""
-    },
-  },
+  releaseTagName: "",
+  resources: [],
+  app_page: "",
+  license_or_tos: "",
+  site: "",
+  source: "",
 };
 
 export default function AppCard(props: {
@@ -47,15 +45,32 @@ export default function AppCard(props: {
   dark: boolean;
 }) {
   const [appData, setAppData] = useState<appData>(def);
+  const [icon, setIcon] = useState<string>();
+  const [author, setAuthor] = useState<AuthorObject>({
+    avatar_url: "",
+    free: () => {},
+    github: "",
+    id: "",
+    name: "",
+  });
 
-  const { appDisplayName, description, icon, source, AuthorObject } = appData;
+  const { appDisplayName, description, source } = appData;
 
   useEffect(() => {
+    setIcon(undefined);
     setAppData(def);
     (async () => {
       const dta = await fetchApps(props.id);
 
       setAppData(dta as appData);
+      setAuthor(await fetchAuthor((dta as appData).authorId));
+
+      getResource(props.id, "0")
+        .then(setIcon)
+        .catch((e) => {
+          console.log(e);
+          setIcon("/package.png");
+        });
     })();
   }, [props.id]);
 
@@ -64,12 +79,12 @@ export default function AppCard(props: {
       className={`card bg-transparent hover:mb-2 hover:shadow-xl ${props.id ? "" : "hidden"}`}
       style={{ cursor: "pointer" }}
       onClick={
-        appData.appId == "%temp%"
+        appData.appId == "%temp%" || appData.appId == undefined
           ? () => {}
           : (props.onClick as React.MouseEventHandler<HTMLDivElement>)
       }
     >
-      {appData.appId === "%temp%" ? (
+      {icon == undefined ? (
         <div
           className={`dui-loading dui-loading-lg dui-loading-ring mt-5 mx-auto mb-[0.75rem] ${
             props.dark ? "text-white" : ""
@@ -79,13 +94,31 @@ export default function AppCard(props: {
         <img className="card-img" src={icon} alt="Logo"></img>
       )}
 
-      <h1 className="card-title">{appDisplayName}</h1>
+      <h1 className="card-title">{appDisplayName || "Unknown"}</h1>
 
-      <div className="card-description">{description.substring(0, 64)}...</div>
+      <div className="card-description">
+        {(description || "Non Existent").substring(0, 64)}...
+      </div>
 
       <div className="card-footer">
-        <button className="text-blue-500 text-2xl" style={{ minWidth: "95%" }}>
-          {source || AuthorObject.name}
+        <button
+          className="text-blue-500 text-2xl flex"
+          style={{ minWidth: "95%" }}
+        >
+          {source ||
+            (appData?.authorId
+              ? author.name.replace("AHQ Store (Official)", "AHQ Store")
+              : "")}
+          {author.name == "AHQ Store (Official)" && (
+            <TbRosetteDiscountCheckFilled
+              style={{
+                marginTop: "auto",
+                marginBottom: "auto",
+                marginLeft: "3px",
+              }}
+              size="1em"
+            />
+          )}
         </button>
       </div>
     </div>

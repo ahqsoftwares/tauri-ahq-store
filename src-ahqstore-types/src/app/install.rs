@@ -1,10 +1,13 @@
+#[cfg(feature = "js")]
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use std::env::consts::{ARCH, OS};
 
-use crate::Str;
 use serde::{Deserialize, Serialize};
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct InstallerOptions {
   #[doc = "🎯 Introduced in v1\n\n"]
   pub win32: Option<InstallerOptionsWindows>,
@@ -22,43 +25,44 @@ pub struct InstallerOptions {
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct InstallerOptionsWindows {
   #[doc = "🎯 Introduced in v2\n\n"]
   pub assetId: u8,
   /// The exe to link as a shortcut[^1]
-  /// 
+  ///
   /// [^1]: Only if you choose WindowsZip
-  pub exec: Option<Str>,
+  pub exec: Option<String>,
   #[doc = "🔬 Planned\n\n"]
   /// Args to pass to the custom exe installer[^1]
-  /// 
-  /// [^1]: Only if you choose WindowsInstallerExe 
-  pub installerArgs: Option<Vec<Str>>
+  ///
+  /// [^1]: Only if you choose WindowsInstallerExe
+  pub installerArgs: Option<Vec<String>>,
 }
-
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[doc = "🔬 Planned\n\n"]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct InstallerOptionsAndroid {
   #[doc = "🎯 Introduced in v2\n\n"]
-  pub assetId: u8
+  pub assetId: u8,
 }
-
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[doc = "🔬 Planned\n\n"]
+#[doc = "🔬 Under Development\n\n"]
+#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
 pub struct InstallerOptionsLinux {
   #[doc = "🎯 Introduced in v2\n\n"]
-  pub assetId: u8
+  pub assetId: u8,
 }
 
 macro_rules! push_install_arch {
   ($x:ident -> $y:ident.$install: ident, $arch: literal) => {
-      if let Some(_) = &$y.$install {
-          $x.push($arch);
-      }
+    if let Some(_) = &$y.$install {
+      $x.push($arch);
+    }
   };
 }
 
@@ -91,7 +95,7 @@ impl InstallerOptions {
 
   #[doc = "🎯 Introduced in v2"]
   pub fn is_supported(&self) -> bool {
-    let os =self.list_os_arch();
+    let os = self.list_os_arch();
     if OS == "android" {
       return os.contains(&"android");
     }
