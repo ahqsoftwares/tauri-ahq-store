@@ -19,9 +19,9 @@ checksum = "512761e0bb2578dd7380c6baaa0f4ce03e84f95e960231d1dec8bf4d7d6e2627"
 
 [[package]]
 name = "ahqstore-types"
-version = "3.2.2"
+version = "3.2.5"
 dependencies = [
- "js_macros",
+ "kfghdfghdfkgh_js_macros",
  "reqwest",
  "serde",
  "serde-wasm-bindgen",
@@ -304,8 +304,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "js_macros"
+name = "kfghdfghdfkgh_js_macros"
 version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf2945f2d6cd0b1388a8a878cf1212dc9df86899d6b80034d98421e692510b22"
 dependencies = [
  "quote",
  "syn",
