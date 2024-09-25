@@ -27,7 +27,7 @@ pub static COMMIT_URL: &'static str = "https://api.github.com/repos/ahqstore/app
 pub static APP_URL: LazyLock<String> =
   LazyLock::new(|| format!("{BASE_URL}/db/apps/{{APP_ID}}.json"));
 pub static APP_ASSET_URL: LazyLock<String> =
-  LazyLock::new(|| format!("{BASE_URL}/db/res/{{APP_ID}}/{{ASSET}}.json"));
+  LazyLock::new(|| format!("{BASE_URL}/db/res/{{APP_ID}}/{{ASSET}}"));
 
 pub static TOTAL: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/total"));
 pub static HOME: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/home.json"));
