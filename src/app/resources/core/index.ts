@@ -39,15 +39,28 @@ export async function get_devs_apps(devId: string) {
   return apps;
 }
 
+let total = [0, 0];
+
 export async function get_total() {
+  console.log("Running get_sha");
   if (sha == "") {
     await get_sha();
   }
 
+
+  if (total[1] > Date.now()) {
+    return total[0];
+  }
+
+  console.log("Sending fetch");
+
   const { data } = await fetch(totalUrl.replace("{sha}", sha), {
     method: "GET",
-  });
+  }).catch(console.log);
 
+  total = [Number(data), Date.now() + 10 * 60 * 1000];
+
+  console.log(data);
   return Number(data);
 }
 
@@ -58,12 +71,12 @@ export async function get_home() {
 
   const url = homeUrl.replace("{sha}", sha);
 
+  console.log("Home URL", url);
   const { data } = await fetch(url, {
     method: "GET",
-    headers: {
-      "ngrok-skip-browser-warning": "true",
-    },
   });
+
+  console.log("Home", data);
 
   return data;
 }
@@ -95,6 +108,7 @@ export async function get_map<T>(): Promise<T> {
   if (sha == "") {
     await get_sha();
   }
+  console.log("Getting map");
   const map = {};
 
   const total = await get_total();
@@ -102,10 +116,15 @@ export async function get_map<T>(): Promise<T> {
   for (let i = 1; i <= total; i++) {
     const url = mapUrl.replace("{sha}", sha).replace("{id}", i.toString());
 
-    const val = await fetch(url, {
+    console.log("Fetching ", i, url);
+    const { data } = await fetch(url, {
       method: "GET",
     });
+
+    console.log("Received ", data);
   }
+
+  console.log("Loop End");
 
   return map as unknown as any as T;
 }
@@ -115,7 +134,7 @@ export function get_sha() {
     sendWsRequest(WebSocketMessage.GetSha(), (val) => {
       if (val.method == "SHAId") {
         sha = val.data as string;
-        resolve(undefined);
+        resolve(val.data as string);
       }
     });
   });
@@ -142,7 +161,7 @@ export async function get_app(app: string): Promise<ApplicationData> {
 
 export function install_app(app: string): Promise<undefined> {
   return new Promise((resolve) => {
-    sendWsRequest(WebSocketMessage.InstallApp(app), () => {});
+    sendWsRequest(WebSocketMessage.InstallApp(app), () => { });
     resolve(undefined);
   });
 }

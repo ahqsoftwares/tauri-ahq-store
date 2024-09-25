@@ -64,44 +64,53 @@ export function runner() {
       const req = send[i];
 
       toResolve.push(req);
-      console.log("Sending ", req.data);
       appWindow.emit("ws_send", req.data);
     }
     send = [];
   }, 1);
 }
 
+let prog = 1;
 appWindow.listen<string[]>("ws_resp", async ({ payload: pload }) => {
-  console.log(pload);
   for (let i = 0; i < pload.length; i++) {
     const payload = pload[i];
-    const toObj = await interpret(payload);
+    try {
+      const toObj = await interpret(payload);
 
-    if (toObj) {
-      if (toObj.method == "DownloadProgress") {
-        const data = toObj.data as Downloaded;
+      if (toObj) {
+        if (toObj.method == "DownloadProgress") {
+          const data = toObj.data as Downloaded;
 
-        invoke("set_progress", {
-          state: 1,
-          c: data.c,
-          t: data.t,
-        });
-      } else {
-        invoke("set_progress", {
-          state: 0,
+          invoke("set_progress", {
+            state: 1,
+            c: data.c,
+            t: data.t,
+          });
+          prog = 1;
+        } else {
+          if (prog != 0) {
+            invoke("set_progress", {
+              state: 0,
+            });
+            prog = 0
+          }
+        }
+
+        toResolve = toResolve.filter(({ ref_id, resolve }) => {
+          if (ref_id == toObj.ref) {
+            resolve(toObj);
+          }
+          if (toObj.method == "TerminateBlock") {
+            return false;
+          }
+
+          return true;
         });
       }
 
-      toResolve = toResolve.filter(({ ref_id, resolve }) => {
-        if (ref_id == toObj.ref) {
-          resolve(toObj);
-        }
-        if (toObj.method == "TerminateBlock") {
-          return false;
-        }
-
-        return true;
-      });
+    } catch (e) {
+      console.log(pload);
+      console.log(e);
     }
   }
 });

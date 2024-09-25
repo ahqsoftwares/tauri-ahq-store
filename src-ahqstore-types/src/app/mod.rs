@@ -76,6 +76,9 @@ pub struct AHQStoreApplication {
 }
 
 impl AHQStoreApplication {
+  pub const RESOURCE_ID_ICON: u8 = 0;
+  pub const RESOURCE_IMAGE: fn(u8) -> u8 = |x| x + 1;
+
   #[cfg(feature = "apps_repo")]
   pub fn validate(&self) -> Result<String, String> {
     let mut result = String::new();
@@ -278,6 +281,16 @@ impl AHQStoreApplication {
       InstallerFormat::AndroidApkZip => Some(".apk"),
       _ => None,
     }
+  }
+
+  #[cfg(feature="internet")]
+  #[doc = "🎯 Introduced in v3"]
+  pub async fn get_resource(&self, resource: u8) -> Option<Vec<u8>> {
+    use crate::internet::{get_commit, get_app_asset};
+
+    let commit = get_commit(None).await?;
+
+    get_app_asset(&commit, &self.appId, &resource.to_string()).await
   }
 }
 

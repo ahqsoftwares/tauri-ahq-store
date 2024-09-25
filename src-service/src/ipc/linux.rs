@@ -4,10 +4,10 @@ use tokio::{io::AsyncWriteExt, net::UnixListener};
 
 use crate::{
   authentication::authenticate_process,
-  handlers::{handle_msg, GET_INSTALL_DAEMON},
-  utils::{chmod, get_iprocess, set_iprocess, write_log},
+  handlers::{get_prefs, handle_msg, GET_INSTALL_DAEMON},
+  utils::{chmod, get_iprocess, set_iprocess, write_log, set_perms},
 };
-use ahqstore_types::Command;
+use ahqstore_types::{Command, Prefs};
 
 pub async fn launch() {
   let _ = GET_INSTALL_DAEMON.send(Command::GetSha(0));
@@ -32,7 +32,6 @@ pub async fn launch() {
   chmod("777", "/ahqstore/socket").unwrap();
 
   loop {
-    println!("Loop");
     if let Ok((stream, _)) = socket.accept().await {
       println!("Got Stream");
       set_iprocess(stream);
@@ -63,6 +62,20 @@ pub async fn launch() {
         println!("DISCONNECT");
         continue;
       }
+
+      set_perms((|| {
+        if sudoer {
+          return (true, true, true);
+        }
+
+        let Prefs {
+          launch_app,
+          install_apps,
+          ..
+        } = get_prefs();
+
+        (sudoer, launch_app, install_apps)
+      })());
 
       let mut ext: u8 = 0;
       'a: loop {
@@ -132,7 +145,5 @@ pub async fn launch() {
     } else {
       println!("socket.accept failed...");
     }
-
-    println!("Loop end");
   }
 }

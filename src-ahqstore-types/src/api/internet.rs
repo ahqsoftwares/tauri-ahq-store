@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::AHQStoreApplication;
 
-static CLIENT: LazyLock<Client> = LazyLock::new(|| {
+pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
   ClientBuilder::new()
     .user_agent("AHQ Store Types / Rust / AHQ Softwares")
     .build()
@@ -144,7 +144,7 @@ pub async fn get_app_asset(commit: &str, app_id: &str, asset: &str) -> Option<Ve
 
   let builder = CLIENT.get(&path).send().await.ok()?;
 
-  builder.json().await.ok()
+  Some(builder.bytes().await.ok()?.to_vec())
 }
 
 #[cfg_attr(feature = "js", wasm_bindgen)]

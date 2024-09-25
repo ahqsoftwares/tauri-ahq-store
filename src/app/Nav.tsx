@@ -64,7 +64,7 @@ export default function Nav(props: prop) {
 
       {auth.currentUser?.dev && (
         <Button
-          text="Developer"
+          text="Dev"
           img={<img style={{ width: "1.5em", height: "1.5em" }} className="rotate-[40deg]" src={dev} />}
           on="developer"
         />
@@ -77,7 +77,7 @@ export default function Nav(props: prop) {
       />
 
       <Button
-        text="Account"
+        text="User"
         img={
           <img
             className="rounded-full"
@@ -89,7 +89,7 @@ export default function Nav(props: prop) {
       />
 
       <Button
-        text="Settings"
+        text="Config"
         img={<FcSettings size="1.5em" />}
         on="settings"
         id="settings"

@@ -34,6 +34,9 @@ windows = { version = "0.58", features = [
   "Win32_System_SystemServices",
 ] }
 
+[target.'cfg(unix)'.dependencies]
+tokio = { version = "1", features = ["full"] }
+
 [target.'cfg(all(target_os="linux",target_arch="aarch64"))'.dependencies]
 openssl-sys = { version = "*", features = ["vendored"] }
 

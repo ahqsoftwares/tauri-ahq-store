@@ -46,13 +46,13 @@ interface ServerResponse {
   method: Methods;
   error: Error[];
   data:
-    | ListedApps
-    | ApplicationData
-    | Prefs
-    | Downloaded
-    | Library[]
-    | UpdateStatusReport
-    | string;
+  | ListedApps
+  | ApplicationData
+  | Prefs
+  | Downloaded
+  | Library[]
+  | UpdateStatusReport
+  | string;
 }
 
 export type {

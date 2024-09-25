@@ -109,10 +109,7 @@ async function resolveApps(apps: string[]): Promise<appData[]> {
     } else {
       promises.push(
         (async () => {
-          console.log("Wanting to get: ", appId);
           const app = await get_app(appId);
-
-          console.log("Got app: ", app);
 
           const appData = {
             ...app,

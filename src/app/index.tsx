@@ -26,7 +26,6 @@ import fetchPrefs, {
   appData,
   setConfig,
 } from "./resources/utilities/preferences";
-import { runner } from "./resources/core/handler";
 import { sendNotification } from "@tauri-apps/plugin-notification";
 import { get_home, get_map } from "./resources/core";
 import {
@@ -36,6 +35,7 @@ import {
 } from "./resources/utilities/themes";
 import { Auth, logOut } from "../auth";
 import { worker } from "./resources/core/installer";
+import { runner } from "./resources/core/handler";
 
 interface AppProps {
   auth: Auth;
@@ -43,7 +43,6 @@ interface AppProps {
 
 function Render(props: AppProps) {
   runner();
-
   const { auth } = props;
   let [page, changePage] = useState("home"),
     [admin, setIsAdmin] = useState(false),
@@ -66,7 +65,7 @@ function Render(props: AppProps) {
         }
         return loadStatus;
       });
-    }, 30 * 1000);
+    }, 5 * 60 * 1000);
     appWindow.listen("launch_app", ({ payload }: { payload: string }) => {
       if (payload.startsWith("ahqstore://")) {
         const [page] = payload.replace("ahqstore://", "").split("/");
@@ -97,16 +96,12 @@ function Render(props: AppProps) {
   }, [dark, theme]);
 
   useEffect(() => {
-    console.log("index.tsx /app");
     (async () => {
-      console.log("Running...");
       const defAccess = {
         install_apps: true,
         launch_app: true,
       };
       const fullPrefs = await fetchPrefs();
-
-      console.log("Got prefs");
 
       const { autoUpdate, dark, font, debug, isAdmin, theme } = fullPrefs;
 
@@ -138,10 +133,10 @@ function Render(props: AppProps) {
       //Fetch Maps
       try {
         console.log("Fetching maps...");
-        const [map, home]: [{ [key: string]: Object }, unknown] =
-          (await Promise.all([get_map(), get_home()])) as any;
-
+        const map = await get_map<{ [key: string]: Object }>();
         window.map = map;
+
+        const home = await get_home();
 
         await worker.init();
         setApps(home);
@@ -272,9 +267,8 @@ function Render(props: AppProps) {
       {load === true ? (
         <>
           <header
-            className={`pt-1 apps ${sidebar} ${
-              sidebar.includes("flex-row-reverse") ? "pr-2" : ""
-            } flex transition-all`}
+            className={`pt-1 apps ${sidebar} ${sidebar.includes("flex-row-reverse") ? "pr-2" : ""
+              } flex transition-all`}
           >
             <Nav
               active={page}

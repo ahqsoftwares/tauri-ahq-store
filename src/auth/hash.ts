@@ -8,13 +8,11 @@ export async function generateGHUserHash(username: string): Promise<string> {
 
   const hash = await invoke<string>("hash_username", { username });
 
-  console.log("Hash: ", hash);
   return hash;
 }
 
 export async function verifyDevExists(hash: string) {
   const resp = await fetchAuthor(hash).catch(() => undefined);
 
-  console.log("Resp: ", resp, resp != undefined);
   return resp != undefined;
 }

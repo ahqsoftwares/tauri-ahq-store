@@ -221,7 +221,8 @@ pub fn main() {
       check_install_update,
       show_code,
       rem_code,
-      hash_username
+      hash_username,
+      get_linux_distro
     ])
     .menu(|handle| Menu::new(handle))
     .build(context)

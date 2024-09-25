@@ -13,7 +13,6 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
 
   #[cfg(debug_assertions)]
   let exe: [String; 0] = [];
-  //let path = format!(r"E:\rust\iprocess\target\debug\iprocess.exe");
 
   let mut system = System::new();
   let mut users = Users::new();
@@ -27,23 +26,18 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
 
   if let Some(process) = process {
     let admin = (|| {
-      if !time {
-        return None;
-      }
-
-      println!("{:?}", &process.user_id());
       let groups = users.get_user_by_id(process.user_id()?)?.groups();
 
-      println!("{:?}", &users);
+      #[cfg(windows)]
+      let admin = "Administrators";
 
       #[cfg(unix)]
-      return Some(true);
+      let admin = "sudo";
 
-      #[cfg(windows)]
       return Some(
         groups
           .iter()
-          .find(|x| x.name() == "Administrators")
+          .find(|x| x.name() == admin)
           .is_some(),
       );
     })()

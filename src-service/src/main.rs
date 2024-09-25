@@ -26,12 +26,31 @@ mod utils;
 
 pub mod handlers;
 
+// #[cfg(unix)]
+// type SResult<T> = Result<T, ()>;
+
 #[cfg(unix)]
-type SResult<T> = Result<T, ()>;
+#[tokio::main]
+pub async fn main() {
+  start().await;
+}
+
+async fn start() {
+  delete_log();
+
+  write_log("WIN NT: Selecting PORT");
+
+  write_log("WIN NT: STARTING");
+  
+  init();
+
+  launch().await;
+}
 
 #[cfg(windows)]
 define_windows_service!(ffi_service_main, service_runner);
 
+#[cfg(windows)]
 pub fn main() -> SResult<()> {
   #[cfg(windows)]
   #[cfg(not(feature = "no_service"))]
@@ -42,6 +61,7 @@ pub fn main() -> SResult<()> {
   Ok(())
 }
 
+#[cfg(windows)]
 fn service_runner<T>(_: T) {
   #[cfg(all(windows, not(feature = "no_service")))]
   {
@@ -105,19 +125,10 @@ fn service_runner<T>(_: T) {
   }
 
   tokio::runtime::Builder::new_current_thread()
-    .worker_threads(10)
     .enable_all()
     .build()
     .unwrap()
     .block_on(async {
-      delete_log();
-
-      write_log("WIN NT: Selecting PORT");
-
-      write_log("WIN NT: STARTING");
-
-      init();
-
-      launch().await;
+      start().await;
     });
 }

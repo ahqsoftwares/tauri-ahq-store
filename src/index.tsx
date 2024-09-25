@@ -159,10 +159,7 @@ if ((window as { __TAURI_INTERNALS__?: string }).__TAURI_INTERNALS__ == null) {
     loadRender(false);
 
     (async () => {
-      const delay = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-
-      await delay(1000);
+      console.log("Running Manage()");
 
       Manage();
     })();
