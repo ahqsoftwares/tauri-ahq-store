@@ -40,7 +40,6 @@ pub static DEV_DATA: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/use
 
 pub type GHRepoCommits = Vec<GHRepoCommit>;
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
 pub async fn get_commit(token: Option<String>) -> Option<String> {
   let mut builder = CLIENT.get(COMMIT_URL);
 
@@ -55,7 +54,6 @@ pub async fn get_commit(token: Option<String>) -> Option<String> {
   Some(sha)
 }
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
 pub async fn get_total_maps(commit: &str) -> Option<usize> {
   CLIENT
     .get(TOTAL.replace("{COMMIT}", commit))
@@ -67,7 +65,17 @@ pub async fn get_total_maps(commit: &str) -> Option<usize> {
     .ok()
 }
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
+pub async fn get_home(commit: &str) -> Option<Vec<(String, Vec<String>)>> {
+  CLIENT
+    .get(HOME.replace("{COMMIT}", commit))
+    .send()
+    .await
+    .ok()?
+    .json()
+    .await
+    .ok()
+}
+
 pub async fn get_search(commit: &str, id: &str) -> Option<Vec<super::SearchEntry>> {
   CLIENT
     .get(SEARCH.replace("{COMMIT}", commit).replace("{ID}", id))
@@ -84,7 +92,6 @@ pub type RespMapData = super::MapData;
 #[cfg(feature = "js")]
 pub type RespMapData = JsValue;
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
 pub async fn get_map(commit: &str, id: &str) -> Option<RespMapData> {
   let val: super::MapData = CLIENT
     .get(MAP.replace("{COMMIT}", commit).replace("{ID}", id))
@@ -102,7 +109,6 @@ pub async fn get_map(commit: &str, id: &str) -> Option<RespMapData> {
   return Some(val);
 }
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
 pub async fn get_devs_apps(commit: &str, id: &str) -> Option<Vec<String>> {
   let data: String = CLIENT
     .get(APPS_DEV.replace("{COMMIT}", commit).replace("{ID}", id))
@@ -123,7 +129,6 @@ pub async fn get_devs_apps(commit: &str, id: &str) -> Option<Vec<String>> {
   )
 }
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
 pub async fn get_dev_data(commit: &str, id: &str) -> Option<super::DevData> {
   CLIENT
     .get(DEV_DATA.replace("{COMMIT}", commit).replace("{ID}", id))
@@ -135,7 +140,6 @@ pub async fn get_dev_data(commit: &str, id: &str) -> Option<super::DevData> {
     .ok()
 }
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
 pub async fn get_app_asset(commit: &str, app_id: &str, asset: &str) -> Option<Vec<u8>> {
   let path = APP_ASSET_URL
     .replace("{COMMIT}", commit)
@@ -147,7 +151,6 @@ pub async fn get_app_asset(commit: &str, app_id: &str, asset: &str) -> Option<Ve
   Some(builder.bytes().await.ok()?.to_vec())
 }
 
-#[cfg_attr(feature = "js", wasm_bindgen)]
 pub async fn get_app(commit: &str, app_id: &str) -> Option<AHQStoreApplication> {
   let url = APP_URL
     .replace("{COMMIT}", commit)
