@@ -1,7 +1,7 @@
 [package]
 name = "ahqstore-types"
 description = "Standard types used by AHQ Store"
-version = "3.2.3"
+version = "3.2.4"
 edition = "2021"
 license-file = "../LICENSE.md"
 repository = "https://github.com/ahqsoftwares/tauri-ahq-store"
@@ -34,5 +34,5 @@ js = [
   "dep:wasm-bindgen-futures",
   "dep:serde-wasm-bindgen",
   "dep:tsify",
-  "dep:js_macros",
+  "dep:kfghdfghdfkgh_js_macros",
 ]
