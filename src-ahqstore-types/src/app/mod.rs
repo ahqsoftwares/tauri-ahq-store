@@ -13,7 +13,7 @@ use tsify::*;
 use wasm_bindgen::JsValue;
 
 #[cfg(feature = "js")]
-use js_macros::TsifyAsync;
+use kfghdfghdfkgh_js_macros::TsifyAsync;
 
 pub use install::*;
 pub use other_fields::*;

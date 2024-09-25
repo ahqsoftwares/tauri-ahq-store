@@ -8,7 +8,7 @@ use tsify::*;
 #[cfg(feature = "js")]
 use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 #[cfg(feature = "js")]
-use js_macros::TsifyAsync;
+use kfghdfghdfkgh_js_macros::TsifyAsync;
 
 #[cfg_attr(feature = "js", declare)]
 pub type AppId = String;
