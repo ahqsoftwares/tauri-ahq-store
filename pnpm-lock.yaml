@@ -133,8 +133,8 @@ importers:
         specifier: ^3.3.3
         version: 3.3.3
       shadcn:
-        specifier: ^2.0.6
-        version: 2.0.6(typescript@5.6.2)
+        specifier: ^2.1.0
+        version: 2.1.0(typescript@5.6.2)
 
 packages:
 
@@ -2194,8 +2194,8 @@ packages:
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
 
-  shadcn@2.0.6:
-    resolution: {integrity: sha512-F/4+gjR2m1Qh7dDGLvpU6azZft8JBsnrFaRM7fL2RVaFAzLZ8bX0XtDgE+Krl7CtDYtZHWn9Xv5RJMsXLOrPDA==}
+  shadcn@2.1.0:
+    resolution: {integrity: sha512-lVuOAnibJUFrl2KaFkO3w+9ObCFBH4aLWrs4xWd9ZHvGKVYopdGXOva9qNAo8XqdeKSOUm0Xv5CYImrV80pjkA==}
     hasBin: true
 
   shebang-command@2.0.0:
@@ -4557,7 +4557,7 @@ snapshots:
 
   set-blocking@2.0.0: {}
 
-  shadcn@2.0.6(typescript@5.6.2):
+  shadcn@2.1.0(typescript@5.6.2):
     dependencies:
       '@antfu/ni': 0.21.12
       '@babel/core': 7.25.2
