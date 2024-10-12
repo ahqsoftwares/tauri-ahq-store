@@ -2,7 +2,7 @@ cargo-features = ["edition2024"]
 
 [package]
 name = "updater"
-version = "2.0.0"
+version = "2.0.1"
 edition = "2024"
 repository = "https://github.com/ahqsoftwares/tauri-ahq-store"
 homepage = "https://ahqstore.github.io/"

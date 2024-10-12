@@ -1,4 +1,4 @@
-The v2.0.0 stable release of AHQ Store
+The v2.0.1 stable release of AHQ Store
 
 ## Changes 🎉
 - Migrate from `server` to `no-server` 💿

@@ -1,6 +1,6 @@
 [package]
 name = "ahq-store-app"
-version = "2.0.0"
+version = "2.0.1"
 description = "AHQ Store on Tauri and Rust"
 authors = ["AHQ Softwares@AHQ Store"]
 license = "MIT"
@@ -11,13 +11,13 @@ edition = "2021"
 rust-version = "1.80"
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 
-tauri = { version = "2.0.0-rc", features = ["devtools", "wry", "tray-icon", "image-png", "rustls-tls"] }
+tauri = { version = "2", features = ["devtools", "wry", "tray-icon", "image-png", "rustls-tls"] }
 wry = "*"
 
 open = "5"
@@ -28,14 +28,14 @@ lazy_static = "1"
 updater = { path = "../src-updater" }
 discord-rich-presence = "0.2.4"
 tokio = "1"
-tauri-plugin-notification = "2.0.0-rc"
-tauri-plugin-http = { version = "2.0.0-rc", features = ["rustls-tls"] }
-tauri-plugin-fs = "2.0.0-rc"
-tauri-plugin-process = "2.0.0-rc"
+tauri-plugin-notification = "2"
+tauri-plugin-http = { version = "2", features = ["rustls-tls"] }
+tauri-plugin-fs = "2"
+tauri-plugin-process = "2"
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 async-recursion = "1"
 bcrypt = "0.15.1"
-ahqstore_gh_hash = "1.2.0"
+ahqstore_gh_hash = "1"
 
 
 [target.'cfg(windows)'.dependencies]
