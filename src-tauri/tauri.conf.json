@@ -44,7 +44,7 @@
     },
     "fileAssociations": [
       {
-        "description": "The AHQ Store binary file",
+        "description": "AHQ Store binary file",
         "ext": [".ahqstore", ".astore"],
         "mimeType": "application/ahqstore",
         "name": "AHQ Store File",

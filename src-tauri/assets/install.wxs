@@ -139,7 +139,7 @@
                 {{/each~}}
             </Component>
             <Component Id="Path" Guid="{{path_component_guid}}" Win64="$(var.Win64)">
-                <File Id="Path" Source="{{app_exe_source}}" KeyPath="yes" Checksum="yes"/>
+                <File Id="Path" Source="{{main_binary_path}}" KeyPath="yes" Checksum="yes"/>
                 <ServiceControl Id="DelService" Name="AHQ Store Service" Stop="both" Remove="both" Wait="no" />
                 {{#each file_associations as |association| ~}}
                 {{#each association.ext as |ext| ~}}
@@ -192,7 +192,7 @@
             <Component Id="ApplicationShortcut" Guid="*">
                 <Shortcut Id="ApplicationStartMenuShortcut"
                     Name="{{product_name}}"
-                    Description="The open source store client"
+                    Description="The open sourced store client"
                     Target="[!Path]"
                     Icon="ProductIcon"
                     WorkingDirectory="INSTALLDIR">
