@@ -28,6 +28,8 @@ pub use api::*;
 pub mod data;
 pub use data::*;
 
+pub mod winget;
+
 /// **You should use cli**
 /// ```sh
 /// cargo install ahqstore_cli_rs
