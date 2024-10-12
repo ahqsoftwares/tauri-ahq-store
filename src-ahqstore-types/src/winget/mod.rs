@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Installer {
   pub Architecture: String,
-  pub InstallerType: String,
+  pub InstallerType: Option<String>,
   pub InstallerLocale: Option<String>,
   pub InstallerUrl: String,
 }
