@@ -20,7 +20,7 @@ pub use other_fields::*;
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[doc = "Use the official ahqstore (https://crates.io/crates/ahqstore_cli_rs) cli\n🎯 Introduced in v1, Revamped in v2"]
+#[doc = "Use the official ahqstore (<https://crates.io/crates/ahqstore_cli_rs>) cli\n🎯 Introduced in v1, Revamped in v2"]
 #[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
 #[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]
 pub struct AHQStoreApplication {
@@ -71,7 +71,7 @@ pub struct AHQStoreApplication {
   /// Page of Application
   pub app_page: Option<String>,
 
-  /// These Resources will be passed to the installer, the size of all the Vec<u8> must not be more than 5 * 1024 * 1024 * 1024 bytes (~5MB)
+  /// These Resources will be passed to the installer, the size of all the `Vec<u8>` must not be more than 5 * 1024 * 1024 * 1024 bytes (~5MB)
   pub resources: Option<HashMap<u8, Vec<u8>>>,
 }
 
@@ -283,10 +283,10 @@ impl AHQStoreApplication {
     }
   }
 
-  #[cfg(feature="internet")]
+  #[cfg(feature = "internet")]
   #[doc = "🎯 Introduced in v3"]
   pub async fn get_resource(&self, resource: u8) -> Option<Vec<u8>> {
-    use crate::internet::{get_commit, get_app_asset};
+    use crate::internet::{get_app_asset, get_commit};
 
     let commit = get_commit(None).await?;
 

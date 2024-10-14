@@ -34,12 +34,7 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
       #[cfg(unix)]
       let admin = "sudo";
 
-      return Some(
-        groups
-          .iter()
-          .find(|x| x.name() == admin)
-          .is_some(),
-      );
+      return Some(groups.iter().find(|x| x.name() == admin).is_some());
     })()
     .unwrap_or(false);
 

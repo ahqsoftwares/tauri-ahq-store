@@ -1,3 +1,5 @@
+#![allow(static_mut_refs)]
+
 #[cfg(windows)]
 use std::time::Duration;
 
@@ -41,7 +43,7 @@ async fn start() {
   write_log("WIN NT: Selecting PORT");
 
   write_log("WIN NT: STARTING");
-  
+
   init();
 
   launch().await;

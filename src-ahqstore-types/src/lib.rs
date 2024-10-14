@@ -2,13 +2,12 @@ use serde::{Deserialize, Serialize};
 use serde_json::{from_str, to_string, to_string_pretty};
 use std::fs::read;
 
-
+#[cfg(feature = "js")]
+use kfghdfghdfkgh_js_macros::TsifyAsync;
 #[cfg(feature = "js")]
 use tsify::*;
 #[cfg(feature = "js")]
-use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
-#[cfg(feature = "js")]
-use kfghdfghdfkgh_js_macros::TsifyAsync;
+use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
 #[cfg_attr(feature = "js", declare)]
 pub type AppId = String;
@@ -53,7 +52,7 @@ pub struct Prefs {
   pub auto_update_apps: bool,
 }
 
-#[cfg_attr(feature="js", wasm_bindgen)]
+#[cfg_attr(feature = "js", wasm_bindgen)]
 impl Prefs {
   pub fn get(path: &str) -> Option<Vec<u8>> {
     read(&path).ok()
@@ -112,7 +111,7 @@ impl Command {
   }
 }
 
-#[cfg_attr(feature="js", wasm_bindgen)]
+#[cfg_attr(feature = "js", wasm_bindgen)]
 impl Command {
   pub fn try_from_js(value: String) -> Option<Command> {
     serde_json::from_str(&value).ok()

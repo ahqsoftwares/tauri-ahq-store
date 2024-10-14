@@ -27,7 +27,7 @@ use super::{
   av::{self, scan::Malicious},
   get_app, get_commit, get_prefs, list_apps,
   service::{download_app, install_app, UninstallResult},
-  uninstall_app,
+  uninstall_app, InstallResult,
 };
 
 pub static mut UPDATE_STATUS_REPORT: Option<UpdateStatusReport> = None;
@@ -87,11 +87,10 @@ pub enum Step {
   None,
 }
 
-#[derive(Debug)]
 pub enum DaemonData {
   Dwn(DownloadData),
   AVScan((AHQStoreApplication, JoinHandle<Option<Malicious>>)),
-  Inst(Child),
+  Inst(InstallResult),
   Unst(JoinHandle<bool>),
   None,
 }
@@ -105,7 +104,7 @@ pub struct DownloadData {
   pub app: AHQStoreApplication,
 }
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct DaemonState {
   pub step: Step,
   pub data: Option<DaemonData>,

@@ -3,7 +3,7 @@ use std::{io::Write, mem::replace};
 use ahqstore_types::{AppStatus, Library};
 
 use crate::{
-  handlers::{av, install_app},
+  handlers::{av, install_app, InstallResult},
   utils::get_installer_file,
 };
 
@@ -90,14 +90,31 @@ pub async fn handle_inst(resp: &mut Library, state: &mut DaemonState, imp: &mut 
   };
 
   if let DaemonData::Inst(x) = data {
-    match x.try_wait() {
-      Ok(Some(s)) => handle_exit(imp, s.success(), resp, state),
-      // Let's actually block
-      Ok(None) => match x.wait() {
-        Ok(s) => handle_exit(imp, s.success(), resp, state),
-        _ => handle_exit(imp, false, resp, state),
-      },
-      _ => handle_exit(imp, false, resp, state),
+    match x {
+      InstallResult::Child(x) => {
+        match x.try_wait() {
+          Ok(Some(s)) => handle_exit(imp, s.success(), resp, state),
+          // Let's actually block
+          Ok(None) => match x.wait() {
+            Ok(s) => handle_exit(imp, s.success(), resp, state),
+            _ => handle_exit(imp, false, resp, state),
+          },
+          _ => handle_exit(imp, false, resp, state),
+        }
+      }
+      InstallResult::Thread(x) => if x.is_finished() {
+        let res = x.await.unwrap();
+
+        handle_exit(
+          imp,
+          match res {
+            Some(()) => true,
+            _ => false,
+          },
+          resp,
+          state,
+        )
+      }
     }
   }
 }

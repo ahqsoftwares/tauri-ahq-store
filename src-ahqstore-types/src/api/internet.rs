@@ -1,162 +1,158 @@
-#[cfg(feature = "js")]
-use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
-
-use std::sync::LazyLock;
-
-use reqwest::{Client, ClientBuilder};
-use serde::{Deserialize, Serialize};
-
 use crate::AHQStoreApplication;
 
-pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
-  ClientBuilder::new()
-    .user_agent("AHQ Store Types / Rust / AHQ Softwares")
-    .build()
-    .unwrap()
-});
+use super::{ahqstore::{AHQSTORE_APPS_DEV, AHQSTORE_APP_ASSET_URL, AHQSTORE_APP_URL, AHQSTORE_DEV_DATA, AHQSTORE_HOME, AHQSTORE_MAP, AHQSTORE_SEARCH, AHQSTORE_TOTAL}, methods::{self, OfficialManifestSource, Store}, winget::{WINGET_APPS_DEV, WINGET_APP_ASSET_URL, WINGET_APP_URL, WINGET_DEV_DATA, WINGET_HOME, WINGET_MAP, WINGET_SEARCH, WINGET_TOTAL}, SearchEntry};
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
-pub struct GHRepoCommit {
-  pub sha: String,
+pub struct Commits {
+  pub ahqstore: String,
+  pub winget: String
 }
 
-pub static BASE_URL: &'static str = "https://rawcdn.githack.com/ahqstore/apps/{COMMIT}";
-pub static COMMIT_URL: &'static str = "https://api.github.com/repos/ahqstore/apps/commits";
-
-pub static APP_URL: LazyLock<String> =
-  LazyLock::new(|| format!("{BASE_URL}/db/apps/{{APP_ID}}.json"));
-pub static APP_ASSET_URL: LazyLock<String> =
-  LazyLock::new(|| format!("{BASE_URL}/db/res/{{APP_ID}}/{{ASSET}}"));
-
-pub static TOTAL: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/total"));
-pub static HOME: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/home.json"));
-
-pub static SEARCH: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/search/{{ID}}.json"));
-pub static MAP: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/map/{{ID}}.json"));
-
-pub static APPS_DEV: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/db/dev/{{ID}}.json"));
-pub static DEV_DATA: LazyLock<String> = LazyLock::new(|| format!("{BASE_URL}/users/{{ID}}.json"));
-
-pub type GHRepoCommits = Vec<GHRepoCommit>;
-
+#[deprecated]
 pub async fn get_commit(token: Option<String>) -> Option<String> {
-  let mut builder = CLIENT.get(COMMIT_URL);
-
-  if let Some(val) = token {
-    builder = builder.bearer_auth(val);
-  }
-
-  let val = builder.send().await.ok()?;
-  let mut val = val.json::<GHRepoCommits>().await.ok()?;
-  let sha = val.remove(0).sha;
-
-  Some(sha)
+  Some(get_all_commits(token).await?.ahqstore)
 }
 
+pub async fn get_all_commits(token: Option<String>) -> Option<Commits> {
+  let ahqstore = methods::get_commit(Store::AHQStore, token.as_ref()).await?;
+  let winget = methods::get_commit(Store::WinGet, token.as_ref()).await?;
+
+  Some(Commits {
+    ahqstore,
+    winget
+  })
+}
+
+#[deprecated]
 pub async fn get_total_maps(commit: &str) -> Option<usize> {
-  CLIENT
-    .get(TOTAL.replace("{COMMIT}", commit))
-    .send()
-    .await
-    .ok()?
-    .json()
-    .await
-    .ok()
+  get_total_maps_by_source(OfficialManifestSource::AHQStore, commit).await
 }
 
+pub async fn get_total_maps_by_source(source: OfficialManifestSource, commit: &str) -> Option<usize> {
+  let total = match source {
+    OfficialManifestSource::AHQStore => &*AHQSTORE_TOTAL,
+    OfficialManifestSource::WinGet => &*WINGET_TOTAL
+  };
+  methods::get_total_maps(total, commit).await
+}
+
+#[deprecated]
 pub async fn get_home(commit: &str) -> Option<Vec<(String, Vec<String>)>> {
-  CLIENT
-    .get(HOME.replace("{COMMIT}", commit))
-    .send()
-    .await
-    .ok()?
-    .json()
-    .await
-    .ok()
+  get_home_by_source(OfficialManifestSource::AHQStore, commit).await
 }
 
+pub async fn get_home_by_source(source: OfficialManifestSource, commit: &str) -> Option<Vec<(String, Vec<String>)>> {
+  let home = match source {
+    OfficialManifestSource::AHQStore => &*AHQSTORE_HOME,
+    OfficialManifestSource::WinGet => &*WINGET_HOME
+  };
+
+  methods::get_home(home, commit).await
+}
+
+#[deprecated]
 pub async fn get_search(commit: &str, id: &str) -> Option<Vec<super::SearchEntry>> {
-  CLIENT
-    .get(SEARCH.replace("{COMMIT}", commit).replace("{ID}", id))
-    .send()
-    .await
-    .ok()?
-    .json()
-    .await
-    .ok()
+  get_search_by_source(OfficialManifestSource::AHQStore, commit, id).await
 }
 
-#[cfg(not(feature = "js"))]
+pub async fn get_search_by_source(source: OfficialManifestSource, commit: &str, id: &str) -> Option<Vec<super::SearchEntry>> {
+  let search = match source {
+    OfficialManifestSource::AHQStore => &*AHQSTORE_SEARCH,
+    OfficialManifestSource::WinGet => &*WINGET_SEARCH
+  };
+
+  methods::get_search(search, commit, id).await
+}
+
+pub async fn get_all_maps_by_source(source: OfficialManifestSource, commit: &str) -> Option<super::MapData> {
+  let (total, map) = match source {
+    OfficialManifestSource::AHQStore => (&*AHQSTORE_TOTAL, &*AHQSTORE_MAP),
+    OfficialManifestSource::WinGet => (&*WINGET_TOTAL, &*WINGET_MAP)
+  };
+
+  let (total, map) = (total.as_str(), map.as_str());
+
+  methods::get_full_map(total, map, commit).await
+}
+
+pub async fn get_all_search_by_source(source: OfficialManifestSource, commit: &str) -> Option<Vec<SearchEntry>> {
+  let (total, search) = match source {
+    OfficialManifestSource::AHQStore => (&*AHQSTORE_TOTAL, &*AHQSTORE_SEARCH),
+    OfficialManifestSource::WinGet => (&*WINGET_TOTAL, &*WINGET_SEARCH)
+  };
+
+  let (total, search) = (total.as_str(), search.as_str());
+
+  methods::get_full_search(total, search, commit).await
+}
+
 pub type RespMapData = super::MapData;
-#[cfg(feature = "js")]
-pub type RespMapData = JsValue;
 
+#[deprecated]
 pub async fn get_map(commit: &str, id: &str) -> Option<RespMapData> {
-  let val: super::MapData = CLIENT
-    .get(MAP.replace("{COMMIT}", commit).replace("{ID}", id))
-    .send()
-    .await
-    .ok()?
-    .json()
-    .await
-    .ok()?;
-
-  #[cfg(feature = "js")]
-  return serde_wasm_bindgen::to_value(&val).ok();
-
-  #[cfg(not(feature = "js"))]
-  return Some(val);
+  get_map_by_source(OfficialManifestSource::AHQStore, commit, id).await
 }
 
+pub async fn get_map_by_source(source: OfficialManifestSource, commit: &str, id: &str) -> Option<RespMapData> {
+  let map = match source {
+    OfficialManifestSource::AHQStore => &*AHQSTORE_MAP,
+    OfficialManifestSource::WinGet => &*WINGET_MAP
+  };
+
+  methods::get_map(map, commit, id).await
+}
+
+#[deprecated]
 pub async fn get_devs_apps(commit: &str, id: &str) -> Option<Vec<String>> {
-  let data: String = CLIENT
-    .get(APPS_DEV.replace("{COMMIT}", commit).replace("{ID}", id))
-    .send()
-    .await
-    .ok()?
-    .json()
-    .await
-    .ok()?;
-
-  Some(
-    data
-      .split("\n")
-      .into_iter()
-      .filter(|x| x.trim() != "")
-      .map(|x| x.to_string())
-      .collect(),
-  )
+  get_devs_apps_by_source(OfficialManifestSource::AHQStore, commit, id).await
 }
 
+pub async fn get_devs_apps_by_source(source: OfficialManifestSource, commit: &str, id: &str) -> Option<Vec<String>> {
+  let apps_dev = match source {
+    OfficialManifestSource::AHQStore => &*AHQSTORE_APPS_DEV,
+    OfficialManifestSource::WinGet => &*WINGET_APPS_DEV
+  };
+
+  methods::get_devs_apps(apps_dev, commit, id).await
+}
+
+#[deprecated]
 pub async fn get_dev_data(commit: &str, id: &str) -> Option<super::DevData> {
-  CLIENT
-    .get(DEV_DATA.replace("{COMMIT}", commit).replace("{ID}", id))
-    .send()
-    .await
-    .ok()?
-    .json()
-    .await
-    .ok()
+  get_dev_data_by_source(OfficialManifestSource::AHQStore, commit, id).await
 }
 
+pub async fn get_dev_data_by_source(source: OfficialManifestSource, commit: &str, id: &str) -> Option<super::DevData> {
+  let dev_data = match source {
+    OfficialManifestSource::AHQStore => &*AHQSTORE_DEV_DATA,
+    OfficialManifestSource::WinGet => &*WINGET_DEV_DATA
+  };
+
+  methods::get_dev_data(dev_data, commit, id).await
+}
+
+#[deprecated]
 pub async fn get_app_asset(commit: &str, app_id: &str, asset: &str) -> Option<Vec<u8>> {
-  let path = APP_ASSET_URL
-    .replace("{COMMIT}", commit)
-    .replace("{APP_ID}", app_id)
-    .replace("{ASSET}", asset);
-
-  let builder = CLIENT.get(&path).send().await.ok()?;
-
-  Some(builder.bytes().await.ok()?.to_vec())
+  get_app_asset_by_source(OfficialManifestSource::AHQStore, commit, app_id, asset).await
 }
 
+pub async fn get_app_asset_by_source(source: OfficialManifestSource, commit: &str, app_id: &str, asset: &str) -> Option<Vec<u8>> {
+  let app_asset_url = match source {
+    OfficialManifestSource::AHQStore => &*AHQSTORE_APP_ASSET_URL,
+    OfficialManifestSource::WinGet => &*WINGET_APP_ASSET_URL
+  };
+
+  methods::get_app_asset(app_asset_url, commit, app_id, asset).await
+}
+
+#[deprecated]
 pub async fn get_app(commit: &str, app_id: &str) -> Option<AHQStoreApplication> {
-  let url = APP_URL
-    .replace("{COMMIT}", commit)
-    .replace("{APP_ID}", app_id);
+  get_app_by_source(OfficialManifestSource::AHQStore, commit, app_id).await
+}
 
-  let builder = CLIENT.get(url).send().await.ok()?;
+pub async fn get_app_by_source(source: OfficialManifestSource, commit: &str, app_id: &str) -> Option<AHQStoreApplication> {
+  let app_url = match source {
+    OfficialManifestSource::AHQStore => &*AHQSTORE_APP_URL,
+    OfficialManifestSource::WinGet => &*WINGET_APP_URL
+  };
 
-  builder.json().await.ok()
+  methods::get_app(app_url, commit, app_id).await
 }
