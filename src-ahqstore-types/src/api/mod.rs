@@ -31,8 +31,8 @@ pub mod flatpak;
 #[cfg(feature = "internet")]
 pub mod fdroid;
 
-use std::sync::LazyLock;
 use reqwest::{Client, ClientBuilder};
+use std::sync::LazyLock;
 
 pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
   ClientBuilder::new()

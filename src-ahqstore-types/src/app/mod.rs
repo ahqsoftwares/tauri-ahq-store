@@ -286,11 +286,31 @@ impl AHQStoreApplication {
   #[cfg(feature = "internet")]
   #[doc = "🎯 Introduced in v3"]
   pub async fn get_resource(&self, resource: u8) -> Option<Vec<u8>> {
-    use crate::internet::{get_app_asset, get_commit};
+    use crate::{
+      internet::{get_all_commits, get_app_asset_by_source},
+      methods::OfficialManifestSource,
+    };
 
-    let commit = get_commit(None).await?;
+    let winget = self.appId.starts_with("winget_pkg_");
 
-    get_app_asset(&commit, &self.appId, &resource.to_string()).await
+    let commit = get_all_commits(None).await?;
+    let commit = if winget {
+      commit.winget
+    } else {
+      commit.ahqstore
+    };
+
+    get_app_asset_by_source(
+      if winget {
+        OfficialManifestSource::AHQStore
+      } else {
+        OfficialManifestSource::WinGet
+      },
+      &commit,
+      &self.appId,
+      &resource.to_string(),
+    )
+    .await
   }
 }
 

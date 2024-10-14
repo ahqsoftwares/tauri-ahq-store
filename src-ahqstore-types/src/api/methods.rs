@@ -17,7 +17,7 @@ pub struct GHRepoCommit {
 
 pub enum OfficialManifestSource {
   AHQStore,
-  WinGet
+  WinGet,
 }
 
 pub type Store = OfficialManifestSource;
@@ -27,7 +27,7 @@ pub type GHRepoCommits = Vec<GHRepoCommit>;
 pub async fn get_commit(store: OfficialManifestSource, token: Option<&String>) -> Option<String> {
   let mut builder = CLIENT.get(match store {
     OfficialManifestSource::AHQStore => AHQSTORE_COMMIT_URL,
-    OfficialManifestSource::WinGet => WINGET_COMMIT_URL
+    OfficialManifestSource::WinGet => WINGET_COMMIT_URL,
   });
 
   if let Some(val) = token {
@@ -82,7 +82,7 @@ pub async fn get_full_map(total: &str, map: &str, commit: &str) -> Option<super:
   let mut i = 1;
   while i <= total {
     let map_result = get_map(map, commit, &i.to_string()).await?;
-    
+
     for (k, v) in map_result {
       result.insert(k, v);
     }
@@ -93,7 +93,11 @@ pub async fn get_full_map(total: &str, map: &str, commit: &str) -> Option<super:
   Some(result)
 }
 
-pub async fn get_full_search(total: &str, search: &str, commit: &str) -> Option<Vec<super::SearchEntry>> {
+pub async fn get_full_search(
+  total: &str,
+  search: &str,
+  commit: &str,
+) -> Option<Vec<super::SearchEntry>> {
   let total = get_total_maps(total, commit).await?;
 
   let mut result = vec![];
@@ -154,7 +158,12 @@ pub async fn get_dev_data(dev_data: &str, commit: &str, id: &str) -> Option<supe
     .ok()
 }
 
-pub async fn get_app_asset(app_asset_url: &str, commit: &str, app_id: &str, asset: &str) -> Option<Vec<u8>> {
+pub async fn get_app_asset(
+  app_asset_url: &str,
+  commit: &str,
+  app_id: &str,
+  asset: &str,
+) -> Option<Vec<u8>> {
   let path = app_asset_url
     .replace("{COMMIT}", commit)
     .replace("{APP_ID}", app_id)
