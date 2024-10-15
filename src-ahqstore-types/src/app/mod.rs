@@ -132,6 +132,15 @@ impl AHQStoreApplication {
       resp.push_str("✅ Resources are valid\n");
     }
 
+    for (_, v) in self.downloadUrls.iter() {
+      match v.installerType {
+        InstallerFormat::LinuxFlathubFlatpak => {
+          resp.push_str("❌ LinuxFlathubFlatpak is not allowed in ahq store repository, you must use LinuxFlatpak\n");
+        }
+        _ => {}
+      }
+    }
+
     resp
   }
 
@@ -249,6 +258,8 @@ impl AHQStoreApplication {
 
     match &url.installerType {
       InstallerFormat::LinuxAppImage => Some(&url),
+      InstallerFormat::LinuxFlatpak => Some(&url),
+      InstallerFormat::LinuxFlathubFlatpak => Some(&url),
       _ => None,
     }
   }
@@ -257,6 +268,8 @@ impl AHQStoreApplication {
   pub fn get_linux_extension(&self) -> Option<&'static str> {
     match self.get_linux_download()?.installerType {
       InstallerFormat::LinuxAppImage => Some(".AppImage"),
+      InstallerFormat::LinuxFlatpak => Some(".flatpak"),
+      InstallerFormat::LinuxFlathubFlatpak => Some(""),
       _ => None,
     }
   }
@@ -286,10 +299,7 @@ impl AHQStoreApplication {
   #[cfg(feature = "internet")]
   #[doc = "🎯 Introduced in v3"]
   pub async fn get_resource(&self, resource: u8) -> Option<Vec<u8>> {
-    use crate::{
-      internet::{get_all_commits, get_app_asset_by_source},
-      methods::OfficialManifestSource,
-    };
+    use crate::internet::{get_all_commits, get_app_asset};
 
     let winget = self.appId.starts_with("winget_pkg_");
 
@@ -300,17 +310,7 @@ impl AHQStoreApplication {
       commit.ahqstore
     };
 
-    get_app_asset_by_source(
-      if winget {
-        OfficialManifestSource::AHQStore
-      } else {
-        OfficialManifestSource::WinGet
-      },
-      &commit,
-      &self.appId,
-      &resource.to_string(),
-    )
-    .await
+    get_app_asset(&commit, &self.appId, &resource.to_string()).await
   }
 }
 

@@ -1,3 +1,8 @@
+//! Declared URLS for:
+//! AHQ Store Community Repository Parsable Urls (ahqstore/apps)
+//!
+//! Repository Mirror : <https://github.com/ahqstore/apps>
+
 use std::sync::LazyLock;
 
 pub static AHQSTORE_COMMIT_URL: &'static str = "https://api.github.com/repos/ahqstore/apps/commits";

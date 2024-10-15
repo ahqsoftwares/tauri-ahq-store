@@ -1,3 +1,9 @@
+//! Collection of methods that can be used to fetch data from URL Declared AHQ Store Sources
+//!
+//! Currently URL Declared AHQ Store Parsable Repos Officially Used are
+//! - AHQ Store Official Community Repository (AHQStore)
+//! - Microsoft Winget Community Repository (WinGet)
+
 use std::collections::HashMap;
 
 #[cfg(feature = "js")]
@@ -17,7 +23,13 @@ pub struct GHRepoCommit {
 
 pub enum OfficialManifestSource {
   AHQStore,
+
+  #[doc = "Third Party Manifest Repo Adapted for use"]
   WinGet,
+  #[doc = "Third Party API Used"]
+  FlatHub,
+  #[doc = "Third Party API Used"]
+  FDroid,
 }
 
 pub type Store = OfficialManifestSource;
@@ -28,6 +40,9 @@ pub async fn get_commit(store: OfficialManifestSource, token: Option<&String>) -
   let mut builder = CLIENT.get(match store {
     OfficialManifestSource::AHQStore => AHQSTORE_COMMIT_URL,
     OfficialManifestSource::WinGet => WINGET_COMMIT_URL,
+    _ => {
+      return None;
+    }
   });
 
   if let Some(val) = token {
