@@ -64,7 +64,7 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@types/react-modal": "^3.16.3",
-    "babel-plugin-react-compiler": "0.0.0-experimental-de2cfda-20240912",
+    "babel-plugin-react-compiler": "0.0.0-experimental-fa06e2c-20241014",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "cross-env": "^7.0.3",
