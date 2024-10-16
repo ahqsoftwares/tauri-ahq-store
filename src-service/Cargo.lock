@@ -30,8 +30,9 @@ dependencies = [
 
 [[package]]
 name = "ahqstore-types"
-version = "3.4.0"
+version = "3.5.3"
 dependencies = [
+ "fuse-rust",
  "reqwest",
  "serde",
  "serde_json",
@@ -321,6 +322,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13624c2627564efccf4934284bdd98cbaa14e79b0b5a141218e507b3a823456"
 dependencies = [
  "percent-encoding",
+]
+
+[[package]]
+name = "fuse-rust"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b38318e0ccdb981874116e30c87ef64ceb9934dbc78d960c365788f7584ca74"
+dependencies = [
+ "crossbeam-utils",
 ]
 
 [[package]]
@@ -785,9 +795,9 @@ dependencies = [
 
 [[package]]
 name = "openssl-sys"
-version = "0.9.103"
+version = "0.9.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f9e8deee91df40a943c71b917e5874b951d32a802526c85721ce3b776c929d6"
+checksum = "45abf306cbf99debc8195b66b7346498d7b10c210de50418b5ccd7ceba08c741"
 dependencies = [
  "cc",
  "libc",
