@@ -67,11 +67,11 @@ pub struct AHQStoreApplication {
   /// License type or Terms of Service Page
   pub license_or_tos: Option<String>,
 
-  /// Page of Application
-  pub app_page: Option<String>,
-
   /// These Resources will be passed to the installer, the size of all the `Vec<u8>` must not be more than 5 * 1024 * 1024 * 1024 bytes (~5MB)
   pub resources: Option<HashMap<u8, Vec<u8>>>,
+
+  /// This is set to true when the app is verified by the AHQ Store Team
+  pub verified: bool,
 }
 
 impl AHQStoreApplication {
@@ -84,7 +84,10 @@ impl AHQStoreApplication {
 
     result.push_str(&self.validate_resource());
 
-    if self.appId.starts_with("flatpak") || self.appId.starts_with("fdroid") || self.appId.starts_with("winget") {
+    if self.appId.starts_with("flatpak")
+      || self.appId.starts_with("fdroid")
+      || self.appId.starts_with("winget")
+    {
       result.push_str("❌ AppId must not start with flatpak, fdroid or winget\n");
     }
 
@@ -94,7 +97,8 @@ impl AHQStoreApplication {
       }
 
       if let Some(_) = self.source {
-        result.push_str("❌ Source can't be present, your application must not reference a source\n");
+        result
+          .push_str("❌ Source can't be present, your application must not reference a source\n");
       }
     }
 
@@ -149,6 +153,7 @@ impl AHQStoreApplication {
 
   pub fn export(&self) -> (String, Vec<(u8, Vec<u8>)>) {
     let mut obj = self.clone();
+    obj.verified = false;
 
     for val in obj.downloadUrls.values_mut() {
       if &obj.authorId == "1" && &val.asset == "url" {

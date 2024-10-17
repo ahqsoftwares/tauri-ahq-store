@@ -212,7 +212,7 @@ pub enum ResponseToSend {
 
   Error(ErrorType),
 
-  SHAId(RefId, String),
+  SHAId(RefId, Commits),
 
   Disconnect(Reason),
 

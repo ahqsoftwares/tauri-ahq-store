@@ -31,6 +31,9 @@ pub mod flatpak;
 #[cfg(feature = "internet")]
 pub mod fdroid;
 
+#[cfg(all(feature = "internet", feature = "search"))]
+pub mod search;
+
 use reqwest::{Client, ClientBuilder};
 use std::sync::LazyLock;
 

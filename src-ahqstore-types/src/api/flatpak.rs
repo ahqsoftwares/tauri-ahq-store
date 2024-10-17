@@ -7,7 +7,7 @@ use crate::{
   InstallerOptionsLinux,
 };
 
-use super::CLIENT;
+use super::{SearchEntry, CLIENT};
 
 pub static FH_BASE_URL: &'static str = "https://flathub.org/api/v2";
 
@@ -80,7 +80,6 @@ pub async fn get_app(id: &str) -> Option<AHQStoreApplication> {
     appDisplayName: app.name.clone(),
     appId: format!("flatpak:{}", app.app_id),
     appShortcutName: app.name,
-    app_page: app.urls.clone().map_or_else(|| None, |x| x.homepage),
     authorId: format!("flathub:{}", app.developer_name),
     description: app.summary,
     displayImages: vec![],
@@ -116,6 +115,7 @@ pub async fn get_app(id: &str) -> Option<AHQStoreApplication> {
       map
     },
     resources: None,
+    verified: false
   })
 }
 
@@ -133,4 +133,54 @@ pub async fn get_app_asset<T>(id: &str, _: T) -> Option<Vec<u8>> {
     .ok()?
     .to_vec()
     .into()
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FlatpakSearchObject {
+  pub query: String,
+  pub filters: Vec<()>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FlatpakSearchReturnObject {
+  pub hits: Vec<FlatpakReturnedApplication>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FlatpakReturnedApplication {
+  pub name: String,
+  pub app_id: String,
+}
+
+pub async fn search(query: &str) -> Option<Vec<SearchEntry>> {
+  use serde_json::to_string;
+
+  let FlatpakSearchReturnObject { mut hits } = CLIENT
+    .post(SEARCH)
+    .body(
+      to_string(&FlatpakSearchObject {
+        query: query.to_string(),
+        filters: vec![],
+      })
+      .ok()?,
+    )
+    .send()
+    .await
+    .ok()?
+    .json::<FlatpakSearchReturnObject>()
+    .await
+    .ok()?;
+
+  hits.truncate(10);
+
+  Some(
+    hits
+      .into_iter()
+      .map(|x| SearchEntry {
+        id: format!("flatpak:{}", x.app_id),
+        name: x.name.clone(),
+        title: x.name,
+      })
+      .collect::<Vec<_>>(),
+  )
 }

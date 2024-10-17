@@ -16,8 +16,7 @@ use super::{
   flatpak,
   methods::{self, OfficialManifestSource, Store},
   winget::{
-    WINGET_APPS_DEV, WINGET_APP_ASSET_URL, WINGET_APP_URL,
-    WINGET_MAP, WINGET_SEARCH, WINGET_TOTAL,
+    WINGET_APPS_DEV, WINGET_APP_ASSET_URL, WINGET_APP_URL, WINGET_MAP, WINGET_SEARCH, WINGET_TOTAL,
   },
   SearchEntry,
 };
@@ -32,8 +31,12 @@ pub struct Commits {
 
 #[tauri_macros::command]
 pub async fn get_all_commits(token: Option<String>) -> Result<Commits> {
-  let ahqstore = methods::get_commit(Store::AHQStore, token.as_ref()).await.context("http")?;
-  let winget = methods::get_commit(Store::WinGet, token.as_ref()).await.context("http")?;
+  let ahqstore = methods::get_commit(Store::AHQStore, token.as_ref())
+    .await
+    .context("http")?;
+  let winget = methods::get_commit(Store::WinGet, token.as_ref())
+    .await
+    .context("http")?;
 
   Ok(Commits { ahqstore, winget })
 }
@@ -54,10 +57,12 @@ pub async fn get_total_maps_by_source(
 }
 
 #[tauri_macros::command]
-pub async fn get_home(ahqstore_repo_commit: &str,) -> Result<Vec<(String, Vec<String>)>> {
+pub async fn get_home(ahqstore_repo_commit: &str) -> Result<Vec<(String, Vec<String>)>> {
   let home = &*AHQSTORE_HOME;
 
-  methods::get_home(home, ahqstore_repo_commit).await.context("")
+  methods::get_home(home, ahqstore_repo_commit)
+    .await
+    .context("")
 }
 
 #[tauri_macros::command]
@@ -96,18 +101,22 @@ pub async fn get_all_maps_by_source(
 }
 
 #[tauri_macros::command]
-pub async fn get_all_search(
-  commit: &Commits,
-) -> Result<Vec<SearchEntry>> {
+pub async fn get_all_search(commit: &Commits) -> Result<Vec<SearchEntry>> {
   let total = &*AHQSTORE_TOTAL;
   let search = &*AHQSTORE_SEARCH;
 
-  let mut result: Vec<SearchEntry> = methods::get_full_search(total, search, &commit.ahqstore).await.context("")?;
+  let mut result: Vec<SearchEntry> = methods::get_full_search(total, search, &commit.ahqstore)
+    .await
+    .context("")?;
 
   let total = &*WINGET_TOTAL;
   let search = &*WINGET_SEARCH;
 
-  result.append(&mut methods::get_full_search(total, search, &commit.winget).await.context("")?);
+  result.append(
+    &mut methods::get_full_search(total, search, &commit.winget)
+      .await
+      .context("")?,
+  );
 
   Ok(result)
 }
@@ -140,15 +149,15 @@ pub async fn get_devs_apps_by_source(
   let apps_dev = match source {
     OfficialManifestSource::AHQStore => &*AHQSTORE_APPS_DEV,
     OfficialManifestSource::WinGet => &*WINGET_APPS_DEV,
-    OfficialManifestSource::FlatHub => {
-      todo!()
-    }
-    OfficialManifestSource::FDroid => {
-      todo!()
+    _ => {
+      // Not worth it to make the api
+      return Ok(vec![]);
     }
   };
 
-  methods::get_devs_apps(apps_dev, commit, id).await.context("")
+  methods::get_devs_apps(apps_dev, commit, id)
+    .await
+    .context("")
 }
 
 #[tauri_macros::command]
@@ -166,7 +175,7 @@ pub async fn get_dev_data_by_source(
         github: "https://github.com/microsoft/winget-pkgs".into(),
         avatar_url: "https://github.com/microsoft/winget-cli/blob/master/.github/images/WindowsPackageManager_Assets/ICO/PNG/_64.png?raw=true".into(),
       });
-    },
+    }
     OfficialManifestSource::FlatHub => {
       return Ok(super::DevData {
         name: "FlatHub".into(),
@@ -180,12 +189,14 @@ pub async fn get_dev_data_by_source(
         name: "F-Droid".into(),
         id: "fdroid".into(),
         avatar_url: "https://avatars.githubusercontent.com/u/8239603?s=200&v=4".into(),
-        github: "https://github.com/f-droid".into()
+        github: "https://github.com/f-droid".into(),
       })
     }
   };
 
-  methods::get_dev_data(dev_data, commit, id).await.context("")
+  methods::get_dev_data(dev_data, commit, id)
+    .await
+    .context("")
 }
 
 pub async fn get_app_asset(commit: &str, app_id: &str, asset: &str) -> Option<Vec<u8>> {
