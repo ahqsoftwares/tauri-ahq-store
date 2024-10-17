@@ -17,8 +17,6 @@ pub static WINGET_APP_ASSET_URL: LazyLock<String> =
   LazyLock::new(|| format!("{WINGET_BASE_URL}/db/res/{{APP_ID}}/{{ASSET}}"));
 
 pub static WINGET_TOTAL: LazyLock<String> = LazyLock::new(|| format!("{WINGET_BASE_URL}/db/total"));
-pub static WINGET_HOME: LazyLock<String> =
-  LazyLock::new(|| format!("{WINGET_BASE_URL}/db/home.json"));
 
 pub static WINGET_SEARCH: LazyLock<String> =
   LazyLock::new(|| format!("{WINGET_BASE_URL}/db/search/{{ID}}.json"));

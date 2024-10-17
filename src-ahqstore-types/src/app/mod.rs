@@ -1,6 +1,5 @@
-use crate::ServerJSONResp;
 use serde::{Deserialize, Serialize};
-use serde_json::{from_str, to_string};
+use serde_json::to_string;
 use std::{collections::HashMap, env::consts::ARCH};
 
 pub mod install;
@@ -85,13 +84,17 @@ impl AHQStoreApplication {
 
     result.push_str(&self.validate_resource());
 
+    if self.appId.starts_with("flatpak") || self.appId.starts_with("fdroid") || self.appId.starts_with("winget") {
+      result.push_str("❌ AppId must not start with flatpak, fdroid or winget\n");
+    }
+
     if &self.authorId != "1" {
       if &self.releaseTagName == "latest" {
         result.push_str("❌ ReleaseTagName can't be latest\n");
       }
 
       if let Some(_) = self.source {
-        result.push_str("❌ Source can't be present, your application must be original\n");
+        result.push_str("❌ Source can't be present, your application must not reference a source\n");
       }
     }
 
@@ -303,7 +306,7 @@ impl AHQStoreApplication {
 
     let winget = self.appId.starts_with("winget_pkg_");
 
-    let commit = get_all_commits(None).await?;
+    let commit = get_all_commits(None).await.ok()?;
     let commit = if winget {
       commit.winget
     } else {
@@ -311,13 +314,5 @@ impl AHQStoreApplication {
     };
 
     get_app_asset(&commit, &self.appId, &resource.to_string()).await
-  }
-}
-
-impl TryFrom<ServerJSONResp> for AHQStoreApplication {
-  type Error = serde_json::Error;
-
-  fn try_from(value: ServerJSONResp) -> Result<Self, Self::Error> {
-    from_str(&value.config)
   }
 }

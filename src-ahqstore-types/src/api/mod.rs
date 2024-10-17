@@ -41,14 +41,36 @@ pub static CLIENT: LazyLock<Client> = LazyLock::new(|| {
     .unwrap()
 });
 
-#[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
-pub struct ServerJSONResp {
-  pub last_updated: u64,
-  pub config: String,
-}
-
 #[cfg_attr(feature = "js", declare)]
 pub type MapData = HashMap<String, String>;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct HomeItem {
+  pub ahqstore: Option<String>,
+  pub winget: Option<String>,
+  pub flatpak: Option<String>,
+  pub fdroid: Option<String>,
+}
+
+impl HomeItem {
+  pub fn get_id(self) -> Option<String> {
+    if let Some(x) = self.ahqstore {
+      return Some(x);
+    }
+
+    #[cfg(target_os = "windows")]
+    return self.winget;
+
+    #[cfg(target_os = "linux")]
+    return self.flatpak;
+
+    #[cfg(target_os = "android")]
+    return self.fdroid;
+  }
+}
+
+pub type RepoHomeData = Vec<(String, Vec<HomeItem>)>;
+pub type HomeData = Vec<(String, Vec<String>)>;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]

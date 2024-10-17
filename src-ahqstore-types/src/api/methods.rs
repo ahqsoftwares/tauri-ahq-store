@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::AHQStoreApplication;
 
-use super::{ahqstore::AHQSTORE_COMMIT_URL, winget::WINGET_COMMIT_URL, CLIENT};
+use super::{ahqstore::AHQSTORE_COMMIT_URL, winget::WINGET_COMMIT_URL, RepoHomeData, CLIENT};
 
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(feature = "js", wasm_bindgen(getter_with_clone))]
@@ -68,14 +68,32 @@ pub async fn get_total_maps(total: &str, commit: &str) -> Option<usize> {
 }
 
 pub async fn get_home(home: &str, commit: &str) -> Option<Vec<(String, Vec<String>)>> {
-  CLIENT
+  let home: RepoHomeData = CLIENT
     .get(home.replace("{COMMIT}", commit))
     .send()
     .await
     .ok()?
     .json()
     .await
-    .ok()
+    .ok()?;
+
+  let mut resp_home = vec![];
+
+  for (title, data) in home {
+    let mut resp_data = vec![];
+
+    for item in data {
+      let id = item.get_id();
+
+      if let Some(id) = id {
+        resp_data.push(id);
+      }
+    }
+
+    resp_home.push((title, resp_data));
+  }
+
+  Some(resp_home)
 }
 
 pub async fn get_search(search: &str, commit: &str, id: &str) -> Option<Vec<super::SearchEntry>> {
