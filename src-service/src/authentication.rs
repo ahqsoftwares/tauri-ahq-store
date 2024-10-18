@@ -9,7 +9,7 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
   )];
 
   #[cfg(all(not(debug_assertions), unix))]
-  let exe = [format!("/bin/ahq-store"), format!("/usr/bin/ahq-store")];
+  let exe = [format!("/bin/ahq-store-app"), format!("/usr/bin/ahq-store-app")];
 
   #[cfg(debug_assertions)]
   let exe: [String; 0] = [];

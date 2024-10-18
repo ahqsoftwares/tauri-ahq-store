@@ -17,7 +17,6 @@ use std::{
 use tokio::spawn;
 
 use crate::{
-  handlers::install_node,
   utils::{
     get_installer_file, get_program_folder, get_programs, get_target_lnk,
     structs::{AHQStoreApplication, AppData},

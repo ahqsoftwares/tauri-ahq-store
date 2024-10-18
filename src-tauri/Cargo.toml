@@ -17,7 +17,13 @@ tauri-build = { version = "2", features = [] }
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 
-tauri = { version = "2", features = ["devtools", "wry", "tray-icon", "image-png", "rustls-tls"] }
+tauri = { version = "2", features = [
+  "devtools",
+  "wry",
+  "tray-icon",
+  "image-png",
+  "rustls-tls",
+] }
 wry = "*"
 
 open = "5"
@@ -26,7 +32,7 @@ chacha20poly1305 = { version = "0.10.1", features = ["heapless"] }
 lazy_static = "1"
 
 updater = { path = "../src-updater" }
-discord-rich-presence = "0.2.4"
+discord-rich-presence = "0.2"
 tokio = "1"
 tauri-plugin-notification = "2"
 tauri-plugin-http = { version = "2", features = ["rustls-tls"] }
@@ -34,8 +40,10 @@ tauri-plugin-fs = "2"
 tauri-plugin-process = "2"
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 async-recursion = "1"
-bcrypt = "0.15.1"
+bcrypt = "0.15"
 ahqstore_gh_hash = "1"
+ahqstore-types = { path = "../src-ahqstore-types" }
+anyhow = "1.0.89"
 
 
 [target.'cfg(windows)'.dependencies]

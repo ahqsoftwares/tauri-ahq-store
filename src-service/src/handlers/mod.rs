@@ -39,7 +39,7 @@ pub fn handle_msg(admin: bool, data: String) {
         match (admin, launch, install, x) {
           (_, _, _, Command::GetSha(ref_id)) => unsafe {
             let val = if let Some(x) = COMMIT_ID.as_ref() {
-              Response::as_msg(Response::SHAId(ref_id, x.into()))
+              Response::as_msg(Response::SHAId(ref_id, x.clone()))
             } else {
               Response::as_msg(Response::Error(ErrorType::GetSHAFailed(ref_id)))
             };

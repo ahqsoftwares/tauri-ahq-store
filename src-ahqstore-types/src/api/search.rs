@@ -77,7 +77,7 @@ impl Serialize for RespSearchEntry {
   }
 }
 
-#[tauri_macros::command]
+
 pub async fn get_search(commit: Option<&Commits>, query: &str) -> Result<Vec<RespSearchEntry>> {
   let search = get_search_inner();
 

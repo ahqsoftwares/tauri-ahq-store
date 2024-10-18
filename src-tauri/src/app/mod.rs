@@ -9,12 +9,14 @@ pub mod utils;
 mod ws;
 
 use crate::rpc;
+use ahqstore_types::search::RespSearchEntry;
 use tauri::{Emitter, Listener};
 use tauri::menu::IconMenuItemBuilder;
 use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButton};
 use tauri::window::{ProgressBarState, ProgressBarStatus};
 use tauri::{AppHandle, Runtime, WebviewWindowBuilder};
 use tauri::{
+  ipc::Response,
   image::Image,
   menu::{Menu, MenuBuilder, MenuEvent, MenuId, MenuItem},
   Manager, RunEvent,
@@ -44,6 +46,7 @@ use whatadistro::identify;
 use std::os::windows::process::CommandExt;
 use std::{
   fs,
+  fmt::Display,
   process::Command,
   process::Stdio,
   sync::{Arc, Mutex},
@@ -54,6 +57,35 @@ use std::{
 use open as open_2;
 
 use utils::{get_service_url, is_an_admin};
+
+use ahqstore_types::{
+  internet, search, AHQStoreApplication, Commits, DevData
+};
+
+use serde::{Serialize, Deserialize};
+
+use anyhow::Context;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum AHQError {
+  JustAnError
+}
+
+impl Display for AHQError {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      AHQError::JustAnError => write!(f, "JustAnError"),
+    }
+  }
+}
+
+impl std::error::Error for AHQError {}
+
+impl From<anyhow::Error> for AHQError {
+  fn from(_: anyhow::Error) -> Self {
+    AHQError::JustAnError
+  }
+}
 
 macro_rules! platform_impl {
   ($x:expr, $y:expr) => {{
@@ -222,7 +254,13 @@ pub fn main() {
       show_code,
       rem_code,
       hash_username,
-      get_linux_distro
+      get_linux_distro,
+      get_all_commits,
+      get_all_search,
+      get_home,
+      get_app,
+      get_app_asset,
+      get_devs_apps
     ])
     .menu(|handle| Menu::new(handle))
     .build(context)
@@ -299,6 +337,51 @@ pub fn main() {
     },
     _ => {}
   });
+}
+
+static mut COMMIT: Option<Commits> = None;
+
+#[tauri::command(async)]
+async fn get_all_commits() -> Result<Commits, AHQError> {
+  let commit = internet::get_all_commits(None).await?;
+
+  unsafe {
+    COMMIT = Some(commit.clone());
+  }
+
+  Ok(commit)
+}
+
+#[tauri::command(async)]
+async fn get_all_search(query: &str) -> Result<Vec<RespSearchEntry>, AHQError> {
+  Ok(search::get_search(unsafe { COMMIT.as_ref() }, query).await?)
+}
+
+#[tauri::command(async)]
+async fn get_home() -> Result<Vec<(String, Vec<String>)>, AHQError> {
+  Ok(internet::get_home(unsafe { &COMMIT.as_ref().unwrap().ahqstore }).await?)
+}
+
+#[tauri::command(async)]
+async fn get_app(app: &str) -> Result<AHQStoreApplication, AHQError> {
+  Ok(internet::get_app(unsafe { COMMIT.as_ref().unwrap() }, app).await?)
+}
+
+#[tauri::command(async)]
+async fn get_app_asset(app: &str, asset: &str) -> Result<Response, AHQError> {
+  let bytes = internet::get_app_asset(unsafe { COMMIT.as_ref().unwrap() }, app, asset).await.context("")?;
+
+  Ok(Response::new(bytes))
+}
+
+#[tauri::command(async)]
+async fn get_dev_data(dev: &str) -> Result<DevData, AHQError> {
+  Ok(internet::get_dev_data(unsafe { COMMIT.as_ref().unwrap() }, dev).await?)
+}
+
+#[tauri::command(async)]
+async fn get_devs_apps(dev: &str) -> Result<Vec<String>, AHQError> {
+  Ok(internet::get_devs_apps(unsafe { COMMIT.as_ref().unwrap() }, dev).await?)
 }
 
 #[tauri::command(async)]

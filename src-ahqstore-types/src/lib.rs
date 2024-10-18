@@ -204,6 +204,21 @@ pub enum UpdateStatusReport {
   Updating,
 }
 
+impl Clone for Commits {
+  fn clone(&self) -> Self {
+    Self {
+      ahqstore: self.ahqstore.clone(),
+      winget: self.winget.clone(),
+    }
+  }
+}
+
+impl From<&Commits> for Commits {
+  fn from(value: &Commits) -> Self {
+      value.clone()
+  }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 #[cfg_attr(feature = "js", derive(Tsify, TsifyAsync))]
 #[cfg_attr(feature = "js", tsify(into_wasm_abi, from_wasm_abi))]

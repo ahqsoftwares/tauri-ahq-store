@@ -309,14 +309,7 @@ impl AHQStoreApplication {
   pub async fn get_resource(&self, resource: u8) -> Option<Vec<u8>> {
     use crate::internet::{get_all_commits, get_app_asset};
 
-    let winget = self.appId.starts_with("winget_pkg_");
-
     let commit = get_all_commits(None).await.ok()?;
-    let commit = if winget {
-      commit.winget
-    } else {
-      commit.ahqstore
-    };
 
     get_app_asset(&commit, &self.appId, &resource.to_string()).await
   }

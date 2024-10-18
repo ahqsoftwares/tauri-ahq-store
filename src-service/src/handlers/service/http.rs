@@ -1,6 +1,5 @@
 use ahqstore_types::{
-  internet::{get_app as t_get_app, get_commit as t_get_commit},
-  AppStatus, Commit, Library,
+  internet::{get_all_commits as t_get_commit, get_app as t_get_app}, AppStatus, Commit, Commits, Library
 };
 use lazy_static::lazy_static;
 use reqwest::{Client, ClientBuilder, Request, StatusCode};
@@ -28,7 +27,7 @@ use crate::utils::write_log;
 #[cfg(windows)]
 use super::unzip;
 
-pub static mut COMMIT_ID: Option<String> = None;
+pub static mut COMMIT_ID: Option<Commits> = None;
 
 lazy_static! {
   static ref DOWNLOADER: Client = ClientBuilder::new()
@@ -47,7 +46,7 @@ pub fn init() {
 }
 
 pub async fn get_commit() -> u8 {
-  if let Some(x) = t_get_commit(None).await {
+  if let Some(x) = t_get_commit(None).await.ok() {
     unsafe {
       COMMIT_ID = Some(x);
     }
@@ -127,37 +126,11 @@ pub async fn get_app_local(ref_id: RefId, app_id: AppId) -> Response {
 pub async fn get_app(ref_id: RefId, app_id: AppId) -> Response {
   let app = t_get_app(unsafe { COMMIT_ID.as_ref().unwrap() }, &app_id).await;
 
-  if let Some(x) = app {
+  if let Ok(x) = app {
     return Response::AppData(ref_id, app_id, x);
   }
 
   Response::Error(ErrorType::GetAppFailed(ref_id, app_id))
-}
-
-#[cfg(windows)]
-pub async fn install_node(version: &str) -> Option<()> {
-  let (f_name, url) = match &version {
-    &"v20" => ("node_20.zip", NODE20.to_string()),
-    &"v21" => ("node_21.zip", NODE21.to_string()),
-    _ => return None,
-  };
-
-  let zip = get_file_on_root(&f_name);
-
-  let mut file = File::create(&zip).ok()?;
-
-  write_download(&mut file, &url).await?;
-
-  let true = unzip(&zip, &get_file_on_root(&format!("node-{}", &version)))
-    .ok()?
-    .wait()
-    .ok()?
-    .success()
-  else {
-    return None;
-  };
-
-  Some(())
 }
 
 #[cfg(windows)]
