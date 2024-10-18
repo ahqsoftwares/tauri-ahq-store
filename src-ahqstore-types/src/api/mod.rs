@@ -69,6 +69,9 @@ impl HomeItem {
 
     #[cfg(target_os = "android")]
     return self.fdroid;
+
+    #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "android")))]
+    return None;
   }
 }
 
