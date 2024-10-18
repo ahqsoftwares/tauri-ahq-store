@@ -73,11 +73,11 @@ pub async fn fetch(install: &InstallMode) -> (Client, ReleaseData) {
   release.assets.into_iter().for_each(|x| {
     if arch!(x.name.ends_with("x64_en-US.msi"), x.name.ends_with("arm64_en-US.msi")) {
       data.msi = x.browser_download_url;
-    } else if arch!(x.name.ends_with("amd64.deb"), x.name.ends_with("arm64.deb")) {
+    } else if arch!(x.name.ends_with("amd64.deb"), x.name.ends_with("unsupported.deb")) {
       data.deb = x.browser_download_url;
     } else if arch!(&x.name == "ahqstore_service_amd64.exe", &x.name == "ahqstore_service_arm64.exe") {
       data.service = x.browser_download_url;
-    } else if arch!(&x.name == "ahqstore_service_amd64", &x.name == "ahqstore_service_arm64") {
+    } else if arch!(&x.name == "ahqstore_service_amd64", &x.name == "unsupported_ahqstore_service_arm64") {
       data.linux_daemon = x.browser_download_url;
     }
   });

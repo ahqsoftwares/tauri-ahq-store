@@ -323,134 +323,134 @@ jobs:
           includeRelease: true
           includeUpdaterJson: false
 
-  publish-arm-linux-tauri:
-    needs: create-release
-    name: Build Tauri App & Service (${{ matrix.deb }})
-    continue-on-error: true
+  # publish-arm-linux-tauri:
+  #   needs: create-release
+  #   name: Build Tauri App & Service (${{ matrix.deb }})
+  #   continue-on-error: true
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - img: dietpi:rpi_armv8_bookworm
-            cpu: cortex-a72
-            deb: arm64
-            rpm: aarch64
-            appimage: aarch64
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - img: dietpi:rpi_armv8_bookworm
+  #           cpu: cortex-a72
+  #           deb: arm64
+  #           rpm: aarch64
+  #           appimage: aarch64
 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Cache Rust to save lives
-        uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: cpu-${{ matrix.cpu }}
-          workspaces: src-tauri
-          cache-on-failure: true
+  #     - name: Cache Rust to save lives
+  #       uses: Swatinem/rust-cache@v2
+  #       with:
+  #         prefix-key: cpu-${{ matrix.cpu }}
+  #         workspaces: src-tauri
+  #         cache-on-failure: true
 
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
+  #     - name: Setup NodeJS
+  #       uses: actions/setup-node@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v5
 
-      - name: Install
-        run: |
-          pip install cargo-zigbuild
+  #     - name: Install
+  #       run: |
+  #         pip install cargo-zigbuild
 
-          rustup toolchain install nightly
-          rustup target install aarch64-unknown-linux-gnu
+  #         rustup toolchain install nightly
+  #         rustup target install aarch64-unknown-linux-gnu
           
-          cd src-ahqstore-types
-          npm i -g wasm-pack
-          wasm-pack build --release -- --features js
-          cd ..
+  #         cd src-ahqstore-types
+  #         npm i -g wasm-pack
+  #         wasm-pack build --release -- --features js
+  #         cd ..
 
-          npm i -g pnpm
-          pnpm install
+  #         npm i -g pnpm
+  #         pnpm install
 
-      - name: Build encryptor.cjs
-        run: node encryptor.cjs
-        env:
-          KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
+  #     - name: Build encryptor.cjs
+  #       run: node encryptor.cjs
+  #       env:
+  #         KEY: ${{ secrets.SSL_ENCRYPT_DATA }}
 
-      - name: Build
-        run: |
-          sudo apt-get update
-          sudo apt-get install gcc-aarch64-linux-gnu
+  #     - name: Build
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install gcc-aarch64-linux-gnu
 
-          sudo dpkg --add-architecture aarch64
+  #         sudo dpkg --add-architecture aarch64
 
-          sudo sed 's/^deb http/deb [arch=aarch64] http/' -i '/etc/apt/apt-mirrors.txt'
+  #         sudo sed 's/^deb http/deb [arch=aarch64] http/' -i '/etc/apt/apt-mirrors.txt'
 
-          sudo apt-get update -y --allow-releaseinfo-change
-          sudo apt-get autoremove -y
-          sudo apt-get install -y --no-install-recommends --no-install-suggests curl libwebkit2gtk-4.1-dev:aarch64 build-essential libssl-dev:aarch64 libgtk-3-dev:aarch64 libayatana-appindicator3-dev:aarch64 librsvg2-dev:aarch64 patchelf libfuse2:aarch64 file
+  #         sudo apt-get update -y --allow-releaseinfo-change
+  #         sudo apt-get autoremove -y
+  #         sudo apt-get install -y --no-install-recommends --no-install-suggests curl libwebkit2gtk-4.1-dev:aarch64 build-essential libssl-dev:aarch64 libgtk-3-dev:aarch64 libayatana-appindicator3-dev:aarch64 librsvg2-dev:aarch64 patchelf libfuse2:aarch64 file
 
-          cd src-service
-          cargo build --release --target aarch64-unknown-linux-gnu
-          cd ..
+  #         cd src-service
+  #         cargo build --release --target aarch64-unknown-linux-gnu
+  #         cd ..
 
-          export PKG_CONFIG_SYSROOT_DIR=/
+  #         export PKG_CONFIG_SYSROOT_DIR=/
 
-          pnpm build
-          pnpm tauri build -v --target aarch64-unknown-linux-gnu
+  #         pnpm build
+  #         pnpm tauri build -v --target aarch64-unknown-linux-gnu
     
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          compression-level: 9
-          path: |
-            src-service/target/release/
-            src-tauri/target/release/
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         compression-level: 9
+  #         path: |
+  #           src-service/target/release/
+  #           src-tauri/target/release/
 
-      - name: Upload Service 
-        uses: ahqstore/upload-release-assets@v60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_name: ahqstore_service_${{ matrix.deb }}
-          asset_path: ./src-service/target/release/ahqstore_service
-          asset_content_type: application/octet-stream
+  #     - name: Upload Service 
+  #       uses: ahqstore/upload-release-assets@v60
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         upload_url: ${{ needs.create-release.outputs.upload_url }}
+  #         asset_name: ahqstore_service_${{ matrix.deb }}
+  #         asset_path: ./src-service/target/release/ahqstore_service
+  #         asset_content_type: application/octet-stream
 
-      - name: Get app version
-        run: echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+  #     - name: Get app version
+  #       run: echo "APP_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
-      - name: Upload .deb Bundle
-        uses: ahqstore/upload-release-assets@v60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
-          asset_path: ./src-tauri/target/release/bundle/deb/AHQ Store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
-          asset_content_type: application/octet-stream
+  #     - name: Upload .deb Bundle
+  #       uses: ahqstore/upload-release-assets@v60
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         upload_url: ${{ needs.create-release.outputs.upload_url }}
+  #         asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
+  #         asset_path: ./src-tauri/target/release/bundle/deb/AHQ Store_${{ env.APP_VERSION }}_${{ matrix.deb }}.deb
+  #         asset_content_type: application/octet-stream
 
-      - name: Upload .rpm Bundle
-        uses: ahqstore/upload-release-assets@v60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.rpm }}.rpm
-          asset_path: ./src-tauri/target/release/bundle/rpm/AHQ Store-${{ env.APP_VERSION }}-1.${{ matrix.rpm }}.rpm
-          asset_content_type: application/octet-stream
+  #     - name: Upload .rpm Bundle
+  #       uses: ahqstore/upload-release-assets@v60
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         upload_url: ${{ needs.create-release.outputs.upload_url }}
+  #         asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.rpm }}.rpm
+  #         asset_path: ./src-tauri/target/release/bundle/rpm/AHQ Store-${{ env.APP_VERSION }}-1.${{ matrix.rpm }}.rpm
+  #         asset_content_type: application/octet-stream
 
-      - name: Upload .AppImage bundle
-        uses: ahqstore/upload-release-assets@v60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
-          asset_path: ./src-tauri/target/release/bundle/appimage/AHQ Store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
-          asset_content_type: application/octet-stream
+  #     - name: Upload .AppImage bundle
+  #       uses: ahqstore/upload-release-assets@v60
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         upload_url: ${{ needs.create-release.outputs.upload_url }}
+  #         asset_name: AHQ Store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
+  #         asset_path: ./src-tauri/target/release/bundle/appimage/AHQ Store_${{ env.APP_VERSION }}_${{ matrix.appimage }}.AppImage
+  #         asset_content_type: application/octet-stream
 
   undraft-release:
-    needs: [create-release, publish-tauri, make-setup, publish-arm-linux-tauri]
+    needs: [create-release, publish-tauri, make-setup]
     name: Publish Release
     runs-on: ubuntu-latest
 
