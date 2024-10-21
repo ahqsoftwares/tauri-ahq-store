@@ -71,7 +71,7 @@ dependencies = [
 
 [[package]]
 name = "ahqstore-types"
-version = "3.7.2"
+version = "3.7.3"
 dependencies = [
  "anyhow",
  "fuse-rust",
@@ -4240,9 +4240,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-fs"
-version = "2.0.1"
+version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab300488ebec3487ca5f56289692e7e45feb07eea8d5e1dba497f7dc9dd9c407"
+checksum = "16d0816b27207c29aaff632c73b702785140cf16fe6150c201a2720245b8ea88"
 dependencies = [
  "anyhow",
  "dunce",
@@ -4261,9 +4261,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-http"
-version = "2.0.1"
+version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "784333f1632d96c94346e8145bfe52970923a38a0e6eacd3dccaa12289275acf"
+checksum = "e8e89be91e293c9dcc04b53ed04a38060a81c8f4ae9cc52a755de00f1cfdad5c"
 dependencies = [
  "data-url",
  "http",
