@@ -79,17 +79,17 @@ importers:
         version: 4.2.3
     devDependencies:
       '@rsbuild/core':
-        specifier: 1.0.15
-        version: 1.0.15
+        specifier: 1.0.16
+        version: 1.0.16
       '@rsbuild/plugin-babel':
         specifier: 1.0.2
-        version: 1.0.2(@rsbuild/core@1.0.15)
+        version: 1.0.2(@rsbuild/core@1.0.16)
       '@rsbuild/plugin-react':
         specifier: 1.0.5
-        version: 1.0.5(@rsbuild/core@1.0.15)
+        version: 1.0.5(@rsbuild/core@1.0.16)
       '@rsbuild/plugin-svgr':
         specifier: 1.0.4
-        version: 1.0.4(@rsbuild/core@1.0.15)(typescript@5.6.3)
+        version: 1.0.4(@rsbuild/core@1.0.16)(typescript@5.6.3)
       '@tauri-apps/api':
         specifier: 2.0.2
         version: 2.0.2
@@ -700,8 +700,8 @@ packages:
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
 
-  '@rsbuild/core@1.0.15':
-    resolution: {integrity: sha512-LIOgs4UzfFeT3sZnPMww1JbqF7zkGNMZdMJ6vV8xEXGOU4t8Z6QAtM5A0FGRfb2mYW5u2+XnMog+JAbo2RrN/A==}
+  '@rsbuild/core@1.0.16':
+    resolution: {integrity: sha512-ioQg9HfDh5eXPZi+An7yCRaSE9TH4W3IBqrxBrv4IjOg/ajpVpKidiKwyYpX3QPbxY1ybfvQTH7HwATND4crCA==}
     engines: {node: '>=16.7.0'}
     hasBin: true
 
@@ -3143,7 +3143,7 @@ snapshots:
 
   '@radix-ui/rect@1.1.0': {}
 
-  '@rsbuild/core@1.0.15':
+  '@rsbuild/core@1.0.16':
     dependencies:
       '@rspack/core': 1.0.13(@swc/helpers@0.5.13)
       '@rspack/lite-tapable': 1.0.1
@@ -3152,13 +3152,13 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  '@rsbuild/plugin-babel@1.0.2(@rsbuild/core@1.0.15)':
+  '@rsbuild/plugin-babel@1.0.2(@rsbuild/core@1.0.16)':
     dependencies:
       '@babel/core': 7.25.8
       '@babel/plugin-proposal-decorators': 7.25.7(@babel/core@7.25.8)
       '@babel/plugin-transform-class-properties': 7.25.7(@babel/core@7.25.8)
       '@babel/preset-typescript': 7.25.7(@babel/core@7.25.8)
-      '@rsbuild/core': 1.0.15
+      '@rsbuild/core': 1.0.16
       '@types/babel__core': 7.20.5
       deepmerge: 4.3.1
       reduce-configs: 1.0.0
@@ -3166,22 +3166,22 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@rsbuild/plugin-react@1.0.4(@rsbuild/core@1.0.15)':
+  '@rsbuild/plugin-react@1.0.4(@rsbuild/core@1.0.16)':
     dependencies:
-      '@rsbuild/core': 1.0.15
+      '@rsbuild/core': 1.0.16
       '@rspack/plugin-react-refresh': 1.0.0(react-refresh@0.14.2)
       react-refresh: 0.14.2
 
-  '@rsbuild/plugin-react@1.0.5(@rsbuild/core@1.0.15)':
+  '@rsbuild/plugin-react@1.0.5(@rsbuild/core@1.0.16)':
     dependencies:
-      '@rsbuild/core': 1.0.15
+      '@rsbuild/core': 1.0.16
       '@rspack/plugin-react-refresh': 1.0.0(react-refresh@0.14.2)
       react-refresh: 0.14.2
 
-  '@rsbuild/plugin-svgr@1.0.4(@rsbuild/core@1.0.15)(typescript@5.6.3)':
+  '@rsbuild/plugin-svgr@1.0.4(@rsbuild/core@1.0.16)(typescript@5.6.3)':
     dependencies:
-      '@rsbuild/core': 1.0.15
-      '@rsbuild/plugin-react': 1.0.4(@rsbuild/core@1.0.15)
+      '@rsbuild/core': 1.0.16
+      '@rsbuild/plugin-react': 1.0.4(@rsbuild/core@1.0.16)
       '@svgr/core': 8.1.0(typescript@5.6.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.6.3))
       '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.6.3))(typescript@5.6.3)
