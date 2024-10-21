@@ -69,7 +69,7 @@
     "class-variance-authority": "^0.7.0",
     "cross-env": "^7.0.3",
     "cryptr": "^6.3.0",
-    "eslint": "^9.12.0",
+    "eslint": "^9.13.0",
     "eslint-plugin-react-compiler": "19.0.0-beta-9ee70a1-20241017",
     "prettier": "^3.3.3",
     "shadcn": "^2.1.0"
