@@ -71,7 +71,7 @@ dependencies = [
 
 [[package]]
 name = "ahqstore-types"
-version = "3.7.2"
+version = "3.7.3"
 dependencies = [
  "anyhow",
  "fuse-rust",
@@ -4313,7 +4313,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-single-instance"
 version = "2.0.1"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#8c67d44aef60b1427019538d8420787ef35bd3d5"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#77149dc4320d26b413e4a6bbe82c654367c51b32"
 dependencies = [
  "log",
  "serde",
