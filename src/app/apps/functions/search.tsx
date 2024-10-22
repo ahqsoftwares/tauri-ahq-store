@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-import SearchModule from "minisearch";
 import fetchApps, {
   appData,
-  fetchSearchData,
 } from "../../resources/api/fetchApps";
 import SearchResult from "../components/search_results";
 import AppCard from "../components/app_card";
 
 import { getData, setData } from "../../resources/utilities/database";
+import { search } from "@/app/resources/core";
 
 interface SearchProps {
   query: string;
@@ -127,35 +126,12 @@ export default function Search(props: SearchProps) {
   }
 }
 
-async function getMatches(query: string): Promise<Array<string>> {
-  let data = getData(query);
-
-  if (!data) {
-    const raw = await fetchSearchData();
-    const search = new SearchModule({
-      fields: ["name:", "title", "id"],
-      storeFields: ["name:", "title", "id"],
-      searchOptions: {
-        fuzzy: 0.25,
-        prefix: true,
-      },
-    });
-    await search.addAllAsync(raw);
-
-    let result = search.search(query);
-    result.length = 30;
-
-    let finalResult = result.filter(({ id }) => id).map(({ id }) => id);
-    setData(query, finalResult);
-
-    return finalResult;
-  } else {
-    return data as any;
-  }
+async function getMatches(query: string): Promise<string[]> {
+  return await search(query);
 }
 
 async function getDataFromMatches(matches: Array<string>) {
   return fetchApps(matches);
 }
 
-export { getMatches, getDataFromMatches };
+export { getDataFromMatches };

@@ -19,6 +19,7 @@ pub fn authenticate_process(pid: usize, time: bool) -> (bool, bool) {
   users.refresh_list();
   system.refresh_processes_specifics(
     ProcessesToUpdate::Some(&[Pid::from(pid)]),
+    true,
     ProcessRefreshKind::everything(),
   );
 

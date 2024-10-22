@@ -1,7 +1,7 @@
 [package]
 name = "ahqstore-types"
 description = "Standard types used by AHQ Store"
-version = "3.7.3"
+version = "3.7.4"
 edition = "2021"
 license-file = "../LICENSE.md"
 repository = "https://github.com/ahqsoftwares/tauri-ahq-store"
@@ -23,7 +23,7 @@ tsify = { version = "0.4", optional = true }
 wasm-bindgen = { version = "0.2", optional = true }
 wasm-bindgen-futures = { version = "0.4", optional = true }
 kfghdfghdfkgh_js_macros = { version = "1", optional = true }
-fuse-rust = { version = "0.3", features = ["async"], optional = true }
+fuse-rust = { version = "0.4", features = ["async"], optional = true }
 anyhow = "1.0.89"
 
 [features]

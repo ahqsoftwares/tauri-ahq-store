@@ -255,10 +255,11 @@ pub fn main() {
       rem_code,
       hash_username,
       get_linux_distro,
-      get_all_commits,
+      set_commit,
       get_all_search,
       get_home,
       get_app,
+      get_dev_data,
       get_app_asset,
       get_devs_apps
     ])
@@ -342,14 +343,10 @@ pub fn main() {
 static mut COMMIT: Option<Commits> = None;
 
 #[tauri::command(async)]
-async fn get_all_commits() -> Result<Commits, AHQError> {
-  let commit = internet::get_all_commits(None).await?;
-
+async fn set_commit(commit: Commits) {
   unsafe {
-    COMMIT = Some(commit.clone());
+    COMMIT = Some(commit);
   }
-
-  Ok(commit)
 }
 
 #[tauri::command(async)]

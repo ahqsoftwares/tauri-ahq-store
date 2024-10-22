@@ -1,7 +1,7 @@
-import { devUserUrl, assetUrl, get_app, get_search_data, sha } from "../core";
+import { get_app, get_dev_data } from "../core";
 
 import { AHQStoreApplication, DevData } from "ahqstore-types/ahqstore_types";
-import fetch from "../core/http";
+import { invoke } from "@tauri-apps/api/core";
 
 type AuthorObject = DevData;
 
@@ -34,21 +34,10 @@ export async function getResource(appId: string, uid: string) {
     return resources[`${appId}-${uid}`];
   }
 
-  const buf = await fetch(
-    assetUrl.replace("{sha}", sha).replace("{app}", appId).replace("{id}", uid),
-    {
-      method: "GET",
-    },
-    false,
-  )
-    .then(async (r) => {
-      const data = (r as any).resp as Response;
-      if (data.body == null || !data.ok) {
-        throw new Error("No body");
-      }
-
-      return await new Response(data.body).arrayBuffer();
-    })
+  const buf = await invoke("get_app_asset", { app: appId, asset: uid })
+    .then(async (r) =>
+      r as ArrayBuffer
+    )
     .then((d) => {
       if (d) {
         return URL.createObjectURL(new Blob([d]));
@@ -61,35 +50,12 @@ export async function getResource(appId: string, uid: string) {
   return buf;
 }
 
-let searchDataCache: SearchData[] = [];
-
-interface SearchData {
-  name: string;
-  title: string;
-  id: string;
-}
-export async function fetchSearchData() {
-  if (searchDataCache.length >= 1) {
-    return searchDataCache;
-  } else {
-    const data = await get_search_data<SearchData[]>();
-
-    searchDataCache = data;
-    return data;
-  }
-}
-
 export async function fetchAuthor(uid: string) {
   if (authorCache[uid]) {
     return authorCache[uid];
   }
 
-  const url = devUserUrl.replace("{sha}", sha).replace("{dev}", uid);
-  console.log(url);
-  const { data } = await fetch(url, {
-    method: "GET",
-  });
-  const author = data as AuthorObject;
+  const author = await get_dev_data(uid) as AuthorObject;
 
   authorCache[uid] = author;
 

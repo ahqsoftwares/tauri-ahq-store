@@ -1,162 +1,48 @@
+import { invoke } from "@tauri-apps/api/core";
 import { ApplicationData } from "../api/fetchApps";
 import { WebSocketMessage, sendWsRequest } from "./handler";
-import fetch from "./http";
 import { Library } from "./installer";
 import { ListedApps } from "./structs";
+import { DevData } from "src-ahqstore-types/pkg/ahqstore_types";
 
-let sha = "";
-
-const totalUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/total";
-const homeUrl = "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/home.json";
-const appUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/apps/{app}.json";
 const assetUrl =
   "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/res/{app}/{id}";
-const mapUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/map/{id}.json";
-const searchUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/search/{id}.json";
-const appsUserUrl =
-  "https://rawcdn.githack.com/ahqstore/apps/{sha}/db/dev/{dev}";
 const devUserUrl =
   "https://rawcdn.githack.com/ahqstore/apps/{sha}/users/{dev}.json";
 
-export async function get_devs_apps(devId: string) {
-  if (sha == "") {
-    await get_sha();
-  }
-  const url = appsUserUrl.replace("{sha}", sha).replace("{dev}", devId);
-
-  const { ok, data } = await fetch(url, {
-    method: "GET",
-  });
-
-  console.log(ok, data);
-  let apps: string[] = ok ? data.split("\n") : [];
-
-  apps = apps.filter((f) => f.trim() != "");
-
-  return apps;
+export async function get_dev_data(dev: string) {
+  return invoke<DevData>("get_dev_data", { dev });
 }
 
-let total = [0, 0];
-
-export async function get_total() {
-  console.log("Running get_sha");
-  if (sha == "") {
-    await get_sha();
-  }
-
-
-  if (total[1] > Date.now()) {
-    return total[0];
-  }
-
-  console.log("Sending fetch");
-
-  const { data } = await fetch(totalUrl.replace("{sha}", sha), {
-    method: "GET",
-  }).catch(console.log);
-
-  total = [Number(data), Date.now() + 10 * 60 * 1000];
-
-  console.log(data);
-  return Number(data);
+export async function get_devs_apps(dev: string) {
+  return invoke<string[]>("get_devs_apps", { dev });
 }
 
 export async function get_home() {
-  if (sha == "") {
-    await get_sha();
-  }
-
-  const url = homeUrl.replace("{sha}", sha);
-
-  console.log("Home URL", url);
-  const { data } = await fetch(url, {
-    method: "GET",
-  });
-
-  console.log("Home", data);
-
-  return data;
+  return invoke<[String, String[]][]>("get_home")
 }
 
-export async function get_search_data<T>() {
-  if (sha == "") {
-    await get_sha();
-  }
-  const map = [];
-
-  const total = await get_total();
-
-  for (let i = 1; i <= total; i++) {
-    const url = searchUrl.replace("{sha}", sha).replace("{id}", i.toString());
-
-    const val = await fetch(url, {
-      method: "GET",
-      headers: {
-        "ngrok-skip-browser-warning": "true",
-      },
-    });
-
-    map.push(...val.data);
-  }
-  return map as unknown as any as T;
-}
-
-export async function get_map<T>(): Promise<T> {
-  if (sha == "") {
-    await get_sha();
-  }
-  console.log("Getting map");
-  const map = {};
-
-  const total = await get_total();
-
-  for (let i = 1; i <= total; i++) {
-    const url = mapUrl.replace("{sha}", sha).replace("{id}", i.toString());
-
-    console.log("Fetching ", i, url);
-    const { data } = await fetch(url, {
-      method: "GET",
-    });
-
-    console.log("Received ", data);
-  }
-
-  console.log("Loop End");
-
-  return map as unknown as any as T;
+export async function search<T>(query: string) {
+  return invoke<T>("get_all_search", { query });
 }
 
 export function get_sha() {
   return new Promise((resolve) => {
     sendWsRequest(WebSocketMessage.GetSha(), (val) => {
       if (val.method == "SHAId") {
-        sha = val.data as string;
-        resolve(val.data as string);
+        const sha = val.data as string;
+        console.log(sha);
+        invoke("set_commit", {
+          commit: sha
+        });
+        resolve(sha);
       }
     });
   });
 }
 
 export async function get_app(app: string): Promise<ApplicationData> {
-  const { data } = await fetch(
-    appUrl.replace("{sha}", sha).replace("{app}", app),
-    {
-      method: "GET",
-      headers: {
-        "ngrok-skip-browser-warning": "true",
-      },
-    },
-  );
-
-  const appData: ApplicationData = {
-    ...data,
-    icon: `data:image;base64,${data.icon}`,
-  };
-
-  return appData;
+  return invoke<ApplicationData>("get_app", { app });
 }
 
 export function install_app(app: string): Promise<undefined> {
@@ -239,4 +125,4 @@ export function un_install(app: string): Promise<void> {
   });
 }
 
-export { devUserUrl, sha, assetUrl };
+export { devUserUrl, assetUrl };

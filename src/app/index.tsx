@@ -27,7 +27,7 @@ import fetchPrefs, {
   setConfig,
 } from "./resources/utilities/preferences";
 import { sendNotification } from "@tauri-apps/plugin-notification";
-import { get_home, get_map } from "./resources/core";
+import { get_home } from "./resources/core";
 import {
   defaultDark,
   defaultLight,
@@ -130,11 +130,9 @@ function Render(props: AppProps) {
       setUpdate(autoUpdate);
       setDebug(debug);
 
-      //Fetch Maps
+      //Fetch Home
       try {
-        console.log("Fetching maps...");
-        const map = await get_map<{ [key: string]: Object }>();
-        window.map = map;
+        console.log("Fetching home...");
 
         const home = await get_home();
 
