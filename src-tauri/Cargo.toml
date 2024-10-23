@@ -43,7 +43,7 @@ async-recursion = "1"
 bcrypt = "0.15"
 ahqstore_gh_hash = "1"
 ahqstore-types = { path = "../src-ahqstore-types" }
-anyhow = "1.0.89"
+anyhow = "1.0.91"
 
 
 [target.'cfg(windows)'.dependencies]
