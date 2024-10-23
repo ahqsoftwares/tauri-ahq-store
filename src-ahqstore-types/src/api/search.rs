@@ -24,7 +24,7 @@ static mut SEARCH: Option<SCache> = None;
 static FUSE: LazyLock<Fuse> = LazyLock::new(|| Fuse::default());
 
 fn get_search_inner() -> Option<&'static Vec<SearchEntry>> {
-  let addr = addr_of!(SEARCH);
+  let addr = unsafe { addr_of!(SEARCH) };
 
   let search = unsafe {
     let addr = &*addr;
@@ -79,6 +79,8 @@ impl Serialize for RespSearchEntry {
 
 
 pub async fn get_search(commit: Option<&Commits>, query: &str) -> Result<Vec<RespSearchEntry>> {
+  println!("Getting Search inner");
+
   let search = get_search_inner();
 
   let search = if search.is_none() {
@@ -88,17 +90,27 @@ pub async fn get_search(commit: Option<&Commits>, query: &str) -> Result<Vec<Res
       commit.unwrap()
     };
 
+    println!("Got a commit");
+
     let search = get_all_search(commit).await?;
+
+    println!("Setting search");
+
     let addr = unsafe { &mut *addr_of_mut!(SEARCH) };
     *addr = Some(SCache {
       e: search,
       t: now() + 6 * 60,
     });
 
+    println!("Returning search");
+
     get_search_inner().unwrap()
   } else {
+    println!("Returning search - directly");
     search.unwrap()
   };
+
+  println!("Got Search inner");
 
   let mut res = vec![];
 
@@ -106,15 +118,21 @@ pub async fn get_search(commit: Option<&Commits>, query: &str) -> Result<Vec<Res
     res.push(RespSearchEntry::Static(&search[val.index]));
   }
 
+  println!("Got Search @ 1");
+
   for val in flatpak::search(query).await.context("")? {
     res.push(RespSearchEntry::Owned(val));
   }
+
+  println!("Got Search @ 2");
 
   let mut final_res = vec![];
   for val in FUSE.search_text_in_fuse_list(query, &res) {
     let resp = res.remove(val.index);
     final_res.push(resp);
   }
+
+  println!("Got Search @ final");
 
   drop(res);
 

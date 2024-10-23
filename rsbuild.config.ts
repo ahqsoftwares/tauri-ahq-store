@@ -42,6 +42,11 @@ export default defineConfig({
     watchFiles: {
       paths: ["./index.html", "./src/**/*"],
     },
+    client: {
+      host: 'localhost',
+      port: '3000',
+      protocol: 'ws',
+    },
   },
   server: {
     port: 3000,
