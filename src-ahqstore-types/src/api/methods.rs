@@ -99,17 +99,14 @@ pub async fn get_home(home: &str, commit: &str) -> Option<Vec<(String, Vec<Strin
 pub async fn get_search(search: &str, commit: &str, id: &str) -> Option<Vec<super::SearchEntry>> {
   let url = search.replace("{COMMIT}", commit).replace("{ID}", id);
 
-  println!("Url: {}", &url);
-
   CLIENT
     .get(url)
     .send()
     .await
-    .unwrap()
+    .ok()?
     .json::<Vec<super::SearchEntry>>()
     .await
-    .unwrap()
-    .into()
+    .ok()
 }
 
 pub async fn get_full_map(total: &str, map: &str, commit: &str) -> Option<super::MapData> {
@@ -138,14 +135,12 @@ pub async fn get_full_search(
 ) -> Option<Vec<super::SearchEntry>> {
   let total = get_total_maps(total, commit).await?;
 
-  println!("Total: {}", &total);
-
   let mut result = vec![];
 
   let mut i = 1;
   while i <= total {
     let mut search_result = get_search(search, commit, &i.to_string()).await?;
-    println!("Result success");
+    
     result.append(&mut search_result);
     i += 1;
   }

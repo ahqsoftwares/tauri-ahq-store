@@ -109,8 +109,6 @@ pub async fn get_all_search(commit: &Commits) -> Result<Vec<SearchEntry>> {
     .await
     .context("")?;
 
-  println!("Got AHQ Store Search");
-
   let total = &*WINGET_TOTAL;
   let search = &*WINGET_SEARCH;
 
@@ -119,8 +117,6 @@ pub async fn get_all_search(commit: &Commits) -> Result<Vec<SearchEntry>> {
       .await
       .context("")?,
   );
-
-  println!("Got Winget Search");
 
   Ok(result)
 }
