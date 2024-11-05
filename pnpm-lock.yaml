@@ -127,8 +127,8 @@ importers:
         specifier: ^9.14.0
         version: 9.14.0(jiti@1.21.6)
       eslint-plugin-react-compiler:
-        specifier: 19.0.0-beta-6fc168f-20241025
-        version: 19.0.0-beta-6fc168f-20241025(eslint@9.14.0(jiti@1.21.6))
+        specifier: 19.0.0-beta-63b359f-20241101
+        version: 19.0.0-beta-63b359f-20241101(eslint@9.14.0(jiti@1.21.6))
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
@@ -1356,8 +1356,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-plugin-react-compiler@19.0.0-beta-6fc168f-20241025:
-    resolution: {integrity: sha512-mHn5tYt9dT4GiXHF5muiz6p+4Lirgi0Oc87N2KrbB/ciSkT+VZ8iJA+6bbS4//ljYzYbxBbPMHWS/dZWhQrbpQ==}
+  eslint-plugin-react-compiler@19.0.0-beta-63b359f-20241101:
+    resolution: {integrity: sha512-b7edYKziu3EFUh9I2UirMnzlKT/80TS1i9pHHp5Rssv5HG74wPtxxdU13BN42hNFj2/Wnq4ToPjMVyuIFO5dhA==}
     engines: {node: ^14.17.0 || ^16.0.0 || >= 18.0.0}
     peerDependencies:
       eslint: '>=7'
@@ -3678,7 +3678,7 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-plugin-react-compiler@19.0.0-beta-6fc168f-20241025(eslint@9.14.0(jiti@1.21.6)):
+  eslint-plugin-react-compiler@19.0.0-beta-63b359f-20241101(eslint@9.14.0(jiti@1.21.6)):
     dependencies:
       '@babel/core': 7.26.0
       '@babel/parser': 7.26.2
