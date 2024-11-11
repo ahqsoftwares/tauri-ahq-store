@@ -91,8 +91,8 @@ importers:
         specifier: 1.0.5
         version: 1.0.5(@rsbuild/core@1.0.19)(typescript@5.6.3)
       '@tauri-apps/api':
-        specifier: 2.0.3
-        version: 2.0.3
+        specifier: 2.1.0
+        version: 2.1.0
       '@tauri-apps/cli':
         specifier: 2.0.4
         version: 2.0.4
@@ -859,8 +859,8 @@ packages:
   '@swc/helpers@0.5.13':
     resolution: {integrity: sha512-UoKGxQ3r5kYI9dALKJapMmuK+1zWM/H17Z1+iwnNmzcJRnfFuevZs375TA5rW31pu4BS4NoSy1fRsexDXfWn5w==}
 
-  '@tauri-apps/api@2.0.3':
-    resolution: {integrity: sha512-840qk6n8rbXBXMA5/aAgTYsg5JAubKO0nXw5wf7IzGnUuYKGbB4oFBIZtXOIWy+E0kNTDI3qhq5iqsoMJfwp8g==}
+  '@tauri-apps/api@2.1.0':
+    resolution: {integrity: sha512-1w/JygZOiUtdOU7qart78MaB4/qayZ2heB793KhbZRS7I9q4sxXcXaB7He6uFlprD8w5TI9P8HCuEByCvWRtfw==}
 
   '@tauri-apps/cli-darwin-arm64@2.0.4':
     resolution: {integrity: sha512-siH7rOHobb16rPbc11k64p1mxIpiRCkWmzs2qmL5IX21Gx9K5onI3Tk67Oqpf2uNupbYzItrOttaDT4NHFC7tw==}
@@ -3219,7 +3219,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@tauri-apps/api@2.0.3': {}
+  '@tauri-apps/api@2.1.0': {}
 
   '@tauri-apps/cli-darwin-arm64@2.0.4':
     optional: true
@@ -3266,19 +3266,19 @@ snapshots:
 
   '@tauri-apps/plugin-fs@2.0.1':
     dependencies:
-      '@tauri-apps/api': 2.0.3
+      '@tauri-apps/api': 2.1.0
 
   '@tauri-apps/plugin-http@2.0.1':
     dependencies:
-      '@tauri-apps/api': 2.0.3
+      '@tauri-apps/api': 2.1.0
 
   '@tauri-apps/plugin-notification@2.0.0':
     dependencies:
-      '@tauri-apps/api': 2.0.3
+      '@tauri-apps/api': 2.1.0
 
   '@tauri-apps/plugin-process@2.0.0':
     dependencies:
-      '@tauri-apps/api': 2.0.3
+      '@tauri-apps/api': 2.1.0
 
   '@trysound/sax@0.2.0': {}
 

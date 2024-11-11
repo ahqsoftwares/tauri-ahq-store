@@ -58,7 +58,7 @@
     "@rsbuild/plugin-babel": "1.0.3",
     "@rsbuild/plugin-react": "1.0.6",
     "@rsbuild/plugin-svgr": "1.0.5",
-    "@tauri-apps/api": "2.0.3",
+    "@tauri-apps/api": "2.1.0",
     "@tauri-apps/cli": "2.0.4",
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.12",
