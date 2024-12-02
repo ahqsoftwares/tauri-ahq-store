@@ -4521,7 +4521,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-single-instance"
 version = "2.0.1"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#33e924574afde37003219fdd4d9085abaadf59b8"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#484eadaf334de24d0f18a9a41e0034e156ce5530"
 dependencies = [
  "serde",
  "serde_json",
