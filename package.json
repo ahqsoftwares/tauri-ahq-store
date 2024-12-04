@@ -55,7 +55,7 @@
     ]
   },
   "devDependencies": {
-    "@rsbuild/core": "1.1.7",
+    "@rsbuild/core": "1.1.8",
     "@rsbuild/plugin-babel": "1.0.3",
     "@rsbuild/plugin-react": "1.0.7",
     "@rsbuild/plugin-svgr": "1.0.5",
