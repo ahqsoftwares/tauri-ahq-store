@@ -74,7 +74,7 @@
     "eslint": "^9.17.0",
     "eslint-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "prettier": "^3.4.2",
-    "shadcn": "^2.1.7"
+    "shadcn": "^2.1.8"
   },
   "repository": {
     "type": "git",
