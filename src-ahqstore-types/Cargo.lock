@@ -496,9 +496,9 @@ dependencies = [
 
 [[package]]
 name = "kfghdfghdfkgh_js_macros"
-version = "1.0.0"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf2945f2d6cd0b1388a8a878cf1212dc9df86899d6b80034d98421e692510b22"
+checksum = "ae4691fe78bbeee1b329586f092473dafaaf14d254a78ecad53b11d452ac96d9"
 dependencies = [
  "quote",
  "syn",
