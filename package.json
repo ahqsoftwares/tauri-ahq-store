@@ -62,7 +62,7 @@
     "@rsbuild/plugin-svgr": "1.0.6",
     "@tauri-apps/api": "2.1.1",
     "@tauri-apps/cli": "2.1.0",
-    "@types/node": "^22.10.2",
+    "@types/node": "^24.0.3",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@types/react-modal": "^3.16.3",
