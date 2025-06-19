@@ -696,9 +696,9 @@ dependencies = [
 
 [[package]]
 name = "check_elevation"
-version = "0.2.4"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34f7310b71e7b968cdadd13480b9e4f2def9f173f67fd7317e8eddb8d7a4ba00"
+checksum = "a7fe1fbbd8bd3174109071530f12932ff471eeff30d83e9c485d6ff424ac534b"
 dependencies = [
  "windows 0.51.1",
 ]
