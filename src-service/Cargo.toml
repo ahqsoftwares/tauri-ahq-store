@@ -27,7 +27,7 @@ chacha20poly1305 = { version = "0.10", features = ["heapless"] }
 [target.'cfg(windows)'.dependencies]
 mslnk = "0.1"
 windows-service = "0.7"
-msi = "0.8"
+msi = "0.9"
 winreg = "0.52"
 windows = { version = "0.58", features = [
   "Win32_Foundation",
