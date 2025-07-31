@@ -29,7 +29,7 @@ check_elevation = "0.2.4"
 winreg = "0.52.0"
 
 [target.'cfg(windows)'.build-dependencies]
-tauri-winres = "0.1"
+tauri-winres = "0.3"
 
 [build-dependencies]
 slint-build = "1"
