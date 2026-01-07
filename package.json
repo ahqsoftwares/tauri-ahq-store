@@ -69,7 +69,7 @@
     "babel-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.1.0",
     "cryptr": "^6.3.0",
     "eslint": "^9.17.0",
     "eslint-plugin-react-compiler": "19.0.0-beta-df7b47d-20241124",
